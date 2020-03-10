@@ -1,0 +1,57 @@
+plugins {
+    id "com.android.library"
+    id "kotlin-android"
+    id "org.jetbrains.kotlin.kapt"
+}
+
+android {
+    compileSdkVersion setup.compileSdk
+    buildToolsVersion setup.buildTools
+    defaultConfig {
+        minSdkVersion setup.minSdk
+        targetSdkVersion setup.targetSdk
+        versionCode appVersionCode
+        versionName appVersion
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+    sourceSets {
+        main.java.srcDirs += "src/main/kotlin"
+        test.java.srcDirs += "src/test/kotlin"
+        androidTest.java.srcDirs += "src/androidTest/kotlin"
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+}
+
+dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion"
+    
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion"
+
+    implementation "org.jetbrains.kotlinx:kotlinx-serialization-runtime:$serializationVersion"
+
+    implementation "com.google.dagger:dagger:$daggerVersion"
+    kapt "com.google.dagger:dagger-compiler:$daggerVersion"
+    
+    implementation "androidx.room:room-runtime:$roomVersion"
+    kapt "androidx.room:room-compiler:$roomVersion"
+    implementation "androidx.room:room-ktx:$roomVersion"
+    
+    testImplementation "org.jetbrains.kotlin:kotlin-test:$kotlinVersion"
+    testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$kotlinVersion"
+    testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:$kotlinMockitoVersion"
+    testImplementation "androidx.room:room-testing:$roomVersion"
+
+    androidTestImplementation "androidx.test:runner:1.2.0"
+    androidTestImplementation "androidx.test.ext:junit:1.1.1"
+    androidTestImplementation "org.jetbrains.kotlin:kotlin-test:$kotlinVersion"
+    androidTestImplementation "org.jetbrains.kotlin:kotlin-test-junit:$kotlinVersion"
+    androidTestImplementation "org.mockito:mockito-android:$mockitoAndroidVersion"
+    androidTestImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:$kotlinMockitoVersion"
+}

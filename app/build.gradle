@@ -1,0 +1,67 @@
+plugins {
+    id "com.android.application"
+    id "kotlin-android"
+    id "org.jetbrains.kotlin.kapt"
+}
+
+android {
+    compileSdkVersion setup.compileSdk
+    buildToolsVersion setup.buildTools
+    defaultConfig {
+        applicationId "com.maltaisn.notes.app"
+        minSdkVersion setup.minSdk
+        targetSdkVersion setup.targetSdk
+        versionCode appVersionCode
+        versionName appVersion
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+    sourceSets {
+        main.java.srcDirs += "src/main/kotlin"
+        test.java.srcDirs += "src/test/kotlin"
+        androidTest.java.srcDirs += "src/androidTest/kotlin"
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+    buildTypes {
+        release {
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+        }
+    }
+}
+
+dependencies {
+    implementation project(":core")
+
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion"
+    
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion"
+
+    implementation "com.google.dagger:dagger:$daggerVersion"
+    kapt "com.google.dagger:dagger-compiler:$daggerVersion"
+
+    implementation "androidx.core:core-ktx:$androidKtxVersion"
+    implementation "androidx.appcompat:appcompat:$appCompatVersion"
+    implementation "androidx.recyclerview:recyclerview:$recyclerViewVersion"
+    implementation "androidx.constraintlayout:constraintlayout:$constraintLayoutVersion"
+    
+    implementation "com.google.android.material:material:$materialVersion"
+    
+    testImplementation "org.jetbrains.kotlin:kotlin-test:$kotlinVersion"
+    testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$kotlinVersion"
+    testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:$kotlinMockitoVersion"
+
+    androidTestImplementation "androidx.test:runner:1.2.0"
+    androidTestImplementation "androidx.test.ext:junit:1.1.1"
+    androidTestImplementation "org.jetbrains.kotlin:kotlin-test:$kotlinVersion"
+    androidTestImplementation "org.jetbrains.kotlin:kotlin-test-junit:$kotlinVersion"
+    androidTestImplementation "org.mockito:mockito-android:$mockitoAndroidVersion"
+    androidTestImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:$kotlinMockitoVersion"
+}
