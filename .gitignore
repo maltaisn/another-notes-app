@@ -1,5 +1,9 @@
 dev/
 
+# Firebase
+app/google-services.json
+.firebaserc
+
 # Android Studio
 local.properties
 *.iml
