@@ -14,17 +14,11 @@
  * limitations under the License.
  */
 
-package com.maltaisn.notes.app
-
-import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
+package com.maltaisn.notes.model.entity
 
 
-class MainActivity : AppCompatActivity() {
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-    }
-
+enum class NoteStatus(val value: Int) {
+    ACTIVE(0),
+    ARCHIVED(1),
+    DELETED(2)
 }

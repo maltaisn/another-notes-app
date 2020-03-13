@@ -20,10 +20,12 @@ import android.content.Context
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.maltaisn.notes.core.converter.DateTimeConverter
-import com.maltaisn.notes.core.entity.Note
-import com.maltaisn.notes.core.entity.NoteStatus
-import com.maltaisn.notes.core.entity.NoteType
+import com.maltaisn.notes.model.NotesDao
+import com.maltaisn.notes.model.NotesDatabase
+import com.maltaisn.notes.model.converter.DateTimeConverter
+import com.maltaisn.notes.model.entity.Note
+import com.maltaisn.notes.model.entity.NoteStatus
+import com.maltaisn.notes.model.entity.NoteType
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Before

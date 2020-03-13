@@ -6,13 +6,13 @@ plugins {
 }
 
 android {
-    compileSdkVersion setup.compileSdk
-    buildToolsVersion setup.buildTools
+    compileSdkVersion 29
+    buildToolsVersion "29.0.2"
     defaultConfig {
-        applicationId "com.maltaisn.notes.app"
-        minSdkVersion setup.minSdk
-        targetSdkVersion setup.targetSdk
-        versionCode appVersionCode
+        applicationId "com.maltaisn.notes"
+        minSdkVersion 21
+        targetSdkVersion 29
+        versionCode appVersion.split(/\./).collect { it.padLeft(2, "0") }.sum().toInteger()
         versionName appVersion
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -38,15 +38,21 @@ android {
 }
 
 dependencies {
-    implementation project(":core")
-
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion"
     
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion"
+    
+    implementation "org.jetbrains.kotlinx:kotlinx-serialization-runtime:$serializationVersion"
 
     implementation "com.google.dagger:dagger:$daggerVersion"
     kapt "com.google.dagger:dagger-compiler:$daggerVersion"
+    
+    implementation "androidx.room:room-runtime:$roomVersion"
+    kapt "androidx.room:room-compiler:$roomVersion"
+    implementation "androidx.room:room-ktx:$roomVersion"
+    
+    implementation "com.google.firebase:firebase-functions-ktx:$firebaseFunctionsVersion"
 
     implementation "androidx.core:core-ktx:$androidKtxVersion"
     implementation "androidx.appcompat:appcompat:$appCompatVersion"

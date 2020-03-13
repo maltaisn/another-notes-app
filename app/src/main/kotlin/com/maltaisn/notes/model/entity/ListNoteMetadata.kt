@@ -14,24 +14,10 @@
  * limitations under the License.
  */
 
-package com.maltaisn.notes.core.entity
-
-import androidx.room.ColumnInfo
-import androidx.room.Entity
-import androidx.room.Fts4
-import androidx.room.PrimaryKey
+package com.maltaisn.notes.model.entity
 
 
-@Fts4(contentEntity = Note::class)
-@Entity(tableName = "notes_fts")
-data class NoteFts(
-        @PrimaryKey
-        @ColumnInfo(name = "rowid")
-        val rowid: Long,
-
-        @ColumnInfo(name = "title")
-        val title: String,
-
-        @ColumnInfo(name = "content")
-        val content: String
-)
+/**
+ * Metadata for a list note used to keep the checked state of each items.
+ */
+data class ListNoteMetadata(val checked: List<Boolean>)

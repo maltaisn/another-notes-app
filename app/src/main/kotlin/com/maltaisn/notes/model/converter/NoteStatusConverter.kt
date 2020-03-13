@@ -14,10 +14,25 @@
  * limitations under the License.
  */
 
-package com.maltaisn.notes.core.entity
+package com.maltaisn.notes.model.converter
+
+import androidx.room.TypeConverter
+import com.maltaisn.notes.model.entity.NoteStatus
 
 
-enum class NoteType(val value: Int) {
-    TEXT(0),
-    LIST(1)
+object NoteStatusConverter {
+
+    @TypeConverter
+    @JvmStatic
+    fun toInt(status: NoteStatus) = status.value
+
+    @TypeConverter
+    @JvmStatic
+    fun toStatus(value: Int) = when (value) {
+        0 -> NoteStatus.ACTIVE
+        1 -> NoteStatus.ARCHIVED
+        2 -> NoteStatus.DELETED
+        else -> error("Unknown note status value")
+    }
+
 }

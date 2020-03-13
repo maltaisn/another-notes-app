@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-package com.maltaisn.notes.core
+package com.maltaisn.notes.model
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import com.maltaisn.notes.core.converter.DateTimeConverter
-import com.maltaisn.notes.core.converter.NoteStatusConverter
-import com.maltaisn.notes.core.converter.NoteTypeConverter
-import com.maltaisn.notes.core.entity.Note
-import com.maltaisn.notes.core.entity.NoteFts
+import com.maltaisn.notes.model.converter.DateTimeConverter
+import com.maltaisn.notes.model.converter.NoteStatusConverter
+import com.maltaisn.notes.model.converter.NoteTypeConverter
+import com.maltaisn.notes.model.entity.Note
+import com.maltaisn.notes.model.entity.NoteFts
 
 
 @Database(

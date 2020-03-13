@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package com.maltaisn.notes.core
+package com.maltaisn.notes.model
 
 import androidx.room.*
-import com.maltaisn.notes.core.entity.Note
-import com.maltaisn.notes.core.entity.NoteStatus
+import com.maltaisn.notes.model.entity.Note
+import com.maltaisn.notes.model.entity.NoteStatus
 
 
 @Dao

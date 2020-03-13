@@ -14,10 +14,17 @@
  * limitations under the License.
  */
 
-package com.maltaisn.notes.core.entity
+package com.maltaisn.notes
+
+import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 
 
-/**
- * Metadata for a list note used to keep the checked state of each items.
- */
-data class ListNoteMetadata(val checked: List<Boolean>)
+class MainActivity : AppCompatActivity() {
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+    }
+
+}

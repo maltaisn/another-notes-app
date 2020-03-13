@@ -14,11 +14,24 @@
  * limitations under the License.
  */
 
-package com.maltaisn.notes.core.entity
+package com.maltaisn.notes.model.entity
+
+import androidx.room.ColumnInfo
+import androidx.room.Entity
+import androidx.room.Fts4
+import androidx.room.PrimaryKey
 
 
-enum class NoteStatus(val value: Int) {
-    ACTIVE(0),
-    ARCHIVED(1),
-    DELETED(2)
-}
+@Fts4(contentEntity = Note::class)
+@Entity(tableName = "notes_fts")
+data class NoteFts(
+        @PrimaryKey
+        @ColumnInfo(name = "rowid")
+        val rowid: Long,
+
+        @ColumnInfo(name = "title")
+        val title: String,
+
+        @ColumnInfo(name = "content")
+        val content: String
+)

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.maltaisn.notes.core.entity
+package com.maltaisn.notes.model.entity
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity

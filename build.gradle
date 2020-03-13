@@ -1,15 +1,4 @@
 buildscript {
-    ext {
-        setup = [
-                compileSdk: 29,
-                buildTools: "29.0.2",
-                minSdk: 14,
-                targetSdk: 29
-        ]
-        
-        // Auto generate app version code based on version name.
-        appVersionCode = appVersion.split(/\./).collect { it.padLeft(2, "0") }.sum().toInteger()
-    }
     repositories {
         google()
         jcenter()

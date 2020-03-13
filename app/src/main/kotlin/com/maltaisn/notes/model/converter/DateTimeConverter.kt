@@ -14,24 +14,27 @@
  * limitations under the License.
  */
 
-package com.maltaisn.notes.core.converter
+package com.maltaisn.notes.model.converter
 
 import androidx.room.TypeConverter
-import com.maltaisn.notes.core.entity.NoteType
+import java.text.SimpleDateFormat
+import java.util.*
 
 
-object NoteTypeConverter {
+object DateTimeConverter {
 
-    @TypeConverter
-    @JvmStatic
-    fun toInt(type: NoteType) = type.value
+    private val dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.ROOT)
 
-    @TypeConverter
-    @JvmStatic
-    fun toType(value: Int) = when (value) {
-        0 -> NoteType.TEXT
-        1 -> NoteType.LIST
-        else -> error("Unknown note type value")
+    init {
+        dateFormat.timeZone = TimeZone.getTimeZone("GMT")
     }
+
+    @TypeConverter
+    @JvmStatic
+    fun toDate(str: String): Date = dateFormat.parse(str)!!
+
+    @TypeConverter
+    @JvmStatic
+    fun toString(date: Date): String = dateFormat.format(date)
 
 }
