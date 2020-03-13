@@ -14,19 +14,28 @@
  * limitations under the License.
  */
 
-package com.maltaisn.notes
+package com.maltaisn.notes.di
 
-import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
+import android.content.Context
+import androidx.room.Room
+import com.maltaisn.notes.model.NotesDatabase
+import dagger.Module
+import dagger.Provides
+import javax.inject.Singleton
 
 
-class MainActivity : AppCompatActivity() {
+@Module
+object DatabaseModule {
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        (applicationContext as App).appComponent.inject(this)
+    @Provides
+    @Singleton
+    @JvmStatic
+    fun providesDatabase(context: Context) = Room.databaseBuilder(context,
+            NotesDatabase::class.java, "notes_db").build()
 
-        setContentView(R.layout.activity_main)
-    }
+    @Provides
+    @Singleton
+    @JvmStatic
+    fun providesNotesDao(database: NotesDatabase) = database.notesDao()
 
 }

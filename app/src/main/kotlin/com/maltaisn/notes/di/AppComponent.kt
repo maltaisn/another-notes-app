@@ -14,19 +14,24 @@
  * limitations under the License.
  */
 
-package com.maltaisn.notes
+package com.maltaisn.notes.di
 
-import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
+import android.content.Context
+import com.maltaisn.notes.MainActivity
+import dagger.BindsInstance
+import dagger.Component
+import javax.inject.Singleton
 
 
-class MainActivity : AppCompatActivity() {
+@Singleton
+@Component(modules = [DatabaseModule::class])
+interface AppComponent {
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        (applicationContext as App).appComponent.inject(this)
+    fun inject(activity: MainActivity)
 
-        setContentView(R.layout.activity_main)
+    @Component.Factory
+    interface Factory {
+        fun create(@BindsInstance appContext: Context): AppComponent
     }
 
 }

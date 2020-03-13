@@ -16,17 +16,14 @@
 
 package com.maltaisn.notes
 
-import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
+import android.app.Application
+import com.maltaisn.notes.di.DaggerAppComponent
 
 
-class MainActivity : AppCompatActivity() {
+class App : Application() {
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        (applicationContext as App).appComponent.inject(this)
-
-        setContentView(R.layout.activity_main)
+    val appComponent by lazy {
+        DaggerAppComponent.factory().create(applicationContext)
     }
 
 }
