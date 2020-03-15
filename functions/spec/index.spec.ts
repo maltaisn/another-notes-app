@@ -85,36 +85,45 @@ describe('cloud functions', () => {
         })
 
         describe('return remote events', async () => {
-            it('should return no events (no remote events)', async () => {
-                return expect(functions.sync.run({
+            it('should return new sync date', async () => {
+                const dateStr = (await functions.sync.run({
                     lastSync: '1970-01-01T00:00:00.000Z',
                     events: []
-                }, callableContext)).to.eventually.deep.equal([])
+                }, callableContext)).lastSync
+                expect(new Date(dateStr).getTime())
+                    .to.approximately(new Date().getTime(), 100)
+            })
+
+            it('should return no events (no remote events)', async () => {
+                expect((await functions.sync.run({
+                    lastSync: '1970-01-01T00:00:00.000Z',
+                    events: []
+                }, callableContext)).events).to.be.empty
             })
 
             it('should return no events (already synced)', async () => {
-                await setTestNote(testData.notes.test)
-                return expect(functions.sync.run({
+                await setTestNote(testData.notes.test);
+                expect((await functions.sync.run({
                     lastSync: '2030-01-01T00:00:00.000Z',
                     events: []
-                }, callableContext)).to.eventually.deep.equal([])
+                }, callableContext)).events).to.be.empty
             })
 
             it('should return single add event', async () => {
                 await setTestNote(testData.notes.test)
-                return expect(functions.sync.run({
+                expect((await functions.sync.run({
                     lastSync: '2010-01-01T00:00:00.000Z',
                     events: []
-                }, callableContext)).to.eventually.deep.equal(
+                }, callableContext)).events).to.deep.equal(
                     [createTestEvent(testData.notes.test, ChangeEventType.Added)])
             })
 
             it('should return single delete event', async () => {
                 await setTestNote(testData.notes.testDeleted)
-                return expect(functions.sync.run({
+                expect((await functions.sync.run({
                     lastSync: '2010-01-01T00:00:00.000Z',
                     events: []
-                }, callableContext)).to.eventually.deep.equal([{
+                }, callableContext)).events).to.deep.equal([{
                     uuid: '0',
                     type: ChangeEventType.Deleted
                 }])
@@ -164,20 +173,20 @@ describe('cloud functions', () => {
         describe('send local event and return remote', async () => {
             it('should update but not return event', async () => {
                 await setTestNote(testData.notes.test)
-                await expect(functions.sync.run({
+                expect((await functions.sync.run({
                     lastSync: '1970-01-01T00:00:00.000Z',
                     events: [createTestEvent(testData.notes.testUpdated, ChangeEventType.Updated)]
-                }, callableContext)).to.be.eventually.eql([])
+                }, callableContext)).events).to.be.empty
                 return expect(getTestNote('0'))
                     .to.be.eventually.deep.equal(testData.notes.testUpdated)
             })
 
             it('should update and return event', async () => {
                 await setTestNote(testData.notes.test)
-                await expect(functions.sync.run({
+                expect((await functions.sync.run({
                     lastSync: '1970-01-01T00:00:00.000Z',
                     events: [createTestEvent(testData.notes.testList, ChangeEventType.Added)]
-                }, callableContext)).to.be.eventually.deep.equal(
+                }, callableContext)).events).to.be.deep.equal(
                     [createTestEvent(testData.notes.test, ChangeEventType.Added)])
                 return expect(getTestNote('1'))
                     .to.be.eventually.deep.equal(testData.notes.testList)

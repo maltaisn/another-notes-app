@@ -25,7 +25,6 @@ import {
     NoteStatus,
     SyncData,
     TActiveNote,
-    TChangeEvent,
     TNote,
     TSyncData
 } from './types'
@@ -57,10 +56,12 @@ export const sync = functions.https.onCall(async (data, context) => {
     const remoteChanges = await syncRemoteChangeEvents(userUid, syncData)
     await syncLocalChangeEvents(userUid, syncData)
 
-    // Encode and return remote change events.
+    // Encode and return remote sync data.
     // Object is also cleaned to remove null and undefined values.
-    return remoteChanges.map((changeEvent) =>
-        cleanObject(TChangeEvent.encode(changeEvent)))
+    return cleanObject(TSyncData.encode({
+        lastSync: new Date(),
+        events: remoteChanges
+    }))
 })
 
 /**
@@ -87,7 +88,7 @@ async function syncRemoteChangeEvents(userUid: string, syncData: SyncData): Prom
                 if (note.status === NoteStatus.Deleted) {
                     remoteChanges.push({
                         uuid: note.uuid,
-                        note: null,
+                        note: undefined,
                         type: ChangeEventType.Deleted
                     })
                 } else {
