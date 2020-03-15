@@ -1,0 +1,37 @@
+{
+  "notes": {
+    "test": {
+      "uuid": "0",
+      "type": 0,
+      "title": "note 1",
+      "content": "content 1",
+      "added": "2019-12-15T00:00:00.000Z",
+      "modified": "2020-02-02T12:10:00.000Z",
+      "status": 0
+    },
+    "testUpdated": {
+      "uuid": "0",
+      "type": 0,
+      "title": "note updated",
+      "content": "archived content",
+      "added": "2019-12-15T00:00:00.000Z",
+      "modified": "2020-03-02T12:03:14.000Z",
+      "status": 1
+    },
+    "testDeleted": {
+      "uuid": "0",
+      "modified": "2020-02-02T12:10:00.000Z",
+      "status": 3
+    },
+    "testList": {
+      "uuid": "1",
+      "type": 1,
+      "title": "note 1",
+      "content": "item1\nitem2\nitem3\nitem4\nitem5\nitem6",
+      "metadata": "{\"checked\":[0,0,0,1,1,0]}",
+      "added": "2019-12-15T00:00:00.000Z",
+      "modified": "2020-02-02T12:10:00.000Z",
+      "status": 0
+    }
+  }
+}

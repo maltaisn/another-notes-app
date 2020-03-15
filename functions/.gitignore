@@ -1,2 +1,4 @@
-node_modules/
+/node_modules/
 /config.json
+/lib/
+/firebase-debug.log
