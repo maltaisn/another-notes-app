@@ -3,6 +3,7 @@ plugins {
     id "kotlin-android"
     id "org.jetbrains.kotlin.kapt"
     id "com.google.gms.google-services"
+    id "org.jetbrains.kotlin.plugin.serialization"
 }
 
 android {
@@ -52,13 +53,16 @@ dependencies {
     kapt "androidx.room:room-compiler:$roomVersion"
     implementation "androidx.room:room-ktx:$roomVersion"
     
+    implementation "com.google.firebase:firebase-auth:$firebaseAuthVersion"
     implementation "com.google.firebase:firebase-functions-ktx:$firebaseFunctionsVersion"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-play-services:$coroutinesVersion"
 
     implementation "androidx.core:core-ktx:$androidKtxVersion"
     implementation "androidx.appcompat:appcompat:$appCompatVersion"
     implementation "androidx.recyclerview:recyclerview:$recyclerViewVersion"
     implementation "androidx.constraintlayout:constraintlayout:$constraintLayoutVersion"
-    
+    implementation "androidx.preference:preference:$preferenceVersion"
+
     implementation "com.google.android.material:material:$materialVersion"
     
     testImplementation "org.jetbrains.kotlin:kotlin-test:$kotlinVersion"

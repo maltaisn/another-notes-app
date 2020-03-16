@@ -16,29 +16,21 @@
 
 package com.maltaisn.notes.di
 
-import android.content.Context
-import androidx.room.Room
-import com.maltaisn.notes.model.NotesDatabase
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.functions.FirebaseFunctions
 import dagger.Module
 import dagger.Provides
-import javax.inject.Singleton
 
 
 @Module
-object DatabaseModule {
-
-    @Provides
-    @Singleton
-    @JvmStatic
-    fun providesDatabase(context: Context) = Room.databaseBuilder(context,
-            NotesDatabase::class.java, "notes_db").build()
+object FirebaseModule {
 
     @Provides
     @JvmStatic
-    fun providesNotesDao(database: NotesDatabase) = database.notesDao()
+    fun providesAuth() = FirebaseAuth.getInstance()
 
     @Provides
     @JvmStatic
-    fun providesChangeEventsDao(database: NotesDatabase) = database.changeEventsDao()
+    fun providesFunctions() = FirebaseFunctions.getInstance()
 
 }

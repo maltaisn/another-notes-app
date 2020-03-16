@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package com.maltaisn.notes.model.entity
+package com.maltaisn.notes
 
 
-enum class NoteStatus(val value: Int) {
-    ACTIVE(0),
-    ARCHIVED(1),
-    TRASHED(2)
+object PreferenceHelper {
+
+    const val LAST_SYNC_TIME = "last_sync_time"
+
 }

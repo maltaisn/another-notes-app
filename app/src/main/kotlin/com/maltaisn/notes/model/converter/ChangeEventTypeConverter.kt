@@ -17,27 +17,28 @@
 package com.maltaisn.notes.model.converter
 
 import androidx.room.TypeConverter
-import com.maltaisn.notes.model.entity.NoteType
+import com.maltaisn.notes.model.entity.ChangeEventType
 import kotlinx.serialization.*
 
 
-@Serializer(forClass = NoteType::class)
-object NoteTypeConverter : KSerializer<NoteType> {
+@Serializer(forClass = ChangeEventType::class)
+object ChangeEventTypeConverter : KSerializer<ChangeEventType> {
 
     @TypeConverter
     @JvmStatic
-    fun toInt(type: NoteType) = type.value
+    fun toInt(type: ChangeEventType) = type.value
 
     @TypeConverter
     @JvmStatic
     fun toType(value: Int) = when (value) {
-        0 -> NoteType.TEXT
-        1 -> NoteType.LIST
-        else -> error("Unknown note type value")
+        0 -> ChangeEventType.ADDED
+        1 -> ChangeEventType.UPDATED
+        2 -> ChangeEventType.DELETED
+        else -> error("Unknown change event type value")
     }
 
-    override val descriptor = PrimitiveDescriptor("NoteType", PrimitiveKind.INT)
-    override fun serialize(encoder: Encoder, value: NoteType) = encoder.encodeInt(toInt(value))
+    override val descriptor = PrimitiveDescriptor("ChangeEventType", PrimitiveKind.INT)
+    override fun serialize(encoder: Encoder, value: ChangeEventType) = encoder.encodeInt(toInt(value))
     override fun deserialize(decoder: Decoder) = toType(decoder.decodeInt())
 
 }

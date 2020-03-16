@@ -14,31 +14,23 @@
  * limitations under the License.
  */
 
-package com.maltaisn.notes.di
+package com.maltaisn.notes.model
 
-import android.content.Context
-import androidx.room.Room
-import com.maltaisn.notes.model.NotesDatabase
-import dagger.Module
-import dagger.Provides
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
+import kotlinx.coroutines.tasks.await
+import javax.inject.Inject
 import javax.inject.Singleton
 
 
-@Module
-object DatabaseModule {
+@Singleton
+class LoginRepository @Inject constructor(private val fbAuth: FirebaseAuth) {
 
-    @Provides
-    @Singleton
-    @JvmStatic
-    fun providesDatabase(context: Context) = Room.databaseBuilder(context,
-            NotesDatabase::class.java, "notes_db").build()
+    suspend fun signIn(email: String, password: String): FirebaseUser? {
+        fbAuth.signInWithEmailAndPassword(email, password).await()
+        return fbAuth.currentUser
+    }
 
-    @Provides
-    @JvmStatic
-    fun providesNotesDao(database: NotesDatabase) = database.notesDao()
-
-    @Provides
-    @JvmStatic
-    fun providesChangeEventsDao(database: NotesDatabase) = database.changeEventsDao()
+    fun signOut() = fbAuth.signOut()
 
 }

@@ -19,9 +19,11 @@ package com.maltaisn.notes.model
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import com.maltaisn.notes.model.converter.ChangeEventTypeConverter
 import com.maltaisn.notes.model.converter.DateTimeConverter
 import com.maltaisn.notes.model.converter.NoteStatusConverter
 import com.maltaisn.notes.model.converter.NoteTypeConverter
+import com.maltaisn.notes.model.entity.ChangeEvent
 import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.model.entity.NoteFts
 
@@ -29,12 +31,16 @@ import com.maltaisn.notes.model.entity.NoteFts
 @Database(
         entities = [
             Note::class,
-            NoteFts::class
+            NoteFts::class,
+            ChangeEvent::class
         ],
         version = 1, exportSchema = false)
-@TypeConverters(DateTimeConverter::class, NoteTypeConverter::class, NoteStatusConverter::class)
+@TypeConverters(DateTimeConverter::class, NoteTypeConverter::class,
+        NoteStatusConverter::class, ChangeEventTypeConverter::class)
 abstract class NotesDatabase : RoomDatabase() {
 
     abstract fun notesDao(): NotesDao
+
+    abstract fun changeEventsDao(): ChangeEventsDao
 
 }

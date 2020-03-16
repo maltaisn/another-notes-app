@@ -24,7 +24,11 @@ import javax.inject.Singleton
 
 
 @Singleton
-@Component(modules = [DatabaseModule::class])
+@Component(modules = [
+    AppModule::class,
+    DatabaseModule::class,
+    FirebaseModule::class
+])
 interface AppComponent {
 
     fun inject(activity: MainActivity)

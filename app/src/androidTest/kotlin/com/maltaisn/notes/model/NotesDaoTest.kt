@@ -14,14 +14,12 @@
  * limitations under the License.
  */
 
-package com.maltaisn.notes.core
+package com.maltaisn.notes.model
 
 import android.content.Context
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.maltaisn.notes.model.NotesDao
-import com.maltaisn.notes.model.NotesDatabase
 import com.maltaisn.notes.model.converter.DateTimeConverter
 import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.model.entity.NoteStatus
@@ -55,30 +53,43 @@ class NotesDaoTest {
 
     @Test
     fun readWriteTests()  = runBlocking {
-        val time = DateTimeConverter.toDate("2020-01-01T00:00:00Z")
-        val note = Note(1, NoteType.TEXT, "note", "content",
+        val time = DateTimeConverter.toDate("2020-01-01T00:00:00.000Z")
+        val note = Note(1, "1", NoteType.TEXT, "note", "content",
                 null, time, time, NoteStatus.ACTIVE)
 
         val id = notesDao.insert(note)
         assertEquals(note, notesDao.getById(id))
 
-        val updatedNote = Note(1, NoteType.TEXT, "note update", "content",
+        val updatedNote = Note(1, "1", NoteType.TEXT, "note update", "content",
                 null, time, time, NoteStatus.ACTIVE)
         notesDao.update(updatedNote)
         assertEquals(updatedNote, notesDao.getById(id))
+        assertEquals(updatedNote, notesDao.getByUuid("1"))
 
         notesDao.delete(updatedNote)
         assertNull(notesDao.getById(id))
+        assertNull(notesDao.getIdByUuid("1"))
+    }
+
+    @Test
+    fun getIdByUuidTest() = runBlocking {
+        val time = DateTimeConverter.toDate("2020-01-01T00:00:00.000Z")
+        val note = Note(1, "1", NoteType.TEXT, "note", "content",
+                null, time, time, NoteStatus.ACTIVE)
+
+        notesDao.insert(note)
+        assertEquals(1, notesDao.getIdByUuid("1"))
+        assertNull(notesDao.getIdByUuid("0"))
     }
 
     @Test
     fun getNotesByStatusTest() = runBlocking {
-        val time = DateTimeConverter.toDate("2020-01-01T00:00:00Z")
+        val time = DateTimeConverter.toDate("2020-01-01T00:00:00.000Z")
         val activeNotes = mutableListOf<Note>()
         var id = 1L
         repeat(5) {
             for (status in NoteStatus.values()) {
-                val note = Note(id, NoteType.TEXT,"note",
+                val note = Note(id, id.toString(), NoteType.TEXT,"note",
                         "content", null, time, time, status)
                 notesDao.insert(note)
                 if (status == NoteStatus.ACTIVE) {
@@ -93,28 +104,13 @@ class NotesDaoTest {
 
     @Test
     fun searchNotesTest() = runBlocking {
-        val time = DateTimeConverter.toDate("2020-01-01T00:00:00Z")
-        val note = Note(1, NoteType.TEXT, "note", "content", null, time, time, NoteStatus.ACTIVE)
+        val time = DateTimeConverter.toDate("2020-01-01T00:00:00.000Z")
+        val note = Note(1, "1", NoteType.TEXT, "note", "content", null, time, time, NoteStatus.ACTIVE)
         notesDao.insert(note)
-        notesDao.insert(Note(2, NoteType.TEXT, "title", "foo", null, time, time, NoteStatus.ACTIVE))
-        notesDao.insert(Note(3, NoteType.TEXT, "my note", "bar", null, time, time, NoteStatus.ACTIVE))
+        notesDao.insert(Note(2, "2", NoteType.TEXT, "title", "foo", null, time, time, NoteStatus.ACTIVE))
+        notesDao.insert(Note(3, "3", NoteType.TEXT, "my note", "bar", null, time, time, NoteStatus.ACTIVE))
 
         assertEquals(listOf(note), notesDao.search("content"))
-    }
-
-    @Test
-    fun getLastModifiedTest() = runBlocking {
-        assertNull(notesDao.getLastModified())
-
-        val time1 = DateTimeConverter.toDate("2020-01-01T00:00:00Z")
-        val time2 = DateTimeConverter.toDate("2020-03-01T12:34:56Z")
-
-        val note = Note(10, NoteType.TEXT, "note", "content", null, time2, time2, NoteStatus.ACTIVE)
-        notesDao.insert(note)
-        notesDao.insert(Note(9, NoteType.TEXT, "title", "foo", null, time1, time2, NoteStatus.ACTIVE))
-        notesDao.insert(Note(3, NoteType.TEXT, "my note", "bar", null, time1, time1, NoteStatus.ACTIVE))
-
-        assertEquals(note, notesDao.getLastModified())
     }
 
 }

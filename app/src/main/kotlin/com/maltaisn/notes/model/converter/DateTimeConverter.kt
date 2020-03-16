@@ -17,13 +17,15 @@
 package com.maltaisn.notes.model.converter
 
 import androidx.room.TypeConverter
+import kotlinx.serialization.*
 import java.text.SimpleDateFormat
 import java.util.*
 
 
-object DateTimeConverter {
+@Serializer(forClass = Date::class)
+object DateTimeConverter : KSerializer<Date> {
 
-    private val dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.ROOT)
+    private val dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.ROOT)
 
     init {
         dateFormat.timeZone = TimeZone.getTimeZone("GMT")
@@ -36,5 +38,10 @@ object DateTimeConverter {
     @TypeConverter
     @JvmStatic
     fun toString(date: Date): String = dateFormat.format(date)
+
+
+    override val descriptor = PrimitiveDescriptor("Date", PrimitiveKind.STRING)
+    override fun serialize(encoder: Encoder, value: Date) = encoder.encodeString(toString(value))
+    override fun deserialize(decoder: Decoder) = toDate(decoder.decodeString())
 
 }

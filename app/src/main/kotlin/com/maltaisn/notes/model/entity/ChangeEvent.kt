@@ -16,9 +16,23 @@
 
 package com.maltaisn.notes.model.entity
 
+import androidx.room.ColumnInfo
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 
-enum class NoteStatus(val value: Int) {
-    ACTIVE(0),
-    ARCHIVED(1),
-    TRASHED(2)
-}
+
+@Entity(tableName = "change_events")
+data class ChangeEvent(
+        /**
+         * The UUID of the changed note.
+         */
+        @PrimaryKey
+        @ColumnInfo(name = "uuid")
+        val uuid: String,
+
+        /**
+         * The event type, indicating what happened with the note.
+         */
+        @ColumnInfo(name = "type")
+        val type: ChangeEventType
+)

@@ -14,11 +14,28 @@
  * limitations under the License.
  */
 
-package com.maltaisn.notes.model.entity
+package com.maltaisn.notes.model
+
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
+import com.maltaisn.notes.model.entity.ChangeEvent
 
 
-enum class NoteStatus(val value: Int) {
-    ACTIVE(0),
-    ARCHIVED(1),
-    TRASHED(2)
+@Dao
+interface ChangeEventsDao {
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insert(event: ChangeEvent)
+
+    @Query("SELECT * FROM change_events")
+    suspend fun getAll(): List<ChangeEvent>
+
+    @Query("DELETE FROM change_events")
+    suspend fun clear()
+
+    @Query("SELECT * FROM change_events WHERE uuid == :uuid")
+    suspend fun getByUuid(uuid: String): ChangeEvent
+
 }

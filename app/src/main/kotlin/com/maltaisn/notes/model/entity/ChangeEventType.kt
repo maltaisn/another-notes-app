@@ -17,8 +17,8 @@
 package com.maltaisn.notes.model.entity
 
 
-enum class NoteStatus(val value: Int) {
-    ACTIVE(0),
-    ARCHIVED(1),
-    TRASHED(2)
+enum class ChangeEventType(val value: Int) {
+    ADDED(0),
+    UPDATED(1),
+    DELETED(2)
 }

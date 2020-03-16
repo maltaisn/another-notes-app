@@ -18,9 +18,11 @@ package com.maltaisn.notes.model.converter
 
 import androidx.room.TypeConverter
 import com.maltaisn.notes.model.entity.NoteStatus
+import kotlinx.serialization.*
 
 
-object NoteStatusConverter {
+@Serializer(forClass = NoteStatus::class)
+object NoteStatusConverter : KSerializer<NoteStatus> {
 
     @TypeConverter
     @JvmStatic
@@ -31,8 +33,12 @@ object NoteStatusConverter {
     fun toStatus(value: Int) = when (value) {
         0 -> NoteStatus.ACTIVE
         1 -> NoteStatus.ARCHIVED
-        2 -> NoteStatus.DELETED
+        2 -> NoteStatus.TRASHED
         else -> error("Unknown note status value")
     }
+
+    override val descriptor = PrimitiveDescriptor("NoteStatus", PrimitiveKind.INT)
+    override fun serialize(encoder: Encoder, value: NoteStatus) = encoder.encodeInt(toInt(value))
+    override fun deserialize(decoder: Decoder) = toStatus(decoder.decodeInt())
 
 }

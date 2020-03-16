@@ -33,16 +33,22 @@ interface NotesDao {
     @Delete
     suspend fun delete(note: Note)
 
+    @Query("DELETE FROM notes WHERE uuid == :uuid")
+    suspend fun delete(uuid: String)
+
     @Query("SELECT * FROM notes WHERE id == :id")
     suspend fun getById(id: Long): Note?
+
+    @Query("SELECT * FROM notes WHERE uuid == :uuid")
+    suspend fun getByUuid(uuid: String): Note?
+
+    @Query("SELECT id FROM notes WHERE uuid == :uuid")
+    suspend fun getIdByUuid(uuid: String): Long?
 
     @Query("SELECT * FROM notes WHERE status == :status ORDER BY modified_date DESC")
     suspend fun getByStatus(status: NoteStatus): List<Note>
 
     @Query("SELECT * FROM notes WHERE id IN (SELECT rowid FROM notes_fts WHERE notes_fts MATCH :query) ORDER BY modified_date DESC")
     suspend fun search(query: String): List<Note>
-
-    @Query("SELECT * FROM notes WHERE modified_date = (SELECT MAX(modified_date) FROM notes) ORDER BY id DESC LIMIT 1")
-    suspend fun getLastModified(): Note?
 
 }

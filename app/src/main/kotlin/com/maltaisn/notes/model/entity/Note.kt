@@ -14,61 +14,86 @@
  * limitations under the License.
  */
 
+@file:UseSerializers(DateTimeConverter::class, NoteTypeConverter::class, NoteStatusConverter::class)
+
 package com.maltaisn.notes.model.entity
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.maltaisn.notes.model.converter.DateTimeConverter
+import com.maltaisn.notes.model.converter.NoteStatusConverter
+import com.maltaisn.notes.model.converter.NoteTypeConverter
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
+import kotlinx.serialization.UseSerializers
 import java.util.*
 
 
+@Serializable
 @Entity(tableName = "notes")
 data class Note(
         @PrimaryKey(autoGenerate = true)
+        @Transient
         @ColumnInfo(name = "id")
-        val id: Long,
+        val id: Long = 0,
+
+        /**
+         * UUID used to identify the note uniquely.
+         */
+        @ColumnInfo(name = "uuid", index = true)
+        @SerialName("uuid")
+        val uuid: String,
 
         /**
          * Note type, determines the type of metadata.
          */
         @ColumnInfo(name = "type")
-        val type: NoteType,
+        @SerialName("type")
+        val type: NoteType = NoteType.TEXT,
 
         /**
          * Note title, can be used for search.
          */
         @ColumnInfo(name = "title")
-        val title: String,
+        @SerialName("title")
+        val title: String = "",
 
         /**
          * Note text content, can be used for search.
          */
         @ColumnInfo(name = "content")
-        val content: String,
+        @SerialName("content")
+        val content: String = "",
 
         /**
          * Note metadata, not used for search.
          * Can be `null` if note has no metadata.
          */
         @ColumnInfo(name = "metadata")
-        val metadata: String?,
+        @SerialName("metadata")
+        val metadata: String? = null,
 
         /**
          * Creation date of the note, in UTC time.
          */
         @ColumnInfo(name = "added_date")
-        val addedDate: Date,
+        @SerialName("added")
+        val addedDate: Date = Date(),
 
         /**
          * Last modification date of the note, in UTC time.
          * Change of [status] changes last modified date too.
          */
         @ColumnInfo(name = "modified_date")
+        @SerialName("modified")
         val lastModifiedDate: Date,
 
         /**
          * Status of the note, i.e. its location.
          */
         @ColumnInfo(name = "status")
+        @SerialName("status")
         val status: NoteStatus
 )
