@@ -45,7 +45,7 @@ open class NotesService @Inject constructor(
      * Send local data to sync with server, and return remote data to sync with local.
      * Throws [IOException] if sync fails for any reason.
      */
-    suspend fun syncNotes(localData: SyncData): SyncData {
+    open suspend fun syncNotes(localData: SyncData): SyncData {
         if (fbAuth.currentUser == null) {
             // Not signed in, no sync
             throw IOException("User not authenticated")
