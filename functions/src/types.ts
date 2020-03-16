@@ -83,8 +83,12 @@ export const TChangeEventType = enumType(ChangeEventType, 'ChangeEventType')
  */
 export const TNote = t.type({
     uuid: t.string,
-    modified: TDateString,
-    status: t.number
+    status: t.number,
+
+    // This field is used to determine whether note data should be sent to the client or not,
+    // depending on the "lastSync" date value passed. "modified" field wasn't sufficient for this
+    // purpose since it depends on user's local time which isn't always reliable.
+    synced: t.union([TDateString, t.undefined])
 })
 export type Note = t.TypeOf<typeof TNote>
 
@@ -98,7 +102,8 @@ export const TActiveNote = t.intersection([
         title: t.string,
         content: t.string,
         metadata: t.union([t.string, t.undefined]),
-        added: TDateString
+        added: TDateString,
+        modified: TDateString,
     })
 ])
 export type ActiveNote = t.TypeOf<typeof TActiveNote>

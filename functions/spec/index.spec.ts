@@ -54,6 +54,9 @@ describe('cloud functions', () => {
     })
 
     describe('sync notes', () => {
+        // Note: for testing purposes, single character "UUID" are being used.
+        // In practice, real UUID should be used.
+
         it('should fail not authenticated', async () => {
             return expect(functions.sync.run({}, {}))
                 .to.eventually.be.rejectedWith('Authentication required')
@@ -111,10 +114,11 @@ describe('cloud functions', () => {
 
             it('should return single add event', async () => {
                 await setTestNote(testData.notes.test)
-                expect((await functions.sync.run({
+                const syncData = await functions.sync.run({
                     lastSync: '2010-01-01T00:00:00.000Z',
                     events: []
-                }, callableContext)).events).to.deep.equal(
+                }, callableContext)
+                expectEventsToBeEqual(syncData.events,
                     [createTestEvent(testData.notes.test, ChangeEventType.Added)])
             })
 
@@ -131,6 +135,8 @@ describe('cloud functions', () => {
         })
 
         describe('send local events', async () => {
+            // Note: for testing purposes, events
+
             it('should add no events', async () => {
                 await functions.sync.run({
                     lastSync: '1970-01-01T00:00:00.000Z',
@@ -141,22 +147,22 @@ describe('cloud functions', () => {
             })
 
             it('should add event', async () => {
-                await functions.sync.run({
+                const syncData = await functions.sync.run({
                     lastSync: '1970-01-01T00:00:00.000Z',
                     events: [createTestEvent(testData.notes.test, ChangeEventType.Added)]
                 }, callableContext)
-                return expect(getTestNote('0'))
-                    .to.be.eventually.deep.equal(testData.notes.test)
+                return expectNoteToBeEventuallyEqual('0',
+                    testData.notes.test, syncData.lastSync)
             })
 
             it('should update event', async () => {
                 await setTestNote(testData.notes.test)
-                await functions.sync.run({
+                const syncData = await functions.sync.run({
                     lastSync: '1970-01-01T00:00:00.000Z',
                     events: [createTestEvent(testData.notes.testUpdated, ChangeEventType.Updated)]
                 }, callableContext)
-                return expect(getTestNote('0'))
-                    .to.be.eventually.deep.equal(testData.notes.testUpdated)
+                return expectNoteToBeEventuallyEqual('0',
+                    testData.notes.testUpdated, syncData.lastSync)
             })
 
             it('should delete event', async () => {
@@ -173,23 +179,25 @@ describe('cloud functions', () => {
         describe('send local event and return remote', async () => {
             it('should update but not return event', async () => {
                 await setTestNote(testData.notes.test)
-                expect((await functions.sync.run({
+                const syncData = await functions.sync.run({
                     lastSync: '1970-01-01T00:00:00.000Z',
                     events: [createTestEvent(testData.notes.testUpdated, ChangeEventType.Updated)]
-                }, callableContext)).events).to.be.empty
-                return expect(getTestNote('0'))
-                    .to.be.eventually.deep.equal(testData.notes.testUpdated)
+                }, callableContext)
+                expect(syncData.events).to.be.empty
+                return expectNoteToBeEventuallyEqual('0',
+                    testData.notes.testUpdated, syncData.lastSync)
             })
 
             it('should update and return event', async () => {
                 await setTestNote(testData.notes.test)
-                expect((await functions.sync.run({
+                const syncData = await functions.sync.run({
                     lastSync: '1970-01-01T00:00:00.000Z',
                     events: [createTestEvent(testData.notes.testList, ChangeEventType.Added)]
-                }, callableContext)).events).to.be.deep.equal(
+                }, callableContext)
+                expectEventsToBeEqual(syncData.events,
                     [createTestEvent(testData.notes.test, ChangeEventType.Added)])
-                return expect(getTestNote('1'))
-                    .to.be.eventually.deep.equal(testData.notes.testList)
+                return expectNoteToBeEventuallyEqual('1',
+                    testData.notes.testList, syncData.lastSync)
             })
         })
 
@@ -228,4 +236,33 @@ describe('cloud functions', () => {
         const encoded = base64EncodeNote(note)
         return userDb.child(encoded.uuid).set(encoded)
     }
+
+    /**
+     * Expect events to be equal ignoring the "synced" field.
+     */
+    function expectEventsToBeEqual(actual: any[], expected: any[]) {
+        const expectedNoSynced = []
+        for (const changeEvent of expected) {
+            // Copy the change event, removing the "synced" key in the note.
+            const changed = Object.assign({}, changeEvent)
+            if (changed.note) {
+                changed.note = Object.assign({}, changed.note)
+                delete changed.note.synced
+            }
+            expectedNoSynced.push(changed)
+        }
+        expect(actual).to.be.deep.equal(expectedNoSynced)
+    }
+
+    /**
+     * Expect note to be equal to a note with a UUID on the server given a synced date.
+     */
+    async function expectNoteToBeEventuallyEqual(uuid: string, expected: any, date: string): Promise<void> {
+        // Set the synced date on a copy of the expected note.
+        const note = await getTestNote(uuid)
+        const expectedNoSynced = Object.assign({}, expected)
+        expectedNoSynced.synced = date
+        expect(note).to.be.deep.equal(expectedNoSynced)
+    }
+
 })

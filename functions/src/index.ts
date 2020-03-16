@@ -53,13 +53,15 @@ export const sync = functions.https.onCall(async (data, context) => {
         throw new HttpsError('invalid-argument', 'Invalid sync data')
     })
 
+    const syncTime = new Date()
+
     const remoteChanges = await syncRemoteChangeEvents(userUid, syncData)
-    await syncLocalChangeEvents(userUid, syncData)
+    await syncLocalChangeEvents(userUid, syncData, syncTime)
 
     // Encode and return remote sync data.
     // Object is also cleaned to remove null and undefined values.
     return cleanObject(TSyncData.encode({
-        lastSync: new Date(),
+        lastSync: new Date(syncTime.getTime()),
         events: remoteChanges
     }))
 })
@@ -74,13 +76,16 @@ async function syncRemoteChangeEvents(userUid: string, syncData: SyncData): Prom
     try {
         const snapshot = await admin.database()
             .ref(`/users/${userUid}/notes`)
-            .orderByChild('modified')
-            .startAt(syncData.lastSync.toISOString())
+            .orderByChild('synced')
+            .startAt(new Date(syncData.lastSync.getTime() + 1).toISOString())
             .once('value')
         snapshot.forEach((childSnapshot) => {
             const note = decodeOrElse(TNote, childSnapshot.val(), () => {
                 throw new HttpsError('internal', 'Invalid server note data')
             })
+
+            note.synced = undefined  // Client doesn't need to know that.
+
             if (!localChangedUuids.has(note.uuid)) {
                 // Add change event, either adding or deleting a note.
                 // Server never sends changes with UPDATED type since it has no way
@@ -112,7 +117,7 @@ async function syncRemoteChangeEvents(userUid: string, syncData: SyncData): Prom
 /**
  * Update remote notes from a list of local change events contained in syncData.
  */
-async function syncLocalChangeEvents(userUid: string, syncData: SyncData) {
+async function syncLocalChangeEvents(userUid: string, syncData: SyncData, syncTime: Date) {
     try {
         const snapshot = admin.database().ref(`/users/${userUid}/notes`)
         for (const changeEvent of syncData.events) {
@@ -125,6 +130,7 @@ async function syncLocalChangeEvents(userUid: string, syncData: SyncData) {
                 // Note was added or updated locally, update on server.
                 // Note must be cleaned because firebase doesn't take undefined values.
                 const encoded = base64EncodeNote(changeEvent.note!) as ActiveNote
+                encoded.synced = syncTime
                 const obj = TActiveNote.encode(encoded)
                 cleanObject(obj)
                 await noteSnapshot.set(obj)
