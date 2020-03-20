@@ -18,43 +18,62 @@ package com.maltaisn.notes
 
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.appcompat.widget.Toolbar
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.setupWithNavController
-import com.google.android.material.navigation.NavigationView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.maltaisn.notes.model.entity.NoteStatus
+import kotlinx.coroutines.*
 
 
-class MainFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener {
+class MainFragment : Fragment() {
+
+    private lateinit var toolbar: Toolbar
+
 
     override fun onCreateView(inflater: LayoutInflater,
-                              container: ViewGroup?, savedInstanceState: Bundle?): View? {
+                              container: ViewGroup?, state: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_main, container, false)
 
         // Setup toolbar with drawer
         val navController = findNavController()
-        val toolbar: Toolbar = view.findViewById(R.id.toolbar)
+        toolbar = view.findViewById(R.id.toolbar)
         val drawerLayout: DrawerLayout = requireActivity().findViewById(R.id.drawer_layout)
         toolbar.setupWithNavController(navController, drawerLayout)
+
+        val swipeRefresh: SwipeRefreshLayout = view.findViewById(R.id.layout_swipe_refresh)
+        swipeRefresh.setOnRefreshListener {
+            GlobalScope.launch(Dispatchers.Default) {
+                delay(2000)
+                withContext(Dispatchers.Main) {
+                    swipeRefresh.isRefreshing = false
+                    Toast.makeText(context, "Refreshed!", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+
+        val fab: FloatingActionButton = view.findViewById(R.id.fab)
+        fab.setOnClickListener {
+            Toast.makeText(context, "Add note", Toast.LENGTH_SHORT).show()
+        }
+
+        changeShownNotesStatus(NoteStatus.ACTIVE)
 
         return view
     }
 
-    override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.item_location_active -> Unit
-            R.id.item_location_archived -> Unit
-            R.id.item_location_deleted -> Unit
-            R.id.item_sync -> Unit
-            R.id.item_settings -> Unit
-            else -> return false
-        }
-
-        return true
+    fun changeShownNotesStatus(status: NoteStatus) {
+        toolbar.setTitle(when (status) {
+            NoteStatus.ACTIVE -> R.string.note_location_active
+            NoteStatus.ARCHIVED -> R.string.note_location_archived
+            NoteStatus.TRASHED -> R.string.note_location_deleted
+        })
     }
 
 }
