@@ -64,7 +64,12 @@ dependencies {
     implementation "androidx.preference:preference:$preferenceVersion"
 
     implementation "com.google.android.material:material:$materialVersion"
-    
+
+    implementation "androidx.navigation:navigation-fragment:$navVersion"
+    implementation "androidx.navigation:navigation-ui:$navVersion"
+    implementation "androidx.navigation:navigation-fragment-ktx:$navVersion"
+    implementation "androidx.navigation:navigation-ui-ktx:$navVersion"
+
     testImplementation "org.jetbrains.kotlin:kotlin-test:$kotlinVersion"
     testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$kotlinVersion"
     testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:$kotlinMockitoVersion"

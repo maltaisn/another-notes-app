@@ -17,22 +17,31 @@
 package com.maltaisn.notes
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.MenuItem
-import androidx.appcompat.app.AppCompatActivity
+import android.view.View
+import android.view.ViewGroup
+import androidx.appcompat.widget.Toolbar
+import androidx.drawerlayout.widget.DrawerLayout
+import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
+import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.navigation.NavigationView
 
 
-class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
+class MainFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener {
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        (applicationContext as App).appComponent.inject(this)
+    override fun onCreateView(inflater: LayoutInflater,
+                              container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        val view = inflater.inflate(R.layout.fragment_main, container, false)
 
-        setContentView(R.layout.activity_main)
+        // Setup toolbar with drawer
+        val navController = findNavController()
+        val toolbar: Toolbar = view.findViewById(R.id.toolbar)
+        val drawerLayout: DrawerLayout = requireActivity().findViewById(R.id.drawer_layout)
+        toolbar.setupWithNavController(navController, drawerLayout)
 
-        // Setup drawer layout
-        val navView: NavigationView = findViewById(R.id.drawer_nav_view)
-        navView.setNavigationItemSelectedListener(this)
+        return view
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {

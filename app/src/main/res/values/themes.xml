@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   Copyright 2020 Nicolas Maltais
 
   Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,7 +16,7 @@
 
 <resources xmlns:tools="http://schemas.android.com/tools">
 
-    <style name="AppTheme.DayNight" parent="Base.AppTheme" />
+    <style name="AppTheme.DayNight" parent="Base.AppTheme"/>
 
     <style name="Base.AppTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar" tools:ignore="NewApi">
         <item name="android:forceDarkAllowed">false</item>
@@ -45,6 +44,8 @@
 
         <item name="colorPrimaryDark">?colorPrimaryVariant</item>
         <item name="colorAccent">?colorSecondary</item>
+
+        <item name="toolbarThemeOverlay">@style/ThemeOverlay.MaterialComponents.Toolbar.Primary</item>
     </style>
 
 </resources>
