@@ -75,8 +75,13 @@ class MainFragment : Fragment(), Toolbar.OnMenuItemClickListener {
         toolbar.setupWithNavController(navController, drawerLayout)
         toolbar.setOnMenuItemClickListener(this)
 
-        viewModel.title.observe(this.viewLifecycleOwner, Observer {
-            toolbar.setTitle(it)
+        viewModel.noteStatus.observe(viewLifecycleOwner, Observer { status ->
+            toolbar.menu.findItem(R.id.item_empty_trash).isVisible = status == NoteStatus.TRASHED
+            toolbar.setTitle(when (status!!) {
+                NoteStatus.ACTIVE -> R.string.note_location_active
+                NoteStatus.ARCHIVED -> R.string.note_location_archived
+                NoteStatus.TRASHED -> R.string.note_location_deleted
+            })
         })
 
         // Swipe refresh
@@ -106,10 +111,10 @@ class MainFragment : Fragment(), Toolbar.OnMenuItemClickListener {
         val layoutManager = StaggeredGridLayoutManager(1, StaggeredGridLayoutManager.VERTICAL)
         rcv.layoutManager = layoutManager
 
-        viewModel.noteItems.observe(this.viewLifecycleOwner, Observer { items ->
+        viewModel.noteItems.observe(viewLifecycleOwner, Observer { items ->
             adapter.submitList(items)
         })
-        viewModel.listLayoutMode.observe(this.viewLifecycleOwner, Observer { mode ->
+        viewModel.listLayoutMode.observe(viewLifecycleOwner, Observer { mode ->
             val layoutItem = toolbar.menu.findItem(R.id.item_layout)
             when (mode!!) {
                 NoteListLayoutMode.LIST -> {
@@ -135,6 +140,7 @@ class MainFragment : Fragment(), Toolbar.OnMenuItemClickListener {
         when (item.itemId) {
             R.id.item_search -> Unit
             R.id.item_layout -> viewModel.toggleListLayoutMode()
+            R.id.item_empty_trash -> viewModel.emptyTrash()
             else -> return false
         }
         return true

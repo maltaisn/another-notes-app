@@ -109,6 +109,22 @@ class NotesDaoTest {
     }
 
     @Test
+    fun deleteByStatusTest() = runBlocking {
+        val time = DateTimeConverter.toDate("2020-01-01T00:00:00.000Z")
+        for ((i, status) in NoteStatus.values().withIndex()) {
+            val note = Note(0, i.toString(), NoteType.TEXT,"note",
+                    "content", null, time, time, status)
+            notesDao.insert(note)
+        }
+
+        val trashFlow = notesDao.getByStatus(NoteStatus.TRASHED)
+        assertEquals(1, trashFlow.first().size)
+
+        notesDao.deleteByStatus(NoteStatus.TRASHED)
+        assertEquals(0, trashFlow.first().size)
+    }
+
+    @Test
     fun searchNotesTest() = runBlocking {
         val time = DateTimeConverter.toDate("2020-01-01T00:00:00.000Z")
         val note = Note(1, "1", NoteType.TEXT, "note", "content", null, time, time, NoteStatus.ACTIVE)

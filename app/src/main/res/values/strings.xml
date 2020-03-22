@@ -28,6 +28,7 @@
     <string name="action_delete">Delete</string>
     <string name="action_archive">Archive</string>
     <string name="action_restore">Restore</string>
+    <string name="action_empty_trash">Empty recycle bin</string>
     <string name="action_select_all">Select all</string>
     <string name="action_share">Share</string>
     <string name="action_layout_grid">View as grid</string>

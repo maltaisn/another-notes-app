@@ -59,6 +59,8 @@ class NotesRepository @Inject constructor(
 
     fun getNotesByStatus(status: NoteStatus) = notesDao.getByStatus(status)
 
+    suspend fun emptyTrash() = notesDao.deleteByStatus(NoteStatus.TRASHED)
+
     suspend fun syncNotes() {
         // Create a list of local changes to send
         val localChanges = changeEventsDao.getAll().map { event ->

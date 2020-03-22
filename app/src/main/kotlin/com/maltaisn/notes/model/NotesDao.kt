@@ -49,6 +49,9 @@ interface NotesDao {
     @Query("SELECT * FROM notes WHERE status == :status ORDER BY modified_date DESC")
     fun getByStatus(status: NoteStatus): Flow<List<Note>>
 
+    @Query("DELETE FROM notes WHERE status == :status")
+    suspend fun deleteByStatus(status: NoteStatus)
+
     @Query("SELECT * FROM notes WHERE id IN (SELECT rowid FROM notes_fts WHERE notes_fts MATCH :query) ORDER BY modified_date DESC")
     suspend fun search(query: String): List<Note>
 

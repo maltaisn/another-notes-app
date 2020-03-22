@@ -43,30 +43,27 @@ class MainViewModel @Inject constructor(
         private val prefs: SharedPreferences) : ViewModel() {
 
 
-    private var noteStatus = NoteStatus.ACTIVE
     private var noteListJob: Job? = null
 
-    val noteItems = MutableLiveData<List<NoteListItem>>()
-    val title = MutableLiveData<Int>()
-    val listLayoutMode = MutableLiveData<NoteListLayoutMode>()
+    private val _noteStatus = MutableLiveData<NoteStatus>()
+    val noteStatus get() = _noteStatus
+    private val _noteItems = MutableLiveData<List<NoteListItem>>()
+    val noteItems get() = _noteItems
+    private val _listLayoutMode = MutableLiveData<NoteListLayoutMode>()
+    val listLayoutMode get() = _listLayoutMode
 
 
     init {
-        setNoteStatus(noteStatus)
+        setNoteStatus(NoteStatus.ACTIVE)
 
         val layoutModeVal = prefs.getInt(PreferenceHelper.LIST_LAYOUT_MODE,
                 NoteListLayoutMode.LIST.value)
-        listLayoutMode.value = NoteListLayoutMode.values().find { it.value == layoutModeVal }
+        _listLayoutMode.value = NoteListLayoutMode.values().find { it.value == layoutModeVal }
     }
 
 
     fun setNoteStatus(status: NoteStatus) {
-        noteStatus = status
-        title.value = when (status) {
-            NoteStatus.ACTIVE -> R.string.note_location_active
-            NoteStatus.ARCHIVED -> R.string.note_location_archived
-            NoteStatus.TRASHED -> R.string.note_location_deleted
-        }
+        _noteStatus.value = status
 
         // Cancel previous flow collection
         noteListJob?.cancel()
@@ -74,28 +71,34 @@ class MainViewModel @Inject constructor(
         // Update note items live data when database flow emits a list.
         noteListJob = viewModelScope.launch {
             notesRepository.getNotesByStatus(status).collect { notes ->
-                noteItems.value = buildItemListFromNotes(notes)
+                _noteItems.value = buildItemListFromNotes(status, notes)
             }
         }
     }
 
     fun toggleListLayoutMode() {
-        val mode = when (listLayoutMode.value!!) {
+        val mode = when (_listLayoutMode.value!!) {
             NoteListLayoutMode.LIST -> NoteListLayoutMode.GRID
             NoteListLayoutMode.GRID -> NoteListLayoutMode.LIST
         }
-        listLayoutMode.value = mode
+        _listLayoutMode.value = mode
         prefs.edit().putInt(PreferenceHelper.LIST_LAYOUT_MODE, mode.value).apply()
+    }
+
+    fun emptyTrash() {
+        viewModelScope.launch {
+            notesRepository.emptyTrash()
+        }
     }
 
     fun debugAddRandomNote() {
         viewModelScope.launch {
-            notesRepository.insertNote(DebugUtils.getRandomNote(noteStatus))
+            notesRepository.insertNote(DebugUtils.getRandomNote(_noteStatus.value!!))
         }
     }
 
-    private fun buildItemListFromNotes(notes: List<Note>): List<NoteListItem> = buildList {
-        if (noteStatus == NoteStatus.TRASHED && notes.isNotEmpty()) {
+    private fun buildItemListFromNotes(status: NoteStatus, notes: List<Note>): List<NoteListItem> = buildList {
+        if (status == NoteStatus.TRASHED && notes.isNotEmpty()) {
             // If needed, add reminder that notes get auto-deleted when in trash.
             val lastReminder = prefs.getLong(PreferenceHelper.LAST_TRASH_REMIND_TIME, 0)
             if (System.currentTimeMillis() - lastReminder > TRASH_REMINDER_DELAY * 86400000L) {
@@ -105,7 +108,7 @@ class MainViewModel @Inject constructor(
                     // Update last remind time when user dismisses message.
                     prefs.edit().putLong(PreferenceHelper.LAST_TRASH_REMIND_TIME,
                             System.currentTimeMillis()).apply()
-                    setNoteStatus(noteStatus)  // Kinda inefficient
+                    setNoteStatus(status)  // Kinda inefficient
                 }
             }
         }
