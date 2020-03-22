@@ -46,16 +46,7 @@
         android:layout_gravity="center_vertical"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
-        tools:text="Notes in the recycle bin will be deleted automatically after 7 days."
-        />
-
-    <View
-        android:id="@+id/div_message"
-        android:layout_width="1dp"
-        android:layout_height="36dp"
-        android:layout_gravity="center_vertical"
-        android:background="@color/material_on_background_emphasis_medium"
-        android:layout_weight="0"
+        tools:text="@string/message_trash_reminder"
         />
 
     <ImageView

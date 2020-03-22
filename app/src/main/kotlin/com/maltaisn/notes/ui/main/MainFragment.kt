@@ -31,14 +31,15 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.setupWithNavController
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.maltaisn.notes.App
 import com.maltaisn.notes.R
 import com.maltaisn.notes.model.entity.NoteStatus
 import com.maltaisn.notes.ui.main.adapter.NoteAdapter
+import com.maltaisn.notes.ui.main.adapter.NoteListLayoutMode
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -99,12 +100,29 @@ class MainFragment : Fragment(), Toolbar.OnMenuItemClickListener {
 
         // Recycler view
         val rcv: RecyclerView = view.findViewById(R.id.rcv_notes)
-        rcv.layoutManager = LinearLayoutManager(context)
         val adapter = NoteAdapter(context, json)
-        viewModel.noteItems.observe(this.viewLifecycleOwner, Observer {
-            adapter.submitList(it)
-        })
         rcv.adapter = adapter
+
+        val layoutManager = StaggeredGridLayoutManager(1, StaggeredGridLayoutManager.VERTICAL)
+        rcv.layoutManager = layoutManager
+
+        viewModel.noteItems.observe(this.viewLifecycleOwner, Observer { items ->
+            adapter.submitList(items)
+        })
+        viewModel.listLayoutMode.observe(this.viewLifecycleOwner, Observer { mode ->
+            val layoutItem = toolbar.menu.findItem(R.id.item_layout)
+            when (mode!!) {
+                NoteListLayoutMode.LIST -> {
+                    layoutManager.spanCount = 1
+                    layoutItem.setIcon(R.drawable.ic_view_grid)
+                }
+                NoteListLayoutMode.GRID -> {
+                    layoutManager.spanCount = 2
+                    layoutItem.setIcon(R.drawable.ic_view_list)
+                }
+            }
+            adapter.listLayoutMode = mode
+        })
 
         return view
     }
@@ -116,7 +134,7 @@ class MainFragment : Fragment(), Toolbar.OnMenuItemClickListener {
     override fun onMenuItemClick(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.item_search -> Unit
-            R.id.item_layout -> Unit
+            R.id.item_layout -> viewModel.toggleListLayoutMode()
             else -> return false
         }
         return true

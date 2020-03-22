@@ -29,6 +29,8 @@ import com.maltaisn.notes.model.entity.NoteStatus
 import com.maltaisn.notes.ui.main.adapter.MessageItem
 import com.maltaisn.notes.ui.main.adapter.NoteItem
 import com.maltaisn.notes.ui.main.adapter.NoteListItem
+import com.maltaisn.notes.ui.main.adapter.NoteListLayoutMode
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -42,14 +44,21 @@ class MainViewModel @Inject constructor(
 
 
     private var noteStatus = NoteStatus.ACTIVE
+    private var noteListJob: Job? = null
 
     val noteItems = MutableLiveData<List<NoteListItem>>()
     val title = MutableLiveData<Int>()
+    val listLayoutMode = MutableLiveData<NoteListLayoutMode>()
+
 
     init {
-        // Initialize observables by setting note status.
         setNoteStatus(noteStatus)
+
+        val layoutModeVal = prefs.getInt(PreferenceHelper.LIST_LAYOUT_MODE,
+                NoteListLayoutMode.LIST.value)
+        listLayoutMode.value = NoteListLayoutMode.values().find { it.value == layoutModeVal }
     }
+
 
     fun setNoteStatus(status: NoteStatus) {
         noteStatus = status
@@ -59,11 +68,24 @@ class MainViewModel @Inject constructor(
             NoteStatus.TRASHED -> R.string.note_location_deleted
         }
 
-        viewModelScope.launch {
-            notesRepository.getNotesByStatus(status).collect {  notes ->
+        // Cancel previous flow collection
+        noteListJob?.cancel()
+
+        // Update note items live data when database flow emits a list.
+        noteListJob = viewModelScope.launch {
+            notesRepository.getNotesByStatus(status).collect { notes ->
                 noteItems.value = buildItemListFromNotes(notes)
             }
         }
+    }
+
+    fun toggleListLayoutMode() {
+        val mode = when (listLayoutMode.value!!) {
+            NoteListLayoutMode.LIST -> NoteListLayoutMode.GRID
+            NoteListLayoutMode.GRID -> NoteListLayoutMode.LIST
+        }
+        listLayoutMode.value = mode
+        prefs.edit().putInt(PreferenceHelper.LIST_LAYOUT_MODE, mode.value).apply()
     }
 
     fun debugAddRandomNote() {
@@ -73,12 +95,13 @@ class MainViewModel @Inject constructor(
     }
 
     private fun buildItemListFromNotes(notes: List<Note>): List<NoteListItem> = buildList {
-        if (noteStatus == NoteStatus.TRASHED) {
+        if (noteStatus == NoteStatus.TRASHED && notes.isNotEmpty()) {
             // If needed, add reminder that notes get auto-deleted when in trash.
             val lastReminder = prefs.getLong(PreferenceHelper.LAST_TRASH_REMIND_TIME, 0)
             if (System.currentTimeMillis() - lastReminder > TRASH_REMINDER_DELAY * 86400000L) {
                 this += MessageItem(TRASH_REMINDER_ITEM_ID,
-                        R.string.message_trash_reminder, TRASH_REMINDER_DELAY) {
+                        R.string.message_trash_reminder,
+                        PreferenceHelper.TRASH_AUTO_DELETE_DELAY) {
                     // Update last remind time when user dismisses message.
                     prefs.edit().putLong(PreferenceHelper.LAST_TRASH_REMIND_TIME,
                             System.currentTimeMillis()).apply()

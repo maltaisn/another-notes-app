@@ -38,6 +38,12 @@ class NoteAdapter(val context: Context,
      */
     private val listNoteItemsPool = LinkedList<ListNoteItemViewHolder>()
 
+    var listLayoutMode = NoteListLayoutMode.LIST
+        set(value) {
+            field = value
+            notifyItemRangeChanged(0, itemCount)
+        }
+
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
@@ -56,8 +62,10 @@ class NoteAdapter(val context: Context,
         val item = getItem(position)
         when (holder) {
             is MessageViewHolder -> holder.bind(item as MessageItem)
-            is TextNoteViewHolder -> holder.bind(item as NoteItem)
-            is ListNoteViewHolder -> {
+            is NoteViewHolder -> {
+                if (holder is ListNoteViewHolder) {
+                    unbindListNoteViewHolder(holder)
+                }
                 holder.bind(item as NoteItem, this)
             }
         }
@@ -70,9 +78,13 @@ class NoteAdapter(val context: Context,
 
     override fun onViewRecycled(holder: RecyclerView.ViewHolder) {
         if (holder is ListNoteViewHolder) {
-            val vhs = holder.unbind()
-            listNoteItemsPool += vhs
+            unbindListNoteViewHolder(holder)
         }
+    }
+
+    private fun unbindListNoteViewHolder(holder: ListNoteViewHolder) {
+        val vhs = holder.unbind()
+        listNoteItemsPool += vhs
     }
 
     @SuppressLint("InflateParams")

@@ -14,16 +14,12 @@
  * limitations under the License.
  */
 
-package com.maltaisn.notes
+package com.maltaisn.notes.ui.main.adapter
 
 
-object PreferenceHelper {
-
-    const val LAST_SYNC_TIME = "last_sync_time"
-
-    const val LIST_LAYOUT_MODE = "is_in_list_layout"
-    const val LAST_TRASH_REMIND_TIME = "last_deleted_remind_time"
-
-    const val TRASH_AUTO_DELETE_DELAY = 7
-
+enum class NoteListLayoutMode(val value: Int,
+                              val maxTextLines: Int,
+                              val maxListItems: Int) {
+    LIST(0, 5, 5),
+    GRID(1, 10, 10)
 }

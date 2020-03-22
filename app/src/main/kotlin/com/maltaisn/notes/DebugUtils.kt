@@ -44,7 +44,7 @@ object DebugUtils {
                 metadata = null
             }
             NoteType.LIST -> {
-                val size = (1..8).random()
+                val size = (1..10).random()
                 content = buildString {
                     repeat(size) {
                         append(getRandomString(16..128))

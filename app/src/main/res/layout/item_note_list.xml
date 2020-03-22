@@ -42,6 +42,7 @@
             />
 
         <!-- List items are added here. -->
+        <!--
         <include
             layout="@layout/item_note_list_item"
             android:layout_width="match_parent"
@@ -53,6 +54,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             />
+        -->
 
         <TextView
             android:id="@+id/txv_info"

@@ -22,17 +22,18 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.maltaisn.notes.R
 import com.maltaisn.notes.model.entity.ListNoteItem
 import com.maltaisn.notes.model.entity.NoteType
 import kotlin.math.min
 
 
-abstract class NoteViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
+abstract class NoteViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
     private val titleTxv: TextView = itemView.findViewById(R.id.txv_title)
 
-    protected open fun bind(item: NoteItem) {
+    open fun bind(item: NoteItem, adapter: NoteAdapter) {
         val title = item.note.title
         titleTxv.text = title
         titleTxv.isVisible = title.isNotBlank()
@@ -44,38 +45,42 @@ class TextNoteViewHolder(itemView: View) : NoteViewHolder(itemView) {
 
     private val contentTxv: TextView = itemView.findViewById(R.id.txv_content)
 
-    public override fun bind(item: NoteItem) {
-        super.bind(item)
+    override fun bind(item: NoteItem, adapter: NoteAdapter) {
+        super.bind(item, adapter)
         require(item.note.type == NoteType.TEXT)
 
         contentTxv.text = item.note.content
+        contentTxv.maxLines = adapter.listLayoutMode.maxTextLines
     }
 }
 
 class ListNoteViewHolder(itemView: View) : NoteViewHolder(itemView) {
 
-    private val layout: LinearLayout = itemView.findViewById(R.id.layout_list_items)
+    private val itemLayout: LinearLayout = itemView.findViewById(R.id.layout_list_items)
     private val infoTxv: TextView = itemView.findViewById(R.id.txv_info)
 
     private val itemViewHolders = mutableListOf<ListNoteItemViewHolder>()
 
-    fun bind(item: NoteItem, adapter: NoteAdapter) {
-        super.bind(item)
+    override fun bind(item: NoteItem, adapter: NoteAdapter) {
+        super.bind(item, adapter)
         require(item.note.type == NoteType.LIST)
+        require(itemViewHolders.isEmpty())
+
+        val maxItems = adapter.listLayoutMode.maxListItems
 
         // Add first items in list using view holders in pool.
         // Only the first few items are shown.
         val noteItems = item.note.getListItems(adapter.json)
-        for (i in 0 until min(MAX_LIST_ITEMS_SHOWN, noteItems.size)) {
+        for (i in 0 until min(maxItems, noteItems.size)) {
             val noteItem = noteItems[i]
             val viewHolder = adapter.obtainListNoteItemViewHolder()
             itemViewHolders += viewHolder
             viewHolder.bind(noteItem)
-            layout.addView(viewHolder.itemView, i + 1)
+            itemLayout.addView(viewHolder.itemView, i + 1)
         }
 
         // Show a label indicating the number of items not shown.
-        val overflowCount = noteItems.size - MAX_LIST_ITEMS_SHOWN
+        val overflowCount = noteItems.size - maxItems
         infoTxv.isVisible = overflowCount > 0
         if (overflowCount > 0) {
             infoTxv.text = adapter.context.resources.getQuantityString(
@@ -84,17 +89,17 @@ class ListNoteViewHolder(itemView: View) : NoteViewHolder(itemView) {
     }
 
     fun unbind(): List<ListNoteItemViewHolder> {
+        if (itemViewHolders.isEmpty()) {
+            return emptyList()
+        }
+
         // Free view holders used by the item.
         val viewHolders = itemViewHolders.toList()
-        layout.removeViews(1, layout.childCount - 2)
+        itemLayout.removeViews(1, itemLayout.childCount - 2)
         itemViewHolders.clear()
+
         return viewHolders
     }
-
-    companion object {
-        private const val MAX_LIST_ITEMS_SHOWN = 5
-    }
-
 }
 
 class MessageViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -107,6 +112,8 @@ class MessageViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         closeBtn.setOnClickListener {
             item.onDismiss()
         }
+
+        (itemView.layoutParams as StaggeredGridLayoutManager.LayoutParams).isFullSpan = true
     }
 
 }
