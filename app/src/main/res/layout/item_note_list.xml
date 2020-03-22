@@ -14,54 +14,58 @@
   limitations under the License.
   -->
 
-<LinearLayout
+<com.google.android.material.card.MaterialCardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    style="@style/NoteListItemCardStyle"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:padding="16dp"
-    android:background="?selectableItemBackground"
-    android:clickable="true"
-    android:focusable="true"
     >
 
-    <TextView
-        android:id="@+id/txv_title"
+    <LinearLayout
+        android:id="@+id/layout_list_items"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textAppearance="?textAppearanceSubtitle1"
-        android:paddingBottom="8dp"
-        android:maxLines="1"
-        android:ellipsize="end"
-        tools:text="Lorem ipsum dolor sit amet"
-        />
+        android:orientation="vertical"
+        android:padding="16dp"
+        >
 
-    <!-- List items are added here. -->
-    <!--
-    <include
-        layout="@layout/item_note_list_item"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        />
+        <TextView
+            android:id="@+id/txv_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="?textAppearanceSubtitle1"
+            android:paddingBottom="8dp"
+            android:maxLines="1"
+            android:ellipsize="end"
+            tools:text="Lorem ipsum dolor sit amet"
+            />
 
-    <include
-        layout="@layout/item_note_list_item"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        />
-    -->
+        <!-- List items are added here. -->
+        <include
+            layout="@layout/item_note_list_item"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            />
 
-    <TextView
-        android:id="@+id/txv_info"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textAppearance="?textAppearanceCaption"
-        android:layout_marginTop="4dp"
-        android:layout_marginStart="24dp"
-        android:maxLines="1"
-        android:ellipsize="end"
-        tools:text="+ 12 list items"
-        />
+        <include
+            layout="@layout/item_note_list_item"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            />
 
-</LinearLayout>
+        <TextView
+            android:id="@+id/txv_info"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="?textAppearanceCaption"
+            android:layout_marginTop="4dp"
+            android:layout_marginStart="24dp"
+            android:maxLines="1"
+            android:ellipsize="end"
+            tools:text="+ 12 list items"
+            />
+
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>

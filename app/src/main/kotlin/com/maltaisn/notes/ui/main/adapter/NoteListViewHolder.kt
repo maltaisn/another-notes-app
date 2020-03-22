@@ -16,10 +16,9 @@
 
 package com.maltaisn.notes.ui.main.adapter
 
-import android.util.Log
 import android.view.View
-import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
@@ -29,31 +28,40 @@ import com.maltaisn.notes.model.entity.NoteType
 import kotlin.math.min
 
 
-class TextNoteViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+abstract class NoteViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
 
     private val titleTxv: TextView = itemView.findViewById(R.id.txv_title)
+
+    protected open fun bind(item: NoteItem) {
+        val title = item.note.title
+        titleTxv.text = title
+        titleTxv.isVisible = title.isNotBlank()
+    }
+
+}
+
+class TextNoteViewHolder(itemView: View) : NoteViewHolder(itemView) {
+
     private val contentTxv: TextView = itemView.findViewById(R.id.txv_content)
 
-    fun bind(item: NoteItem) {
+    public override fun bind(item: NoteItem) {
+        super.bind(item)
         require(item.note.type == NoteType.TEXT)
 
-        titleTxv.text = item.note.title
         contentTxv.text = item.note.content
     }
 }
 
-class ListNoteViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+class ListNoteViewHolder(itemView: View) : NoteViewHolder(itemView) {
 
-    private val layout = itemView as ViewGroup
-    private val titleTxv: TextView = itemView.findViewById(R.id.txv_title)
+    private val layout: LinearLayout = itemView.findViewById(R.id.layout_list_items)
     private val infoTxv: TextView = itemView.findViewById(R.id.txv_info)
 
     private val itemViewHolders = mutableListOf<ListNoteItemViewHolder>()
 
     fun bind(item: NoteItem, adapter: NoteAdapter) {
+        super.bind(item)
         require(item.note.type == NoteType.LIST)
-
-        titleTxv.text = item.note.title
 
         // Add first items in list using view holders in pool.
         // Only the first few items are shown.
@@ -65,8 +73,6 @@ class ListNoteViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
             viewHolder.bind(noteItem)
             layout.addView(viewHolder.itemView, i + 1)
         }
-
-        Log.d("ListNoteViewHolder", "Bound ${itemViewHolders.size} VH, curr size = ${adapter.listNoteItemsPool.size}")
 
         // Show a label indicating the number of items not shown.
         val overflowCount = noteItems.size - MAX_LIST_ITEMS_SHOWN

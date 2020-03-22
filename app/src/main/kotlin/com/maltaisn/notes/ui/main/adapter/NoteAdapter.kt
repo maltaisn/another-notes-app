@@ -18,7 +18,6 @@ package com.maltaisn.notes.ui.main.adapter
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
@@ -37,7 +36,7 @@ class NoteAdapter(val context: Context,
      * When list note items are bound, view holders are obtained from this pool and bound.
      * When list note items are recycled, view holders are added back to the pool.
      */
-    val listNoteItemsPool = LinkedList<ListNoteItemViewHolder>()
+    private val listNoteItemsPool = LinkedList<ListNoteItemViewHolder>()
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -73,7 +72,6 @@ class NoteAdapter(val context: Context,
         if (holder is ListNoteViewHolder) {
             val vhs = holder.unbind()
             listNoteItemsPool += vhs
-            Log.d("ListNoteViewHolder", "Freed ${vhs.size} VH, curr size = ${listNoteItemsPool.size}")
         }
     }
 

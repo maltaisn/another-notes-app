@@ -14,38 +14,43 @@
   limitations under the License.
   -->
 
-<LinearLayout
+<com.google.android.material.card.MaterialCardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    style="@style/NoteListItemCardStyle"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:padding="16dp"
-    android:background="?selectableItemBackground"
-    android:clickable="true"
-    android:focusable="true"
     >
 
-    <TextView
-        android:id="@+id/txv_title"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textAppearance="?textAppearanceSubtitle1"
-        android:paddingBottom="8dp"
-        android:maxLines="1"
-        android:ellipsize="end"
-        tools:text="Lorem ipsum dolor sit amet"
-        />
+        android:orientation="vertical"
+        android:padding="16dp"
+        >
 
-    <TextView
-        android:id="@+id/txv_content"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textAppearance="?textAppearanceBody2"
-        android:textColor="@color/material_on_background_emphasis_medium"
-        android:maxLines="5"
-        android:ellipsize="end"
-        tools:text="Mauris rutrum massa placerat felis pharetra tristique. Nulla sed urna a dui vehicula euismod. Aenean sit amet velit feugiat, aliquet leo sed, sodales risus. Donec non justo et nisi lobortis sodales sed eget erat. Donec ac libero ut enim porta porta id at sem. Aliquam erat volutpat. In eu turpis quis eros posuere porta. Nam et risus turpis. Integer consequat convallis interdum. Etiam ac orci ultrices, mollis lectus ut, efficitur felis. Nunc varius facilisis dapibus. Phasellus vulputate sapien iaculis sem venenatis tincidunt. Cras placerat purus sit amet metus fringilla facilisis."
-        />
+        <TextView
+            android:id="@+id/txv_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="?textAppearanceSubtitle1"
+            android:paddingBottom="8dp"
+            android:maxLines="1"
+            android:ellipsize="end"
+            tools:text="Lorem ipsum dolor sit amet"
+            />
 
-</LinearLayout>
+        <TextView
+            android:id="@+id/txv_content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="?textAppearanceBody2"
+            android:textColor="@color/material_on_background_emphasis_medium"
+            android:maxLines="5"
+            android:ellipsize="end"
+            tools:text="Mauris rutrum massa placerat felis pharetra tristique. Nulla sed urna a dui vehicula euismod. Aenean sit amet velit feugiat, aliquet leo sed, sodales risus. Donec non justo et nisi lobortis sodales sed eget erat. Donec ac libero ut enim porta porta id at sem. Aliquam erat volutpat. In eu turpis quis eros posuere porta. Nam et risus turpis. Integer consequat convallis interdum. Etiam ac orci ultrices, mollis lectus ut, efficitur felis. Nunc varius facilisis dapibus. Phasellus vulputate sapien iaculis sem venenatis tincidunt. Cras placerat purus sit amet metus fringilla facilisis."
+            />
+
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>

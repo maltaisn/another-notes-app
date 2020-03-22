@@ -31,7 +31,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.setupWithNavController
-import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -101,7 +100,6 @@ class MainFragment : Fragment(), Toolbar.OnMenuItemClickListener {
         // Recycler view
         val rcv: RecyclerView = view.findViewById(R.id.rcv_notes)
         rcv.layoutManager = LinearLayoutManager(context)
-        rcv.addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
         val adapter = NoteAdapter(context, json)
         viewModel.noteItems.observe(this.viewLifecycleOwner, Observer {
             adapter.submitList(it)
