@@ -16,6 +16,12 @@ android {
         versionCode appVersion.split(/\./).collect { it.padLeft(2, "0") }.sum().toInteger()
         versionName appVersion
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        kapt {
+            arguments {
+                arg("room.schemaLocation", "$projectDir/schemas")
+            }
+        }
     }
     sourceSets {
         main.java.srcDirs += "src/main/kotlin"

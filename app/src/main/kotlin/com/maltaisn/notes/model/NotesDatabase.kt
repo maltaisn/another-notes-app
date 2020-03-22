@@ -34,7 +34,7 @@ import com.maltaisn.notes.model.entity.NoteFts
             NoteFts::class,
             ChangeEvent::class
         ],
-        version = 1, exportSchema = false)
+        version = 1)
 @TypeConverters(DateTimeConverter::class, NoteTypeConverter::class,
         NoteStatusConverter::class, ChangeEventTypeConverter::class)
 abstract class NotesDatabase : RoomDatabase() {
