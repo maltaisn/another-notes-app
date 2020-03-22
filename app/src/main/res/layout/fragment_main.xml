@@ -61,6 +61,8 @@
                 android:paddingTop="16dp"
                 android:paddingBottom="16dp"
                 android:clipToPadding="false"
+                tools:listitem="@layout/item_note_text"
+                tools:itemCount="3"
                 />
 
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

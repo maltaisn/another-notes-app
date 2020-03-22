@@ -14,13 +14,17 @@
  * limitations under the License.
  */
 
-package com.maltaisn.notes
+package com.maltaisn.notes.ui
+
+import androidx.lifecycle.ViewModel
+import dagger.MapKey
+import java.lang.annotation.Documented
+import kotlin.reflect.KClass
 
 
-object PreferenceHelper {
-
-    const val LAST_SYNC_TIME = "last_sync_time"
-
-    const val LAST_TRASH_REMIND_TIME = "last_deleted_remind_time"
-
-}
+@Suppress("DEPRECATED_JAVA_ANNOTATION")
+@Documented
+@Target(AnnotationTarget.FUNCTION)
+@Retention(AnnotationRetention.RUNTIME)
+@MapKey
+annotation class ViewModelKey(val value: KClass<out ViewModel>)

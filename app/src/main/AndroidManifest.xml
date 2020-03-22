@@ -26,7 +26,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme.DayNight"
         tools:ignore="AllowBackup,GoogleAppIndexingWarning,MissingApplicationIcon">
-        <activity android:name=".MainActivity">
+        <activity android:name=".ui.main.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

@@ -28,6 +28,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 import kotlinx.serialization.UseSerializers
+import kotlinx.serialization.json.Json
 import java.util.*
 
 
@@ -96,4 +97,24 @@ data class Note(
         @ColumnInfo(name = "status")
         @SerialName("status")
         val status: NoteStatus
-)
+) {
+
+    init {
+        require (type != NoteType.LIST || metadata != null)
+    }
+
+    fun getListItems(json: Json): List<ListNoteItem> {
+        check (type == NoteType.LIST) { "Cannot get list items for non-list note." }
+
+        val checked = json.parse(ListNoteMetadata.serializer(), metadata!!)
+        val items = content.split('\n')
+        check (checked.checked.size == items.size) { "Invalid list note data." }
+
+        return items.mapIndexed { i, text ->
+            ListNoteItem(text, checked.checked[i])
+        }
+    }
+
+}
+
+data class ListNoteItem(val content: String, val checked: Boolean)

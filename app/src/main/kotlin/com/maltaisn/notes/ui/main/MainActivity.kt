@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
-package com.maltaisn.notes
+package com.maltaisn.notes.ui.main
 
 import android.os.Bundle
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.drawerlayout.widget.DrawerLayout
 import com.google.android.material.navigation.NavigationView
+import com.maltaisn.notes.App
+import com.maltaisn.notes.R
 import com.maltaisn.notes.model.entity.NoteStatus
 
 

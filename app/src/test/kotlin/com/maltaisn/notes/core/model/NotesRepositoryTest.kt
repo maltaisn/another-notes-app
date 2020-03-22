@@ -50,7 +50,7 @@ class NotesRepositoryTest {
     fun `should add note in database`() = runBlocking {
         val note = Note(0, "0", NoteType.TEXT, "note",
                 "content", null, Date(), Date(), NoteStatus.ACTIVE)
-        notesRepo.createNote(note)
+        notesRepo.insertNote(note)
         verify(notesDao).insert(note)
         verify(changesDao).insert(ChangeEvent(note.uuid, ChangeEventType.ADDED))
     }

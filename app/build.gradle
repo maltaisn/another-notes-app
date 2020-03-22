@@ -28,6 +28,7 @@ android {
     }
     kotlinOptions {
         jvmTarget = "1.8"
+        freeCompilerArgs += ["-Xopt-in=kotlin.ExperimentalStdlibApi"]
     }
     buildTypes {
         release {
@@ -52,6 +53,11 @@ dependencies {
     implementation "androidx.room:room-runtime:$roomVersion"
     kapt "androidx.room:room-compiler:$roomVersion"
     implementation "androidx.room:room-ktx:$roomVersion"
+
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycleVersion"
+    implementation "androidx.lifecycle:lifecycle-livedata-ktx:$lifecycleVersion"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-savedstate:$lifecycleVersion"
+    implementation "androidx.lifecycle:lifecycle-common-java8:$lifecycleVersion"
     
     implementation "com.google.firebase:firebase-auth:$firebaseAuthVersion"
     implementation "com.google.firebase:firebase-functions-ktx:$firebaseFunctionsVersion"
@@ -63,7 +69,6 @@ dependencies {
     implementation "androidx.constraintlayout:constraintlayout:$constraintLayoutVersion"
     implementation "androidx.preference:preference:$preferenceVersion"
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:$swipeRefreshVersion"
-
 
     implementation "com.google.android.material:material:$materialVersion"
 

@@ -36,7 +36,7 @@ class NotesRepository @Inject constructor(
         private val notesService: NotesService,
         private val prefs: SharedPreferences) {
 
-    suspend fun createNote(note: Note) {
+    suspend fun insertNote(note: Note) {
         notesDao.insert(note)
         addChangeEvent(note, ChangeEventType.ADDED)
     }
@@ -57,7 +57,7 @@ class NotesRepository @Inject constructor(
 
     suspend fun searchNotes(query: String) = notesDao.search(query)
 
-    suspend fun getNotesByStatus(status: NoteStatus) = notesDao.getByStatus(status)
+    fun getNotesByStatus(status: NoteStatus) = notesDao.getByStatus(status)
 
     suspend fun syncNotes() {
         // Create a list of local changes to send

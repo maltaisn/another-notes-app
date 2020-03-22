@@ -35,7 +35,11 @@
     <string name="action_convert_to_text">Convert to text</string>
     <string name="action_convert_to_list">Convert to list</string>
 
-    <string name="action_open_drawer">Open drawer</string>
-    <string name="action_close_drawer">Close drawer</string>
+    <plurals name="note_list_item_info">
+        <item quantity="one">+ %d other list item</item>
+        <item quantity="other">+ %d other list items</item>
+    </plurals>
+
+    <string name="message_trash_reminder">Notes in recycle bin are automatically deleted after %d days.</string>
 
 </resources>

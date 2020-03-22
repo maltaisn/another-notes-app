@@ -14,42 +14,75 @@
  * limitations under the License.
  */
 
-package com.maltaisn.notes
+package com.maltaisn.notes.ui.main
 
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.widget.Toolbar
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.setupWithNavController
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.maltaisn.notes.App
+import com.maltaisn.notes.R
 import com.maltaisn.notes.model.entity.NoteStatus
-import kotlinx.coroutines.*
+import com.maltaisn.notes.ui.main.adapter.NoteAdapter
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import kotlinx.serialization.json.Json
+import javax.inject.Inject
 
 
-class MainFragment : Fragment() {
+class MainFragment : Fragment(), Toolbar.OnMenuItemClickListener {
+
+    @Inject lateinit var viewModelFactory: ViewModelProvider.Factory
+    private val viewModel: MainViewModel by viewModels { viewModelFactory }
+
+    @Inject lateinit var json: Json
 
     private lateinit var toolbar: Toolbar
 
 
+    override fun onCreate(state: Bundle?) {
+        super.onCreate(state)
+        (requireContext().applicationContext as App).appComponent.inject(this)
+    }
+
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?, state: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_main, container, false)
+        val context = requireContext()
 
         // Setup toolbar with drawer
         val navController = findNavController()
         toolbar = view.findViewById(R.id.toolbar)
         val drawerLayout: DrawerLayout = requireActivity().findViewById(R.id.drawer_layout)
         toolbar.setupWithNavController(navController, drawerLayout)
+        toolbar.setOnMenuItemClickListener(this)
 
+        viewModel.title.observe(this.viewLifecycleOwner, Observer {
+            toolbar.setTitle(it)
+        })
+
+        // Swipe refresh
         val swipeRefresh: SwipeRefreshLayout = view.findViewById(R.id.layout_swipe_refresh)
         swipeRefresh.setOnRefreshListener {
-            GlobalScope.launch(Dispatchers.Default) {
+            viewModel.viewModelScope.launch(Dispatchers.Default) {
                 delay(2000)
                 withContext(Dispatchers.Main) {
                     swipeRefresh.isRefreshing = false
@@ -58,22 +91,37 @@ class MainFragment : Fragment() {
             }
         }
 
+        // Floating action button
         val fab: FloatingActionButton = view.findViewById(R.id.fab)
         fab.setOnClickListener {
-            Toast.makeText(context, "Add note", Toast.LENGTH_SHORT).show()
+            // DEBUG: Add random note to current location
+            viewModel.debugAddRandomNote()
         }
 
-        changeShownNotesStatus(NoteStatus.ACTIVE)
+        // Recycler view
+        val rcv: RecyclerView = view.findViewById(R.id.rcv_notes)
+        rcv.layoutManager = LinearLayoutManager(context)
+        rcv.addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
+        val adapter = NoteAdapter(context, json)
+        viewModel.noteItems.observe(this.viewLifecycleOwner, Observer {
+            adapter.submitList(it)
+        })
+        rcv.adapter = adapter
 
         return view
     }
 
     fun changeShownNotesStatus(status: NoteStatus) {
-        toolbar.setTitle(when (status) {
-            NoteStatus.ACTIVE -> R.string.note_location_active
-            NoteStatus.ARCHIVED -> R.string.note_location_archived
-            NoteStatus.TRASHED -> R.string.note_location_deleted
-        })
+        viewModel.setNoteStatus(status)
+    }
+
+    override fun onMenuItemClick(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.item_search -> Unit
+            R.id.item_layout -> Unit
+            else -> return false
+        }
+        return true
     }
 
 }

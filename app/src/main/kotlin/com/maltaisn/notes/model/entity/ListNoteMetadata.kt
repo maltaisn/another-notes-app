@@ -16,8 +16,14 @@
 
 package com.maltaisn.notes.model.entity
 
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+
 
 /**
  * Metadata for a list note used to keep the checked state of each items.
  */
-data class ListNoteMetadata(val checked: List<Boolean>)
+@Serializable
+data class ListNoteMetadata(
+        @SerialName("checked")
+        val checked: List<Boolean>)

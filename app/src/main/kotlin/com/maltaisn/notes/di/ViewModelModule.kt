@@ -16,27 +16,25 @@
 
 package com.maltaisn.notes.di
 
-import android.content.Context
-import android.content.SharedPreferences
-import androidx.preference.PreferenceManager
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import com.maltaisn.notes.ui.ViewModelFactory
+import com.maltaisn.notes.ui.ViewModelKey
+import com.maltaisn.notes.ui.main.MainViewModel
+import dagger.Binds
 import dagger.Module
-import dagger.Provides
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonConfiguration
-import javax.inject.Singleton
+import dagger.multibindings.IntoMap
 
 
 @Module
-object AppModule {
+abstract class ViewModelModule {
 
-    @Provides
-    @JvmStatic
-    fun providesSharedPreferences(context: Context): SharedPreferences =
-            PreferenceManager.getDefaultSharedPreferences(context)
+    @Binds
+    @IntoMap
+    @ViewModelKey(MainViewModel::class)
+    abstract fun bindsMainViewModel(viewModel: MainViewModel): ViewModel
 
-    @Provides
-    @JvmStatic
-    @Singleton
-    fun providesJson() = Json(JsonConfiguration.Stable)
+    @Binds
+    abstract fun bindsViewModelFactory(factory: ViewModelFactory): ViewModelProvider.Factory
 
 }

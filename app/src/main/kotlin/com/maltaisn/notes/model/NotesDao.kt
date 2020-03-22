@@ -19,6 +19,7 @@ package com.maltaisn.notes.model
 import androidx.room.*
 import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.model.entity.NoteStatus
+import kotlinx.coroutines.flow.Flow
 
 
 @Dao
@@ -46,7 +47,7 @@ interface NotesDao {
     suspend fun getIdByUuid(uuid: String): Long?
 
     @Query("SELECT * FROM notes WHERE status == :status ORDER BY modified_date DESC")
-    suspend fun getByStatus(status: NoteStatus): List<Note>
+    fun getByStatus(status: NoteStatus): Flow<List<Note>>
 
     @Query("SELECT * FROM notes WHERE id IN (SELECT rowid FROM notes_fts WHERE notes_fts MATCH :query) ORDER BY modified_date DESC")
     suspend fun search(query: String): List<Note>

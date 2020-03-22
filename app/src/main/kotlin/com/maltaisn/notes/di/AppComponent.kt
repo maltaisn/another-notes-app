@@ -17,7 +17,8 @@
 package com.maltaisn.notes.di
 
 import android.content.Context
-import com.maltaisn.notes.MainActivity
+import com.maltaisn.notes.ui.main.MainActivity
+import com.maltaisn.notes.ui.main.MainFragment
 import dagger.BindsInstance
 import dagger.Component
 import javax.inject.Singleton
@@ -26,12 +27,15 @@ import javax.inject.Singleton
 @Singleton
 @Component(modules = [
     AppModule::class,
+    ViewModelModule::class,
     DatabaseModule::class,
     FirebaseModule::class
 ])
 interface AppComponent {
 
     fun inject(activity: MainActivity)
+
+    fun inject(activity: MainFragment)
 
     @Component.Factory
     interface Factory {

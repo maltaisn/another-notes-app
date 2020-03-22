@@ -24,6 +24,7 @@ import com.maltaisn.notes.model.converter.DateTimeConverter
 import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.model.entity.NoteStatus
 import com.maltaisn.notes.model.entity.NoteType
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Before
@@ -99,7 +100,12 @@ class NotesDaoTest {
             }
         }
 
-        assertEquals(activeNotes, notesDao.getByStatus(NoteStatus.ACTIVE))
+        val noteFlow = notesDao.getByStatus(NoteStatus.ACTIVE)
+        assertEquals(activeNotes, noteFlow.first())
+
+        // Delete any note to see if flow is updated.
+        notesDao.delete(activeNotes.removeAt(activeNotes.indices.random()))
+        assertEquals(activeNotes, noteFlow.first())
     }
 
     @Test
