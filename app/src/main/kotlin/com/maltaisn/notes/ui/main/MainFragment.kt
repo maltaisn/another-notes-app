@@ -70,8 +70,8 @@ class MainFragment : Fragment(), Toolbar.OnMenuItemClickListener {
 
         // Setup toolbar with drawer
         val navController = findNavController()
-        toolbar = view.findViewById(R.id.toolbar)
         val drawerLayout: DrawerLayout = requireActivity().findViewById(R.id.drawer_layout)
+        toolbar = view.findViewById(R.id.toolbar)
         toolbar.setupWithNavController(navController, drawerLayout)
         toolbar.setOnMenuItemClickListener(this)
 
