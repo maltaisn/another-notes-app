@@ -115,6 +115,9 @@ data class Note(
         }
     }
 
+    companion object {
+        const val NO_ID = 0L
+    }
 }
 
 data class ListNoteItem(val content: String, val checked: Boolean)

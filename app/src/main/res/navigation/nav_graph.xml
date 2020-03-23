@@ -26,6 +26,27 @@
         android:id="@+id/fragment_main"
         android:name="com.maltaisn.notes.ui.main.MainFragment"
         tools:layout="@layout/fragment_main"
-        />
+        >
+        <action
+            android:id="@+id/action_main_to_edit"
+            app:destination="@id/edit_fragment"
+            />
+    </fragment>
+
+    <fragment
+        android:id="@+id/edit_fragment"
+        android:name="com.maltaisn.notes.ui.edit.EditFragment"
+        tools:layout="@layout/fragment_edit"
+        >
+        <argument
+            android:name="noteStatus"
+            app:argType="com.maltaisn.notes.model.entity.NoteStatus"
+            />
+        <argument
+            android:name="noteId"
+            android:defaultValue="0L"
+            app:argType="long"
+            />
+    </fragment>
 
 </navigation>

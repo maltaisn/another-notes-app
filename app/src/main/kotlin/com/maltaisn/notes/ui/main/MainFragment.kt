@@ -23,6 +23,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.widget.Toolbar
+import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -30,7 +31,6 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.ui.setupWithNavController
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -38,6 +38,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.maltaisn.notes.App
 import com.maltaisn.notes.R
 import com.maltaisn.notes.model.entity.NoteStatus
+import com.maltaisn.notes.ui.EventObserver
 import com.maltaisn.notes.ui.main.adapter.NoteAdapter
 import com.maltaisn.notes.ui.main.adapter.NoteListLayoutMode
 import kotlinx.coroutines.Dispatchers
@@ -57,7 +58,6 @@ class MainFragment : Fragment(), Toolbar.OnMenuItemClickListener {
 
     private lateinit var toolbar: Toolbar
 
-
     override fun onCreate(state: Bundle?) {
         super.onCreate(state)
         (requireContext().applicationContext as App).appComponent.inject(this)
@@ -66,23 +66,21 @@ class MainFragment : Fragment(), Toolbar.OnMenuItemClickListener {
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?, state: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_main, container, false)
+
         val context = requireContext()
+        val navController = findNavController()
 
         // Setup toolbar with drawer
-        val navController = findNavController()
-        val drawerLayout: DrawerLayout = requireActivity().findViewById(R.id.drawer_layout)
         toolbar = view.findViewById(R.id.toolbar)
-        toolbar.setupWithNavController(navController, drawerLayout)
-        toolbar.setOnMenuItemClickListener(this)
-
-        viewModel.noteStatus.observe(viewLifecycleOwner, Observer { status ->
-            toolbar.menu.findItem(R.id.item_empty_trash).isVisible = status == NoteStatus.TRASHED
-            toolbar.setTitle(when (status!!) {
-                NoteStatus.ACTIVE -> R.string.note_location_active
-                NoteStatus.ARCHIVED -> R.string.note_location_archived
-                NoteStatus.TRASHED -> R.string.note_location_deleted
-            })
-        })
+        toolbar.let {
+            val drawerLayout: DrawerLayout = requireActivity().findViewById(R.id.drawer_layout)
+            it.setNavigationIcon(R.drawable.ic_menu)
+            it.setNavigationContentDescription(R.string.content_descrp_open_drawer)
+            it.setNavigationOnClickListener {
+                drawerLayout.openDrawer(GravityCompat.START)
+            }
+            it.setOnMenuItemClickListener(this)
+        }
 
         // Swipe refresh
         val swipeRefresh: SwipeRefreshLayout = view.findViewById(R.id.layout_swipe_refresh)
@@ -99,21 +97,40 @@ class MainFragment : Fragment(), Toolbar.OnMenuItemClickListener {
         // Floating action button
         val fab: FloatingActionButton = view.findViewById(R.id.fab)
         fab.setOnClickListener {
-            // DEBUG: Add random note to current location
-            viewModel.debugAddRandomNote()
+            navController.navigate(MainFragmentDirections.actionMainToEdit(NoteStatus.ACTIVE))
         }
 
         // Recycler view
         val rcv: RecyclerView = view.findViewById(R.id.rcv_notes)
         val adapter = NoteAdapter(context, json)
-        rcv.adapter = adapter
-
         val layoutManager = StaggeredGridLayoutManager(1, StaggeredGridLayoutManager.VERTICAL)
+        rcv.adapter = adapter
         rcv.layoutManager = layoutManager
+
+        // Observers
+        viewModel.noteStatus.observe(viewLifecycleOwner, Observer { status ->
+            // Show "Empty recycle bin" toolbar option
+            toolbar.menu.findItem(R.id.item_empty_trash).isVisible = status == NoteStatus.TRASHED
+
+            // Update toolbar title
+            toolbar.setTitle(when (status!!) {
+                NoteStatus.ACTIVE -> R.string.note_location_active
+                NoteStatus.ARCHIVED -> R.string.note_location_archived
+                NoteStatus.TRASHED -> R.string.note_location_deleted
+            })
+
+            // Fab is only shown in active notes.
+            if (status == NoteStatus.ACTIVE) {
+                fab.show()
+            } else {
+                fab.hide()
+            }
+        })
 
         viewModel.noteItems.observe(viewLifecycleOwner, Observer { items ->
             adapter.submitList(items)
         })
+
         viewModel.listLayoutMode.observe(viewLifecycleOwner, Observer { mode ->
             val layoutItem = toolbar.menu.findItem(R.id.item_layout)
             when (mode!!) {
@@ -127,6 +144,11 @@ class MainFragment : Fragment(), Toolbar.OnMenuItemClickListener {
                 }
             }
             adapter.listLayoutMode = mode
+        })
+
+        viewModel.itemClickEvent.observe(viewLifecycleOwner, EventObserver { item ->
+            navController.navigate(MainFragmentDirections.actionMainToEdit(
+                    viewModel.noteStatus.value!!, item.note.id))
         })
 
         return view

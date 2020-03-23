@@ -21,25 +21,41 @@
     >
 
     <item
-        android:id="@+id/item_search"
-        android:icon="@drawable/ic_search"
-        android:title="@string/action_search"
+        android:id="@+id/item_type"
+        android:title="@null"
+        android:icon="@null"
         app:showAsAction="always"
+        tools:icon="@drawable/ic_checkbox"
+        tools:title="@string/action_convert_to_list"
         />
 
     <item
-        android:id="@+id/item_layout"
+        android:id="@+id/item_move"
         android:icon="@null"
         android:title="@null"
         app:showAsAction="ifRoom"
-        tools:icon="@drawable/ic_view_grid"
-        tools:title="@string/action_layout_grid"
+        tools:icon="@drawable/ic_archive"
+        tools:title="@string/action_archive"
         />
 
     <item
-        android:id="@+id/item_empty_trash"
-        android:title="@string/action_empty_trash"
+        android:id="@+id/item_share"
+        android:icon="@drawable/ic_share"
+        android:title="@string/action_share"
+        app:showAsAction="ifRoom"
+        />
+
+    <item
+        android:id="@+id/item_copy"
+        android:title="@string/action_copy"
         app:showAsAction="never"
+        />
+
+    <item
+        android:id="@+id/item_delete"
+        android:title="@null"
+        app:showAsAction="never"
+        tools:title="@string/action_delete"
         />
 
 </menu>

@@ -51,6 +51,8 @@ class NotesRepository @Inject constructor(
         addChangeEvent(note, ChangeEventType.DELETED)
     }
 
+    suspend fun getById(id: Long) = notesDao.getById(id)
+
     private suspend fun addChangeEvent(note: Note, type: ChangeEventType) {
         changeEventsDao.insert(ChangeEvent(note.uuid, type))
     }

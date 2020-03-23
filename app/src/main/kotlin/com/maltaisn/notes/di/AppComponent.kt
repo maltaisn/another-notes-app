@@ -17,6 +17,7 @@
 package com.maltaisn.notes.di
 
 import android.content.Context
+import com.maltaisn.notes.ui.edit.EditFragment
 import com.maltaisn.notes.ui.main.MainActivity
 import com.maltaisn.notes.ui.main.MainFragment
 import dagger.BindsInstance
@@ -35,7 +36,9 @@ interface AppComponent {
 
     fun inject(activity: MainActivity)
 
-    fun inject(activity: MainFragment)
+    fun inject(fragment: MainFragment)
+    fun inject(fragment: EditFragment)
+
 
     @Component.Factory
     interface Factory {

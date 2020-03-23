@@ -37,6 +37,10 @@ abstract class NoteViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView
         val title = item.note.title
         titleTxv.text = title
         titleTxv.isVisible = title.isNotBlank()
+
+        itemView.setOnClickListener {
+            item.onClick(item)
+        }
     }
 
 }
@@ -110,7 +114,7 @@ class MessageViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     fun bind(item: MessageItem) {
         messageTxv.text = messageTxv.context.getString(item.message, *item.args)
         closeBtn.setOnClickListener {
-            item.onDismiss()
+            item.onDismiss(item)
         }
 
         (itemView.layoutParams as StaggeredGridLayoutManager.LayoutParams).isFullSpan = true

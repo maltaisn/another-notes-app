@@ -22,19 +22,25 @@
     <string name="note_location_archived">Archived</string>
     <string name="note_location_deleted">Deleted</string>
 
-    <string name="action_settings">Settings</string>
-    <string name="action_sync">Synchronization</string>
-    <string name="action_search">Search</string>
-    <string name="action_delete">Delete</string>
+    <string name="edit_add_title">Create note</string>
+    <string name="edit_change_title">Edit note</string>
+
     <string name="action_archive">Archive</string>
-    <string name="action_restore">Restore</string>
+    <string name="action_convert_to_list">Convert to list</string>
+    <string name="action_convert_to_text">Convert to text</string>
+    <string name="action_copy">Make a copy</string>
+    <string name="action_delete">Delete</string>
+    <string name="action_delete_forever">Delete forever</string>
     <string name="action_empty_trash">Empty recycle bin</string>
-    <string name="action_select_all">Select all</string>
-    <string name="action_share">Share</string>
     <string name="action_layout_grid">View as grid</string>
     <string name="action_layout_list">View as list</string>
-    <string name="action_convert_to_text">Convert to text</string>
-    <string name="action_convert_to_list">Convert to list</string>
+    <string name="action_restore">Restore</string>
+    <string name="action_search">Search</string>
+    <string name="action_select_all">Select all</string>
+    <string name="action_settings">Settings</string>
+    <string name="action_share">Share</string>
+    <string name="action_sync">Synchronization</string>
+    <string name="action_unarchive">Unarchive</string>
 
     <plurals name="note_list_item_info">
         <item quantity="one">+ %d other list item</item>
@@ -42,5 +48,7 @@
     </plurals>
 
     <string name="message_trash_reminder">Notes in recycle bin are automatically deleted after %d days.</string>
+
+    <string name="content_descrp_open_drawer">Open drawer</string>
 
 </resources>

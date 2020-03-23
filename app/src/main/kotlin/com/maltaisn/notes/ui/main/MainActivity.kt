@@ -19,7 +19,9 @@ package com.maltaisn.notes.ui.main
 import android.os.Bundle
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.navigation.findNavController
 import com.google.android.material.navigation.NavigationView
 import com.maltaisn.notes.App
 import com.maltaisn.notes.R
@@ -41,6 +43,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         drawerLayout = findViewById(R.id.drawer_layout)
         val navView: NavigationView = findViewById(R.id.drawer_nav_view)
         navView.setNavigationItemSelectedListener(this)
+
+        findNavController(R.id.fragment_nav_host).addOnDestinationChangedListener { _, ds, _ ->
+            drawerLayout.setDrawerLockMode(if (ds.id == R.id.fragment_main) {
+                DrawerLayout.LOCK_MODE_UNLOCKED
+            } else {
+                DrawerLayout.LOCK_MODE_LOCKED_CLOSED
+            }, GravityCompat.START)
+        }
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {

@@ -17,6 +17,7 @@
 package com.maltaisn.notes.ui.main
 
 import android.content.SharedPreferences
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -26,6 +27,7 @@ import com.maltaisn.notes.R
 import com.maltaisn.notes.model.NotesRepository
 import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.model.entity.NoteStatus
+import com.maltaisn.notes.ui.Event
 import com.maltaisn.notes.ui.main.adapter.MessageItem
 import com.maltaisn.notes.ui.main.adapter.NoteItem
 import com.maltaisn.notes.ui.main.adapter.NoteListItem
@@ -46,11 +48,20 @@ class MainViewModel @Inject constructor(
     private var noteListJob: Job? = null
 
     private val _noteStatus = MutableLiveData<NoteStatus>()
-    val noteStatus get() = _noteStatus
+    val noteStatus: LiveData<NoteStatus>
+        get() = _noteStatus
+
     private val _noteItems = MutableLiveData<List<NoteListItem>>()
-    val noteItems get() = _noteItems
+    val noteItems : LiveData<List<NoteListItem>>
+        get() = _noteItems
+
     private val _listLayoutMode = MutableLiveData<NoteListLayoutMode>()
-    val listLayoutMode get() = _listLayoutMode
+    val listLayoutMode : LiveData<NoteListLayoutMode>
+        get() = _listLayoutMode
+
+    private val _itemClickEvent = MutableLiveData<Event<NoteItem>>()
+    val itemClickEvent: LiveData<Event<NoteItem>>
+        get() = _itemClickEvent
 
 
     init {
@@ -114,8 +125,11 @@ class MainViewModel @Inject constructor(
         }
 
         // Add note items
+        val onNoteClick = { item: NoteItem ->
+            _itemClickEvent.value = Event(item)
+        }
         for (note in notes) {
-            this += NoteItem(note.id, note)
+            this += NoteItem(note.id, note, onNoteClick)
         }
     }
 

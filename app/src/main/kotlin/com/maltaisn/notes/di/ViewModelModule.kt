@@ -20,6 +20,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.maltaisn.notes.ui.ViewModelFactory
 import com.maltaisn.notes.ui.ViewModelKey
+import com.maltaisn.notes.ui.edit.EditViewModel
 import com.maltaisn.notes.ui.main.MainViewModel
 import dagger.Binds
 import dagger.Module
@@ -33,6 +34,11 @@ abstract class ViewModelModule {
     @IntoMap
     @ViewModelKey(MainViewModel::class)
     abstract fun bindsMainViewModel(viewModel: MainViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(EditViewModel::class)
+    abstract fun bindsEditViewModel(viewModel: EditViewModel): ViewModel
 
     @Binds
     abstract fun bindsViewModelFactory(factory: ViewModelFactory): ViewModelProvider.Factory
