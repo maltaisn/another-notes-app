@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-package com.maltaisn.notes.core.model
+package com.maltaisn.notes.model
 
 import com.google.firebase.auth.FirebaseAuth
-import com.maltaisn.notes.model.NotesService
 import com.maltaisn.notes.model.NotesService.ChangeEventData
 import com.maltaisn.notes.model.NotesService.SyncData
 import com.maltaisn.notes.model.entity.ChangeEventType
