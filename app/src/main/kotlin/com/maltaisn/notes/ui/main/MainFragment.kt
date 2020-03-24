@@ -97,7 +97,7 @@ class MainFragment : Fragment(), Toolbar.OnMenuItemClickListener {
         // Floating action button
         val fab: FloatingActionButton = view.findViewById(R.id.fab)
         fab.setOnClickListener {
-            navController.navigate(MainFragmentDirections.actionMainToEdit(NoteStatus.ACTIVE))
+            navController.navigate(MainFragmentDirections.actionMainToEdit())
         }
 
         // Recycler view
@@ -147,8 +147,7 @@ class MainFragment : Fragment(), Toolbar.OnMenuItemClickListener {
         })
 
         viewModel.itemClickEvent.observe(viewLifecycleOwner, EventObserver { item ->
-            navController.navigate(MainFragmentDirections.actionMainToEdit(
-                    viewModel.noteStatus.value!!, item.note.id))
+            navController.navigate(MainFragmentDirections.actionMainToEdit(item.note.id))
         })
 
         return view

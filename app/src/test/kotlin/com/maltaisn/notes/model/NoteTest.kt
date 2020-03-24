@@ -16,12 +16,15 @@
 
 package com.maltaisn.notes.model
 
-import com.maltaisn.notes.model.entity.*
+import com.maltaisn.notes.model.entity.ListNoteItem
+import com.maltaisn.notes.model.entity.NoteType
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
 import org.junit.Test
 import java.util.*
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 
 class NoteTest {
@@ -30,28 +33,85 @@ class NoteTest {
 
     @Test(expected = IllegalArgumentException::class)
     fun `should fail to create list note without metadata`() {
-        Note(0, "0", NoteType.LIST, "note",
-                "content", null, Date(), Date(), NoteStatus.ACTIVE)
+        testNote(type = NoteType.LIST, metadata = null)
     }
 
     @Test(expected = IllegalStateException::class)
     fun `should fail to get list items on text note`() {
-        val note = Note(0, "0", NoteType.TEXT, "note",
-                "content", null, Date(), Date(), NoteStatus.ACTIVE)
+        val note = testNote(type = NoteType.TEXT)
         note.getListItems(json)
     }
 
     @Test
     fun `should get list items on list note`() {
-        val metadata = json.stringify(ListNoteMetadata.serializer(),
-                ListNoteMetadata(listOf(false, true, true)))
-        val note = Note(0, "0", NoteType.LIST, "note",
-                "0\n1\n2", metadata, Date(), Date(), NoteStatus.ACTIVE)
+        val note = listNote(json, items = listOf(
+                ListNoteItem("0", false),
+                ListNoteItem("1", true),
+                ListNoteItem("2", true)
+        ))
         assertEquals(listOf(
                 ListNoteItem("0", false),
                 ListNoteItem("1", true),
                 ListNoteItem("2", true)
         ), note.getListItems(json))
+    }
+
+    @Test
+    fun `should check if not is blank`() {
+        val note1 = testNote(title = "note")
+        val note2 = testNote(content = "content")
+        val note3 = testNote(title = "   ", content = "")
+        val note4 = testNote(type = NoteType.LIST, title = "",
+                content = "  \n   ", metadata = "not blank")
+
+        assertFalse(note1.isBlank)
+        assertFalse(note2.isBlank)
+        assertTrue(note3.isBlank)
+        assertTrue(note4.isBlank)
+    }
+
+    @Test
+    fun `should convert text note to list`() {
+        val date = Date()
+        val textNote = testNote(content = "0\n1", added = date, modified = date)
+        val listNote = listNote(json, items = listOf(
+                ListNoteItem("0", false),
+                ListNoteItem("1", false)
+        ), added = date, modified = date)
+        assertEquals(listNote, textNote.convertToType(NoteType.LIST, json))
+    }
+
+    @Test
+    fun `should convert text note with bullets to list`() {
+        val date = Date()
+        val textNote = testNote(content = "- 0\n- 1", added = date, modified = date)
+        val listNote = listNote(json, items = listOf(
+                ListNoteItem("0", false),
+                ListNoteItem("1", false)
+        ), added = date, modified = date)
+        assertEquals(listNote, textNote.convertToType(NoteType.LIST, json))
+    }
+
+    @Test
+    fun `should convert empty list note with bullet to text`() {
+        val date = Date()
+        val listNote = listNote(json, items = listOf(
+                ListNoteItem("    ", false),
+                ListNoteItem("", true)
+        ), added = date, modified = date)
+        val textNote = testNote(content = "", added = date, modified = date)
+        assertEquals(textNote, listNote.convertToType(NoteType.TEXT, json))
+    }
+
+    @Test
+    fun `should convert list note to text`() {
+        val date = Date()
+        val listNote = listNote(json, items = listOf(
+                ListNoteItem("0", false),
+                ListNoteItem("1", false)
+        ), added = date, modified = date)
+        val textNote = testNote(content = "- 0\n- 1", added = date, modified = date)
+        assertEquals(textNote, listNote.convertToType(NoteType.TEXT, json))
     }
 
 }

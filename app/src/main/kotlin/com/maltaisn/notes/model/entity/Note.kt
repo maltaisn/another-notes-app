@@ -100,19 +100,76 @@ data class Note(
 ) {
 
     init {
-        require (type != NoteType.LIST || metadata != null)
+        require(type != NoteType.LIST || metadata != null)
     }
 
+    /**
+     * Returns true if note has no content.
+     * Metadata is not taken into account.
+     */
+    val isBlank: Boolean
+        get() = title.isBlank() && content.isBlank()
+
+    /**
+     * If not is a list note, parse content and metadata into a list of items.
+     */
     fun getListItems(json: Json): List<ListNoteItem> {
-        check (type == NoteType.LIST) { "Cannot get list items for non-list note." }
+        check(type == NoteType.LIST) { "Cannot get list items for non-list note." }
 
         val checked = json.parse(ListNoteMetadata.serializer(), metadata!!)
         val items = content.split('\n')
-        check (checked.checked.size == items.size) { "Invalid list note data." }
+        check(checked.checked.size == items.size) { "Invalid list note data." }
 
         return items.mapIndexed { i, text ->
             ListNoteItem(text, checked.checked[i])
         }
+    }
+
+    fun convertToType(type: NoteType, json: Json): Note {
+        if (this.type == type) {
+            return this
+        }
+
+        val lines = content.split('\n')
+
+        val content: String
+        val metadata: String?
+        when (type) {
+            NoteType.TEXT -> {
+                // Append a bullet point to each line of content.
+                content = if (lines.all { it.isBlank() }) {
+                    ""
+                } else {
+                    buildString {
+                        for (line in lines) {
+                            append("- ")
+                            append(line)
+                            append('\n')
+                        }
+                        deleteCharAt(length - 1)
+                    }
+                }
+                metadata = null
+            }
+            NoteType.LIST -> {
+                // Convert each list item to a text line.
+                content = if (lines.all { it.startsWith("-") }) {
+                    // All lines start with a bullet point, remove them.
+                    buildString {
+                        for (line in lines) {
+                            append(line.substring(1).trim())
+                            append('\n')
+                        }
+                        deleteCharAt(length - 1)
+                    }
+                } else {
+                    this.content
+                }
+                metadata = json.stringify(ListNoteMetadata.serializer(),
+                        ListNoteMetadata(List(lines.size) { false }))
+            }
+        }
+        return Note(id, uuid, type, title, content, metadata, addedDate, lastModifiedDate, status)
     }
 
     companion object {

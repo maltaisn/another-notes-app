@@ -21,6 +21,7 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.addCallback
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -57,14 +58,18 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener {
         val context = requireContext()
         val navController = findNavController()
 
-        viewModel.start(args.noteStatus, args.noteId)
+        requireActivity().onBackPressedDispatcher.addCallback(this) {
+            exit()
+        }
+
+        viewModel.start(args.noteId)
 
         // Setup toolbar
         toolbar = view.findViewById(R.id.toolbar)
         toolbar.setOnMenuItemClickListener(this)
         toolbar.setNavigationIcon(R.drawable.ic_arrow_left)
         toolbar.setNavigationOnClickListener {
-            navController.popBackStack()
+            exit()
         }
         toolbar.setTitle(if (args.noteId == Note.NO_ID) {
             R.string.edit_add_title
@@ -79,33 +84,35 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener {
         val copyItem = toolbarMenu.findItem(R.id.item_copy)
         val deleteItem = toolbarMenu.findItem(R.id.item_delete)
 
-        when (args.noteStatus) {
-            NoteStatus.ACTIVE -> {
-                moveItem.setIcon(R.drawable.ic_archive)
-                moveItem.setTitle(R.string.action_archive)
-            }
-            NoteStatus.ARCHIVED -> {
-                moveItem.setIcon(R.drawable.ic_unarchive)
-                moveItem.setTitle(R.string.action_unarchive)
-            }
-            NoteStatus.TRASHED -> {
-                moveItem.setIcon(R.drawable.ic_restore)
-                moveItem.setTitle(R.string.action_restore)
-            }
-        }
+        viewModel.noteStatus.observe(viewLifecycleOwner, Observer { status ->
+            if (status != null) {
+                when (status) {
+                    NoteStatus.ACTIVE -> {
+                        moveItem.setIcon(R.drawable.ic_archive)
+                        moveItem.setTitle(R.string.action_archive)
+                    }
+                    NoteStatus.ARCHIVED -> {
+                        moveItem.setIcon(R.drawable.ic_unarchive)
+                        moveItem.setTitle(R.string.action_unarchive)
+                    }
+                    NoteStatus.TRASHED -> {
+                        moveItem.setIcon(R.drawable.ic_restore)
+                        moveItem.setTitle(R.string.action_restore)
+                    }
+                }
 
-        val isTrash = args.noteStatus == NoteStatus.TRASHED
-        shareItem.isVisible = !isTrash
-        copyItem.isVisible = !isTrash
-        deleteItem.setTitle(if (isTrash) {
-            R.string.action_delete_forever
-        } else {
-            R.string.action_delete
+                val isTrash = status == NoteStatus.TRASHED
+                shareItem.isVisible = !isTrash
+                copyItem.isVisible = !isTrash
+                deleteItem.setTitle(if (isTrash) {
+                    R.string.action_delete_forever
+                } else {
+                    R.string.action_delete
+                })
+            }
         })
-
-
-        viewModel.noteType.observe(viewLifecycleOwner, Observer {  type ->
-            when (type!!) {
+        viewModel.noteType.observe(viewLifecycleOwner, Observer { type ->
+            when (type) {
                 NoteType.TEXT -> {
                     typeItem.setIcon(R.drawable.ic_checkbox)
                     typeItem.setTitle(R.string.action_convert_to_list)
@@ -122,14 +129,31 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener {
 
     override fun onMenuItemClick(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.item_type -> viewModel.toggleNoteType()
-            R.id.item_move -> viewModel.moveNote()
-            R.id.item_copy -> viewModel.copyNote()
-            R.id.item_delete -> viewModel.deleteNote()
-            R.id.item_share -> viewModel.shareNote()
+            R.id.item_type -> {
+                viewModel.toggleNoteType()
+            }
+            R.id.item_move -> {
+                viewModel.moveNote()
+                exit()
+            }
+            R.id.item_copy -> {
+                viewModel.copyNote()
+            }
+            R.id.item_delete -> {
+                viewModel.deleteNote()
+                exit()
+            }
+            R.id.item_share -> {
+                viewModel.shareNote()
+            }
             else -> return false
         }
         return true
+    }
+
+    private fun exit() {
+        viewModel.exit()
+        findNavController().popBackStack()
     }
 
 }

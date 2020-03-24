@@ -39,10 +39,6 @@
         tools:layout="@layout/fragment_edit"
         >
         <argument
-            android:name="noteStatus"
-            app:argType="com.maltaisn.notes.model.entity.NoteStatus"
-            />
-        <argument
             android:name="noteId"
             android:defaultValue="0L"
             app:argType="long"
