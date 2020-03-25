@@ -24,6 +24,7 @@ import com.maltaisn.notes.model.NotesRepository
 import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.model.entity.NoteStatus
 import com.maltaisn.notes.model.entity.NoteType
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import java.util.*
@@ -70,7 +71,7 @@ class EditViewModel @Inject constructor(
         val note = note ?: return
         if (note.isBlank) {
             // Discard blank note.
-            viewModelScope.launch {
+            viewModelScope.launch(NonCancellable) {
                 notesRepository.deleteNote(note)
             }
         }
@@ -123,7 +124,7 @@ class EditViewModel @Inject constructor(
 
     fun deleteNote() {
         val note = note ?: return
-        viewModelScope.launch {
+        viewModelScope.launch(NonCancellable) {
             if (noteStatus.value == NoteStatus.TRASHED) {
                 // Delete forever
                 notesRepository.deleteNote(note)
@@ -140,7 +141,8 @@ class EditViewModel @Inject constructor(
                 status = newStatus,
                 lastModifiedDate = Date()
         ) ?: return
-        viewModelScope.launch {
+        viewModelScope.launch(NonCancellable) {
+            // Use non-cancellable context since fragment is destroyed just after.
             notesRepository.updateNote(note)
         }
     }

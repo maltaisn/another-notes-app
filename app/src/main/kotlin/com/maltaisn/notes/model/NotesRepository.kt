@@ -23,8 +23,6 @@ import com.maltaisn.notes.model.entity.ChangeEvent
 import com.maltaisn.notes.model.entity.ChangeEventType
 import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.model.entity.NoteStatus
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import java.io.IOException
 import java.util.*
 import javax.inject.Inject
@@ -38,17 +36,17 @@ class NotesRepository @Inject constructor(
         private val notesService: NotesService,
         private val prefs: SharedPreferences) {
 
-    suspend fun insertNote(note: Note): Long = withContext(Dispatchers.IO) {
+    suspend fun insertNote(note: Note): Long {
         addChangeEvent(note, ChangeEventType.ADDED)
-        notesDao.insert(note)
+        return notesDao.insert(note)
     }
 
-    suspend fun updateNote(note: Note) = withContext(Dispatchers.IO) {
+    suspend fun updateNote(note: Note) {
         addChangeEvent(note, ChangeEventType.UPDATED)
         notesDao.update(note)
     }
 
-    suspend fun deleteNote(note: Note) = withContext(Dispatchers.IO) {
+    suspend fun deleteNote(note: Note) {
         addChangeEvent(note, ChangeEventType.DELETED)
         notesDao.delete(note)
     }
