@@ -57,6 +57,12 @@ class NoteTest {
     }
 
     @Test
+    fun `should get no list items on empty list note`() {
+        val note = listNote(json, items = emptyList())
+        assertEquals(emptyList(), note.getListItems(json))
+    }
+
+    @Test
     fun `should check if not is blank`() {
         val note1 = testNote(title = "note")
         val note2 = testNote(content = "content")

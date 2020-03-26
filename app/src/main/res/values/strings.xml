@@ -42,6 +42,10 @@
     <string name="action_sync">Synchronization</string>
     <string name="action_unarchive">Unarchive</string>
 
+    <string name="hint_note_title">Title</string>
+    <string name="hint_note_content">Note</string>
+    <string name="hint_note_item">List item</string>
+
     <plurals name="note_list_item_info">
         <item quantity="one">+ %d other list item</item>
         <item quantity="other">+ %d other list items</item>

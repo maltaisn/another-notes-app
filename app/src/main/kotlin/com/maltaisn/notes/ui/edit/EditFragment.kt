@@ -29,11 +29,14 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.maltaisn.notes.App
 import com.maltaisn.notes.R
 import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.model.entity.NoteStatus
 import com.maltaisn.notes.model.entity.NoteType
+import com.maltaisn.notes.ui.edit.adapter.EditAdapter
 import javax.inject.Inject
 
 
@@ -56,20 +59,19 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener {
         val view = inflater.inflate(R.layout.fragment_edit, container, false)
 
         val context = requireContext()
-        val navController = findNavController()
 
         requireActivity().onBackPressedDispatcher.addCallback(this) {
-            exit()
+            viewModel.exit()
         }
 
         viewModel.start(args.noteId)
 
-        // Setup toolbar
+        // Toolbar
         toolbar = view.findViewById(R.id.toolbar)
         toolbar.setOnMenuItemClickListener(this)
         toolbar.setNavigationIcon(R.drawable.ic_arrow_left)
         toolbar.setNavigationOnClickListener {
-            exit()
+            viewModel.exit()
         }
         toolbar.setTitle(if (args.noteId == Note.NO_ID) {
             R.string.edit_add_title
@@ -84,6 +86,14 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener {
         val copyItem = toolbarMenu.findItem(R.id.item_copy)
         val deleteItem = toolbarMenu.findItem(R.id.item_delete)
 
+        // Recycler view
+        val rcv: RecyclerView = view.findViewById(R.id.rcv_edit)
+        val adapter = EditAdapter(context)
+        val layoutManager = LinearLayoutManager(context)
+        rcv.adapter = adapter
+        rcv.layoutManager = layoutManager
+
+        // Observers
         viewModel.noteStatus.observe(viewLifecycleOwner, Observer { status ->
             if (status != null) {
                 when (status) {
@@ -123,37 +133,26 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener {
                 }
             }
         })
+        viewModel.editItems.observe(viewLifecycleOwner, Observer { items ->
+            adapter.submitList(items)
+        })
+        viewModel.exitEvent.observe(viewLifecycleOwner, Observer {
+            findNavController().popBackStack()
+        })
 
         return view
     }
 
     override fun onMenuItemClick(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.item_type -> {
-                viewModel.toggleNoteType()
-            }
-            R.id.item_move -> {
-                viewModel.moveNote()
-                exit()
-            }
-            R.id.item_copy -> {
-                viewModel.copyNote()
-            }
-            R.id.item_delete -> {
-                viewModel.deleteNote()
-                exit()
-            }
-            R.id.item_share -> {
-                viewModel.shareNote()
-            }
+            R.id.item_type -> viewModel.toggleNoteType()
+            R.id.item_move -> viewModel.moveNote()
+            R.id.item_copy -> viewModel.copyNote()
+            R.id.item_delete -> viewModel.deleteNote()
+            R.id.item_share -> viewModel.shareNote()
             else -> return false
         }
         return true
-    }
-
-    private fun exit() {
-        viewModel.exit()
-        findNavController().popBackStack()
     }
 
 }

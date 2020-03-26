@@ -118,6 +118,11 @@ data class Note(
 
         val checked = json.parse(ListNoteMetadata.serializer(), metadata!!)
         val items = content.split('\n')
+        if (items.size == 1 && checked.checked.isEmpty()) {
+            // No items
+            return emptyList()
+        }
+
         check(checked.checked.size == items.size) { "Invalid list note data." }
 
         return items.mapIndexed { i, text ->

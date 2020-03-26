@@ -48,7 +48,7 @@
             android:textColor="@color/material_on_background_emphasis_medium"
             android:maxLines="5"
             android:ellipsize="end"
-            tools:text="Mauris rutrum massa placerat felis pharetra tristique. Nulla sed urna a dui vehicula euismod. Aenean sit amet velit feugiat, aliquet leo sed, sodales risus. Donec non justo et nisi lobortis sodales sed eget erat. Donec ac libero ut enim porta porta id at sem. Aliquam erat volutpat. In eu turpis quis eros posuere porta. Nam et risus turpis. Integer consequat convallis interdum. Etiam ac orci ultrices, mollis lectus ut, efficitur felis. Nunc varius facilisis dapibus. Phasellus vulputate sapien iaculis sem venenatis tincidunt. Cras placerat purus sit amet metus fringilla facilisis."
+            tools:text="Mauris rutrum massa placerat felis pharetra tristique. Nulla sed urna a dui vehicula euismod. Aenean sit amet velit feugiat, aliquet leo sed, sodales risus. Donec non justo et nisi lobortis sodales sed eget erat. Donec ac libero ut enim porta porta id at sem. Aliquam erat volutpat. In eu turpis quis eros posuere porta."
             />
 
     </LinearLayout>
