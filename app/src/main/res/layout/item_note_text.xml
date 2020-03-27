@@ -35,7 +35,7 @@
             android:layout_height="wrap_content"
             android:textAppearance="?textAppearanceSubtitle1"
             android:paddingBottom="8dp"
-            android:maxLines="1"
+            android:maxLines="2"
             android:ellipsize="end"
             tools:text="Lorem ipsum dolor sit amet"
             />

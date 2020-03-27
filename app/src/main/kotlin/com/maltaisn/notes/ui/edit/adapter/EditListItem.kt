@@ -32,8 +32,9 @@ data class EditContentItem(var content: CharSequence) : EditListItem() {
 }
 
 data class EditItemItem(var content: CharSequence, var checked: Boolean,
-                   val onChange: (item: EditItemItem, pos: Int) -> Unit,
-                   val onDelete: (pos: Int) -> Unit) : EditListItem() {
+                        val onChange: (item: EditItemItem, pos: Int, isPaste: Boolean) -> Unit,
+                        val onBackspace: (item: EditItemItem, pos: Int) -> Unit,
+                        val onDelete: (pos: Int) -> Unit) : EditListItem() {
     override val type: Int
         get() = EditAdapter.VIEW_TYPE_ITEM
 }

@@ -90,10 +90,11 @@ class NoteTest {
     @Test
     fun `should convert text note with bullets to list`() {
         val date = Date()
-        val textNote = testNote(content = "- 0\n- 1", added = date, modified = date)
+        val textNote = testNote(content = "- 0\n* 1\n+ 2", added = date, modified = date)
         val listNote = listNote(json, items = listOf(
                 ListNoteItem("0", false),
-                ListNoteItem("1", false)
+                ListNoteItem("1", false),
+                ListNoteItem("2", false)
         ), added = date, modified = date)
         assertEquals(listNote, textNote.convertToType(NoteType.LIST, json))
     }

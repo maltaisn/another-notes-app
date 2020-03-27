@@ -147,7 +147,8 @@ data class Note(
                 } else {
                     buildString {
                         for (line in lines) {
-                            append("- ")
+                            append(DEFAULT_BULLET_CHAR)
+                            append(' ')
                             append(line)
                             append('\n')
                         }
@@ -158,7 +159,7 @@ data class Note(
             }
             NoteType.LIST -> {
                 // Convert each list item to a text line.
-                content = if (lines.all { it.startsWith("-") }) {
+                content = if (lines.all { it.isNotEmpty() && it.first() in BULLET_CHARS }) {
                     // All lines start with a bullet point, remove them.
                     buildString {
                         for (line in lines) {
@@ -179,6 +180,9 @@ data class Note(
 
     companion object {
         const val NO_ID = 0L
+
+        const val BULLET_CHARS = "-+*•–"
+        const val DEFAULT_BULLET_CHAR = "-"
     }
 }
 

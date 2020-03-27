@@ -16,15 +16,17 @@
 
 package com.maltaisn.notes.ui.edit.adapter
 
+import android.view.KeyEvent
 import android.view.View
 import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.view.isInvisible
-import androidx.core.widget.addTextChangedListener
+import androidx.core.widget.doOnTextChanged
 import androidx.recyclerview.widget.RecyclerView
 import com.maltaisn.notes.R
+import com.maltaisn.notes.ui.edit.BulletTextWatcher
 
 
 class EditTitleViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -32,7 +34,7 @@ class EditTitleViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     private val titleEdt = itemView as EditText
 
     fun bind(item: EditTitleItem) {
-        titleEdt.setText(item.title, TextView.BufferType.EDITABLE)
+        titleEdt.setText(item.title)
         item.title = titleEdt.text
     }
 }
@@ -41,8 +43,13 @@ class EditContentViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) 
 
     private val contentEdt = itemView as TextView
 
+    init {
+        contentEdt.addTextChangedListener(BulletTextWatcher())
+    }
+
     fun bind(item: EditContentItem) {
-        contentEdt.setText(item.content, TextView.BufferType.EDITABLE)
+        // Change note content to the EditText editable text so view model can change it.
+        contentEdt.setText(item.content)
         item.content = contentEdt.text
     }
 }
@@ -54,26 +61,64 @@ class EditItemViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     private val itemEdt: EditText = itemView.findViewById(R.id.edt_item)
     private val deleteImv: ImageView = itemView.findViewById(R.id.imv_item_delete)
 
-    fun bind(item: EditItemItem) {
-        itemEdt.setText(item.content, TextView.BufferType.EDITABLE)
-        item.content = itemEdt.text
+    private lateinit var item: EditItemItem
 
-        itemCheck.isChecked = item.checked
+    init {
         itemCheck.setOnCheckedChangeListener { _, isChecked ->
             item.checked = isChecked
         }
 
-        itemEdt.addTextChangedListener { item.onChange(item, adapterPosition) }
+        itemEdt.doOnTextChanged { _, _, _, count ->
+            // This is used to detect when user enters line breaks into the input, so the
+            // item can be split into multiple items. When user enters a single line break,
+            // selection is set at the beginning of new item. On paste, i.e. when more than one
+            // character is entered, selection is set at the end of last new item.
+            item.onChange(item, adapterPosition, count > 1)
+        }
         itemEdt.setOnFocusChangeListener { _, hasFocus ->
+            // Only show delete icon for currently focused item.
             deleteImv.isInvisible = !hasFocus
         }
+        itemEdt.setOnKeyListener { _, _, event ->
+            if (event.action == KeyEvent.ACTION_DOWN
+                    && event.keyCode == KeyEvent.KEYCODE_DEL
+                    && itemEdt.selectionStart == itemEdt.selectionEnd
+                    && itemEdt.selectionStart == 0) {
+                // If user presses backspace at the start of an item, current item
+                // will be merged with previous.
+                val pos = adapterPosition
+                if (pos != RecyclerView.NO_POSITION) {
+                    item.onBackspace(item, pos)
+                }
+            }
+            false
+        }
 
-        deleteImv.setOnClickListener { item.onDelete(adapterPosition) }
+        deleteImv.setOnClickListener {
+            val pos = adapterPosition
+            if (pos != RecyclerView.NO_POSITION) {
+                item.onDelete(pos)
+            }
+        }
+    }
+
+    fun bind(item: EditItemItem) {
+        this.item = item
+
+        // Change item content to the EditText editable text so view model can change it.
+        itemEdt.setText(item.content)
+        item.content = itemEdt.text
+
+        itemCheck.isChecked = item.checked
+    }
+
+    fun setFocus(pos: Int) {
+        itemEdt.requestFocus()
+        itemEdt.setSelection(pos)
     }
 }
 
 class EditItemAddViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-
     fun bind(item: EditItemAddItem) {
         itemView.setOnClickListener { item.onClick() }
     }

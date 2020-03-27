@@ -16,11 +16,13 @@
 
 package com.maltaisn.notes.ui.edit
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import androidx.activity.addCallback
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
@@ -36,6 +38,7 @@ import com.maltaisn.notes.R
 import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.model.entity.NoteStatus
 import com.maltaisn.notes.model.entity.NoteType
+import com.maltaisn.notes.ui.EventObserver
 import com.maltaisn.notes.ui.edit.adapter.EditAdapter
 import javax.inject.Inject
 
@@ -71,6 +74,8 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener {
         toolbar.setOnMenuItemClickListener(this)
         toolbar.setNavigationIcon(R.drawable.ic_arrow_left)
         toolbar.setNavigationOnClickListener {
+            (context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager)
+                    .hideSoftInputFromWindow(view.windowToken, 0)
             viewModel.exit()
         }
         toolbar.setTitle(if (args.noteId == Note.NO_ID) {
@@ -136,7 +141,10 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener {
         viewModel.editItems.observe(viewLifecycleOwner, Observer { items ->
             adapter.submitList(items)
         })
-        viewModel.exitEvent.observe(viewLifecycleOwner, Observer {
+        viewModel.focusEvent.observe(viewLifecycleOwner, EventObserver { focus ->
+            adapter.setItemFocus(focus)
+        })
+        viewModel.exitEvent.observe(viewLifecycleOwner, EventObserver {
             findNavController().popBackStack()
         })
 

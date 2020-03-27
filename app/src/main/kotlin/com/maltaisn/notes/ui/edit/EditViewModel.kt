@@ -63,6 +63,10 @@ class EditViewModel @Inject constructor(
     val editItems: LiveData<List<EditListItem>>
         get() = _editItems
 
+    private val _focusEvent = MutableLiveData<Event<FocusChange>>()
+    val focusEvent: LiveData<Event<FocusChange>>
+        get() = _focusEvent
+
     private val _exitEvent = MutableLiveData<Event<Unit>>()
     val exitEvent: LiveData<Event<Unit>>
         get() = _exitEvent
@@ -134,6 +138,9 @@ class EditViewModel @Inject constructor(
 
     fun copyNote() {
         val note = note ?: return
+
+        // FIXME original note should be saved before copying
+
         viewModelScope.launch {
             val date = Date()
             val copy = note.copy(
@@ -184,14 +191,16 @@ class EditViewModel @Inject constructor(
 
         return buildList {
             // Title item
-            val title = titleItem ?: EditTitleItem(note.title)
+            val title = titleItem ?: EditTitleItem("")
+            title.title = note.title
             titleItem = title
             this += title
 
             when (note.type) {
                 NoteType.TEXT -> {
                     // Content item
-                    val content = contentItem ?: EditContentItem(note.content)
+                    val content = contentItem ?: EditContentItem("")
+                    content.content = note.content
                     contentItem = content
                     this += content
                 }
@@ -212,9 +221,10 @@ class EditViewModel @Inject constructor(
     }
 
     private fun createListItem(content: CharSequence, checked: Boolean) =
-            EditItemItem(content, checked, ::onListItemChanged, ::onListItemDeleted)
+            EditItemItem(content, checked, ::onListItemChanged,
+                    ::onListItemBackspace, ::onListItemDeleted)
 
-    private fun onListItemChanged(item: EditItemItem, pos: Int) {
+    private fun onListItemChanged(item: EditItemItem, pos: Int, isPaste: Boolean) {
         if ('\n' in item.content) {
             // User inserted line breaks in list items, split it into multiple items.
             val newList = listItems.toMutableList()
@@ -224,7 +234,24 @@ class EditViewModel @Inject constructor(
                 newList.add(pos + i, createListItem(lines[i], false))
             }
             listItems = newList
-            // TODO set cursor focus at the end of last item content.
+
+            // Update selection
+            _focusEvent.value = Event(FocusChange(pos + lines.size - 1,
+                    if (isPaste) lines.last().length else 0, false))
+        }
+    }
+
+    private fun onListItemBackspace(item: EditItemItem, pos: Int) {
+        val prevItem = listItems[pos - 1]
+        if (prevItem is EditItemItem) {
+            // Previous item is also a note list item. Merge the two items content,
+            // and delete the current item.
+            val prevLength = prevItem.content.length
+            (prevItem.content as Editable).append(item.content)
+            onListItemDeleted(pos)
+
+            // Update selection
+            _focusEvent.value = Event(FocusChange(pos - 1, prevLength, true))
         }
     }
 
@@ -263,5 +290,7 @@ class EditViewModel @Inject constructor(
         return Note(note.id, note.uuid, note.type, title, content, metadata,
                 note.addedDate, note.lastModifiedDate, note.status)
     }
+
+    data class FocusChange(val itemPos: Int, val pos: Int, val itemExists: Boolean)
 
 }

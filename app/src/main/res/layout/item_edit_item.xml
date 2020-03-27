@@ -20,8 +20,6 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:paddingTop="8dp"
-    android:paddingBottom="8dp"
     android:paddingStart="8dp"
     android:paddingEnd="16dp"
     >
@@ -46,7 +44,6 @@
         android:minHeight="0dp"
         android:gravity="top"
         android:minWidth="0dp"
-        tools:text="@null"
         />
 
     <EditText
@@ -56,8 +53,10 @@
         android:layout_weight="1"
         android:layout_gravity="center"
         android:textAppearance="?textAppearanceBody1"
+        android:textSize="15sp"
         android:background="@null"
         android:inputType="textMultiLine"
+        android:imeOptions="flagNoExtractUi"
         android:padding="5dp"
         android:importantForAutofill="no"
         tools:ignore="LabelFor"
@@ -66,13 +65,13 @@
 
     <ImageView
         android:id="@+id/imv_item_delete"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
         android:layout_weight="0"
         android:src="@drawable/ic_close"
         android:layout_gravity="top"
-        android:layout_marginTop="4dp"
-        android:layout_marginStart="8dp"
+        android:layout_marginStart="4dp"
+        android:padding="4dp"
         android:background="?selectableItemBackgroundBorderless"
         android:visibility="invisible"
         tools:ignore="ContentDescription"
