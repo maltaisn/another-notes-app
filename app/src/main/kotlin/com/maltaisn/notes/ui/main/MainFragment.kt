@@ -162,6 +162,7 @@ class MainFragment : Fragment(), Toolbar.OnMenuItemClickListener {
             R.id.item_search -> Unit
             R.id.item_layout -> viewModel.toggleListLayoutMode()
             R.id.item_empty_trash -> viewModel.emptyTrash()
+            R.id.item_add_debug_notes -> viewModel.addDebugNotes()
             else -> return false
         }
         return true

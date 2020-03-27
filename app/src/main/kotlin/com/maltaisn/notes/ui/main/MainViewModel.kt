@@ -100,9 +100,12 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    fun debugAddRandomNote() {
+    fun addDebugNotes() {
         viewModelScope.launch {
-            notesRepository.insertNote(DebugUtils.getRandomNote(_noteStatus.value!!))
+            val status = _noteStatus.value!!
+            repeat(3) {
+                notesRepository.insertNote(DebugUtils.getRandomNote(status))
+            }
         }
     }
 
