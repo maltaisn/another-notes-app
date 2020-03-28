@@ -62,9 +62,10 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener {
     }
 
     override fun onCreateView(inflater: LayoutInflater,
-                              container: ViewGroup?, state: Bundle?): View? {
-        val view = inflater.inflate(R.layout.fragment_edit, container, false)
+                              container: ViewGroup?, state: Bundle?): View =
+            inflater.inflate(R.layout.fragment_edit, container, false)
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val context = requireContext()
 
         requireActivity().onBackPressedDispatcher.addCallback(this) {
@@ -162,8 +163,6 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener {
         viewModel.exitEvent.observe(viewLifecycleOwner, EventObserver {
             findNavController().popBackStack()
         })
-
-        return view
     }
 
     override fun onPause() {

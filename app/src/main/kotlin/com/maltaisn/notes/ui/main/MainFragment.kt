@@ -69,9 +69,10 @@ class MainFragment : Fragment(), Toolbar.OnMenuItemClickListener {
     }
 
     override fun onCreateView(inflater: LayoutInflater,
-                              container: ViewGroup?, state: Bundle?): View? {
-        val view = inflater.inflate(R.layout.fragment_main, container, false)
+                              container: ViewGroup?, state: Bundle?): View =
+            inflater.inflate(R.layout.fragment_main, container, false)
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val context = requireContext()
         val navController = findNavController()
 
@@ -163,8 +164,6 @@ class MainFragment : Fragment(), Toolbar.OnMenuItemClickListener {
                         sharedViewModel.undoStatusChange()
                     }.show()
         })
-
-        return view
     }
 
     fun changeShownNotesStatus(status: NoteStatus) {
