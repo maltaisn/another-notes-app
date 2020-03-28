@@ -46,6 +46,8 @@
         <item name="colorAccent">?colorSecondary</item>
 
         <item name="toolbarThemeOverlay">@style/ThemeOverlay.MaterialComponents.Toolbar.Primary</item>
+
+        <item name="editDraggedItemElevation">2dp</item>
     </style>
 
 </resources>

@@ -18,10 +18,13 @@ package com.maltaisn.notes.ui.edit.adapter
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.Canvas
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
+import androidx.core.content.res.use
+import androidx.core.view.ViewCompat
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -35,17 +38,15 @@ class EditAdapter(val context: Context, val callback: Callback) :
 
     private var recyclerView: RecyclerView? = null
 
-    private var listItems: MutableList<EditListItem> = mutableListOf()
+    private var listItems = mutableListOf<EditListItem>()
 
     private var pendingFocusChange: EditViewModel.FocusChange? = null
 
-
     private val itemTouchHelper = ItemTouchHelper(object : ItemTouchHelper.Callback() {
-        // Note: to achieve the shadow effect on the dragged item, the EditTitleViewHolder
-        // item view was set to the desired elevation, with outlineProvider set to `none`.
-        // This way, when dragging an item, ItemTouchHelper will find this elevation value
-        // in `onChildDraw` and will set the dragged item elevation just above that value.
-        // See answer at [https://stackoverflow.com/a/60896887/5288316].
+        private val elevation = context.obtainStyledAttributes(
+                intArrayOf(R.attr.editDraggedItemElevation)).use {
+            it.getDimensionPixelSize(0, 0).toFloat()
+        }
 
         override fun getMovementFlags(recyclerView: RecyclerView,
                                       viewHolder: RecyclerView.ViewHolder) =
@@ -57,6 +58,24 @@ class EditAdapter(val context: Context, val callback: Callback) :
         override fun canDropOver(recyclerView: RecyclerView,
                                  current: RecyclerView.ViewHolder,
                                  target: RecyclerView.ViewHolder) = target is EditItemViewHolder
+
+        override fun onChildDraw(c: Canvas, recyclerView: RecyclerView,
+                                 viewHolder: RecyclerView.ViewHolder,
+                                 dX: Float, dY: Float, actionState: Int, isCurrentlyActive: Boolean) {
+            val view = viewHolder.itemView
+            view.translationX = dX
+            view.translationY = dY
+            if (isCurrentlyActive) {
+                ViewCompat.setElevation(view, elevation)
+            }
+        }
+
+        override fun clearView(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder) {
+            val view = viewHolder.itemView
+            view.translationX = 0f
+            view.translationY = 0f
+            ViewCompat.setElevation(view, 0f)
+        }
 
         override fun onMove(recyclerView: RecyclerView,
                             viewHolder: RecyclerView.ViewHolder,

@@ -28,6 +28,4 @@
     android:textAppearance="?textAppearanceHeadline6"
     android:hint="@string/hint_note_title"
     android:importantForAutofill="no"
-    android:outlineProvider="none"
-    android:elevation="2dp"
     />
