@@ -121,7 +121,8 @@ class MainViewModel @Inject constructor(
         if (status == NoteStatus.TRASHED && notes.isNotEmpty()) {
             // If needed, add reminder that notes get auto-deleted when in trash.
             val lastReminder = prefs.getLong(PreferenceHelper.LAST_TRASH_REMIND_TIME, 0)
-            if (System.currentTimeMillis() - lastReminder > TRASH_REMINDER_DELAY * 86400000L) {
+            if (System.currentTimeMillis() - lastReminder >
+                    PreferenceHelper.TRASH_REMINDER_DELAY * 86400000L) {
                 this += MessageItem(TRASH_REMINDER_ITEM_ID, R.string.message_trash_reminder,
                         PreferenceHelper.TRASH_AUTO_DELETE_DELAY)
             }
@@ -134,7 +135,6 @@ class MainViewModel @Inject constructor(
     }
 
     companion object {
-        private const val TRASH_REMINDER_DELAY = 60
         private const val TRASH_REMINDER_ITEM_ID = -1L
     }
 

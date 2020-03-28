@@ -26,6 +26,7 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -35,10 +36,12 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.snackbar.Snackbar
 import com.maltaisn.notes.App
 import com.maltaisn.notes.R
 import com.maltaisn.notes.model.entity.NoteStatus
 import com.maltaisn.notes.ui.EventObserver
+import com.maltaisn.notes.ui.SharedViewModel
 import com.maltaisn.notes.ui.main.adapter.NoteAdapter
 import com.maltaisn.notes.ui.main.adapter.NoteListLayoutMode
 import kotlinx.coroutines.Dispatchers
@@ -53,10 +56,12 @@ class MainFragment : Fragment(), Toolbar.OnMenuItemClickListener {
 
     @Inject lateinit var viewModelFactory: ViewModelProvider.Factory
     private val viewModel: MainViewModel by viewModels { viewModelFactory }
+    private val sharedViewModel: SharedViewModel by activityViewModels { viewModelFactory }
 
     @Inject lateinit var json: Json
 
     private lateinit var toolbar: Toolbar
+
 
     override fun onCreate(state: Bundle?) {
         super.onCreate(state)
@@ -149,6 +154,14 @@ class MainFragment : Fragment(), Toolbar.OnMenuItemClickListener {
 
         viewModel.itemClickEvent.observe(viewLifecycleOwner, EventObserver { item ->
             navController.navigate(MainFragmentDirections.actionMainToEdit(item.note.id))
+        })
+
+        sharedViewModel.statusChangeMessageEvent.observe(viewLifecycleOwner, EventObserver { message ->
+            Snackbar.make(view, context.resources.getQuantityString(
+                    message.messageId, message.count, message.count), Snackbar.LENGTH_SHORT)
+                    .setAction(R.string.action_undo) {
+                        sharedViewModel.undoStatusChange()
+                    }.show()
         })
 
         return view

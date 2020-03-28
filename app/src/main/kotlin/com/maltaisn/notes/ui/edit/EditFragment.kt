@@ -26,6 +26,7 @@ import android.view.inputmethod.InputMethodManager
 import androidx.activity.addCallback
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -39,6 +40,7 @@ import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.model.entity.NoteStatus
 import com.maltaisn.notes.model.entity.NoteType
 import com.maltaisn.notes.ui.EventObserver
+import com.maltaisn.notes.ui.SharedViewModel
 import com.maltaisn.notes.ui.edit.adapter.EditAdapter
 import javax.inject.Inject
 
@@ -47,10 +49,12 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener {
 
     @Inject lateinit var viewModelFactory: ViewModelProvider.Factory
     private val viewModel: EditViewModel by viewModels { viewModelFactory }
+    private val sharedViewModel: SharedViewModel by activityViewModels { viewModelFactory }
 
-    val args: EditFragmentArgs by navArgs()
+    private val args: EditFragmentArgs by navArgs()
 
     private lateinit var toolbar: Toolbar
+
 
     override fun onCreate(state: Bundle?) {
         super.onCreate(state)
@@ -127,6 +131,7 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener {
                 })
             }
         })
+
         viewModel.noteType.observe(viewLifecycleOwner, Observer { type ->
             when (type) {
                 NoteType.TEXT -> {
@@ -139,12 +144,21 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener {
                 }
             }
         })
+
         viewModel.editItems.observe(viewLifecycleOwner, Observer { items ->
             adapter.submitList(items)
         })
+
         viewModel.focusEvent.observe(viewLifecycleOwner, EventObserver { focus ->
             adapter.setItemFocus(focus)
         })
+
+        viewModel.statusChangeEvent.observe(viewLifecycleOwner, EventObserver { statusChange ->
+            // A shared view model is used since snackbar can't be shown from this fragment,
+            // which will be popped from backstack just after the status change.
+            sharedViewModel.doStatusChange(statusChange)
+        })
+
         viewModel.exitEvent.observe(viewLifecycleOwner, EventObserver {
             findNavController().popBackStack()
         })

@@ -41,10 +41,28 @@
     <string name="action_share">Share</string>
     <string name="action_sync">Synchronization</string>
     <string name="action_unarchive">Unarchive</string>
+    <string name="action_undo">Undo</string>
 
     <string name="hint_note_title">Title</string>
     <string name="hint_note_content">Note</string>
     <string name="hint_note_item">List item</string>
+
+    <plurals name="message_move_archive">
+        <item quantity="one">Note archived</item>
+        <item quantity="other">Notes archived</item>
+    </plurals>
+    <plurals name="message_move_delete">
+        <item quantity="one">Note moved to recycle bin</item>
+        <item quantity="other">Notes moved to recycle bin</item>
+    </plurals>
+    <plurals name="message_move_restore">
+        <item quantity="one">Note restored</item>
+        <item quantity="other">Notes restored</item>
+    </plurals>
+    <plurals name="message_move_unarchive">
+        <item quantity="one">Note unarchived</item>
+        <item quantity="other">Notes unarchived</item>
+    </plurals>
 
     <plurals name="note_list_item_info">
         <item quantity="one">+ %d other list item</item>

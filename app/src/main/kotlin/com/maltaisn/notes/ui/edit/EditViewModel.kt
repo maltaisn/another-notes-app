@@ -27,6 +27,7 @@ import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.model.entity.NoteStatus
 import com.maltaisn.notes.model.entity.NoteType
 import com.maltaisn.notes.ui.Event
+import com.maltaisn.notes.ui.StatusChange
 import com.maltaisn.notes.ui.edit.adapter.*
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
@@ -66,6 +67,10 @@ class EditViewModel @Inject constructor(
     private val _focusEvent = MutableLiveData<Event<FocusChange>>()
     val focusEvent: LiveData<Event<FocusChange>>
         get() = _focusEvent
+
+    private val _statusChangeEvent = MutableLiveData<Event<StatusChange>>()
+    val statusChangeEvent: LiveData<Event<StatusChange>>
+        get() = _statusChangeEvent
 
     private val _exitEvent = MutableLiveData<Event<Unit>>()
     val exitEvent: LiveData<Event<Unit>>
@@ -131,17 +136,15 @@ class EditViewModel @Inject constructor(
         changeNoteStatus(if (note.status == NoteStatus.ACTIVE) {
             NoteStatus.ARCHIVED
         } else {
-            // Unarchive or restore
             NoteStatus.ACTIVE
         })
         save(true)
-        // TODO show snackbar with undo
     }
 
     fun copyNote() {
         val note = note ?: return
 
-        // FIXME original note should be saved before copying
+        save(false)
 
         viewModelScope.launch {
             val date = Date()
@@ -173,16 +176,16 @@ class EditViewModel @Inject constructor(
         } else {
             // Send to trash
             changeNoteStatus(NoteStatus.TRASHED)
-            // TODO show snackbar with undo
         }
         save(true)
     }
 
     private fun changeNoteStatus(newStatus: NoteStatus) {
-        this.note = note?.copy(
-                status = newStatus,
-                lastModifiedDate = Date()
-        ) ?: return
+        val note = note ?: return
+        val newNote = note.copy(status = newStatus, lastModifiedDate = Date())
+        this.note = newNote
+        _statusChangeEvent.value = Event(StatusChange(listOf(newNote),
+                listOf(note.lastModifiedDate), note.status, newStatus))
     }
 
     private fun generateNoteUuid() = UUID.randomUUID().toString().replace("-", "")

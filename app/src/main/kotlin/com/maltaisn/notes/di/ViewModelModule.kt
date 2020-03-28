@@ -18,6 +18,7 @@ package com.maltaisn.notes.di
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.maltaisn.notes.ui.SharedViewModel
 import com.maltaisn.notes.ui.ViewModelFactory
 import com.maltaisn.notes.ui.ViewModelKey
 import com.maltaisn.notes.ui.edit.EditViewModel
@@ -29,6 +30,11 @@ import dagger.multibindings.IntoMap
 
 @Module
 abstract class ViewModelModule {
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(SharedViewModel::class)
+    abstract fun bindsSharedViewModel(viewModel: SharedViewModel): ViewModel
 
     @Binds
     @IntoMap

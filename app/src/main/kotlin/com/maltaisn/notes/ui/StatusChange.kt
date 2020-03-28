@@ -14,17 +14,18 @@
  * limitations under the License.
  */
 
-package com.maltaisn.notes
+package com.maltaisn.notes.ui
 
+import com.maltaisn.notes.model.entity.Note
+import com.maltaisn.notes.model.entity.NoteStatus
+import java.util.*
 
-object PreferenceHelper {
-
-    const val LAST_SYNC_TIME = "last_sync_time"
-
-    const val LIST_LAYOUT_MODE = "is_in_list_layout"
-    const val LAST_TRASH_REMIND_TIME = "last_deleted_remind_time"
-
-    const val TRASH_AUTO_DELETE_DELAY = 7
-    const val TRASH_REMINDER_DELAY = 60
-
-}
+/**
+ * A class representing a change of status for one or many notes.
+ * Status change from [oldStatus] to [newStatus].
+ * Old last modified dates are saved so they can be restored if change is undone.
+ */
+data class StatusChange(val notes: List<Note>,
+                        val oldModifiedDates: List<Date>,
+                        val oldStatus: NoteStatus,
+                        val newStatus: NoteStatus)
