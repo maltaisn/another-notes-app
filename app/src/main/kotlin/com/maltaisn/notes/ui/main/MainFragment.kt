@@ -78,15 +78,13 @@ class MainFragment : Fragment(), Toolbar.OnMenuItemClickListener {
 
         // Setup toolbar with drawer
         toolbar = view.findViewById(R.id.toolbar)
-        toolbar.let {
-            val drawerLayout: DrawerLayout = requireActivity().findViewById(R.id.drawer_layout)
-            it.setNavigationIcon(R.drawable.ic_menu)
-            it.setNavigationContentDescription(R.string.content_descrp_open_drawer)
-            it.setNavigationOnClickListener {
-                drawerLayout.openDrawer(GravityCompat.START)
-            }
-            it.setOnMenuItemClickListener(this)
+        val drawerLayout: DrawerLayout = requireActivity().findViewById(R.id.drawer_layout)
+        toolbar.setNavigationIcon(R.drawable.ic_menu)
+        toolbar.setNavigationContentDescription(R.string.content_descrp_open_drawer)
+        toolbar.setNavigationOnClickListener {
+            drawerLayout.openDrawer(GravityCompat.START)
         }
+        toolbar.setOnMenuItemClickListener(this)
 
         // Swipe refresh
         val swipeRefresh: SwipeRefreshLayout = view.findViewById(R.id.layout_swipe_refresh)
