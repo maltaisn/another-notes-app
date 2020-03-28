@@ -18,6 +18,4 @@
 
     <attr name="toolbarThemeOverlay" format="reference" />
 
-    <attr name="dividerColor" format="color|reference" />
-
 </resources>

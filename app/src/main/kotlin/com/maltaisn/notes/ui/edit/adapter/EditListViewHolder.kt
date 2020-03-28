@@ -21,7 +21,6 @@ import android.view.View
 import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.ImageView
-import android.widget.TextView
 import androidx.core.view.isInvisible
 import androidx.core.widget.doOnTextChanged
 import androidx.recyclerview.widget.RecyclerView
@@ -41,7 +40,7 @@ class EditTitleViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
 class EditContentViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
-    private val contentEdt = itemView as TextView
+    private val contentEdt = itemView as EditText
 
     init {
         contentEdt.addTextChangedListener(BulletTextWatcher())
@@ -56,7 +55,7 @@ class EditContentViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) 
 
 class EditItemViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
-    private val dragImv: ImageView = itemView.findViewById(R.id.imv_item_drag)
+    val dragImv: ImageView = itemView.findViewById(R.id.imv_item_drag)
     private val itemCheck: CheckBox = itemView.findViewById(R.id.chk_item)
     private val itemEdt: EditText = itemView.findViewById(R.id.edt_item)
     private val deleteImv: ImageView = itemView.findViewById(R.id.imv_item_delete)
@@ -115,6 +114,10 @@ class EditItemViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     fun setFocus(pos: Int) {
         itemEdt.requestFocus()
         itemEdt.setSelection(pos)
+    }
+
+    fun clearFocus() {
+        itemEdt.clearFocus()
     }
 }
 

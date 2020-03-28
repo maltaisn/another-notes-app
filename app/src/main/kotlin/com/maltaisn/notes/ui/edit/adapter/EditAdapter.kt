@@ -16,13 +16,18 @@
 
 package com.maltaisn.notes.ui.edit.adapter
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.maltaisn.notes.R
 import com.maltaisn.notes.ui.edit.EditViewModel
+import java.util.*
 
 
 class EditAdapter(val context: Context) :
@@ -30,17 +35,62 @@ class EditAdapter(val context: Context) :
 
     private var recyclerView: RecyclerView? = null
 
+    private var listItems: MutableList<EditListItem> = mutableListOf()
+
     private var pendingFocusChange: EditViewModel.FocusChange? = null
 
 
+    private val itemTouchHelper = ItemTouchHelper(object : ItemTouchHelper.Callback() {
+        // Note: to achieve the shadow effect on the dragged item, the EditTitleViewHolder
+        // item view was set to the desired elevation, with outlineProvider set to `none`.
+        // This way, when dragging an item, ItemTouchHelper will find this elevation value
+        // in `onChildDraw` and will set the dragged item elevation just above that value.
+        // See answer at [https://stackoverflow.com/a/60896887/5288316].
+
+        override fun getMovementFlags(recyclerView: RecyclerView,
+                                      viewHolder: RecyclerView.ViewHolder) =
+                makeFlag(ItemTouchHelper.ACTION_STATE_DRAG,
+                        ItemTouchHelper.UP or ItemTouchHelper.DOWN)
+
+        override fun isLongPressDragEnabled() = false
+
+        override fun canDropOver(recyclerView: RecyclerView,
+                                 current: RecyclerView.ViewHolder,
+                                 target: RecyclerView.ViewHolder) = target is EditItemViewHolder
+
+        override fun onMove(recyclerView: RecyclerView,
+                            viewHolder: RecyclerView.ViewHolder,
+                            target: RecyclerView.ViewHolder): Boolean {
+            val from = viewHolder.adapterPosition
+            val to = target.adapterPosition
+
+            // submitList is not used here, since it results in a very unresponsive design.
+            // Adapter and dataset are updated manually.
+            notifyItemMoved(from, to)
+            Collections.swap(listItems, from, to)
+            return true
+        }
+
+        override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) = Unit
+    })
+
+    override fun submitList(list: MutableList<EditListItem>?) {
+        super.submitList(list)
+
+        // Save mutable view of list which is otherwise inacessible.
+        listItems = list ?: mutableListOf()
+    }
+
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
         this.recyclerView = recyclerView
+        itemTouchHelper.attachToRecyclerView(recyclerView)
     }
 
     override fun onDetachedFromRecyclerView(recyclerView: RecyclerView) {
         this.recyclerView = null
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         return when (viewType) {
@@ -48,10 +98,23 @@ class EditAdapter(val context: Context) :
                     R.layout.item_edit_title, parent, false))
             VIEW_TYPE_CONTENT -> EditContentViewHolder(inflater.inflate(
                     R.layout.item_edit_content, parent, false))
-            VIEW_TYPE_ITEM -> EditItemViewHolder(inflater.inflate(
-                    R.layout.item_edit_item, parent, false))
             VIEW_TYPE_ITEM_ADD -> EditItemAddViewHolder(inflater.inflate(
                     R.layout.item_edit_item_add, parent, false))
+            VIEW_TYPE_ITEM -> {
+                val viewHolder = EditItemViewHolder(inflater.inflate(
+                        R.layout.item_edit_item, parent, false))
+                viewHolder.dragImv.setOnTouchListener { view, event ->
+                    if (event.action == MotionEvent.ACTION_DOWN && listItems.size > 3) {
+                        // Drag handle was touched. Hide keyboard and start dragging.
+                        viewHolder.clearFocus()
+                        (context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager)
+                                .hideSoftInputFromWindow(view.windowToken, 0)
+                        itemTouchHelper.startDrag(viewHolder)
+                    }
+                    false
+                }
+                viewHolder
+            }
             else -> error("Unknown view type")
         }
     }

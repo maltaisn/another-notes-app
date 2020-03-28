@@ -39,7 +39,7 @@ class EditViewModel @Inject constructor(
         private val json: Json) : ViewModel() {
 
     private var note: Note? = null
-    private var listItems = emptyList<EditListItem>()
+    private var listItems = mutableListOf<EditListItem>()
         set(value) {
             field = value
             _editItems.value = value
@@ -59,8 +59,8 @@ class EditViewModel @Inject constructor(
     val noteStatus: LiveData<NoteStatus?>
         get() = _noteStatus
 
-    private val _editItems = MutableLiveData<List<EditListItem>>()
-    val editItems: LiveData<List<EditListItem>>
+    private val _editItems = MutableLiveData<MutableList<EditListItem>>()
+    val editItems: LiveData<MutableList<EditListItem>>
         get() = _editItems
 
     private val _focusEvent = MutableLiveData<Event<FocusChange>>()
@@ -90,7 +90,7 @@ class EditViewModel @Inject constructor(
             _noteType.value = note.type
             _noteStatus.value = note.status
 
-            listItems = buildListItems()
+            createListItems()
         }
     }
 
@@ -121,7 +121,7 @@ class EditViewModel @Inject constructor(
         this.note = note.convertToType(newType, json)
 
         // Update list items
-        listItems = buildListItems()
+        createListItems()
     }
 
     fun moveNote() {
@@ -186,38 +186,40 @@ class EditViewModel @Inject constructor(
     private fun generateNoteUuid() = UUID.randomUUID().toString().replace("-", "")
 
 
-    private fun buildListItems(): List<EditListItem> {
-        val note = note ?: return emptyList()
+    private fun createListItems() {
+        val note = note ?: return
 
-        return buildList {
-            // Title item
-            val title = titleItem ?: EditTitleItem("")
-            title.title = note.title
-            titleItem = title
-            this += title
+        val list = mutableListOf<EditListItem>()
 
-            when (note.type) {
-                NoteType.TEXT -> {
-                    // Content item
-                    val content = contentItem ?: EditContentItem("")
-                    content.content = note.content
-                    contentItem = content
-                    this += content
+        // Title item
+        val title = titleItem ?: EditTitleItem("")
+        title.title = note.title
+        titleItem = title
+        list += title
+
+        when (note.type) {
+            NoteType.TEXT -> {
+                // Content item
+                val content = contentItem ?: EditContentItem("")
+                content.content = note.content
+                contentItem = content
+                list += content
+            }
+            NoteType.LIST -> {
+                // List items
+                val items = note.getListItems(json)
+                for (item in items) {
+                    list += createListItem(item.content, item.checked)
                 }
-                NoteType.LIST -> {
-                    // List items
-                    val items = note.getListItems(json)
-                    for (item in items) {
-                        this += createListItem(item.content, item.checked)
-                    }
 
-                    // Item add item
-                    val itemAdd = itemAddItem ?: EditItemAddItem(::onListItemAdd)
-                    itemAddItem = itemAdd
-                    this += itemAdd
-                }
+                // Item add item
+                val itemAdd = itemAddItem ?: EditItemAddItem(::onListItemAdd)
+                itemAddItem = itemAdd
+                list += itemAdd
             }
         }
+
+        listItems = list
     }
 
     private fun createListItem(content: CharSequence, checked: Boolean) =
@@ -227,15 +229,16 @@ class EditViewModel @Inject constructor(
     private fun onListItemChanged(item: EditItemItem, pos: Int, isPaste: Boolean) {
         if ('\n' in item.content) {
             // User inserted line breaks in list items, split it into multiple items.
-            val newList = listItems.toMutableList()
             val lines = item.content.split('\n')
-            (item.content as Editable).replace(0, item.content.length, lines.first())
-            for (i in 1 until lines.size) {
-                newList.add(pos + i, createListItem(lines[i], false))
+            changeListItems { list ->
+                (item.content as Editable).replace(0, item.content.length, lines.first())
+                for (i in 1 until lines.size) {
+                    list.add(pos + i, createListItem(lines[i], false))
+                }
             }
-            listItems = newList
 
-            // Update selection
+            // If text was pasted, set focus at the end of last items pasted.
+            // If a single linebreak was inserted, focus on the new item.
             _focusEvent.value = Event(FocusChange(pos + lines.size - 1,
                     if (isPaste) lines.last().length else 0, false))
         }
@@ -250,20 +253,30 @@ class EditViewModel @Inject constructor(
             (prevItem.content as Editable).append(item.content)
             onListItemDeleted(pos)
 
-            // Update selection
+            // Set focus on merge boundary.
             _focusEvent.value = Event(FocusChange(pos - 1, prevLength, true))
         }
     }
 
     private fun onListItemDeleted(pos: Int) {
-        val newList = listItems.toMutableList()
-        newList.removeAt(pos)
-        listItems = newList
+        val prevItem = listItems[pos - 1]
+        if (prevItem is EditItemItem) {
+            // Set focus at the end of previous item.
+            _focusEvent.value = Event(FocusChange(pos - 1,
+                    prevItem.content.length, true))
+        }
+
+        // Delete item in list.
+        changeListItems { it.removeAt(pos) }
     }
 
-    private fun onListItemAdd() {
+    private fun onListItemAdd() = changeListItems { list ->
+        list.add(listItems.size - 1, createListItem("", false))
+    }
+
+    private inline fun changeListItems(change: (MutableList<EditListItem>) -> Unit) {
         val newList = listItems.toMutableList()
-        newList.add(listItems.size - 1, createListItem("", false))
+        change(newList)
         listItems = newList
     }
 

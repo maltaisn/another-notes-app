@@ -102,6 +102,7 @@ class MainFragment : Fragment(), Toolbar.OnMenuItemClickListener {
 
         // Recycler view
         val rcv: RecyclerView = view.findViewById(R.id.rcv_notes)
+        rcv.setHasFixedSize(true)
         val adapter = NoteAdapter(context, json)
         val layoutManager = StaggeredGridLayoutManager(1, StaggeredGridLayoutManager.VERTICAL)
         rcv.adapter = adapter
