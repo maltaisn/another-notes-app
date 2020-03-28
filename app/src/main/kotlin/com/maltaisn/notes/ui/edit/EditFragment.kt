@@ -64,7 +64,7 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener {
         val context = requireContext()
 
         requireActivity().onBackPressedDispatcher.addCallback(this) {
-            viewModel.exit()
+            viewModel.save(true)
         }
 
         viewModel.start(args.noteId)
@@ -76,7 +76,7 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener {
         toolbar.setNavigationOnClickListener {
             (context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager)
                     .hideSoftInputFromWindow(view.windowToken, 0)
-            viewModel.exit()
+            viewModel.save(true)
         }
         toolbar.setTitle(if (args.noteId == Note.NO_ID) {
             R.string.edit_add_title
@@ -150,6 +150,11 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener {
         })
 
         return view
+    }
+
+    override fun onPause() {
+        super.onPause()
+        viewModel.save(false)
     }
 
     override fun onMenuItemClick(item: MenuItem): Boolean {

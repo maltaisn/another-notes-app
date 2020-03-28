@@ -94,7 +94,7 @@ class EditViewModel @Inject constructor(
         }
     }
 
-    fun exit() {
+    fun save(exit: Boolean) {
         val note = buildNote() ?: return
         viewModelScope.launch {
             if (deleteOnExit || note.isBlank) {
@@ -104,7 +104,9 @@ class EditViewModel @Inject constructor(
                 // Update note
                 notesRepository.updateNote(note)
             }
-            _exitEvent.value = Event(Unit)
+            if (exit) {
+                _exitEvent.value = Event(Unit)
+            }
         }
     }
 
@@ -132,7 +134,7 @@ class EditViewModel @Inject constructor(
             // Unarchive or restore
             NoteStatus.ACTIVE
         })
-        exit()
+        save(true)
         // TODO show snackbar with undo
     }
 
@@ -173,7 +175,7 @@ class EditViewModel @Inject constructor(
             changeNoteStatus(NoteStatus.TRASHED)
             // TODO show snackbar with undo
         }
-        exit()
+        save(true)
     }
 
     private fun changeNoteStatus(newStatus: NoteStatus) {
