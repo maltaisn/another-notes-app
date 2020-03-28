@@ -36,7 +36,7 @@ import javax.inject.Inject
 
 class EditViewModel @Inject constructor(
         private val notesRepository: NotesRepository,
-        private val json: Json) : ViewModel() {
+        private val json: Json) : ViewModel(), EditAdapter.Callback {
 
     private var note: Note? = null
     private var listItems = mutableListOf<EditListItem>()
@@ -209,11 +209,11 @@ class EditViewModel @Inject constructor(
                 // List items
                 val items = note.getListItems(json)
                 for (item in items) {
-                    list += createListItem(item.content, item.checked)
+                    list += EditItemItem(item.content, item.checked)
                 }
 
                 // Item add item
-                val itemAdd = itemAddItem ?: EditItemAddItem(::onListItemAdd)
+                val itemAdd = itemAddItem ?: EditItemAddItem()
                 itemAddItem = itemAdd
                 list += itemAdd
             }
@@ -222,18 +222,14 @@ class EditViewModel @Inject constructor(
         listItems = list
     }
 
-    private fun createListItem(content: CharSequence, checked: Boolean) =
-            EditItemItem(content, checked, ::onListItemChanged,
-                    ::onListItemBackspace, ::onListItemDeleted)
-
-    private fun onListItemChanged(item: EditItemItem, pos: Int, isPaste: Boolean) {
+    override fun onNoteItemChanged(item: EditItemItem, pos: Int, isPaste: Boolean) {
         if ('\n' in item.content) {
             // User inserted line breaks in list items, split it into multiple items.
             val lines = item.content.split('\n')
             changeListItems { list ->
                 (item.content as Editable).replace(0, item.content.length, lines.first())
                 for (i in 1 until lines.size) {
-                    list.add(pos + i, createListItem(lines[i], false))
+                    list.add(pos + i, EditItemItem(lines[i], false))
                 }
             }
 
@@ -244,21 +240,31 @@ class EditViewModel @Inject constructor(
         }
     }
 
-    private fun onListItemBackspace(item: EditItemItem, pos: Int) {
+    override fun onNoteItemBackspacePressed(item: EditItemItem, pos: Int) {
         val prevItem = listItems[pos - 1]
         if (prevItem is EditItemItem) {
             // Previous item is also a note list item. Merge the two items content,
             // and delete the current item.
             val prevLength = prevItem.content.length
             (prevItem.content as Editable).append(item.content)
-            onListItemDeleted(pos)
+            deleteNoteItem(pos)
 
             // Set focus on merge boundary.
             _focusEvent.value = Event(FocusChange(pos - 1, prevLength, true))
         }
     }
 
-    private fun onListItemDeleted(pos: Int) {
+    override fun onNoteItemDeleteClicked(pos: Int) {
+        deleteNoteItem(pos)
+    }
+
+    override fun onNoteItemAddClicked() {
+        changeListItems { list ->
+            list.add(listItems.size - 1, EditItemItem("", false))
+        }
+    }
+
+    private fun deleteNoteItem(pos: Int) {
         val prevItem = listItems[pos - 1]
         if (prevItem is EditItemItem) {
             // Set focus at the end of previous item.
@@ -268,10 +274,6 @@ class EditViewModel @Inject constructor(
 
         // Delete item in list.
         changeListItems { it.removeAt(pos) }
-    }
-
-    private fun onListItemAdd() = changeListItems { list ->
-        list.add(listItems.size - 1, createListItem("", false))
     }
 
     private inline fun changeListItems(change: (MutableList<EditListItem>) -> Unit) {

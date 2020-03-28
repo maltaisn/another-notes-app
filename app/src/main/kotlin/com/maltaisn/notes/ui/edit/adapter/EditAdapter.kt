@@ -30,7 +30,7 @@ import com.maltaisn.notes.ui.edit.EditViewModel
 import java.util.*
 
 
-class EditAdapter(val context: Context) :
+class EditAdapter(val context: Context, val callback: Callback) :
         ListAdapter<EditListItem, RecyclerView.ViewHolder>(EditDiffCallback()) {
 
     private var recyclerView: RecyclerView? = null
@@ -99,10 +99,10 @@ class EditAdapter(val context: Context) :
             VIEW_TYPE_CONTENT -> EditContentViewHolder(inflater.inflate(
                     R.layout.item_edit_content, parent, false))
             VIEW_TYPE_ITEM_ADD -> EditItemAddViewHolder(inflater.inflate(
-                    R.layout.item_edit_item_add, parent, false))
+                    R.layout.item_edit_item_add, parent, false), callback)
             VIEW_TYPE_ITEM -> {
                 val viewHolder = EditItemViewHolder(inflater.inflate(
-                        R.layout.item_edit_item, parent, false))
+                        R.layout.item_edit_item, parent, false), callback)
                 viewHolder.dragImv.setOnTouchListener { view, event ->
                     if (event.action == MotionEvent.ACTION_DOWN && listItems.size > 3) {
                         // Drag handle was touched. Hide keyboard and start dragging.
@@ -124,7 +124,6 @@ class EditAdapter(val context: Context) :
         when (holder) {
             is EditTitleViewHolder -> holder.bind(item as EditTitleItem)
             is EditContentViewHolder -> holder.bind(item as EditContentItem)
-            is EditItemAddViewHolder -> holder.bind(item as EditItemAddItem)
             is EditItemViewHolder -> {
                 holder.bind(item as EditItemItem)
                 if (position == pendingFocusChange?.itemPos) {
@@ -154,6 +153,13 @@ class EditAdapter(val context: Context) :
             // Not supposed to happen, but if it does, just save it for later.
             pendingFocusChange = focus
         }
+    }
+
+    interface Callback {
+        fun onNoteItemChanged(item: EditItemItem, pos: Int, isPaste: Boolean)
+        fun onNoteItemBackspacePressed(item: EditItemItem, pos: Int)
+        fun onNoteItemDeleteClicked(pos: Int)
+        fun onNoteItemAddClicked()
     }
 
     companion object {

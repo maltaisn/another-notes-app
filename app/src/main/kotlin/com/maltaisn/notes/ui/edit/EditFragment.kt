@@ -94,7 +94,7 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener {
         // Recycler view
         val rcv: RecyclerView = view.findViewById(R.id.rcv_edit)
         rcv.setHasFixedSize(true)
-        val adapter = EditAdapter(context)
+        val adapter = EditAdapter(context, viewModel)
         val layoutManager = LinearLayoutManager(context)
         rcv.adapter = adapter
         rcv.layoutManager = layoutManager

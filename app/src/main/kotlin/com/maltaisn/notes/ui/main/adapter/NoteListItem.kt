@@ -24,8 +24,7 @@ sealed class NoteListItem(val id: Long) {
     abstract val type: Int
 }
 
-class NoteItem(id: Long, val note: Note,
-               val onClick: (NoteItem) -> Unit) : NoteListItem(id) {
+class NoteItem(id: Long, val note: Note) : NoteListItem(id) {
     override val type: Int
         get() = when (note.type) {
             NoteType.TEXT -> NoteAdapter.VIEW_TYPE_TEXT_NOTE
@@ -33,8 +32,7 @@ class NoteItem(id: Long, val note: Note,
         }
 }
 
-class MessageItem(id: Long, val message: Int, vararg val args: Any,
-                  val onDismiss: (MessageItem) -> Unit) : NoteListItem(id) {
+class MessageItem(id: Long, val message: Int, vararg val args: Any) : NoteListItem(id) {
     override val type: Int
         get() = NoteAdapter.VIEW_TYPE_MESSAGE
 }

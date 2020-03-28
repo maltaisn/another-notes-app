@@ -27,8 +27,7 @@ import kotlinx.serialization.json.Json
 import java.util.*
 
 
-class NoteAdapter(val context: Context,
-                  val json: Json) :
+class NoteAdapter(val context: Context, val json: Json, val callback: Callback) :
         ListAdapter<NoteListItem, RecyclerView.ViewHolder>(NoteListDiffCallback()) {
 
     /**
@@ -61,7 +60,7 @@ class NoteAdapter(val context: Context,
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val item = getItem(position)
         when (holder) {
-            is MessageViewHolder -> holder.bind(item as MessageItem)
+            is MessageViewHolder -> holder.bind(item as MessageItem, this)
             is NoteViewHolder -> {
                 if (holder is ListNoteViewHolder) {
                     unbindListNoteViewHolder(holder)
@@ -96,6 +95,11 @@ class NoteAdapter(val context: Context,
                 ListNoteItemViewHolder(inflater.inflate(
                         R.layout.item_note_list_item, null, false))
             }
+
+    interface Callback {
+        fun onNoteItemClicked(item: NoteItem)
+        fun onMessageItemDismissed(item: MessageItem)
+    }
 
     companion object {
         const val VIEW_TYPE_MESSAGE = 0

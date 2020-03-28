@@ -31,15 +31,12 @@ data class EditContentItem(var content: CharSequence) : EditListItem() {
         get() = EditAdapter.VIEW_TYPE_CONTENT
 }
 
-data class EditItemItem(var content: CharSequence, var checked: Boolean,
-                        val onChange: (item: EditItemItem, pos: Int, isPaste: Boolean) -> Unit,
-                        val onBackspace: (item: EditItemItem, pos: Int) -> Unit,
-                        val onDelete: (pos: Int) -> Unit) : EditListItem() {
+data class EditItemItem(var content: CharSequence, var checked: Boolean) : EditListItem() {
     override val type: Int
         get() = EditAdapter.VIEW_TYPE_ITEM
 }
 
-class EditItemAddItem(val onClick: () -> Unit) : EditListItem() {
+class EditItemAddItem : EditListItem() {
     override val type: Int
         get() = EditAdapter.VIEW_TYPE_ITEM_ADD
 }

@@ -28,10 +28,7 @@ import com.maltaisn.notes.model.NotesRepository
 import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.model.entity.NoteStatus
 import com.maltaisn.notes.ui.Event
-import com.maltaisn.notes.ui.main.adapter.MessageItem
-import com.maltaisn.notes.ui.main.adapter.NoteItem
-import com.maltaisn.notes.ui.main.adapter.NoteListItem
-import com.maltaisn.notes.ui.main.adapter.NoteListLayoutMode
+import com.maltaisn.notes.ui.main.adapter.*
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
@@ -40,7 +37,7 @@ import javax.inject.Inject
 
 class MainViewModel @Inject constructor(
         private val notesRepository: NotesRepository,
-        private val prefs: SharedPreferences) : ViewModel() {
+        private val prefs: SharedPreferences) : ViewModel(), NoteAdapter.Callback {
 
 
     private var noteListJob: Job? = null
@@ -50,11 +47,11 @@ class MainViewModel @Inject constructor(
         get() = _noteStatus
 
     private val _noteItems = MutableLiveData<List<NoteListItem>>()
-    val noteItems : LiveData<List<NoteListItem>>
+    val noteItems: LiveData<List<NoteListItem>>
         get() = _noteItems
 
     private val _listLayoutMode = MutableLiveData<NoteListLayoutMode>()
-    val listLayoutMode : LiveData<NoteListLayoutMode>
+    val listLayoutMode: LiveData<NoteListLayoutMode>
         get() = _listLayoutMode
 
     private val _itemClickEvent = MutableLiveData<Event<NoteItem>>()
@@ -109,28 +106,30 @@ class MainViewModel @Inject constructor(
         }
     }
 
+    override fun onNoteItemClicked(item: NoteItem) {
+        _itemClickEvent.value = Event(item)
+    }
+
+    override fun onMessageItemDismissed(item: MessageItem) {
+        // Update last remind time when user dismisses message.
+        prefs.edit().putLong(PreferenceHelper.LAST_TRASH_REMIND_TIME,
+                System.currentTimeMillis()).apply()
+        setNoteStatus(_noteStatus.value!!)  // Kinda inefficient
+    }
+
     private fun buildItemListFromNotes(status: NoteStatus, notes: List<Note>): List<NoteListItem> = buildList {
         if (status == NoteStatus.TRASHED && notes.isNotEmpty()) {
             // If needed, add reminder that notes get auto-deleted when in trash.
             val lastReminder = prefs.getLong(PreferenceHelper.LAST_TRASH_REMIND_TIME, 0)
             if (System.currentTimeMillis() - lastReminder > TRASH_REMINDER_DELAY * 86400000L) {
-                this += MessageItem(TRASH_REMINDER_ITEM_ID,
-                        R.string.message_trash_reminder,
-                        PreferenceHelper.TRASH_AUTO_DELETE_DELAY) {
-                    // Update last remind time when user dismisses message.
-                    prefs.edit().putLong(PreferenceHelper.LAST_TRASH_REMIND_TIME,
-                            System.currentTimeMillis()).apply()
-                    setNoteStatus(status)  // Kinda inefficient
-                }
+                this += MessageItem(TRASH_REMINDER_ITEM_ID, R.string.message_trash_reminder,
+                        PreferenceHelper.TRASH_AUTO_DELETE_DELAY)
             }
         }
 
         // Add note items
-        val onNoteClick = { item: NoteItem ->
-            _itemClickEvent.value = Event(item)
-        }
         for (note in notes) {
-            this += NoteItem(note.id, note, onNoteClick)
+            this += NoteItem(note.id, note)
         }
     }
 

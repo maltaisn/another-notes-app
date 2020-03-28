@@ -53,7 +53,8 @@ class EditContentViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) 
     }
 }
 
-class EditItemViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+class EditItemViewHolder(itemView: View, callback: EditAdapter.Callback) :
+        RecyclerView.ViewHolder(itemView) {
 
     val dragImv: ImageView = itemView.findViewById(R.id.imv_item_drag)
     private val itemCheck: CheckBox = itemView.findViewById(R.id.chk_item)
@@ -72,7 +73,7 @@ class EditItemViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
             // item can be split into multiple items. When user enters a single line break,
             // selection is set at the beginning of new item. On paste, i.e. when more than one
             // character is entered, selection is set at the end of last new item.
-            item.onChange(item, adapterPosition, count > 1)
+            callback.onNoteItemChanged(item, adapterPosition, count > 1)
         }
         itemEdt.setOnFocusChangeListener { _, hasFocus ->
             // Only show delete icon for currently focused item.
@@ -87,7 +88,7 @@ class EditItemViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
                 // will be merged with previous.
                 val pos = adapterPosition
                 if (pos != RecyclerView.NO_POSITION) {
-                    item.onBackspace(item, pos)
+                    callback.onNoteItemBackspacePressed(item, pos)
                 }
             }
             false
@@ -96,7 +97,7 @@ class EditItemViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         deleteImv.setOnClickListener {
             val pos = adapterPosition
             if (pos != RecyclerView.NO_POSITION) {
-                item.onDelete(pos)
+                callback.onNoteItemDeleteClicked(pos)
             }
         }
     }
@@ -121,8 +122,12 @@ class EditItemViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     }
 }
 
-class EditItemAddViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-    fun bind(item: EditItemAddItem) {
-        itemView.setOnClickListener { item.onClick() }
+class EditItemAddViewHolder(itemView: View, callback: EditAdapter.Callback) :
+        RecyclerView.ViewHolder(itemView) {
+
+    init {
+        itemView.setOnClickListener {
+            callback.onNoteItemAddClicked()
+        }
     }
 }

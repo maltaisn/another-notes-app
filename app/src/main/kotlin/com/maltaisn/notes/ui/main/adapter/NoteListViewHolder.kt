@@ -29,7 +29,8 @@ import com.maltaisn.notes.model.entity.NoteType
 import kotlin.math.min
 
 
-abstract class NoteViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+abstract class NoteViewHolder(itemView: View) :
+        RecyclerView.ViewHolder(itemView) {
 
     private val titleTxv: TextView = itemView.findViewById(R.id.txv_title)
 
@@ -39,7 +40,7 @@ abstract class NoteViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView
         titleTxv.isVisible = title.isNotBlank()
 
         itemView.setOnClickListener {
-            item.onClick(item)
+            adapter.callback.onNoteItemClicked(item)
         }
     }
 
@@ -111,10 +112,10 @@ class MessageViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     private val messageTxv: TextView = itemView.findViewById(R.id.txv_message)
     private val closeBtn: ImageView = itemView.findViewById(R.id.imv_message_close)
 
-    fun bind(item: MessageItem) {
+    fun bind(item: MessageItem, adapter: NoteAdapter) {
         messageTxv.text = messageTxv.context.getString(item.message, *item.args)
         closeBtn.setOnClickListener {
-            item.onDismiss(item)
+            adapter.callback.onMessageItemDismissed(item)
         }
 
         (itemView.layoutParams as StaggeredGridLayoutManager.LayoutParams).isFullSpan = true
