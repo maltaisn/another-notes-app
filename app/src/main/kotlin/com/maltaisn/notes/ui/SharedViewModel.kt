@@ -20,11 +20,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.maltaisn.notes.R
 import com.maltaisn.notes.model.NotesRepository
-import com.maltaisn.notes.model.entity.NoteStatus
+import com.maltaisn.notes.ui.main.MessageEvent
 import kotlinx.coroutines.launch
-import java.util.*
 import javax.inject.Inject
 
 
@@ -33,30 +31,22 @@ class SharedViewModel @Inject constructor(
 
     private var lastStatusChange: StatusChange? = null
 
-    private val _statusChangeMessageEvent = MutableLiveData<Event<StatusChangeMessage>>()
-    val statusChangeMessageEvent: LiveData<Event<StatusChangeMessage>>
-        get() = _statusChangeMessageEvent
+    private val _messageEvent = MutableLiveData<Event<MessageEvent>>()
+    val messageEvent: LiveData<Event<MessageEvent>>
+        get() = _messageEvent
 
 
-    fun doStatusChange(statusChange: StatusChange) {
-        lastStatusChange = statusChange
+    fun onMessageEvent(message: MessageEvent) {
+        if (message is MessageEvent.StatusChangeEvent) {
+            lastStatusChange = message.statusChange
+        }
 
-        // Show status change message
-        _statusChangeMessageEvent.value = Event(StatusChangeMessage(when (statusChange.newStatus) {
-            NoteStatus.ACTIVE -> if (statusChange.oldStatus == NoteStatus.TRASHED) {
-                R.plurals.message_move_restore
-            } else {
-                R.plurals.message_move_unarchive
-            }
-            NoteStatus.ARCHIVED -> R.plurals.message_move_archive
-            NoteStatus.TRASHED -> R.plurals.message_move_delete
-        }, statusChange.notes.size))
+        _messageEvent.value = Event(message)
     }
 
     fun undoStatusChange() {
         val change = lastStatusChange ?: return
         viewModelScope.launch {
-            val date = Date()
             for ((i, note) in change.notes.withIndex()) {
                 notesRepository.updateNote(note.copy(
                         status = change.oldStatus,
@@ -65,7 +55,5 @@ class SharedViewModel @Inject constructor(
         }
         lastStatusChange = null
     }
-
-    data class StatusChangeMessage(val messageId: Int, val count: Int)
 
 }

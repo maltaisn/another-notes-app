@@ -18,13 +18,16 @@ package com.maltaisn.notes.ui.main.adapter
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.Canvas
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.maltaisn.notes.R
 import kotlinx.serialization.json.Json
 import java.util.*
+import kotlin.math.absoluteValue
 
 
 class NoteAdapter(val context: Context, val json: Json, val callback: Callback) :
@@ -43,6 +46,42 @@ class NoteAdapter(val context: Context, val json: Json, val callback: Callback) 
             notifyItemRangeChanged(0, itemCount)
         }
 
+    private val itemTouchHelper = ItemTouchHelper(object : ItemTouchHelper.Callback() {
+        override fun isLongPressDragEnabled() = false
+        override fun isItemViewSwipeEnabled() = callback.isNoteSwipeEnabled
+
+        override fun getMovementFlags(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder) =
+                makeMovementFlags(0, if (viewHolder is NoteViewHolder) {
+                    ItemTouchHelper.START or ItemTouchHelper.END
+                } else {
+                    0
+                })
+
+        override fun onChildDraw(c: Canvas, recyclerView: RecyclerView,
+                                 viewHolder: RecyclerView.ViewHolder,
+                                 dX: Float, dY: Float, actionState: Int, isCurrentlyActive: Boolean) {
+            val view = viewHolder.itemView
+            view.alpha = ((view.width - dX.absoluteValue * 0.7f) / view.width).coerceIn(0f, 1f)
+            view.translationX = dX
+        }
+
+        override fun clearView(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder) {
+            val view = viewHolder.itemView
+            view.alpha = 1f
+            view.translationX = 0f
+        }
+
+        override fun onMove(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder,
+                            target: RecyclerView.ViewHolder) = false
+
+        override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+            callback.onNoteSwiped(viewHolder.adapterPosition)
+        }
+    })
+
+    override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
+        itemTouchHelper.attachToRecyclerView(recyclerView)
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
@@ -99,6 +138,9 @@ class NoteAdapter(val context: Context, val json: Json, val callback: Callback) 
     interface Callback {
         fun onNoteItemClicked(item: NoteItem)
         fun onMessageItemDismissed(item: MessageItem)
+
+        val isNoteSwipeEnabled: Boolean
+        fun onNoteSwiped(pos: Int)
     }
 
     companion object {

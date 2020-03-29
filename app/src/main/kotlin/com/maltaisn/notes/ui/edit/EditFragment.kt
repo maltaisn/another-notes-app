@@ -16,13 +16,11 @@
 
 package com.maltaisn.notes.ui.edit
 
-import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.view.inputmethod.InputMethodManager
 import androidx.activity.addCallback
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
@@ -36,6 +34,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.maltaisn.notes.App
 import com.maltaisn.notes.R
+import com.maltaisn.notes.hideKeyboard
 import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.model.entity.NoteStatus
 import com.maltaisn.notes.model.entity.NoteType
@@ -69,7 +68,8 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener {
         val context = requireContext()
 
         requireActivity().onBackPressedDispatcher.addCallback(this) {
-            viewModel.save(true)
+            viewModel.save()
+            viewModel.exit()
         }
 
         viewModel.start(args.noteId)
@@ -79,9 +79,9 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener {
         toolbar.setOnMenuItemClickListener(this)
         toolbar.setNavigationIcon(R.drawable.ic_arrow_left)
         toolbar.setNavigationOnClickListener {
-            (context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager)
-                    .hideSoftInputFromWindow(view.windowToken, 0)
-            viewModel.save(true)
+            view.hideKeyboard()
+            viewModel.save()
+            viewModel.exit()
         }
         toolbar.setTitle(if (args.noteId == Note.NO_ID) {
             R.string.edit_add_title
@@ -154,10 +154,10 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener {
             adapter.setItemFocus(focus)
         })
 
-        viewModel.statusChangeEvent.observe(viewLifecycleOwner, EventObserver { statusChange ->
+        viewModel.messageEvent.observe(viewLifecycleOwner, EventObserver { message ->
             // A shared view model is used since snackbar can't be shown from this fragment,
             // which will be popped from backstack just after the status change.
-            sharedViewModel.doStatusChange(statusChange)
+            sharedViewModel.onMessageEvent(message)
         })
 
         viewModel.exitEvent.observe(viewLifecycleOwner, EventObserver {
@@ -167,7 +167,7 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener {
 
     override fun onPause() {
         super.onPause()
-        viewModel.save(false)
+        viewModel.save()
     }
 
     override fun onMenuItemClick(item: MenuItem): Boolean {

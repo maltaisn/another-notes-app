@@ -28,10 +28,12 @@ import com.maltaisn.notes.model.NotesRepository
 import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.model.entity.NoteStatus
 import com.maltaisn.notes.ui.Event
+import com.maltaisn.notes.ui.StatusChange
 import com.maltaisn.notes.ui.main.adapter.*
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import java.util.*
 import javax.inject.Inject
 
 
@@ -58,6 +60,9 @@ class MainViewModel @Inject constructor(
     val itemClickEvent: LiveData<Event<NoteItem>>
         get() = _itemClickEvent
 
+    private val _messageEvent = MutableLiveData<Event<MessageEvent>>()
+    val messageEvent: LiveData<Event<MessageEvent>>
+        get() = _messageEvent
 
     init {
         setNoteStatus(NoteStatus.ACTIVE)
@@ -115,6 +120,24 @@ class MainViewModel @Inject constructor(
         prefs.edit().putLong(PreferenceHelper.LAST_TRASH_REMIND_TIME,
                 System.currentTimeMillis()).apply()
         setNoteStatus(_noteStatus.value!!)  // Kinda inefficient
+    }
+
+    override val isNoteSwipeEnabled: Boolean
+        get() = noteStatus.value == NoteStatus.ACTIVE
+
+    override fun onNoteSwiped(pos: Int) {
+        // Archive note
+        val note = (noteItems.value!![pos] as NoteItem).note
+        val newNote = note.copy(status = NoteStatus.ARCHIVED, lastModifiedDate = Date())
+        viewModelScope.launch {
+            notesRepository.updateNote(newNote)
+        }
+
+        // Show message
+        val statusChange = StatusChange(listOf(newNote),
+                listOf(note.lastModifiedDate), NoteStatus.ACTIVE, NoteStatus.ARCHIVED)
+        _messageEvent.value = Event(MessageEvent.StatusChangeEvent(
+                R.plurals.message_move_archive, statusChange))
     }
 
     private fun buildItemListFromNotes(status: NoteStatus, notes: List<Note>): List<NoteListItem> = buildList {

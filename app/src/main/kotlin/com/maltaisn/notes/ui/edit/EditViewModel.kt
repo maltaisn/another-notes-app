@@ -21,6 +21,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.maltaisn.notes.R
 import com.maltaisn.notes.model.NotesRepository
 import com.maltaisn.notes.model.entity.ListNoteMetadata
 import com.maltaisn.notes.model.entity.Note
@@ -29,6 +30,7 @@ import com.maltaisn.notes.model.entity.NoteType
 import com.maltaisn.notes.ui.Event
 import com.maltaisn.notes.ui.StatusChange
 import com.maltaisn.notes.ui.edit.adapter.*
+import com.maltaisn.notes.ui.main.MessageEvent
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import java.util.*
@@ -39,7 +41,7 @@ class EditViewModel @Inject constructor(
         private val notesRepository: NotesRepository,
         private val json: Json) : ViewModel(), EditAdapter.Callback {
 
-    private var note: Note? = null
+    private var note: Note = BLANK_NOTE
     private var listItems = mutableListOf<EditListItem>()
         set(value) {
             field = value
@@ -49,8 +51,6 @@ class EditViewModel @Inject constructor(
     private var titleItem: EditTitleItem? = null
     private var contentItem: EditContentItem? = null
     private var itemAddItem: EditItemAddItem? = null
-
-    private var deleteOnExit = false
 
     private val _noteType = MutableLiveData<NoteType?>()
     val noteType: LiveData<NoteType?>
@@ -68,9 +68,9 @@ class EditViewModel @Inject constructor(
     val focusEvent: LiveData<Event<FocusChange>>
         get() = _focusEvent
 
-    private val _statusChangeEvent = MutableLiveData<Event<StatusChange>>()
-    val statusChangeEvent: LiveData<Event<StatusChange>>
-        get() = _statusChangeEvent
+    private val _messageEvent = MutableLiveData<Event<MessageEvent>>()
+    val messageEvent: LiveData<Event<MessageEvent>>
+        get() = _messageEvent
 
     private val _exitEvent = MutableLiveData<Event<Unit>>()
     val exitEvent: LiveData<Event<Unit>>
@@ -78,7 +78,7 @@ class EditViewModel @Inject constructor(
 
 
     fun start(noteId: Long) {
-        this.note = null
+        this.note = BLANK_NOTE
         viewModelScope.launch {
             // Try to get note by ID.
             var note = notesRepository.getById(noteId)
@@ -99,52 +99,71 @@ class EditViewModel @Inject constructor(
         }
     }
 
-    fun save(exit: Boolean) {
-        val note = buildNote() ?: return
-        viewModelScope.launch {
-            if (deleteOnExit || note.isBlank) {
-                // Discard blank note.
-                notesRepository.deleteNote(note)
-            } else {
-                // Update note
-                notesRepository.updateNote(note)
+    fun save() {
+        // Create note
+        val title = titleItem!!.title.toString()
+        val content: String
+        val metadata: String?
+        when (note.type) {
+            NoteType.TEXT -> {
+                content = contentItem!!.content.toString()
+                metadata = null
             }
-            if (exit) {
+            NoteType.LIST -> {
+                @Suppress("UNCHECKED_CAST")
+                val items = listItems.subList(1, listItems.size - 1) as List<EditItemItem>
+                content = items.joinToString("\n") { it.content }
+                metadata = json.stringify(ListNoteMetadata.serializer(),
+                        ListNoteMetadata(items.map { it.checked }))
+            }
+        }
+        note = Note(note.id, note.uuid, note.type, title, content, metadata,
+                note.addedDate, note.lastModifiedDate, note.status)
+
+        // Update note
+        viewModelScope.launch {
+            notesRepository.updateNote(note)
+        }
+    }
+
+    fun exit() {
+        if (note.isBlank) {
+            // Delete blank note
+            viewModelScope.launch {
+                notesRepository.deleteNote(note)
+                _messageEvent.value = Event(MessageEvent.BlankNoteDiscardEvent)
                 _exitEvent.value = Event(Unit)
             }
+        } else {
+            _exitEvent.value = Event(Unit)
         }
     }
 
     fun toggleNoteType() {
-        // Build note first to reflect any changes.
-        val note = buildNote() ?: return
+        save()
 
         // Convert note type
         val newType = when (note.type) {
             NoteType.TEXT -> NoteType.LIST
             NoteType.LIST -> NoteType.TEXT
         }
+        note = note.convertToType(newType, json)
         _noteType.value = newType
-        this.note = note.convertToType(newType, json)
 
         // Update list items
         createListItems()
     }
 
     fun moveNote() {
-        val note = note ?: return
-        changeNoteStatus(if (note.status == NoteStatus.ACTIVE) {
+        changeNoteStatusAndExit(if (note.status == NoteStatus.ACTIVE) {
             NoteStatus.ARCHIVED
         } else {
             NoteStatus.ACTIVE
         })
-        save(true)
     }
 
     fun copyNote() {
-        val note = note ?: return
-
-        save(false)
+        save()
 
         viewModelScope.launch {
             val date = Date()
@@ -170,30 +189,49 @@ class EditViewModel @Inject constructor(
     fun deleteNote() {
         if (noteStatus.value == NoteStatus.TRASHED) {
             // Delete forever
-            deleteOnExit = true
             // TODO ask for confirmation
+            viewModelScope.launch {
+                notesRepository.deleteNote(note)
+            }
+            exit()
 
         } else {
             // Send to trash
-            changeNoteStatus(NoteStatus.TRASHED)
+            changeNoteStatusAndExit(NoteStatus.TRASHED)
         }
-        save(true)
     }
 
-    private fun changeNoteStatus(newStatus: NoteStatus) {
-        val note = note ?: return
-        val newNote = note.copy(status = newStatus, lastModifiedDate = Date())
-        this.note = newNote
-        _statusChangeEvent.value = Event(StatusChange(listOf(newNote),
-                listOf(note.lastModifiedDate), note.status, newStatus))
+    private fun changeNoteStatusAndExit(newStatus: NoteStatus) {
+        save()
+
+        if (!note.isBlank) {
+            // If note is blank, it will be discarded on exit anyway, so don't change it.
+            val oldNote = note
+            val oldStatus = note.status
+            note = note.copy(status = newStatus, lastModifiedDate = Date())
+
+            // Show status change message.
+            val messageId = when (newStatus) {
+                NoteStatus.ACTIVE -> if (oldStatus == NoteStatus.TRASHED) {
+                    R.plurals.message_move_restore
+                } else {
+                    R.plurals.message_move_unarchive
+                }
+                NoteStatus.ARCHIVED -> R.plurals.message_move_archive
+                NoteStatus.TRASHED -> R.plurals.message_move_delete
+            }
+            val statusChange = StatusChange(listOf(note),
+                    listOf(oldNote.lastModifiedDate), oldStatus, newStatus)
+            _messageEvent.value = Event(MessageEvent.StatusChangeEvent(messageId, statusChange))
+        }
+
+        exit()
     }
 
     private fun generateNoteUuid() = UUID.randomUUID().toString().replace("-", "")
 
 
     private fun createListItems() {
-        val note = note ?: return
-
         val list = mutableListOf<EditListItem>()
 
         // Title item
@@ -269,6 +307,13 @@ class EditViewModel @Inject constructor(
         }
     }
 
+    override val isNoteDragEnabled: Boolean
+        get() = listItems.size > 3
+
+    override fun onNoteItemSwapped(from: Int, to: Int) {
+        Collections.swap(listItems, from, to)
+    }
+
     private fun deleteNoteItem(pos: Int) {
         val prevItem = listItems[pos - 1]
         if (prevItem is EditItemItem) {
@@ -287,30 +332,11 @@ class EditViewModel @Inject constructor(
         listItems = newList
     }
 
-    @Suppress("UNCHECKED_CAST")
-    private fun buildNote(): Note? {
-        val note = note ?: return null
-
-        val title = titleItem!!.title.toString()
-        val content: String
-        val metadata: String?
-        when (note.type) {
-            NoteType.TEXT -> {
-                content = contentItem!!.content.toString()
-                metadata = null
-            }
-            NoteType.LIST -> {
-                val items = listItems.subList(1, listItems.size - 1) as List<EditItemItem>
-                content = items.joinToString("\n") { it.content }
-                metadata = json.stringify(ListNoteMetadata.serializer(),
-                        ListNoteMetadata(items.map { it.checked }))
-            }
-        }
-
-        return Note(note.id, note.uuid, note.type, title, content, metadata,
-                note.addedDate, note.lastModifiedDate, note.status)
-    }
-
     data class FocusChange(val itemPos: Int, val pos: Int, val itemExists: Boolean)
+
+    companion object {
+        private val BLANK_NOTE = Note(Note.NO_ID, "", NoteType.TEXT,
+                "", "", null, Date(0), Date(0), NoteStatus.ACTIVE)
+    }
 
 }

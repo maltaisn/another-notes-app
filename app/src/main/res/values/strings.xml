@@ -64,6 +64,8 @@
         <item quantity="other">Notes unarchived</item>
     </plurals>
 
+    <string name="message_blank_note_discarded">Blank note discarded</string>
+
     <plurals name="note_list_item_info">
         <item quantity="one">+ %d other list item</item>
         <item quantity="other">+ %d other list items</item>

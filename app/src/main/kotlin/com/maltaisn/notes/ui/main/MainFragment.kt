@@ -155,12 +155,26 @@ class MainFragment : Fragment(), Toolbar.OnMenuItemClickListener {
             navController.navigate(MainFragmentDirections.actionMainToEdit(item.note.id))
         })
 
-        sharedViewModel.statusChangeMessageEvent.observe(viewLifecycleOwner, EventObserver { message ->
-            Snackbar.make(view, context.resources.getQuantityString(
-                    message.messageId, message.count, message.count), Snackbar.LENGTH_SHORT)
-                    .setAction(R.string.action_undo) {
-                        sharedViewModel.undoStatusChange()
-                    }.show()
+        viewModel.messageEvent.observe(viewLifecycleOwner, EventObserver { message ->
+            sharedViewModel.onMessageEvent(message)
+        })
+
+        sharedViewModel.messageEvent.observe(viewLifecycleOwner, EventObserver { message ->
+            when (message) {
+                is MessageEvent.BlankNoteDiscardEvent -> {
+                    Snackbar.make(view, R.string.message_blank_note_discarded, Snackbar.LENGTH_SHORT)
+                            .show()
+                }
+                is MessageEvent.StatusChangeEvent -> {
+                    val count = message.statusChange.notes.size
+                    Snackbar.make(view, context.resources.getQuantityString(
+                            message.messageId, count, count), Snackbar.LENGTH_SHORT)
+                            .setAction(R.string.action_undo) {
+                                sharedViewModel.undoStatusChange()
+                            }.show()
+                }
+            }
+
         })
     }
 

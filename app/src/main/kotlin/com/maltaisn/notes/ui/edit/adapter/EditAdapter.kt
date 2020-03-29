@@ -22,15 +22,14 @@ import android.graphics.Canvas
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.ViewGroup
-import android.view.inputmethod.InputMethodManager
 import androidx.core.content.res.use
 import androidx.core.view.ViewCompat
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.maltaisn.notes.R
+import com.maltaisn.notes.hideKeyboard
 import com.maltaisn.notes.ui.edit.EditViewModel
-import java.util.*
 
 
 class EditAdapter(val context: Context, val callback: Callback) :
@@ -38,22 +37,22 @@ class EditAdapter(val context: Context, val callback: Callback) :
 
     private var recyclerView: RecyclerView? = null
 
-    private var listItems = mutableListOf<EditListItem>()
-
     private var pendingFocusChange: EditViewModel.FocusChange? = null
 
     private val itemTouchHelper = ItemTouchHelper(object : ItemTouchHelper.Callback() {
-        private val elevation = context.obtainStyledAttributes(
+
+        private val dragElevation = context.obtainStyledAttributes(
                 intArrayOf(R.attr.editDraggedItemElevation)).use {
             it.getDimensionPixelSize(0, 0).toFloat()
         }
+
+        override fun isLongPressDragEnabled() = false
+        override fun isItemViewSwipeEnabled() = false
 
         override fun getMovementFlags(recyclerView: RecyclerView,
                                       viewHolder: RecyclerView.ViewHolder) =
                 makeFlag(ItemTouchHelper.ACTION_STATE_DRAG,
                         ItemTouchHelper.UP or ItemTouchHelper.DOWN)
-
-        override fun isLongPressDragEnabled() = false
 
         override fun canDropOver(recyclerView: RecyclerView,
                                  current: RecyclerView.ViewHolder,
@@ -66,7 +65,7 @@ class EditAdapter(val context: Context, val callback: Callback) :
             view.translationX = dX
             view.translationY = dY
             if (isCurrentlyActive) {
-                ViewCompat.setElevation(view, elevation)
+                ViewCompat.setElevation(view, dragElevation)
             }
         }
 
@@ -86,19 +85,12 @@ class EditAdapter(val context: Context, val callback: Callback) :
             // submitList is not used here, since it results in a very unresponsive design.
             // Adapter and dataset are updated manually.
             notifyItemMoved(from, to)
-            Collections.swap(listItems, from, to)
+            callback.onNoteItemSwapped(from, to)
             return true
         }
 
         override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) = Unit
     })
-
-    override fun submitList(list: MutableList<EditListItem>?) {
-        super.submitList(list)
-
-        // Save mutable view of list which is otherwise inacessible.
-        listItems = list ?: mutableListOf()
-    }
 
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
         this.recyclerView = recyclerView
@@ -123,11 +115,10 @@ class EditAdapter(val context: Context, val callback: Callback) :
                 val viewHolder = EditItemViewHolder(inflater.inflate(
                         R.layout.item_edit_item, parent, false), callback)
                 viewHolder.dragImv.setOnTouchListener { view, event ->
-                    if (event.action == MotionEvent.ACTION_DOWN && listItems.size > 3) {
+                    if (event.action == MotionEvent.ACTION_DOWN && callback.isNoteDragEnabled) {
                         // Drag handle was touched. Hide keyboard and start dragging.
                         viewHolder.clearFocus()
-                        (context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager)
-                                .hideSoftInputFromWindow(view.windowToken, 0)
+                        view.hideKeyboard()
                         itemTouchHelper.startDrag(viewHolder)
                     }
                     false
@@ -179,6 +170,9 @@ class EditAdapter(val context: Context, val callback: Callback) :
         fun onNoteItemBackspacePressed(item: EditItemItem, pos: Int)
         fun onNoteItemDeleteClicked(pos: Int)
         fun onNoteItemAddClicked()
+
+        val isNoteDragEnabled: Boolean
+        fun onNoteItemSwapped(from: Int, to: Int)
     }
 
     companion object {
