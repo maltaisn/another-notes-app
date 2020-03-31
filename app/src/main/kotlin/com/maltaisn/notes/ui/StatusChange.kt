@@ -18,14 +18,11 @@ package com.maltaisn.notes.ui
 
 import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.model.entity.NoteStatus
-import java.util.*
 
 /**
  * A class representing a change of status for one or many notes.
  * Status change from [oldStatus] to [newStatus].
- * Old last modified dates are saved so they can be restored if change is undone.
  */
-data class StatusChange(val notes: List<Note>,
-                        val oldModifiedDates: List<Date>,
+data class StatusChange(val oldNotes: List<Note>,
                         val oldStatus: NoteStatus,
                         val newStatus: NoteStatus)

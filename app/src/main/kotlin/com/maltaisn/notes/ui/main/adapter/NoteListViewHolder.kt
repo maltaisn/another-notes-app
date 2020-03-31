@@ -23,6 +23,7 @@ import android.widget.TextView
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import com.google.android.material.card.MaterialCardView
 import com.maltaisn.notes.R
 import com.maltaisn.notes.model.entity.ListNoteItem
 import com.maltaisn.notes.model.entity.NoteType
@@ -32,6 +33,7 @@ import kotlin.math.min
 abstract class NoteViewHolder(itemView: View) :
         RecyclerView.ViewHolder(itemView) {
 
+    private val cardView = itemView as MaterialCardView
     private val titleTxv: TextView = itemView.findViewById(R.id.txv_title)
 
     open fun bind(item: NoteItem, adapter: NoteAdapter) {
@@ -39,8 +41,13 @@ abstract class NoteViewHolder(itemView: View) :
         titleTxv.text = title
         titleTxv.isVisible = title.isNotBlank()
 
-        itemView.setOnClickListener {
-            adapter.callback.onNoteItemClicked(item)
+        cardView.isChecked = item.checked
+        cardView.setOnClickListener {
+            adapter.callback.onNoteItemClicked(item, adapterPosition)
+        }
+        cardView.setOnLongClickListener {
+            adapter.callback.onNoteItemLongClicked(item, adapterPosition)
+            true
         }
     }
 
@@ -115,7 +122,8 @@ class MessageViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     fun bind(item: MessageItem, adapter: NoteAdapter) {
         messageTxv.text = messageTxv.context.getString(item.message, *item.args)
         closeBtn.setOnClickListener {
-            adapter.callback.onMessageItemDismissed(item)
+            adapter.callback.onMessageItemDismissed(item, adapterPosition)
+            adapter.notifyItemRemoved(adapterPosition)
         }
 
         (itemView.layoutParams as StaggeredGridLayoutManager.LayoutParams).isFullSpan = true

@@ -47,11 +47,7 @@ class SharedViewModel @Inject constructor(
     fun undoStatusChange() {
         val change = lastStatusChange ?: return
         viewModelScope.launch {
-            for ((i, note) in change.notes.withIndex()) {
-                notesRepository.updateNote(note.copy(
-                        status = change.oldStatus,
-                        lastModifiedDate = change.oldModifiedDates[i]))
-            }
+            notesRepository.updateNotes(change.oldNotes)
         }
         lastStatusChange = null
     }

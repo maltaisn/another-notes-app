@@ -29,6 +29,9 @@ interface ChangeEventsDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(event: ChangeEvent)
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAll(events: List<ChangeEvent>)
+
     @Query("SELECT * FROM change_events")
     suspend fun getAll(): List<ChangeEvent>
 

@@ -16,6 +16,8 @@
 
 package com.maltaisn.notes.ui.main
 
+import com.maltaisn.notes.R
+import com.maltaisn.notes.model.entity.NoteStatus
 import com.maltaisn.notes.ui.StatusChange
 
 
@@ -23,7 +25,17 @@ sealed class MessageEvent {
 
     object BlankNoteDiscardEvent : MessageEvent()
 
-    data class StatusChangeEvent(val messageId: Int,
-                                 val statusChange: StatusChange) : MessageEvent()
+    class StatusChangeEvent(val statusChange: StatusChange) : MessageEvent() {
+
+        val messageId = when (statusChange.newStatus) {
+            NoteStatus.ACTIVE -> if (statusChange.oldStatus == NoteStatus.TRASHED) {
+                R.plurals.message_move_restore
+            } else {
+                R.plurals.message_move_unarchive
+            }
+            NoteStatus.ARCHIVED -> R.plurals.message_move_archive
+            NoteStatus.TRASHED -> R.plurals.message_move_delete
+        }
+    }
 
 }

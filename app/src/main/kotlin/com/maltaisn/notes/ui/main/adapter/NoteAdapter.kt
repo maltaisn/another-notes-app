@@ -79,6 +79,12 @@ class NoteAdapter(val context: Context, val json: Json, val callback: Callback) 
         }
     })
 
+
+    init {
+        setHasStableIds(true)
+    }
+
+
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
         itemTouchHelper.attachToRecyclerView(recyclerView)
     }
@@ -136,11 +142,13 @@ class NoteAdapter(val context: Context, val json: Json, val callback: Callback) 
             }
 
     interface Callback {
-        fun onNoteItemClicked(item: NoteItem)
-        fun onMessageItemDismissed(item: MessageItem)
+        fun onNoteItemClicked(item: NoteItem, pos: Int)
+        fun onNoteItemLongClicked(item: NoteItem, pos: Int)
+        fun onMessageItemDismissed(item: MessageItem, pos: Int)
 
         val isNoteSwipeEnabled: Boolean
         fun onNoteSwiped(pos: Int)
+
     }
 
     companion object {

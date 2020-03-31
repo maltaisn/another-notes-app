@@ -17,10 +17,7 @@
 package com.maltaisn.notes.ui.main
 
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.MenuItem
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.Toast
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
@@ -49,10 +46,11 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
+import java.text.NumberFormat
 import javax.inject.Inject
 
 
-class MainFragment : Fragment(), Toolbar.OnMenuItemClickListener {
+class MainFragment : Fragment(), Toolbar.OnMenuItemClickListener, ActionMode.Callback {
 
     @Inject lateinit var viewModelFactory: ViewModelProvider.Factory
     private val viewModel: MainViewModel by viewModels { viewModelFactory }
@@ -61,6 +59,8 @@ class MainFragment : Fragment(), Toolbar.OnMenuItemClickListener {
     @Inject lateinit var json: Json
 
     private lateinit var toolbar: Toolbar
+    private lateinit var drawerLayout: DrawerLayout
+    private var actionMode: ActionMode? = null
 
 
     override fun onCreate(state: Bundle?) {
@@ -74,11 +74,12 @@ class MainFragment : Fragment(), Toolbar.OnMenuItemClickListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val context = requireContext()
+        val activity = requireActivity()
         val navController = findNavController()
 
         // Setup toolbar with drawer
         toolbar = view.findViewById(R.id.toolbar)
-        val drawerLayout: DrawerLayout = requireActivity().findViewById(R.id.drawer_layout)
+        drawerLayout = activity.findViewById(R.id.drawer_layout)
         toolbar.setNavigationIcon(R.drawable.ic_menu)
         toolbar.setNavigationContentDescription(R.string.content_descrp_open_drawer)
         toolbar.setNavigationOnClickListener {
@@ -151,12 +152,33 @@ class MainFragment : Fragment(), Toolbar.OnMenuItemClickListener {
             adapter.listLayoutMode = mode
         })
 
-        viewModel.itemClickEvent.observe(viewLifecycleOwner, EventObserver { item ->
+        viewModel.editItemEvent.observe(viewLifecycleOwner, EventObserver { item ->
             navController.navigate(MainFragmentDirections.actionMainToEdit(item.note.id))
         })
 
         viewModel.messageEvent.observe(viewLifecycleOwner, EventObserver { message ->
             sharedViewModel.onMessageEvent(message)
+        })
+
+        viewModel.selectedCount.observe(viewLifecycleOwner, Observer { count ->
+            if (count != 0 && actionMode == null) {
+                actionMode = toolbar.startActionMode(this)
+                drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED, GravityCompat.START)
+
+            } else if (count == 0 && actionMode != null) {
+                actionMode?.finish()
+                actionMode = null
+            }
+
+            actionMode?.let {
+                it.title = NUMBER_FORMAT.format(count)
+
+                // Share and copy are only visible if there is a single note selected.
+                val menu = it.menu
+                val singleSelection = count == 1
+                menu.findItem(R.id.item_share).isVisible = singleSelection
+                menu.findItem(R.id.item_copy).isVisible = singleSelection
+            }
         })
 
         sharedViewModel.messageEvent.observe(viewLifecycleOwner, EventObserver { message ->
@@ -166,7 +188,7 @@ class MainFragment : Fragment(), Toolbar.OnMenuItemClickListener {
                             .show()
                 }
                 is MessageEvent.StatusChangeEvent -> {
-                    val count = message.statusChange.notes.size
+                    val count = message.statusChange.oldNotes.size
                     Snackbar.make(view, context.resources.getQuantityString(
                             message.messageId, count, count), Snackbar.LENGTH_SHORT)
                             .setAction(R.string.action_undo) {
@@ -174,7 +196,6 @@ class MainFragment : Fragment(), Toolbar.OnMenuItemClickListener {
                             }.show()
                 }
             }
-
         })
     }
 
@@ -191,6 +212,56 @@ class MainFragment : Fragment(), Toolbar.OnMenuItemClickListener {
             else -> return false
         }
         return true
+    }
+
+    override fun onActionItemClicked(mode: ActionMode, item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.item_move -> viewModel.moveSelectedNotes()
+            R.id.item_select_all -> viewModel.selectAll()
+            R.id.item_share -> Unit
+            R.id.item_copy -> Unit
+            R.id.item_delete -> viewModel.deleteSelectedNotes()
+            else -> return false
+        }
+        return true
+    }
+
+    override fun onCreateActionMode(mode: ActionMode, menu: Menu): Boolean {
+        mode.menuInflater.inflate(R.menu.selection_cab, menu)
+        return true
+    }
+
+    override fun onPrepareActionMode(mode: ActionMode, menu: Menu): Boolean {
+        val moveItem = menu.findItem(R.id.item_move)
+        val deleteItem = menu.findItem(R.id.item_delete)
+        when (viewModel.noteStatus.value!!) {
+            NoteStatus.ACTIVE -> {
+                moveItem.setIcon(R.drawable.ic_archive)
+                moveItem.setTitle(R.string.action_archive)
+                deleteItem.setTitle(R.string.action_delete)
+            }
+            NoteStatus.ARCHIVED -> {
+                moveItem.setIcon(R.drawable.ic_unarchive)
+                moveItem.setTitle(R.string.action_unarchive)
+                deleteItem.setTitle(R.string.action_delete)
+            }
+            NoteStatus.TRASHED -> {
+                moveItem.setIcon(R.drawable.ic_restore)
+                moveItem.setTitle(R.string.action_restore)
+                deleteItem.setTitle(R.string.action_delete_forever)
+            }
+        }
+        return true
+    }
+
+    override fun onDestroyActionMode(mode: ActionMode) {
+        actionMode = null
+        viewModel.clearSelection()
+        drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED, GravityCompat.START)
+    }
+
+    companion object {
+        private val NUMBER_FORMAT = NumberFormat.getInstance()
     }
 
 }

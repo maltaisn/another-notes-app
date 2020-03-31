@@ -45,9 +45,19 @@
         <item name="colorPrimaryDark">?colorPrimaryVariant</item>
         <item name="colorAccent">?colorSecondary</item>
 
-        <item name="toolbarThemeOverlay">@style/ThemeOverlay.MaterialComponents.Toolbar.Primary</item>
+        <item name="toolbarStyle">@style/Widget.MaterialComponents.Toolbar.Primary</item>
+
+        <item name="windowActionModeOverlay">true</item>
+        <item name="actionBarTheme">@style/ThemeOverlay.MaterialComponents.Toolbar.Primary</item>
+        <item name="actionModeStyle">@style/ActionModeStyle</item>
+        <item name="actionModeCloseDrawable">@drawable/ic_close</item>
 
         <item name="editDraggedItemElevation">2dp</item>
+    </style>
+
+    <style name="ActionModeStyle" parent="Widget.AppCompat.ActionMode">
+        <item name="background">?colorPrimary</item>
+        <item name="titleTextStyle">@style/ActionModeTitleStyle</item>
     </style>
 
 </resources>

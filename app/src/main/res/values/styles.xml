@@ -18,15 +18,23 @@
 <resources>
 
     <style name="NoteListItemCardStyle">
-        <item name="android:background">?selectableItemBackground</item>
+        <item name="android:background">?colorOnSurface</item>
+        <item name="android:foreground">?selectableItemBackground</item>
         <item name="cornerRadius">10dp</item>
+        <item name="strokeColor">@color/color_note_card_stroke</item>
+        <item name="strokeWidth">2dp</item>
         <item name="cardElevation">2dp</item>
+        <item name="android:checkable">true</item>
         <item name="android:clickable">true</item>
         <item name="android:focusable">true</item>
         <item name="android:layout_marginTop">5dp</item>
         <item name="android:layout_marginBottom">5dp</item>
         <item name="android:layout_marginStart">5dp</item>
         <item name="android:layout_marginEnd">5dp</item>
+    </style>
+
+    <style name="ActionModeTitleStyle" parent="TextAppearance.AppCompat.Widget.ActionMode.Title">
+        <item name="android:textColor">?colorControlNormal</item>
     </style>
 
 </resources>

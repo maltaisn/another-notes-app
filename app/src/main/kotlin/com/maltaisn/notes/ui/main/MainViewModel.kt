@@ -41,6 +41,13 @@ class MainViewModel @Inject constructor(
         private val notesRepository: NotesRepository,
         private val prefs: SharedPreferences) : ViewModel(), NoteAdapter.Callback {
 
+    private var listItems: List<NoteListItem> = emptyList()
+        set(value) {
+            field = value
+            _noteItems.value = value
+        }
+
+    private val selectedIds = mutableSetOf<Long>()
 
     private var noteListJob: Job? = null
 
@@ -56,13 +63,18 @@ class MainViewModel @Inject constructor(
     val listLayoutMode: LiveData<NoteListLayoutMode>
         get() = _listLayoutMode
 
-    private val _itemClickEvent = MutableLiveData<Event<NoteItem>>()
-    val itemClickEvent: LiveData<Event<NoteItem>>
-        get() = _itemClickEvent
+    private val _editItemEvent = MutableLiveData<Event<NoteItem>>()
+    val editItemEvent: LiveData<Event<NoteItem>>
+        get() = _editItemEvent
 
     private val _messageEvent = MutableLiveData<Event<MessageEvent>>()
     val messageEvent: LiveData<Event<MessageEvent>>
         get() = _messageEvent
+
+    private val _selectedCount = MutableLiveData<Int>()
+    val selectedCount: LiveData<Int>
+        get() = _selectedCount
+
 
     init {
         setNoteStatus(NoteStatus.ACTIVE)
@@ -82,7 +94,7 @@ class MainViewModel @Inject constructor(
         // Update note items live data when database flow emits a list.
         noteListJob = viewModelScope.launch {
             notesRepository.getNotesByStatus(status).collect { notes ->
-                _noteItems.value = buildItemListFromNotes(status, notes)
+                createListItems(status, notes)
             }
         }
     }
@@ -102,6 +114,74 @@ class MainViewModel @Inject constructor(
         }
     }
 
+    fun clearSelection() {
+        setAllSelected(false)
+    }
+
+    fun selectAll() {
+        setAllSelected(true)
+    }
+
+    fun moveSelectedNotes() {
+        changeSelectedNotesStatus(if (noteStatus.value == NoteStatus.ACTIVE) {
+            NoteStatus.ARCHIVED
+        } else {
+            NoteStatus.ACTIVE
+        })
+    }
+
+    fun deleteSelectedNotes() {
+        if (noteStatus.value == NoteStatus.TRASHED) {
+            // Delete forever
+            // TODO ask for confirmation
+
+            viewModelScope.launch {
+                val notes = selectedIds.mapNotNull { notesRepository.getById(it) }
+                notesRepository.deleteNotes(notes)
+                clearSelection()
+            }
+
+        } else {
+            // Send to trash
+            changeSelectedNotesStatus(NoteStatus.TRASHED)
+        }
+    }
+
+    private fun setAllSelected(selected: Boolean) {
+        changeListItems { list ->
+            for ((i, item) in list.withIndex()) {
+                if (item is NoteItem) {
+                    list[i] = item.copy(checked = selected)
+                    if (selected) {
+                        selectedIds += item.id
+                    } else {
+                        selectedIds -= item.id
+                    }
+                }
+            }
+        }
+        _selectedCount.value = selectedIds.size
+    }
+
+    private fun changeSelectedNotesStatus(newStatus: NoteStatus) {
+        if (selectedIds.isEmpty()) {
+            return
+        }
+
+        viewModelScope.launch {
+            // Change the status for all notes.
+            val date = Date()
+            val oldNotes = selectedIds.mapNotNull { notesRepository.getById(it) }
+            val newNotes = oldNotes.map { it.copy(status = newStatus, lastModifiedDate = date) }
+            notesRepository.updateNotes(newNotes)
+
+            // Show status change message.
+            val statusChange = StatusChange(oldNotes, oldNotes.first().status, newStatus)
+            _messageEvent.value = Event(MessageEvent.StatusChangeEvent(statusChange))
+            clearSelection()
+        }
+    }
+
     fun addDebugNotes() {
         viewModelScope.launch {
             val status = _noteStatus.value!!
@@ -111,49 +191,79 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    override fun onNoteItemClicked(item: NoteItem) {
-        _itemClickEvent.value = Event(item)
+    override fun onNoteItemClicked(item: NoteItem, pos: Int) {
+        if (selectedIds.isEmpty()) {
+            // Edit item
+            _editItemEvent.value = Event(item)
+        } else {
+            // Toggle item selection
+            toggleItemChecked(item, pos)
+        }
     }
 
-    override fun onMessageItemDismissed(item: MessageItem) {
+    override fun onNoteItemLongClicked(item: NoteItem, pos: Int) {
+        toggleItemChecked(item, pos)
+    }
+
+    private fun toggleItemChecked(item: NoteItem, pos: Int) {
+        val checked = !item.checked
+        if (checked) {
+            selectedIds += item.id
+        } else {
+            selectedIds -= item.id
+        }
+        _selectedCount.value = selectedIds.size
+
+        changeListItems { it[pos] = item.copy(checked = checked) }
+    }
+
+    override fun onMessageItemDismissed(item: MessageItem, pos: Int) {
         // Update last remind time when user dismisses message.
         prefs.edit().putLong(PreferenceHelper.LAST_TRASH_REMIND_TIME,
                 System.currentTimeMillis()).apply()
-        setNoteStatus(_noteStatus.value!!)  // Kinda inefficient
+
+        // Remove message item in list
+        changeListItems { it.removeAt(pos) }
     }
 
     override val isNoteSwipeEnabled: Boolean
-        get() = noteStatus.value == NoteStatus.ACTIVE
+        get() = noteStatus.value == NoteStatus.ACTIVE && selectedIds.isEmpty()
 
     override fun onNoteSwiped(pos: Int) {
         // Archive note
-        val note = (noteItems.value!![pos] as NoteItem).note
-        val newNote = note.copy(status = NoteStatus.ARCHIVED, lastModifiedDate = Date())
+        val oldNote = (noteItems.value!![pos] as NoteItem).note
+        val newNote = oldNote.copy(status = NoteStatus.ARCHIVED, lastModifiedDate = Date())
         viewModelScope.launch {
             notesRepository.updateNote(newNote)
         }
 
         // Show message
-        val statusChange = StatusChange(listOf(newNote),
-                listOf(note.lastModifiedDate), NoteStatus.ACTIVE, NoteStatus.ARCHIVED)
-        _messageEvent.value = Event(MessageEvent.StatusChangeEvent(
-                R.plurals.message_move_archive, statusChange))
+        val statusChange = StatusChange(listOf(oldNote), NoteStatus.ACTIVE, NoteStatus.ARCHIVED)
+        _messageEvent.value = Event(MessageEvent.StatusChangeEvent(statusChange))
     }
 
-    private fun buildItemListFromNotes(status: NoteStatus, notes: List<Note>): List<NoteListItem> = buildList {
-        if (status == NoteStatus.TRASHED && notes.isNotEmpty()) {
-            // If needed, add reminder that notes get auto-deleted when in trash.
-            val lastReminder = prefs.getLong(PreferenceHelper.LAST_TRASH_REMIND_TIME, 0)
-            if (System.currentTimeMillis() - lastReminder >
-                    PreferenceHelper.TRASH_REMINDER_DELAY * 86400000L) {
-                this += MessageItem(TRASH_REMINDER_ITEM_ID, R.string.message_trash_reminder,
-                        PreferenceHelper.TRASH_AUTO_DELETE_DELAY)
-            }
-        }
+    private inline fun changeListItems(change: (MutableList<NoteListItem>) -> Unit) {
+        val newList = listItems.toMutableList()
+        change(newList)
+        listItems = newList
+    }
 
-        // Add note items
-        for (note in notes) {
-            this += NoteItem(note.id, note)
+    private fun createListItems(status: NoteStatus, notes: List<Note>) {
+        listItems = buildList {
+            if (status == NoteStatus.TRASHED && notes.isNotEmpty()) {
+                // If needed, add reminder that notes get auto-deleted when in trash.
+                val lastReminder = prefs.getLong(PreferenceHelper.LAST_TRASH_REMIND_TIME, 0)
+                if (System.currentTimeMillis() - lastReminder >
+                        PreferenceHelper.TRASH_REMINDER_DELAY * 86400000L) {
+                    this += MessageItem(TRASH_REMINDER_ITEM_ID, R.string.message_trash_reminder,
+                            PreferenceHelper.TRASH_AUTO_DELETE_DELAY)
+                }
+            }
+
+            // Add note items
+            for (note in notes) {
+                this += NoteItem(note.id, note, note.id in selectedIds)
+            }
         }
     }
 

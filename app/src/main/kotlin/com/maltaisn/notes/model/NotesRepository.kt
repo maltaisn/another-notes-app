@@ -39,25 +39,31 @@ class NotesRepository @Inject constructor(
         private val prefs: SharedPreferences) {
 
     suspend fun insertNote(note: Note): Long = withContext(NonCancellable) {
-        addChangeEvent(note, ChangeEventType.ADDED)
+        changeEventsDao.insert(ChangeEvent(note.uuid, ChangeEventType.ADDED))
         notesDao.insert(note)
     }
 
     suspend fun updateNote(note: Note) = withContext(NonCancellable) {
-        addChangeEvent(note, ChangeEventType.UPDATED)
+        changeEventsDao.insert(ChangeEvent(note.uuid, ChangeEventType.UPDATED))
         notesDao.update(note)
     }
 
+    suspend fun updateNotes(notes: List<Note>) = withContext(NonCancellable) {
+        changeEventsDao.insertAll(notes.map { ChangeEvent(it.uuid, ChangeEventType.UPDATED) })
+        notesDao.updateAll(notes)
+    }
+
     suspend fun deleteNote(note: Note) = withContext(NonCancellable) {
-        addChangeEvent(note, ChangeEventType.DELETED)
+        changeEventsDao.insert(ChangeEvent(note.uuid, ChangeEventType.DELETED))
         notesDao.delete(note)
     }
 
-    suspend fun getById(id: Long) = notesDao.getById(id)
-
-    private suspend fun addChangeEvent(note: Note, type: ChangeEventType) {
-        changeEventsDao.insert(ChangeEvent(note.uuid, type))
+    suspend fun deleteNotes(notes: List<Note>) = withContext(NonCancellable) {
+        changeEventsDao.insertAll(notes.map { ChangeEvent(it.uuid, ChangeEventType.DELETED) })
+        notesDao.deleteAll(notes)
     }
+
+    suspend fun getById(id: Long) = notesDao.getById(id)
 
     suspend fun searchNotes(query: String) = notesDao.search(query)
 

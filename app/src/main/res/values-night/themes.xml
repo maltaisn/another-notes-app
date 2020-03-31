@@ -22,8 +22,14 @@
         <item name="android:windowLightStatusBar">false</item>
         <item name="android:windowLightNavigationBar">false</item>
 
-        <item name="toolbarThemeOverlay">@style/ThemeOverlay.MaterialComponents.Toolbar.Surface
-        </item>
+        <item name="toolbarStyle">@style/Widget.MaterialComponents.Toolbar.Surface</item>
+
+        <item name="actionBarTheme">@style/ThemeOverlay.MaterialComponents.Toolbar.Surface</item>
+    </style>
+
+    <style name="ActionModeStyle" parent="Widget.AppCompat.ActionMode">
+        <item name="background">?colorSurface</item>
+        <item name="titleTextStyle">@style/ActionModeTitleStyle</item>
     </style>
 
 </resources>

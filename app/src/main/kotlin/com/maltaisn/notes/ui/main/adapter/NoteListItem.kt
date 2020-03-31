@@ -20,11 +20,11 @@ import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.model.entity.NoteType
 
 
-sealed class NoteListItem(val id: Long) {
+sealed class NoteListItem(open val id: Long) {
     abstract val type: Int
 }
 
-class NoteItem(id: Long, val note: Note) : NoteListItem(id) {
+data class NoteItem(override val id: Long, val note: Note, val checked: Boolean) : NoteListItem(id) {
     override val type: Int
         get() = when (note.type) {
             NoteType.TEXT -> NoteAdapter.VIEW_TYPE_TEXT_NOTE

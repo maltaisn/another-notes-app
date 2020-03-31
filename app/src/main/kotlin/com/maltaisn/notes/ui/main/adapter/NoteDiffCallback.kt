@@ -30,9 +30,11 @@ class NoteListDiffCallback : DiffUtil.ItemCallback<NoteListItem>() {
 
         return when (new) {
             is NoteItem -> {
-                // Only title, content and metadata have influence on visual representation of notes.
+                // Only checked state, title, content and metadata
+                // have influence on visual representation of notes.
                 old as NoteItem
-                new.note.title == old.note.title &&
+                new.checked == old.checked &&
+                        new.note.title == old.note.title &&
                         new.note.content == old.note.content &&
                         new.note.metadata == old.note.metadata
             }

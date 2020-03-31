@@ -31,8 +31,14 @@ interface NotesDao {
     @Update
     suspend fun update(note: Note)
 
+    @Update
+    suspend fun updateAll(notes: List<Note>)
+
     @Delete
     suspend fun delete(note: Note)
+
+    @Delete
+    suspend fun deleteAll(notes: List<Note>)
 
     @Query("DELETE FROM notes WHERE uuid == :uuid")
     suspend fun delete(uuid: String)

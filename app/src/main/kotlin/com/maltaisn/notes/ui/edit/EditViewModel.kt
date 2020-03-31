@@ -21,7 +21,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.maltaisn.notes.R
 import com.maltaisn.notes.model.NotesRepository
 import com.maltaisn.notes.model.entity.ListNoteMetadata
 import com.maltaisn.notes.model.entity.Note
@@ -187,7 +186,7 @@ class EditViewModel @Inject constructor(
     }
 
     fun deleteNote() {
-        if (noteStatus.value == NoteStatus.TRASHED) {
+        if (note.status == NoteStatus.TRASHED) {
             // Delete forever
             // TODO ask for confirmation
             viewModelScope.launch {
@@ -211,18 +210,8 @@ class EditViewModel @Inject constructor(
             note = note.copy(status = newStatus, lastModifiedDate = Date())
 
             // Show status change message.
-            val messageId = when (newStatus) {
-                NoteStatus.ACTIVE -> if (oldStatus == NoteStatus.TRASHED) {
-                    R.plurals.message_move_restore
-                } else {
-                    R.plurals.message_move_unarchive
-                }
-                NoteStatus.ARCHIVED -> R.plurals.message_move_archive
-                NoteStatus.TRASHED -> R.plurals.message_move_delete
-            }
-            val statusChange = StatusChange(listOf(note),
-                    listOf(oldNote.lastModifiedDate), oldStatus, newStatus)
-            _messageEvent.value = Event(MessageEvent.StatusChangeEvent(messageId, statusChange))
+            val statusChange = StatusChange(listOf(oldNote), oldStatus, newStatus)
+            _messageEvent.value = Event(MessageEvent.StatusChangeEvent(statusChange))
         }
 
         exit()
