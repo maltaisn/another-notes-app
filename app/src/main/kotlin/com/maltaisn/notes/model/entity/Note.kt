@@ -183,6 +183,22 @@ data class Note(
 
         const val BULLET_CHARS = "-+*•–"
         const val DEFAULT_BULLET_CHAR = "-"
+
+
+        fun getCopiedNoteTitle(currentTitle: String, untitledName: String, copySuffix: String): String {
+            val match = "^(.*) - $copySuffix(?:\\s+([1-9]\\d*))?$".toRegex().find(currentTitle)
+            return when {
+                match != null -> {
+                    val name = match.groupValues[1]
+                    val number = (match.groupValues[2].toIntOrNull() ?: 1) + 1
+                    "$name - $copySuffix $number"
+                }
+                currentTitle.isBlank() -> "$untitledName - $copySuffix"
+                else -> "$currentTitle - $copySuffix"
+            }
+        }
+
+        fun generateNoteUuid() = UUID.randomUUID().toString().replace("-", "")
     }
 }
 

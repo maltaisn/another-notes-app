@@ -84,7 +84,7 @@ class EditViewModel @Inject constructor(
             if (note == null) {
                 // Note doesn't exist, create new blank text note.
                 val date = Date()
-                note = Note(Note.NO_ID, generateNoteUuid(), NoteType.TEXT,
+                note = Note(Note.NO_ID, Note.generateNoteUuid(), NoteType.TEXT,
                         "", "", null, date, date, NoteStatus.ACTIVE)
                 val id = notesRepository.insertNote(note)
                 note = note.copy(id = id)
@@ -161,23 +161,28 @@ class EditViewModel @Inject constructor(
         })
     }
 
-    fun copyNote() {
+    fun copyNote(untitledName: String, copySuffix: String) {
         save()
 
         viewModelScope.launch {
-            val date = Date()
-            val copy = note.copy(
-                    id = Note.NO_ID,
-                    uuid = generateNoteUuid(),
-                    title = note.title + " - Copy",  // TODO localize this
-                    addedDate = date,
-                    lastModifiedDate = date)
-            val id = notesRepository.insertNote(copy)
-            this@EditViewModel.note = copy.copy(id = id)
+            val newTitle = Note.getCopiedNoteTitle(note.title, untitledName, copySuffix)
+            if (!note.isBlank) {
+                // If note is blank, don't make a copy, just change the title.
+                // Copied blank note should be discarded anyway.
+                val date = Date()
+                val copy = note.copy(
+                        id = Note.NO_ID,
+                        uuid = Note.generateNoteUuid(),
+                        title = newTitle,
+                        addedDate = date,
+                        lastModifiedDate = date)
+                val id = notesRepository.insertNote(copy)
+                this@EditViewModel.note = copy.copy(id = id)
+            }
 
             // Update title item
             val title = titleItem?.title as Editable
-            title.replace(0, title.length, copy.title)
+            title.replace(0, title.length, newTitle)
         }
     }
 
@@ -216,9 +221,6 @@ class EditViewModel @Inject constructor(
 
         exit()
     }
-
-    private fun generateNoteUuid() = UUID.randomUUID().toString().replace("-", "")
-
 
     private fun createListItems() {
         val list = mutableListOf<EditListItem>()

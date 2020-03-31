@@ -174,7 +174,8 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener {
         when (item.itemId) {
             R.id.item_type -> viewModel.toggleNoteType()
             R.id.item_move -> viewModel.moveNote()
-            R.id.item_copy -> viewModel.copyNote()
+            R.id.item_copy -> viewModel.copyNote(getString(R.string.copy_untitled_name),
+                    getString(R.string.copy_suffix))
             R.id.item_delete -> viewModel.deleteNote()
             R.id.item_share -> viewModel.shareNote()
             else -> return false

@@ -147,10 +147,29 @@ class MainViewModel @Inject constructor(
         }
     }
 
+    fun copySelectedNote(untitledName: String, copySuffix: String) {
+        if (selectedIds.size != 1) {
+            return
+        }
+
+        viewModelScope.launch {
+            val note = notesRepository.getById(selectedIds.first()) ?: return@launch
+            val date = Date()
+            val copy = note.copy(
+                    id = Note.NO_ID,
+                    uuid = Note.generateNoteUuid(),
+                    title = Note.getCopiedNoteTitle(note.title, untitledName, copySuffix),
+                    addedDate = date,
+                    lastModifiedDate = date)
+            notesRepository.insertNote(copy)
+            clearSelection()
+        }
+    }
+
     private fun setAllSelected(selected: Boolean) {
         changeListItems { list ->
             for ((i, item) in list.withIndex()) {
-                if (item is NoteItem) {
+                if (item is NoteItem && item.checked != selected) {
                     list[i] = item.copy(checked = selected)
                     if (selected) {
                         selectedIds += item.id

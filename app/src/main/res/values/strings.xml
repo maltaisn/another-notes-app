@@ -71,6 +71,9 @@
         <item quantity="other">+ %d other list items</item>
     </plurals>
 
+    <string name="copy_untitled_name">untitled</string>
+    <string name="copy_suffix">Copy</string>
+
     <string name="message_trash_reminder">Notes in recycle bin are automatically deleted after %d days.</string>
 
     <string name="content_descrp_open_drawer">Open drawer</string>

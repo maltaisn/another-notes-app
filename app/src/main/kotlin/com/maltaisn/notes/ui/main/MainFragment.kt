@@ -219,7 +219,8 @@ class MainFragment : Fragment(), Toolbar.OnMenuItemClickListener, ActionMode.Cal
             R.id.item_move -> viewModel.moveSelectedNotes()
             R.id.item_select_all -> viewModel.selectAll()
             R.id.item_share -> Unit
-            R.id.item_copy -> Unit
+            R.id.item_copy -> viewModel.copySelectedNote(getString(R.string.copy_untitled_name),
+                    getString(R.string.copy_suffix))
             R.id.item_delete -> viewModel.deleteSelectedNotes()
             else -> return false
         }

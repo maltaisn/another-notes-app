@@ -17,6 +17,7 @@
 package com.maltaisn.notes.model
 
 import com.maltaisn.notes.model.entity.ListNoteItem
+import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.model.entity.NoteType
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
@@ -119,6 +120,25 @@ class NoteTest {
         ), added = date, modified = date)
         val textNote = testNote(content = "- 0\n- 1", added = date, modified = date)
         assertEquals(textNote, listNote.convertToType(NoteType.TEXT, json))
+    }
+
+
+    @Test
+    fun `should add copy suffix to title`() {
+        assertEquals("note - Copy", Note.getCopiedNoteTitle(
+                "note", "untitled", "Copy"))
+    }
+
+    @Test
+    fun `should increment copy number in title`() {
+        assertEquals("note - Copy 43", Note.getCopiedNoteTitle(
+                "note - Copy 42", "untitled", "Copy"))
+    }
+
+    @Test
+    fun `should name untitled note copy`() {
+        assertEquals("untitled - Copy", Note.getCopiedNoteTitle(
+                "  ", "untitled", "Copy"))
     }
 
 }
