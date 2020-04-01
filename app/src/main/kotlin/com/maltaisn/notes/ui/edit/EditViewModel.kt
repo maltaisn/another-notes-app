@@ -269,8 +269,7 @@ class EditViewModel @Inject constructor(
 
             // If text was pasted, set focus at the end of last items pasted.
             // If a single linebreak was inserted, focus on the new item.
-            _focusEvent.value = Event(FocusChange(pos + lines.size - 1,
-                    if (isPaste) lines.last().length else 0, false))
+            focusItemAt(pos + lines.size - 1, if (isPaste) lines.last().length else 0, false)
         }
     }
 
@@ -284,7 +283,7 @@ class EditViewModel @Inject constructor(
             deleteNoteItem(pos)
 
             // Set focus on merge boundary.
-            _focusEvent.value = Event(FocusChange(pos - 1, prevLength, true))
+            focusItemAt(pos - 1, prevLength, true)
         }
     }
 
@@ -293,8 +292,9 @@ class EditViewModel @Inject constructor(
     }
 
     override fun onNoteItemAddClicked() {
+        val pos = listItems.size - 1
         changeListItems { list ->
-            list.add(listItems.size - 1, EditItemItem("", false))
+            list.add(pos, EditItemItem("", false))
         }
     }
 
@@ -305,12 +305,15 @@ class EditViewModel @Inject constructor(
         Collections.swap(listItems, from, to)
     }
 
+    private fun focusItemAt(pos: Int, textPos: Int, itemExists: Boolean) {
+        _focusEvent.value = Event(FocusChange(pos, textPos, itemExists))
+    }
+
     private fun deleteNoteItem(pos: Int) {
         val prevItem = listItems[pos - 1]
         if (prevItem is EditItemItem) {
             // Set focus at the end of previous item.
-            _focusEvent.value = Event(FocusChange(pos - 1,
-                    prevItem.content.length, true))
+            focusItemAt(pos - 1, prevItem.content.length, true)
         }
 
         // Delete item in list.
