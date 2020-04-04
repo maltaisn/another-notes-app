@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "b199608d4d8a68fc9f9b3da5385d0e16",
+    "identityHash": "6870bc490721ef6b0903a217f6cf0ab5",
     "entities": [
       {
         "tableName": "notes",
@@ -84,7 +84,7 @@
       {
         "ftsVersion": "FTS4",
         "ftsOptions": {
-          "tokenizer": "simple",
+          "tokenizer": "unicode61",
           "tokenizerArgs": [],
           "contentTable": "notes",
           "languageIdColumnName": "",
@@ -100,7 +100,7 @@
           "CREATE TRIGGER IF NOT EXISTS room_fts_content_sync_notes_fts_AFTER_INSERT AFTER INSERT ON `notes` BEGIN INSERT INTO `notes_fts`(`docid`, `title`, `content`) VALUES (NEW.`rowid`, NEW.`title`, NEW.`content`); END"
         ],
         "tableName": "notes_fts",
-        "createSql": "CREATE VIRTUAL TABLE IF NOT EXISTS `${TABLE_NAME}` USING FTS4(`title` TEXT NOT NULL, `content` TEXT NOT NULL, content=`notes`)",
+        "createSql": "CREATE VIRTUAL TABLE IF NOT EXISTS `${TABLE_NAME}` USING FTS4(`title` TEXT NOT NULL, `content` TEXT NOT NULL, tokenize=unicode61, content=`notes`)",
         "fields": [
           {
             "fieldPath": "rowid",
@@ -160,7 +160,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'b199608d4d8a68fc9f9b3da5385d0e16')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '6870bc490721ef6b0903a217f6cf0ab5')"
     ]
   }
 }

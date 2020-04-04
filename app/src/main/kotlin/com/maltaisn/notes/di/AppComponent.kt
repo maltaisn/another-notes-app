@@ -19,7 +19,7 @@ package com.maltaisn.notes.di
 import android.content.Context
 import com.maltaisn.notes.ui.edit.EditFragment
 import com.maltaisn.notes.ui.main.MainActivity
-import com.maltaisn.notes.ui.main.MainFragment
+import com.maltaisn.notes.ui.note.NoteFragment
 import dagger.BindsInstance
 import dagger.Component
 import javax.inject.Singleton
@@ -36,7 +36,7 @@ interface AppComponent {
 
     fun inject(activity: MainActivity)
 
-    fun inject(fragment: MainFragment)
+    fun inject(fragment: NoteFragment)
     fun inject(fragment: EditFragment)
 
 

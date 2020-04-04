@@ -14,25 +14,22 @@
  * limitations under the License.
  */
 
-package com.maltaisn.notes.ui.main.adapter
+package com.maltaisn.notes.model
 
 import com.maltaisn.notes.model.entity.Note
+import com.maltaisn.notes.model.entity.NoteStatus
 import com.maltaisn.notes.model.entity.NoteType
+import java.util.*
 
 
-sealed class NoteListItem(open val id: Long) {
-    abstract val type: Int
-}
-
-data class NoteItem(override val id: Long, val note: Note, val checked: Boolean) : NoteListItem(id) {
-    override val type: Int
-        get() = when (note.type) {
-            NoteType.TEXT -> NoteAdapter.VIEW_TYPE_TEXT_NOTE
-            NoteType.LIST -> NoteAdapter.VIEW_TYPE_LIST_NOTE
-        }
-}
-
-class MessageItem(id: Long, val message: Int, vararg val args: Any) : NoteListItem(id) {
-    override val type: Int
-        get() = NoteAdapter.VIEW_TYPE_MESSAGE
-}
+fun atestNote(
+        id: Long = Note.NO_ID,
+        uuid: String = Note.generateNoteUuid(),
+        type: NoteType = NoteType.TEXT,
+        title: String = "note",
+        content: String = "content",
+        metadata: String? = null,
+        added: Date = Date(),
+        modified: Date = Date(),
+        status: NoteStatus = NoteStatus.ACTIVE
+) = Note(id, uuid, type, title, content, metadata, added, modified, status)

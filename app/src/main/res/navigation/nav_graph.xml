@@ -29,12 +29,27 @@
         >
         <action
             android:id="@+id/action_main_to_edit"
-            app:destination="@id/edit_fragment"
+            app:destination="@id/fragment_edit"
+            />
+        <action
+            android:id="@+id/action_main_to_search"
+            app:destination="@id/fragment_search"
             />
     </fragment>
 
     <fragment
-        android:id="@+id/edit_fragment"
+        android:id="@+id/fragment_search"
+        android:name="com.maltaisn.notes.ui.search.SearchFragment"
+        tools:layout="@layout/fragment_search"
+        >
+        <action
+            android:id="@+id/action_search_to_edit"
+            app:destination="@id/fragment_edit"
+            />
+    </fragment>
+
+    <fragment
+        android:id="@+id/fragment_edit"
         android:name="com.maltaisn.notes.ui.edit.EditFragment"
         tools:layout="@layout/fragment_edit"
         >

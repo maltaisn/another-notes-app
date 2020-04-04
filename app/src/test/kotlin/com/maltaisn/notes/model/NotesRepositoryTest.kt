@@ -18,7 +18,8 @@ package com.maltaisn.notes.model
 
 import android.content.SharedPreferences
 import com.maltaisn.notes.PreferenceHelper
-import com.maltaisn.notes.model.entity.*
+import com.maltaisn.notes.model.entity.ChangeEvent
+import com.maltaisn.notes.model.entity.ChangeEventType
 import com.nhaarman.mockitokotlin2.*
 import kotlinx.coroutines.runBlocking
 import org.junit.Test
@@ -44,8 +45,7 @@ class NotesRepositoryTest {
 
     @Test
     fun `should add note in database`() = runBlocking {
-        val note = Note(0, "0", NoteType.TEXT, "note",
-                "content", null, Date(), Date(), NoteStatus.ACTIVE)
+        val note = testNote()
         notesRepo.insertNote(note)
         verify(notesDao).insert(note)
         verify(changesDao).insert(ChangeEvent(note.uuid, ChangeEventType.ADDED))
@@ -53,8 +53,7 @@ class NotesRepositoryTest {
 
     @Test
     fun `should update note in database`() = runBlocking {
-        val note = Note(0, "0", NoteType.TEXT, "note",
-                "content", null, Date(), Date(), NoteStatus.ACTIVE)
+        val note = testNote()
         notesRepo.updateNote(note)
         verify(notesDao).update(note)
         verify(changesDao).insert(ChangeEvent(note.uuid, ChangeEventType.UPDATED))
@@ -62,8 +61,7 @@ class NotesRepositoryTest {
 
     @Test
     fun `should delete note in database`() = runBlocking {
-        val note = Note(0, "0", NoteType.TEXT, "note",
-                "content", null, Date(), Date(), NoteStatus.ACTIVE)
+        val note = testNote()
         notesRepo.deleteNote(note)
         verify(notesDao).delete(note)
         verify(changesDao).insert(ChangeEvent(note.uuid, ChangeEventType.DELETED))
@@ -71,10 +69,8 @@ class NotesRepositoryTest {
 
     @Test
     fun `should sync notes correctly`() = runBlocking {
-        val note1 = Note(0, "0", NoteType.TEXT, "note 1",
-                "content 1", null, Date(), Date(), NoteStatus.ACTIVE)
-        val note2 = Note(0, "1", NoteType.TEXT, "note 2",
-                "content 2", null, Date(), Date(), NoteStatus.ACTIVE)
+        val note1 = testNote(uuid = "0")
+        val note2 = testNote(uuid = "1")
         whenever(notesDao.getByUuid("0")) doReturn note1
         whenever(changesDao.getAll()) doReturn listOf(ChangeEvent("0", ChangeEventType.UPDATED))
 

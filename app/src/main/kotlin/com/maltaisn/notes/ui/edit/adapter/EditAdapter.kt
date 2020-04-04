@@ -22,7 +22,6 @@ import android.graphics.Canvas
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.ViewGroup
-import androidx.core.content.res.use
 import androidx.core.view.ViewCompat
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.ListAdapter
@@ -41,10 +40,8 @@ class EditAdapter(val context: Context, val callback: Callback) :
 
     private val itemTouchHelper = ItemTouchHelper(object : ItemTouchHelper.Callback() {
 
-        private val dragElevation = context.obtainStyledAttributes(
-                intArrayOf(R.attr.editDraggedItemElevation)).use {
-            it.getDimensionPixelSize(0, 0).toFloat()
-        }
+        private val dragElevation = context.resources.getDimensionPixelSize(
+                R.dimen.edit_dragged_item_elevation).toFloat()
 
         override fun isLongPressDragEnabled() = false
         override fun isItemViewSwipeEnabled() = false

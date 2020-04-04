@@ -80,8 +80,8 @@ class NoteTest {
     @Test
     fun `should convert text note to list`() {
         val date = Date()
-        val textNote = testNote(content = "0\n1", added = date, modified = date)
-        val listNote = listNote(json, items = listOf(
+        val textNote = testNote(uuid = "0", content = "0\n1", added = date, modified = date)
+        val listNote = listNote(json, uuid = "0", items = listOf(
                 ListNoteItem("0", false),
                 ListNoteItem("1", false)
         ), added = date, modified = date)
@@ -91,8 +91,8 @@ class NoteTest {
     @Test
     fun `should convert text note with bullets to list`() {
         val date = Date()
-        val textNote = testNote(content = "- 0\n* 1\n+ 2", added = date, modified = date)
-        val listNote = listNote(json, items = listOf(
+        val textNote = testNote(uuid = "0", content = "- 0\n* 1\n+ 2", added = date, modified = date)
+        val listNote = listNote(json, uuid = "0", items = listOf(
                 ListNoteItem("0", false),
                 ListNoteItem("1", false),
                 ListNoteItem("2", false)
@@ -103,22 +103,22 @@ class NoteTest {
     @Test
     fun `should convert empty list note with bullet to text`() {
         val date = Date()
-        val listNote = listNote(json, items = listOf(
+        val listNote = listNote(json, uuid = "0", items = listOf(
                 ListNoteItem("    ", false),
                 ListNoteItem("", true)
         ), added = date, modified = date)
-        val textNote = testNote(content = "", added = date, modified = date)
+        val textNote = testNote(uuid = "0", content = "", added = date, modified = date)
         assertEquals(textNote, listNote.convertToType(NoteType.TEXT, json))
     }
 
     @Test
     fun `should convert list note to text`() {
         val date = Date()
-        val listNote = listNote(json, items = listOf(
+        val listNote = listNote(json, uuid = "0", items = listOf(
                 ListNoteItem("0", false),
                 ListNoteItem("1", false)
         ), added = date, modified = date)
-        val textNote = testNote(content = "- 0\n- 1", added = date, modified = date)
+        val textNote = testNote(uuid = "0", content = "- 0\n- 1", added = date, modified = date)
         assertEquals(textNote, listNote.convertToType(NoteType.TEXT, json))
     }
 

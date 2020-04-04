@@ -23,7 +23,7 @@ import java.util.*
 
 fun testNote(
         id: Long = Note.NO_ID,
-        uuid: String = id.toString(),
+        uuid: String = Note.generateNoteUuid(),
         type: NoteType = NoteType.TEXT,
         title: String = "note",
         content: String = "content",

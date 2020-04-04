@@ -27,9 +27,9 @@ import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.model.entity.NoteStatus
 import com.maltaisn.notes.model.entity.NoteType
 import com.maltaisn.notes.ui.Event
+import com.maltaisn.notes.ui.MessageEvent
 import com.maltaisn.notes.ui.StatusChange
 import com.maltaisn.notes.ui.edit.adapter.*
-import com.maltaisn.notes.ui.main.MessageEvent
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import java.util.*

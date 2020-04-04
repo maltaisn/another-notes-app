@@ -16,13 +16,13 @@
 
 package com.maltaisn.notes.model.entity
 
-import androidx.room.ColumnInfo
-import androidx.room.Entity
-import androidx.room.Fts4
-import androidx.room.PrimaryKey
+import androidx.room.*
 
 
-@Fts4(contentEntity = Note::class)
+@Fts4(
+        contentEntity = Note::class,
+        tokenizer = FtsOptions.TOKENIZER_UNICODE61
+)
 @Entity(tableName = "notes_fts")
 data class NoteFts(
         @PrimaryKey

@@ -23,6 +23,7 @@ import com.maltaisn.notes.ui.ViewModelFactory
 import com.maltaisn.notes.ui.ViewModelKey
 import com.maltaisn.notes.ui.edit.EditViewModel
 import com.maltaisn.notes.ui.main.MainViewModel
+import com.maltaisn.notes.ui.search.SearchViewModel
 import dagger.Binds
 import dagger.Module
 import dagger.multibindings.IntoMap
@@ -40,6 +41,11 @@ abstract class ViewModelModule {
     @IntoMap
     @ViewModelKey(MainViewModel::class)
     abstract fun bindsMainViewModel(viewModel: MainViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(SearchViewModel::class)
+    abstract fun bindsSearchViewModel(viewModel: SearchViewModel): ViewModel
 
     @Binds
     @IntoMap

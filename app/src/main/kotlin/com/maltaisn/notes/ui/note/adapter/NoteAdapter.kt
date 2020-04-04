@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.maltaisn.notes.ui.main.adapter
+package com.maltaisn.notes.ui.note.adapter
 
 import android.annotation.SuppressLint
 import android.content.Context

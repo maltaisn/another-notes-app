@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.maltaisn.notes.ui.main.adapter
+package com.maltaisn.notes.ui.note.adapter
 
 
 enum class NoteListLayoutMode(val value: Int,

@@ -32,4 +32,10 @@
         <item name="titleTextStyle">@style/ActionModeTitleStyle</item>
     </style>
 
+    <style name="SearchViewThemeOverlay">
+        <item name="android:editTextColor">?colorControlNormal</item>
+        <item name="android:textColorHint">@color/color_toolbar_hint</item>
+        <item name="android:colorControlActivated">@color/material_on_surface_emphasis_high_type</item>
+    </style>
+
 </resources>

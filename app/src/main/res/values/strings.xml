@@ -43,6 +43,8 @@
     <string name="action_unarchive">Unarchive</string>
     <string name="action_undo">Undo</string>
 
+    <string name="hint_search">Search notes</string>
+
     <string name="hint_note_title">Title</string>
     <string name="hint_note_content">Note</string>
     <string name="hint_note_item">List item</string>
@@ -77,5 +79,6 @@
     <string name="message_trash_reminder">Notes in recycle bin are automatically deleted after %d days.</string>
 
     <string name="content_descrp_open_drawer">Open drawer</string>
+    <string name="content_descrp_back">Go back</string>
 
 </resources>

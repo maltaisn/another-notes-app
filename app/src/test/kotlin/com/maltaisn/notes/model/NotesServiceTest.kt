@@ -20,9 +20,6 @@ import com.google.firebase.auth.FirebaseAuth
 import com.maltaisn.notes.model.NotesService.ChangeEventData
 import com.maltaisn.notes.model.NotesService.SyncData
 import com.maltaisn.notes.model.entity.ChangeEventType
-import com.maltaisn.notes.model.entity.Note
-import com.maltaisn.notes.model.entity.NoteStatus
-import com.maltaisn.notes.model.entity.NoteType
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import kotlinx.coroutines.runBlocking
@@ -45,10 +42,8 @@ class NotesServiceTest {
     @Test
     fun `should encode and decode sync data structures`() = runBlocking {
         // Note: ID is not serialized so ID 0 (the default) is used everywhere.
-        val note1 = Note(0, "1", NoteType.TEXT,
-                "note 1", "content 1", null, Date(), Date(), NoteStatus.ACTIVE)
-        val note2 = Note(0, "2", NoteType.LIST,
-                "list 2", "item 2", "metadata", Date(), Date(), NoteStatus.ARCHIVED)
+        val note1 = testNote()
+        val note2 = testNote()
         val syncData = SyncData(Date(), listOf(
                 ChangeEventData("1", note1, ChangeEventType.ADDED),
                 ChangeEventData("2", note2, ChangeEventType.UPDATED),

@@ -1,4 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?><!--
+<?xml version="1.0" encoding="utf-8"?>
+<!--
   Copyright 2020 Nicolas Maltais
 
   Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,6 +17,6 @@
 
 <resources>
 
-    <attr name="toolbarStyle" format="reference" />
+    <dimen name="edit_dragged_item_elevation">2dp</dimen>
 
 </resources>

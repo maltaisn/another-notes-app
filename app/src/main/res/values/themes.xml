@@ -51,13 +51,17 @@
         <item name="actionBarTheme">@style/ThemeOverlay.MaterialComponents.Toolbar.Primary</item>
         <item name="actionModeStyle">@style/ActionModeStyle</item>
         <item name="actionModeCloseDrawable">@drawable/ic_close</item>
-
-        <item name="editDraggedItemElevation">2dp</item>
     </style>
 
     <style name="ActionModeStyle" parent="Widget.AppCompat.ActionMode">
         <item name="background">?colorPrimary</item>
         <item name="titleTextStyle">@style/ActionModeTitleStyle</item>
+    </style>
+
+    <style name="SearchViewThemeOverlay">
+        <item name="android:editTextColor">?colorControlNormal</item>
+        <item name="android:textColorHint">@color/color_toolbar_hint</item>
+        <item name="android:colorControlActivated">@color/material_on_primary_emphasis_high_type</item>
     </style>
 
 </resources>

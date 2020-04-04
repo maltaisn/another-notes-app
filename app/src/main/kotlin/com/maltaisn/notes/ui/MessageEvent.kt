@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-package com.maltaisn.notes.ui.main
+package com.maltaisn.notes.ui
 
 import com.maltaisn.notes.R
 import com.maltaisn.notes.model.entity.NoteStatus
-import com.maltaisn.notes.ui.StatusChange
 
 
 sealed class MessageEvent {

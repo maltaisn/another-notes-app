@@ -23,7 +23,6 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.maltaisn.notes.model.converter.DateTimeConverter
 import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.model.entity.NoteStatus
-import com.maltaisn.notes.model.entity.NoteType
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.junit.After
@@ -53,16 +52,14 @@ class NotesDaoTest {
     }
 
     @Test
-    fun readWriteTests()  = runBlocking {
+    fun readWriteTests() = runBlocking {
         val time = DateTimeConverter.toDate("2020-01-01T00:00:00.000Z")
-        val note = Note(1, "1", NoteType.TEXT, "note", "content",
-                null, time, time, NoteStatus.ACTIVE)
+        val note = atestNote(id = 1, uuid = "1", title = "note")
 
         val id = notesDao.insert(note)
         assertEquals(note, notesDao.getById(id))
 
-        val updatedNote = Note(1, "1", NoteType.TEXT, "note update", "content",
-                null, time, time, NoteStatus.ACTIVE)
+        val updatedNote = atestNote(id = 1, uuid = "1", title = "updated note")
         notesDao.update(updatedNote)
         assertEquals(updatedNote, notesDao.getById(id))
         assertEquals(updatedNote, notesDao.getByUuid("1"))
@@ -74,9 +71,7 @@ class NotesDaoTest {
 
     @Test
     fun getIdByUuidTest() = runBlocking {
-        val time = DateTimeConverter.toDate("2020-01-01T00:00:00.000Z")
-        val note = Note(1, "1", NoteType.TEXT, "note", "content",
-                null, time, time, NoteStatus.ACTIVE)
+        val note = atestNote(id = 1, uuid = "1")
 
         notesDao.insert(note)
         assertEquals(1, notesDao.getIdByUuid("1"))
@@ -90,8 +85,7 @@ class NotesDaoTest {
         var id = 1L
         repeat(5) {
             for (status in NoteStatus.values()) {
-                val note = Note(id, id.toString(), NoteType.TEXT,"note",
-                        "content", null, time, time, status)
+                val note = atestNote(id = id, status = status, added = time, modified = time)
                 notesDao.insert(note)
                 if (status == NoteStatus.ACTIVE) {
                     activeNotes += note
@@ -110,10 +104,8 @@ class NotesDaoTest {
 
     @Test
     fun deleteByStatusTest() = runBlocking {
-        val time = DateTimeConverter.toDate("2020-01-01T00:00:00.000Z")
-        for ((i, status) in NoteStatus.values().withIndex()) {
-            val note = Note(0, i.toString(), NoteType.TEXT,"note",
-                    "content", null, time, time, status)
+        for (status in NoteStatus.values()) {
+            val note = atestNote(status = status)
             notesDao.insert(note)
         }
 
@@ -126,13 +118,19 @@ class NotesDaoTest {
 
     @Test
     fun searchNotesTest() = runBlocking {
-        val time = DateTimeConverter.toDate("2020-01-01T00:00:00.000Z")
-        val note = Note(1, "1", NoteType.TEXT, "note", "content", null, time, time, NoteStatus.ACTIVE)
-        notesDao.insert(note)
-        notesDao.insert(Note(2, "2", NoteType.TEXT, "title", "foo", null, time, time, NoteStatus.ACTIVE))
-        notesDao.insert(Note(3, "3", NoteType.TEXT, "my note", "bar", null, time, time, NoteStatus.ACTIVE))
+        val note0 = atestNote(id = 1, title = "note", content = "content")
+        notesDao.insert(note0)
+        notesDao.insert(atestNote(id = 2, title = "title", content = "foo"))
+        notesDao.insert(atestNote(id = 3, title = "my note", content = "bar"))
 
-        assertEquals(listOf(note), notesDao.search("content"))
+        val noteFlow = notesDao.search("content")
+        assertEquals(listOf(note0), noteFlow.first())
+
+        val note1 = atestNote(id = 4, title = "note copy", content = "content copy")
+        val note2 = atestNote(id = 5, title = "archived", content = "archived content", status = NoteStatus.ARCHIVED)
+        notesDao.insert(note1)
+        notesDao.insert(note2)
+        assertEquals(listOf(note1, note0, note2), noteFlow.first())
     }
 
 }

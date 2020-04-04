@@ -14,8 +14,6 @@
   limitations under the License.
   -->
 
-<resources>
-
-    <attr name="toolbarStyle" format="reference" />
-
-</resources>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:alpha="@dimen/material_emphasis_medium" android:color="?colorControlNormal" />
+</selector>
