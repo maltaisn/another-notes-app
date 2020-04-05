@@ -50,7 +50,7 @@ object DebugUtils {
                         append(getRandomString(16..128))
                         append('\n')
                     }
-                    deleteCharAt(length - 1)
+                    deleteCharAt(lastIndex)
                 }
                 metadata = json.stringify(ListNoteMetadata.serializer(),
                         ListNoteMetadata(List(size) { Random.nextBoolean() }))

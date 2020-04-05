@@ -49,14 +49,14 @@ class BulletTextWatcher : TextWatcher {
             if (bullet in Note.BULLET_CHARS) {
                 // Get the bullet text, i.e the bullet with all following whitespaces.
                 val bulletText = buildString {
-                    this.append(bullet)
+                    append(bullet)
                     pos = lineStart + 1
                     while (pos < start) {
                         val c = text[pos]
                         if (!c.isWhitespace()) {
                             break
                         }
-                        this.append(text[pos])
+                        append(text[pos])
                         pos++
                     }
                 }

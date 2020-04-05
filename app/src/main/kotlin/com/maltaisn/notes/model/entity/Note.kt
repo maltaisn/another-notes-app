@@ -44,7 +44,6 @@ data class Note(
          * UUID used to identify the note uniquely.
          */
         @ColumnInfo(name = "uuid", index = true)
-        @SerialName("uuid")
         val uuid: String,
 
         /**
@@ -152,7 +151,7 @@ data class Note(
                             append(line)
                             append('\n')
                         }
-                        deleteCharAt(length - 1)
+                        deleteCharAt(lastIndex)
                     }
                 }
                 metadata = null
@@ -166,7 +165,7 @@ data class Note(
                             append(line.substring(1).trim())
                             append('\n')
                         }
-                        deleteCharAt(length - 1)
+                        deleteCharAt(lastIndex)
                     }
                 } else {
                     this.content
