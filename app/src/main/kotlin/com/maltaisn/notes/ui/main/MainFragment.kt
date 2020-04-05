@@ -61,6 +61,7 @@ class MainFragment : NoteFragment(), Toolbar.OnMenuItemClickListener {
         val navController = findNavController()
 
         // Toolbar
+        val toolbar: Toolbar = view.findViewById(R.id.toolbar)
         toolbar.setNavigationOnClickListener {
             drawerLayout.openDrawer(GravityCompat.START)
         }

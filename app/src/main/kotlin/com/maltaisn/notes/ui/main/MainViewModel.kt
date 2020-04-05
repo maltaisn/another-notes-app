@@ -127,7 +127,7 @@ class MainViewModel @Inject constructor(
             // Add note items
             for (note in notes) {
                 val checked = selectedNotes.any { it.id == note.id }
-                this += NoteItem(note.id, note, checked)
+                this += NoteItem(note.id, note, checked, emptyList(), emptyList())
             }
         }
     }

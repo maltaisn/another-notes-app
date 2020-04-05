@@ -41,10 +41,12 @@ class NoteListDiffCallback : DiffUtil.ItemCallback<NoteListItem>() {
                 // Only checked state, title, content and metadata
                 // have influence on visual representation of notes.
                 old as NoteItem
-                new.checked == old.checked &&
-                        new.note.title == old.note.title &&
-                        new.note.content == old.note.content &&
-                        new.note.metadata == old.note.metadata
+                new.checked == old.checked
+                        && new.titleHighlights == old.titleHighlights
+                        && new.contentHighlights == old.contentHighlights
+                        && new.note.title == old.note.title
+                        && new.note.content == old.note.content
+                        && new.note.metadata == old.note.metadata
             }
         }
     }

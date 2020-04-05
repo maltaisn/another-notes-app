@@ -146,7 +146,6 @@ abstract class NoteViewModel(
         }
 
         viewModelScope.launch {
-            // Change the status for all notes.
             val date = Date()
             val oldNotes = notes.toList()
             val newNotes = oldNotes.map { it.copy(status = newStatus, lastModifiedDate = date) }

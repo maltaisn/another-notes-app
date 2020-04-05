@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.maltaisn.notes.model
+package com.maltaisn.notes
 
 import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.model.entity.NoteStatus

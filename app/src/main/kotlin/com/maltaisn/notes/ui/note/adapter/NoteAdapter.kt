@@ -21,6 +21,7 @@ import android.content.Context
 import android.graphics.Canvas
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -79,6 +80,9 @@ class NoteAdapter(val context: Context, val json: Json, val callback: Callback) 
         }
     })
 
+    val highlightBackgroundColor = ContextCompat.getColor(context, R.color.colorHighlight)
+    val highlightForegroundColor = ContextCompat.getColor(context, R.color.colorOnHighlight)
+
 
     init {
         setHasStableIds(true)
@@ -113,7 +117,7 @@ class NoteAdapter(val context: Context, val json: Json, val callback: Callback) 
                 if (holder is ListNoteViewHolder) {
                     unbindListNoteViewHolder(holder)
                 }
-                holder.bind(item as NoteItem, this)
+                holder.bind(this, item as NoteItem)
             }
         }
     }

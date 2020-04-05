@@ -30,5 +30,7 @@
     <color name="colorOnBackground">#ffffff</color>
     <color name="colorOnSurface">#ffffff</color>
     <color name="colorOnError">#000000</color>
+    <color name="colorHighlight">#ffe57f</color>
+    <color name="colorOnHighlight">#000000</color>
 
 </resources>

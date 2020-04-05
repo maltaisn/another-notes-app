@@ -20,6 +20,7 @@ import android.content.SharedPreferences
 import com.maltaisn.notes.PreferenceHelper
 import com.maltaisn.notes.model.entity.ChangeEvent
 import com.maltaisn.notes.model.entity.ChangeEventType
+import com.maltaisn.notes.testNote
 import com.nhaarman.mockitokotlin2.*
 import kotlinx.coroutines.runBlocking
 import org.junit.Test

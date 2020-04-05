@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-package com.maltaisn.notes.model
+package com.maltaisn.notes.model.entity
 
-import com.maltaisn.notes.model.entity.ListNoteItem
-import com.maltaisn.notes.model.entity.Note
-import com.maltaisn.notes.model.entity.NoteType
+import com.maltaisn.notes.listNote
+import com.maltaisn.notes.testNote
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
 import org.junit.Test

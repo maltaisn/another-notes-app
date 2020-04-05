@@ -26,15 +26,18 @@ sealed class NoteListItem(open val id: Long) {
     abstract val type: Int
 }
 
-data class NoteItem(override val id: Long, val note: Note, val checked: Boolean) : NoteListItem(id) {
+data class NoteItem(override val id: Long, val note: Note, val checked: Boolean,
+                    val titleHighlights: List<IntRange>,
+                    val contentHighlights: List<IntRange>) : NoteListItem(id) {
     override val type: Int
         get() = when (note.type) {
             NoteType.TEXT -> NoteAdapter.VIEW_TYPE_TEXT_NOTE
             NoteType.LIST -> NoteAdapter.VIEW_TYPE_LIST_NOTE
         }
+
 }
 
-class HeaderItem(id: Long, @StringRes val title: Int): NoteListItem(id) {
+class HeaderItem(id: Long, @StringRes val title: Int) : NoteListItem(id) {
     override val type: Int
         get() = NoteAdapter.VIEW_TYPE_HEADER
 }

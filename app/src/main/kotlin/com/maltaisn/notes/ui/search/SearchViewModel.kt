@@ -23,12 +23,14 @@ import com.maltaisn.notes.R
 import com.maltaisn.notes.model.NotesRepository
 import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.model.entity.NoteStatus
+import com.maltaisn.notes.ui.note.HighlightHelper
 import com.maltaisn.notes.ui.note.NoteViewModel
 import com.maltaisn.notes.ui.note.adapter.HeaderItem
 import com.maltaisn.notes.ui.note.adapter.NoteAdapter
 import com.maltaisn.notes.ui.note.adapter.NoteItem
 import com.maltaisn.notes.ui.note.adapter.NoteListLayoutMode
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -38,8 +40,8 @@ class SearchViewModel @Inject constructor(
         notesRepository: NotesRepository,
         prefs: SharedPreferences) : NoteViewModel(notesRepository, prefs), NoteAdapter.Callback {
 
+    private var lastQuery = ""
     private var noteListJob: Job? = null
-
 
     init {
         val layoutModeVal = prefs.getInt(PreferenceHelper.LIST_LAYOUT_MODE,
@@ -47,14 +49,16 @@ class SearchViewModel @Inject constructor(
         _listLayoutMode.value = NoteListLayoutMode.values().find { it.value == layoutModeVal }
     }
 
-
     fun searchNotes(query: String) {
-        // Cancel previous flow collection
+        lastQuery = query
+
+        // Cancel previous flow collection / debounce
         noteListJob?.cancel()
 
         // Update note items live data when database flow emits a list.
         val cleanedQuery = SearchQueryCleaner.clean(query)
         noteListJob = viewModelScope.launch {
+            delay(200)
             notesRepository.searchNotes(cleanedQuery).collect { notes ->
                 createListItems(notes)
             }
@@ -78,8 +82,6 @@ class SearchViewModel @Inject constructor(
 
     private fun createListItems(notes: List<Note>) {
         listItems = buildList {
-            // TODO add header item for archived
-
             var addedArchivedHeader = false
             for (note in notes) {
                 val checked = selectedNotes.any { it.id == note.id }
@@ -87,7 +89,11 @@ class SearchViewModel @Inject constructor(
                     this += HeaderItem(-1, R.string.note_location_archived)
                     addedArchivedHeader = true
                 }
-                this += NoteItem(note.id, note, checked)
+
+                val titleHighlights = HighlightHelper.findHighlightsInString(note.title, lastQuery, 2)
+                val contentHighlights = HighlightHelper.findHighlightsInString(note.content, lastQuery, 10)
+
+                this += NoteItem(note.id, note, checked, titleHighlights, contentHighlights)
             }
         }
     }

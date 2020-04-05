@@ -25,7 +25,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.google.android.material.snackbar.Snackbar
@@ -50,9 +49,8 @@ abstract class NoteFragment : Fragment(), ActionMode.Callback {
 
     @Inject lateinit var json: Json
 
-    protected lateinit var toolbar: Toolbar
     protected lateinit var drawerLayout: DrawerLayout
-    protected var actionMode: ActionMode? = null
+    private var actionMode: ActionMode? = null
 
 
     override fun onCreate(state: Bundle?) {
@@ -66,10 +64,9 @@ abstract class NoteFragment : Fragment(), ActionMode.Callback {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val context = requireContext()
         val activity = requireActivity()
-        val navController = findNavController()
 
         // Setup toolbar with drawer
-        toolbar = view.findViewById(R.id.toolbar)
+        val toolbar: Toolbar = view.findViewById(R.id.toolbar)
         drawerLayout = activity.findViewById(R.id.drawer_layout)
 
         // Recycler view
@@ -86,7 +83,7 @@ abstract class NoteFragment : Fragment(), ActionMode.Callback {
         })
 
         viewModel.listLayoutMode.observe(viewLifecycleOwner, Observer { mode ->
-            layoutManager.spanCount =  when (mode!!) {
+            layoutManager.spanCount = when (mode!!) {
                 NoteListLayoutMode.LIST -> 1
                 NoteListLayoutMode.GRID -> 2
             }

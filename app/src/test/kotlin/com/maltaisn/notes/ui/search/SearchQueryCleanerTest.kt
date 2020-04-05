@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-package com.maltaisn.notes.model
+package com.maltaisn.notes.ui.search
 
-import com.maltaisn.notes.ui.search.SearchQueryCleaner
 import org.junit.Test
 import kotlin.test.assertEquals
 

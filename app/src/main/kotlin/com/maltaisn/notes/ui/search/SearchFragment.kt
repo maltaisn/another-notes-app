@@ -21,8 +21,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.SearchView
+import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.SimpleItemAnimator
 import com.maltaisn.notes.App
 import com.maltaisn.notes.R
 import com.maltaisn.notes.hideKeyboard
@@ -50,22 +53,29 @@ class SearchFragment : NoteFragment() {
         val navController = findNavController()
         
         // Toolbar
+        val toolbar: Toolbar = view.findViewById(R.id.toolbar)
         toolbar.setNavigationIcon(R.drawable.ic_arrow_left)
         toolbar.setNavigationOnClickListener {
             view.hideKeyboard()
             navController.popBackStack()
         }
 
+        // Recycler view
+        val rcv: RecyclerView = view.findViewById(R.id.rcv_notes)
+        (rcv.itemAnimator as SimpleItemAnimator).supportsChangeAnimations = false
+
         // Search view
         val searchView = toolbar.menu.findItem(R.id.item_search_edt).actionView as SearchView
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String): Boolean {
                 view.hideKeyboard()
-                viewModel.searchNotes(query)
                 return true
             }
 
-            override fun onQueryTextChange(newText: String?) = false
+            override fun onQueryTextChange(query: String): Boolean {
+                viewModel.searchNotes(query)
+                return false
+            }
         })
         searchView.showKeyboard()
 

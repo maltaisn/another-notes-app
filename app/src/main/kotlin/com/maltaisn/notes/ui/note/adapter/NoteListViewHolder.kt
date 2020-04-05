@@ -16,6 +16,7 @@
 
 package com.maltaisn.notes.ui.note.adapter
 
+import android.graphics.Color
 import android.view.View
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -27,8 +28,10 @@ import com.google.android.material.card.MaterialCardView
 import com.maltaisn.notes.R
 import com.maltaisn.notes.model.entity.ListNoteItem
 import com.maltaisn.notes.model.entity.NoteType
+import com.maltaisn.notes.ui.note.HighlightHelper
 import kotlin.math.min
 
+val HIGHLIGHT_COLOR = Color.rgb(0, 200, 255)
 
 abstract class NoteViewHolder(itemView: View) :
         RecyclerView.ViewHolder(itemView) {
@@ -36,10 +39,10 @@ abstract class NoteViewHolder(itemView: View) :
     private val cardView = itemView as MaterialCardView
     private val titleTxv: TextView = itemView.findViewById(R.id.txv_title)
 
-    open fun bind(item: NoteItem, adapter: NoteAdapter) {
-        val title = item.note.title
-        titleTxv.text = title
-        titleTxv.isVisible = title.isNotBlank()
+    open fun bind(adapter: NoteAdapter, item: NoteItem) {
+        titleTxv.text = HighlightHelper.getHighlightedText(item.note.title, item.titleHighlights,
+                adapter.highlightBackgroundColor, adapter.highlightForegroundColor)
+        titleTxv.isVisible = item.note.title.isNotBlank()
 
         cardView.isChecked = item.checked
         cardView.setOnClickListener {
@@ -57,11 +60,12 @@ class TextNoteViewHolder(itemView: View) : NoteViewHolder(itemView) {
 
     private val contentTxv: TextView = itemView.findViewById(R.id.txv_content)
 
-    override fun bind(item: NoteItem, adapter: NoteAdapter) {
-        super.bind(item, adapter)
+    override fun bind(adapter: NoteAdapter, item: NoteItem) {
+        super.bind(adapter, item)
         require(item.note.type == NoteType.TEXT)
 
-        contentTxv.text = item.note.content
+        contentTxv.text = HighlightHelper.getHighlightedText(item.note.content, item.contentHighlights,
+                adapter.highlightBackgroundColor, adapter.highlightForegroundColor)
         contentTxv.maxLines = adapter.listLayoutMode.maxTextLines
     }
 }
@@ -73,8 +77,8 @@ class ListNoteViewHolder(itemView: View) : NoteViewHolder(itemView) {
 
     private val itemViewHolders = mutableListOf<ListNoteItemViewHolder>()
 
-    override fun bind(item: NoteItem, adapter: NoteAdapter) {
-        super.bind(item, adapter)
+    override fun bind(adapter: NoteAdapter, item: NoteItem) {
+        super.bind(adapter, item)
         require(item.note.type == NoteType.LIST)
         require(itemViewHolders.isEmpty())
 
@@ -83,11 +87,13 @@ class ListNoteViewHolder(itemView: View) : NoteViewHolder(itemView) {
         // Add first items in list using view holders in pool.
         // Only the first few items are shown.
         val noteItems = item.note.getListItems(adapter.json)
+        val itemHighlights = HighlightHelper.splitListNoteHighlightsByItem(
+                noteItems, item.contentHighlights)
         for (i in 0 until min(maxItems, noteItems.size)) {
             val noteItem = noteItems[i]
             val viewHolder = adapter.obtainListNoteItemViewHolder()
             itemViewHolders += viewHolder
-            viewHolder.bind(noteItem)
+            viewHolder.bind(adapter, noteItem, itemHighlights[i])
             itemLayout.addView(viewHolder.itemView, i + 1)
         }
 
@@ -143,10 +149,12 @@ class HeaderViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 class ListNoteItemViewHolder(val itemView: View) {
 
     private val checkImv: ImageView = itemView.findViewById(R.id.imv_item_checkbox)
-    private val titleTxv: TextView = itemView.findViewById(R.id.txv_item_title)
+    private val contentTxv: TextView = itemView.findViewById(R.id.txv_item_content)
 
-    fun bind(item: ListNoteItem) {
-        titleTxv.text = item.content
+    fun bind(adapter: NoteAdapter, item: ListNoteItem, highlights: List<IntRange>) {
+        contentTxv.text = HighlightHelper.getHighlightedText(item.content, highlights,
+                adapter.highlightBackgroundColor, adapter.highlightForegroundColor)
+
         checkImv.setImageResource(if (item.checked) {
             R.drawable.ic_checkbox_on
         } else {

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.maltaisn.notes.model
+package com.maltaisn.notes
 
 import com.maltaisn.notes.model.entity.*
 import kotlinx.serialization.json.Json

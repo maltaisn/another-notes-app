@@ -20,6 +20,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.maltaisn.notes.model.NotesService.ChangeEventData
 import com.maltaisn.notes.model.NotesService.SyncData
 import com.maltaisn.notes.model.entity.ChangeEventType
+import com.maltaisn.notes.testNote
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import kotlinx.coroutines.runBlocking
