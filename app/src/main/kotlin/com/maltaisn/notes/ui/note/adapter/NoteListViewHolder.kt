@@ -128,7 +128,16 @@ class MessageViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
         (itemView.layoutParams as StaggeredGridLayoutManager.LayoutParams).isFullSpan = true
     }
+}
 
+class HeaderViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+
+    private val titleTxv = itemView as TextView
+
+    fun bind(item: HeaderItem) {
+        titleTxv.setText(item.title)
+        (itemView.layoutParams as StaggeredGridLayoutManager.LayoutParams).isFullSpan = true
+    }
 }
 
 class ListNoteItemViewHolder(val itemView: View) {

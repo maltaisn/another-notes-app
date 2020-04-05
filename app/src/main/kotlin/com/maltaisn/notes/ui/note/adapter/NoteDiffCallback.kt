@@ -29,6 +29,14 @@ class NoteListDiffCallback : DiffUtil.ItemCallback<NoteListItem>() {
         }
 
         return when (new) {
+            is MessageItem -> {
+                old as MessageItem
+                new.message == old.message
+            }
+            is HeaderItem -> {
+                old as HeaderItem
+                new.title == old.title
+            }
             is NoteItem -> {
                 // Only checked state, title, content and metadata
                 // have influence on visual representation of notes.
@@ -37,10 +45,6 @@ class NoteListDiffCallback : DiffUtil.ItemCallback<NoteListItem>() {
                         new.note.title == old.note.title &&
                         new.note.content == old.note.content &&
                         new.note.metadata == old.note.metadata
-            }
-            is MessageItem -> {
-                old as MessageItem
-                new.message == old.message
             }
         }
     }

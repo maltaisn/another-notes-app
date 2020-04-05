@@ -19,10 +19,12 @@ package com.maltaisn.notes.ui.search
 import android.content.SharedPreferences
 import androidx.lifecycle.viewModelScope
 import com.maltaisn.notes.PreferenceHelper
+import com.maltaisn.notes.R
 import com.maltaisn.notes.model.NotesRepository
 import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.model.entity.NoteStatus
 import com.maltaisn.notes.ui.note.NoteViewModel
+import com.maltaisn.notes.ui.note.adapter.HeaderItem
 import com.maltaisn.notes.ui.note.adapter.NoteAdapter
 import com.maltaisn.notes.ui.note.adapter.NoteItem
 import com.maltaisn.notes.ui.note.adapter.NoteListLayoutMode
@@ -77,8 +79,13 @@ class SearchViewModel @Inject constructor(
         listItems = buildList {
             // TODO add header item for archived
 
+            var addedArchivedHeader = false
             for (note in notes) {
                 val checked = selectedNotes.any { it.id == note.id }
+                if (!addedArchivedHeader && note.status == NoteStatus.ARCHIVED) {
+                    this += HeaderItem(-1, R.string.note_location_archived)
+                    addedArchivedHeader = true
+                }
                 this += NoteItem(note.id, note, checked)
             }
         }

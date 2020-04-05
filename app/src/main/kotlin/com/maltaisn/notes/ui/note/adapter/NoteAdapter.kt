@@ -94,6 +94,8 @@ class NoteAdapter(val context: Context, val json: Json, val callback: Callback) 
         return when (viewType) {
             VIEW_TYPE_MESSAGE -> MessageViewHolder(inflater.inflate(
                     R.layout.item_message, parent, false))
+            VIEW_TYPE_HEADER -> HeaderViewHolder(inflater.inflate(
+                    R.layout.item_header, parent, false))
             VIEW_TYPE_TEXT_NOTE -> TextNoteViewHolder(inflater.inflate(
                     R.layout.item_note_text, parent, false))
             VIEW_TYPE_LIST_NOTE -> ListNoteViewHolder(inflater.inflate(
@@ -106,6 +108,7 @@ class NoteAdapter(val context: Context, val json: Json, val callback: Callback) 
         val item = getItem(position)
         when (holder) {
             is MessageViewHolder -> holder.bind(item as MessageItem, this)
+            is HeaderViewHolder -> holder.bind(item as HeaderItem)
             is NoteViewHolder -> {
                 if (holder is ListNoteViewHolder) {
                     unbindListNoteViewHolder(holder)
@@ -153,7 +156,8 @@ class NoteAdapter(val context: Context, val json: Json, val callback: Callback) 
 
     companion object {
         const val VIEW_TYPE_MESSAGE = 0
-        const val VIEW_TYPE_TEXT_NOTE = 1
-        const val VIEW_TYPE_LIST_NOTE = 2
+        const val VIEW_TYPE_HEADER = 1
+        const val VIEW_TYPE_TEXT_NOTE = 10
+        const val VIEW_TYPE_LIST_NOTE = 11
     }
 }

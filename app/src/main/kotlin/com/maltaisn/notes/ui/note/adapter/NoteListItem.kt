@@ -16,6 +16,8 @@
 
 package com.maltaisn.notes.ui.note.adapter
 
+import androidx.annotation.PluralsRes
+import androidx.annotation.StringRes
 import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.model.entity.NoteType
 
@@ -32,7 +34,13 @@ data class NoteItem(override val id: Long, val note: Note, val checked: Boolean)
         }
 }
 
-class MessageItem(id: Long, val message: Int, vararg val args: Any) : NoteListItem(id) {
+class HeaderItem(id: Long, @StringRes val title: Int): NoteListItem(id) {
+    override val type: Int
+        get() = NoteAdapter.VIEW_TYPE_HEADER
+}
+
+class MessageItem(id: Long, @StringRes @PluralsRes val message: Int,
+                  vararg val args: Any) : NoteListItem(id) {
     override val type: Int
         get() = NoteAdapter.VIEW_TYPE_MESSAGE
 }
