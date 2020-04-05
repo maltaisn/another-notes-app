@@ -125,26 +125,37 @@ abstract class NoteViewModel(
     }
 
     private fun setAllSelected(selected: Boolean) {
-        changeListItems { list ->
-            for ((i, item) in list.withIndex()) {
-                if (item is NoteItem && item.checked != selected) {
-                    list[i] = item.copy(checked = selected)
-                    if (selected) {
-                        selectedNotes += item.note
-                    } else {
-                        selectedNotes -= item.note
-                    }
+        if (!selected && selectedNotes.isEmpty()) {
+            // Already all unselected.
+            return
+        }
+
+        val selectedBefore = selectedNotes.size
+        val newList = listItems.toMutableList()
+        for ((i, item) in listItems.withIndex()) {
+            if (item is NoteItem && item.checked != selected) {
+                newList[i] = item.copy(checked = selected)
+                if (selected) {
+                    selectedNotes += item.note
+                } else {
+                    selectedNotes -= item.note
                 }
             }
         }
-        _currentSelection.value = NoteSelection(selectedNotes.size, selectedNoteStatus)
+
+        if (selectedBefore != selectedNotes.size) {
+            // If selection changed, update list and counter.
+            listItems = newList
+            _currentSelection.value = NoteSelection(selectedNotes.size, selectedNoteStatus)
+        }
     }
 
-    protected fun changeNotesStatus(notes: Collection<Note>, newStatus: NoteStatus) {
+    protected fun changeNotesStatus(notes: Set<Note>, newStatus: NoteStatus) {
         if (notes.isEmpty()) {
             return
         }
 
+        // Update the status in database
         viewModelScope.launch {
             val date = Date()
             val oldNotes = notes.toList()

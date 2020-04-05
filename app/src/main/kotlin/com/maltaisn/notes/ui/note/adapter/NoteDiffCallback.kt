@@ -41,12 +41,15 @@ class NoteListDiffCallback : DiffUtil.ItemCallback<NoteListItem>() {
                 // Only checked state, title, content and metadata
                 // have influence on visual representation of notes.
                 old as NoteItem
+                val oldNote = old.note
+                val newNote = new.note
                 new.checked == old.checked
                         && new.titleHighlights == old.titleHighlights
                         && new.contentHighlights == old.contentHighlights
-                        && new.note.title == old.note.title
-                        && new.note.content == old.note.content
-                        && new.note.metadata == old.note.metadata
+                        && newNote.title == oldNote.title
+                        && newNote.content == oldNote.content
+                        && newNote.metadata == oldNote.metadata
+                        && newNote.status == oldNote.status
             }
         }
     }

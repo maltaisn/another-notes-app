@@ -69,6 +69,9 @@ class SearchViewModel @Inject constructor(
         get() {
             // If a single note is active, treat all as active.
             // Otherwise all notes are archived. Deleted notes are never shown in search.
+            if (selectedNotes.isEmpty()) {
+                return null
+            }
             for (note in selectedNotes) {
                 if (note.status == NoteStatus.ACTIVE) {
                     return NoteStatus.ACTIVE

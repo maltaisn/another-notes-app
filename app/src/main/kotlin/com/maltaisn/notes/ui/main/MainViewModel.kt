@@ -109,7 +109,7 @@ class MainViewModel @Inject constructor(
     override fun onNoteSwiped(pos: Int) {
         // Archive note
         val note = (noteItems.value!![pos] as NoteItem).note
-        changeNotesStatus(listOf(note), NoteStatus.ARCHIVED)
+        changeNotesStatus(setOf(note), NoteStatus.ARCHIVED)
     }
 
     private fun createListItems(status: NoteStatus, notes: List<Note>) {
