@@ -18,7 +18,9 @@ package com.maltaisn.notes.ui.main
 
 import android.content.SharedPreferences
 import android.text.format.DateUtils
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import com.maltaisn.notes.DebugUtils
 import com.maltaisn.notes.PreferenceHelper
 import com.maltaisn.notes.R
@@ -40,7 +42,7 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor(
         notesRepository: NotesRepository,
         prefs: SharedPreferences
-) : NoteViewModel(notesRepository, prefs), NoteAdapter.Callback, LifecycleObserver {
+) : NoteViewModel(notesRepository, prefs), NoteAdapter.Callback {
 
     private var noteListJob: Job? = null
 
@@ -61,7 +63,6 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
     fun onResume() {
         viewModelScope.launch {
             notesRepository.deleteOldNotesInTrash()
