@@ -17,9 +17,8 @@
 package com.maltaisn.notes.ui.main
 
 import android.content.SharedPreferences
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
+import android.text.format.DateUtils
+import androidx.lifecycle.*
 import com.maltaisn.notes.DebugUtils
 import com.maltaisn.notes.PreferenceHelper
 import com.maltaisn.notes.R
@@ -32,6 +31,7 @@ import com.maltaisn.notes.ui.note.adapter.NoteAdapter
 import com.maltaisn.notes.ui.note.adapter.NoteItem
 import com.maltaisn.notes.ui.note.adapter.NoteListLayoutMode
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -39,7 +39,7 @@ import javax.inject.Inject
 
 class MainViewModel @Inject constructor(
         notesRepository: NotesRepository,
-        prefs: SharedPreferences) : NoteViewModel(notesRepository, prefs), NoteAdapter.Callback {
+        prefs: SharedPreferences) : NoteViewModel(notesRepository, prefs), NoteAdapter.Callback, LifecycleObserver {
 
     private var noteListJob: Job? = null
 
@@ -50,8 +50,22 @@ class MainViewModel @Inject constructor(
 
     init {
         setNoteStatus(NoteStatus.ACTIVE)
+
+        // Job to periodically remove old notes in trash
+        viewModelScope.launch {
+            while (true) {
+                notesRepository.deleteOldNotesInTrash()
+                delay(TRASH_AUTO_DELETE_INTERVAL)
+            }
+        }
     }
 
+    @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
+    fun onResume() {
+        viewModelScope.launch {
+            notesRepository.deleteOldNotesInTrash()
+        }
+    }
 
     fun setNoteStatus(status: NoteStatus) {
         _noteStatus.value = status
@@ -118,7 +132,7 @@ class MainViewModel @Inject constructor(
                 // If needed, add reminder that notes get auto-deleted when in trash.
                 val lastReminder = prefs.getLong(PreferenceHelper.LAST_TRASH_REMIND_TIME, 0)
                 if (System.currentTimeMillis() - lastReminder >
-                        PreferenceHelper.TRASH_REMINDER_DELAY * 86400000L) {
+                        PreferenceHelper.TRASH_REMINDER_DELAY * DateUtils.DAY_IN_MILLIS) {
                     this += MessageItem(TRASH_REMINDER_ITEM_ID, R.string.message_trash_reminder,
                             PreferenceHelper.TRASH_AUTO_DELETE_DELAY)
                 }
@@ -134,6 +148,7 @@ class MainViewModel @Inject constructor(
 
     companion object {
         private const val TRASH_REMINDER_ITEM_ID = -1L
+        private const val TRASH_AUTO_DELETE_INTERVAL = DateUtils.HOUR_IN_MILLIS
     }
 
 }

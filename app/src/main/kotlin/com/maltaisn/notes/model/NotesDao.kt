@@ -20,6 +20,7 @@ import androidx.room.*
 import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.model.entity.NoteStatus
 import kotlinx.coroutines.flow.Flow
+import java.util.*
 
 
 @Dao
@@ -45,6 +46,9 @@ interface NotesDao {
 
     @Query("DELETE FROM notes WHERE status == :status")
     suspend fun deleteByStatus(status: NoteStatus)
+
+    @Query("DELETE FROM notes WHERE status == :status AND modified_date < :minDate")
+    suspend fun deleteByStatusAndDate(status: NoteStatus, minDate: Date)
 
     @Query("SELECT * FROM notes WHERE id == :id")
     suspend fun getById(id: Long): Note?

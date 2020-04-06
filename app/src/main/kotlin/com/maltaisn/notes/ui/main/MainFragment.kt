@@ -116,6 +116,8 @@ class MainFragment : NoteFragment(), Toolbar.OnMenuItemClickListener {
         viewModel.editItemEvent.observe(viewLifecycleOwner, EventObserver { item ->
             navController.navigate(MainFragmentDirections.actionMainToEdit(item.note.id))
         })
+
+        lifecycle.addObserver(viewModel)
     }
 
     fun changeShownNotesStatus(status: NoteStatus) {

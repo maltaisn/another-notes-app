@@ -118,6 +118,29 @@ class NotesDaoTest {
     }
 
     @Test
+    fun deleteByStatusAndDateTest() = runBlocking {
+        val dates = listOf(
+                "2019-01-01T00:00:00.000Z",
+                "2019-05-01T00:00:00.000Z",
+                "2019-12-31T12:34:56.789Z",
+                "2019-12-31T23:59:59.999Z",
+                "2020-01-01T00:00:00.000Z",
+                "2020-01-02T00:00:00.000Z")
+        val notes = dates.mapIndexed { i, date ->
+            val note = atestNote(id = i + 1L, modified = DateTimeConverter.toDate(date),
+                    status = NoteStatus.TRASHED)
+            notesDao.insert(note)
+            note
+        }
+
+        notesDao.deleteByStatusAndDate(NoteStatus.TRASHED,
+                DateTimeConverter.toDate("2020-01-01T00:00:00.000Z"))
+
+        assertEquals(setOf(notes[5], notes[4]),
+                notesDao.getByStatus(NoteStatus.TRASHED).first().toSet())
+    }
+
+    @Test
     fun searchNotesTest() = runBlocking {
         val note0 = atestNote(id = 1, title = "note", content = "content")
         notesDao.insert(note0)

@@ -18,6 +18,7 @@
 package com.maltaisn.notes.model
 
 import android.content.SharedPreferences
+import android.text.format.DateUtils
 import com.maltaisn.notes.PreferenceHelper
 import com.maltaisn.notes.model.entity.ChangeEvent
 import com.maltaisn.notes.model.entity.ChangeEventType
@@ -65,11 +66,17 @@ class NotesRepository @Inject constructor(
 
     suspend fun getById(id: Long) = notesDao.getById(id)
 
-    suspend fun searchNotes(query: String) = notesDao.search(query)
+    fun searchNotes(query: String) = notesDao.search(query)
 
     fun getNotesByStatus(status: NoteStatus) = notesDao.getByStatus(status)
 
     suspend fun emptyTrash() = notesDao.deleteByStatus(NoteStatus.TRASHED)
+
+    suspend fun deleteOldNotesInTrash() {
+        val delay = PreferenceHelper.TRASH_AUTO_DELETE_DELAY * DateUtils.DAY_IN_MILLIS
+        val minDate = Date(System.currentTimeMillis() - delay)
+        notesDao.deleteByStatusAndDate(NoteStatus.TRASHED, minDate)
+    }
 
     suspend fun syncNotes() {
         // Create a list of local changes to send

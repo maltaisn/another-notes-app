@@ -58,7 +58,7 @@ class SearchViewModel @Inject constructor(
         // Update note items live data when database flow emits a list.
         val cleanedQuery = SearchQueryCleaner.clean(query)
         noteListJob = viewModelScope.launch {
-            delay(200)
+            delay(100)
             notesRepository.searchNotes(cleanedQuery).collect { notes ->
                 createListItems(notes)
             }
