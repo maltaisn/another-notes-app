@@ -71,7 +71,7 @@ class HighlightHelperTest {
                 ListNoteItem("foo bar", false),
                 ListNoteItem("hello", false),
                 ListNoteItem("world", false))
-        val note = listNote(json, items = items)
+        val note = listNote(items)
         val highlights = HighlightHelper.findHighlightsInString(note.content, "o")
         assertEquals(listOf(emptyList(), listOf(1..2, 2..3), listOf(4..5), listOf(1..2)),
                 HighlightHelper.splitListNoteHighlightsByItem(items, highlights))

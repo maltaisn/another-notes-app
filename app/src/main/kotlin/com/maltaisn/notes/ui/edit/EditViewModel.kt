@@ -22,24 +22,20 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.maltaisn.notes.model.NotesRepository
-import com.maltaisn.notes.model.entity.ListNoteMetadata
-import com.maltaisn.notes.model.entity.Note
-import com.maltaisn.notes.model.entity.NoteStatus
-import com.maltaisn.notes.model.entity.NoteType
+import com.maltaisn.notes.model.entity.*
 import com.maltaisn.notes.ui.Event
 import com.maltaisn.notes.ui.MessageEvent
 import com.maltaisn.notes.ui.ShareData
 import com.maltaisn.notes.ui.StatusChange
 import com.maltaisn.notes.ui.edit.adapter.*
 import kotlinx.coroutines.launch
-import kotlinx.serialization.json.Json
 import java.util.*
 import javax.inject.Inject
 
 
 class EditViewModel @Inject constructor(
-        private val notesRepository: NotesRepository,
-        private val json: Json) : ViewModel(), EditAdapter.Callback {
+        private val notesRepository: NotesRepository
+) : ViewModel(), EditAdapter.Callback {
 
     private var note: Note = BLANK_NOTE
     private var listItems = mutableListOf<EditListItem>()
@@ -89,8 +85,8 @@ class EditViewModel @Inject constructor(
             if (note == null) {
                 // Note doesn't exist, create new blank text note.
                 val date = Date()
-                note = Note(Note.NO_ID, Note.generateNoteUuid(), NoteType.TEXT,
-                        "", "", null, date, date, NoteStatus.ACTIVE)
+                note = BLANK_NOTE.copy(uuid = Note.generateNoteUuid(),
+                        addedDate = date, lastModifiedDate = date)
                 val id = notesRepository.insertNote(note)
                 note = note.copy(id = id)
             }
@@ -107,18 +103,17 @@ class EditViewModel @Inject constructor(
         // Create note
         val title = titleItem!!.title.toString()
         val content: String
-        val metadata: String?
+        val metadata: NoteMetadata
         when (note.type) {
             NoteType.TEXT -> {
                 content = contentItem!!.content.toString()
-                metadata = null
+                metadata = BlankNoteMetadata
             }
             NoteType.LIST -> {
                 @Suppress("UNCHECKED_CAST")
                 val items = listItems.subList(1, listItems.size - 1) as List<EditItemItem>
                 content = items.joinToString("\n") { it.content }
-                metadata = json.stringify(ListNoteMetadata.serializer(),
-                        ListNoteMetadata(items.map { it.checked }))
+                metadata = ListNoteMetadata(items.map { it.checked })
             }
         }
         note = Note(note.id, note.uuid, note.type, title, content, metadata,
@@ -151,7 +146,7 @@ class EditViewModel @Inject constructor(
             NoteType.TEXT -> NoteType.LIST
             NoteType.LIST -> NoteType.TEXT
         }
-        note = note.convertToType(newType, json)
+        note = note.convertToType(newType)
         _noteType.value = newType
 
         // Update list items
@@ -193,7 +188,7 @@ class EditViewModel @Inject constructor(
 
     fun shareNote() {
         save()
-        _shareEvent.value = Event(ShareData(note.title, note.asText(json)))
+        _shareEvent.value = Event(ShareData(note.title, note.asText()))
     }
 
     fun deleteNote() {
@@ -247,7 +242,7 @@ class EditViewModel @Inject constructor(
             }
             NoteType.LIST -> {
                 // List items
-                val items = note.getListItems(json)
+                val items = note.listItems
                 for (item in items) {
                     list += EditItemItem(item.content, item.checked)
                 }
@@ -336,7 +331,7 @@ class EditViewModel @Inject constructor(
 
     companion object {
         private val BLANK_NOTE = Note(Note.NO_ID, "", NoteType.TEXT,
-                "", "", null, Date(0), Date(0), NoteStatus.ACTIVE)
+                "", "", BlankNoteMetadata, Date(0), Date(0), NoteStatus.ACTIVE)
     }
 
 }

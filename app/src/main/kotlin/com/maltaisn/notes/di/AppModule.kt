@@ -21,9 +21,6 @@ import android.content.SharedPreferences
 import androidx.preference.PreferenceManager
 import dagger.Module
 import dagger.Provides
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonConfiguration
-import javax.inject.Singleton
 
 
 @Module
@@ -33,10 +30,5 @@ object AppModule {
     @JvmStatic
     fun providesSharedPreferences(context: Context): SharedPreferences =
             PreferenceManager.getDefaultSharedPreferences(context)
-
-    @Provides
-    @JvmStatic
-    @Singleton
-    fun providesJson() = Json(JsonConfiguration.Stable)
 
 }

@@ -20,10 +20,21 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 
+@Serializable
+sealed class NoteMetadata
+
 /**
- * Metadata for a list note used to keep the checked state of each items.
+ * Metadata with no information, for a text note.
  */
 @Serializable
+@SerialName("blank")
+object BlankNoteMetadata : NoteMetadata()
+
+/**
+ * Metadata to keep the checked state of each item, for a list note.
+ */
+@Serializable
+@SerialName("list")
 data class ListNoteMetadata(
         @SerialName("checked")
-        val checked: List<Boolean>)
+        val checked: List<Boolean>) : NoteMetadata()

@@ -34,14 +34,13 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import kotlinx.serialization.json.Json
 import javax.inject.Inject
 
 
 class MainViewModel @Inject constructor(
         notesRepository: NotesRepository,
-        prefs: SharedPreferences,
-        json: Json) : NoteViewModel(notesRepository, prefs, json), NoteAdapter.Callback, LifecycleObserver {
+        prefs: SharedPreferences
+) : NoteViewModel(notesRepository, prefs), NoteAdapter.Callback, LifecycleObserver {
 
     private var noteListJob: Job? = null
 

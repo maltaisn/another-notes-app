@@ -17,7 +17,6 @@
 package com.maltaisn.notes
 
 import com.maltaisn.notes.model.entity.*
-import kotlinx.serialization.json.Json
 import java.util.*
 
 
@@ -27,23 +26,19 @@ fun testNote(
         type: NoteType = NoteType.TEXT,
         title: String = "note",
         content: String = "content",
-        metadata: String? = null,
+        metadata: NoteMetadata = BlankNoteMetadata,
         added: Date = Date(),
         modified: Date = Date(),
         status: NoteStatus = NoteStatus.ACTIVE
 ) = Note(id, uuid, type, title, content, metadata, added, modified, status)
 
 fun listNote(
-        json: Json,
+        items: List<ListNoteItem>,
         id: Long = Note.NO_ID,
         uuid: String = id.toString(),
         title: String = "note",
         added: Date = Date(),
         modified: Date = Date(),
-        status: NoteStatus = NoteStatus.ACTIVE,
-        items: List<ListNoteItem>
-): Note {
-    val metadata = json.stringify(ListNoteMetadata.serializer(), ListNoteMetadata(items.map { it.checked }))
-    return Note(id, uuid, NoteType.LIST, title, items.joinToString("\n") { it.content },
-            metadata, added, modified, status)
-}
+        status: NoteStatus = NoteStatus.ACTIVE
+) = Note(id, uuid, NoteType.LIST, title, items.joinToString("\n") { it.content },
+        ListNoteMetadata(items.map { it.checked }), added, modified, status)

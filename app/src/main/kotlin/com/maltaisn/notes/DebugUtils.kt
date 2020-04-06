@@ -16,10 +16,7 @@
 
 package com.maltaisn.notes
 
-import com.maltaisn.notes.model.entity.ListNoteMetadata
-import com.maltaisn.notes.model.entity.Note
-import com.maltaisn.notes.model.entity.NoteStatus
-import com.maltaisn.notes.model.entity.NoteType
+import com.maltaisn.notes.model.entity.*
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
 import java.util.*
@@ -37,11 +34,11 @@ object DebugUtils {
         val type = NoteType.values().random()
 
         val content: String
-        val metadata: String?
+        val metadata: NoteMetadata
         when (type) {
             NoteType.TEXT -> {
                 content = getRandomString(32..256)
-                metadata = null
+                metadata = BlankNoteMetadata
             }
             NoteType.LIST -> {
                 val size = (1..10).random()
@@ -52,8 +49,7 @@ object DebugUtils {
                     }
                     deleteCharAt(lastIndex)
                 }
-                metadata = json.stringify(ListNoteMetadata.serializer(),
-                        ListNoteMetadata(List(size) { Random.nextBoolean() }))
+                metadata = ListNoteMetadata(List(size) { Random.nextBoolean() })
             }
         }
 

@@ -33,14 +33,13 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import kotlinx.serialization.json.Json
 import javax.inject.Inject
 
 
 class SearchViewModel @Inject constructor(
         notesRepository: NotesRepository,
-        prefs: SharedPreferences,
-        json: Json) : NoteViewModel(notesRepository, prefs, json), NoteAdapter.Callback {
+        prefs: SharedPreferences
+) : NoteViewModel(notesRepository, prefs), NoteAdapter.Callback {
 
     private var lastQuery = ""
     private var noteListJob: Job? = null

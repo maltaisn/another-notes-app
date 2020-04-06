@@ -28,7 +28,6 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 import kotlinx.serialization.UseSerializers
-import kotlinx.serialization.json.Json
 import java.util.*
 
 
@@ -73,7 +72,7 @@ data class Note(
          */
         @ColumnInfo(name = "metadata")
         @SerialName("metadata")
-        val metadata: String? = null,
+        val metadata: NoteMetadata = BlankNoteMetadata,
 
         /**
          * Creation date of the note, in UTC time.
@@ -99,7 +98,10 @@ data class Note(
 ) {
 
     init {
-        require(type != NoteType.LIST || metadata != null)
+        when (type) {
+            NoteType.TEXT -> require(metadata is BlankNoteMetadata)
+            NoteType.LIST -> require(metadata is ListNoteMetadata)
+        }
     }
 
     /**
@@ -110,26 +112,28 @@ data class Note(
         get() = title.isBlank() && content.isBlank()
 
     /**
-     * If not is a list note, parse content and metadata into a list of items.
+     * If note is a list note, returns a list of the items in it.
      */
-    fun getListItems(json: Json): List<ListNoteItem> {
-        check(type == NoteType.LIST) { "Cannot get list items for non-list note." }
+    val listItems: List<ListNoteItem>
+        get() {
+            check(type == NoteType.LIST) { "Cannot get list items for non-list note." }
 
-        val checked = json.parse(ListNoteMetadata.serializer(), metadata!!)
-        val items = content.split('\n')
-        if (items.size == 1 && checked.checked.isEmpty()) {
-            // No items
-            return emptyList()
+            val checked = (metadata as ListNoteMetadata).checked
+            val items = content.split('\n')
+            if (items.size == 1 && checked.isEmpty()) {
+                // No items
+                return emptyList()
+            }
+
+            check(checked.size == items.size) { "Invalid list note data." }
+
+            return items.mapIndexed { i, text ->
+                ListNoteItem(text, checked[i])
+            }
         }
 
-        check(checked.checked.size == items.size) { "Invalid list note data." }
 
-        return items.mapIndexed { i, text ->
-            ListNoteItem(text, checked.checked[i])
-        }
-    }
-
-    fun convertToType(type: NoteType, json: Json): Note {
+    fun convertToType(type: NoteType): Note {
         if (this.type == type) {
             return this
         }
@@ -137,7 +141,7 @@ data class Note(
         val lines = content.split('\n')
 
         val content: String
-        val metadata: String?
+        val metadata: NoteMetadata
         when (type) {
             NoteType.TEXT -> {
                 // Append a bullet point to each line of content.
@@ -154,7 +158,7 @@ data class Note(
                         deleteCharAt(lastIndex)
                     }
                 }
-                metadata = null
+                metadata = BlankNoteMetadata
             }
             NoteType.LIST -> {
                 // Convert each list item to a text line.
@@ -170,15 +174,14 @@ data class Note(
                 } else {
                     this.content
                 }
-                metadata = json.stringify(ListNoteMetadata.serializer(),
-                        ListNoteMetadata(List(lines.size) { false }))
+                metadata = ListNoteMetadata(List(lines.size) { false })
             }
         }
         return Note(id, uuid, type, title, content, metadata, addedDate, lastModifiedDate, status)
     }
 
-    fun asText(json: Json): String {
-        val textNote = convertToType(NoteType.TEXT, json)
+    fun asText(): String {
+        val textNote = convertToType(NoteType.TEXT)
         return buildString {
             if (title.isNotBlank()) {
                 append(textNote.title)
@@ -212,4 +215,9 @@ data class Note(
     }
 }
 
-data class ListNoteItem(val content: String, val checked: Boolean)
+data class ListNoteItem(val content: String, val checked: Boolean) {
+
+    init {
+        require('\n' !in content) { "List item content cannot contain line breaks." }
+    }
+}

@@ -31,14 +31,12 @@ import com.maltaisn.notes.ui.ShareData
 import com.maltaisn.notes.ui.StatusChange
 import com.maltaisn.notes.ui.note.adapter.*
 import kotlinx.coroutines.launch
-import kotlinx.serialization.json.Json
 import java.util.*
 
 
 abstract class NoteViewModel(
         protected val notesRepository: NotesRepository,
-        protected val prefs: SharedPreferences,
-        private val json: Json) : ViewModel(), NoteAdapter.Callback {
+        protected val prefs: SharedPreferences) : ViewModel(), NoteAdapter.Callback {
 
     protected var listItems: List<NoteListItem> = emptyList()
         set(value) {
@@ -136,7 +134,7 @@ abstract class NoteViewModel(
             return
         }
         val note = selectedNotes.first()
-        _shareEvent.value = Event(ShareData(note.title, note.asText(json)))
+        _shareEvent.value = Event(ShareData(note.title, note.asText()))
     }
 
     private fun setAllSelected(selected: Boolean) {

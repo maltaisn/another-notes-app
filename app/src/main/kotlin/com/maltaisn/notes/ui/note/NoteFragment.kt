@@ -37,7 +37,6 @@ import com.maltaisn.notes.ui.MessageEvent
 import com.maltaisn.notes.ui.SharedViewModel
 import com.maltaisn.notes.ui.note.adapter.NoteAdapter
 import com.maltaisn.notes.ui.note.adapter.NoteListLayoutMode
-import kotlinx.serialization.json.Json
 import java.text.NumberFormat
 import javax.inject.Inject
 
@@ -47,8 +46,6 @@ abstract class NoteFragment : Fragment(), ActionMode.Callback {
     @Inject lateinit var viewModelFactory: ViewModelProvider.Factory
     private val sharedViewModel: SharedViewModel by activityViewModels { viewModelFactory }
     protected abstract val viewModel: NoteViewModel
-
-    @Inject lateinit var json: Json
 
     protected lateinit var drawerLayout: DrawerLayout
     private var actionMode: ActionMode? = null
@@ -73,7 +70,7 @@ abstract class NoteFragment : Fragment(), ActionMode.Callback {
         // Recycler view
         val rcv: RecyclerView = view.findViewById(R.id.rcv_notes)
         rcv.setHasFixedSize(true)
-        val adapter = NoteAdapter(context, json, viewModel)
+        val adapter = NoteAdapter(context, viewModel)
         val layoutManager = StaggeredGridLayoutManager(1, StaggeredGridLayoutManager.VERTICAL)
         rcv.adapter = adapter
         rcv.layoutManager = layoutManager

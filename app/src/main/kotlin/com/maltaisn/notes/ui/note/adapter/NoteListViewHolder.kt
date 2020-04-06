@@ -86,7 +86,7 @@ class ListNoteViewHolder(itemView: View) : NoteViewHolder(itemView) {
 
         // Add first items in list using view holders in pool.
         // Only the first few items are shown.
-        val noteItems = item.note.getListItems(adapter.json)
+        val noteItems = item.note.listItems
         val itemHighlights = HighlightHelper.splitListNoteHighlightsByItem(
                 noteItems, item.contentHighlights)
         for (i in 0 until min(maxItems, noteItems.size)) {

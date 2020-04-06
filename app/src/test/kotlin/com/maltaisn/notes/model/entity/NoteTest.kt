@@ -18,8 +18,6 @@ package com.maltaisn.notes.model.entity
 
 import com.maltaisn.notes.listNote
 import com.maltaisn.notes.testNote
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonConfiguration
 import org.junit.Test
 import java.util.*
 import kotlin.test.assertEquals
@@ -29,46 +27,49 @@ import kotlin.test.assertTrue
 
 class NoteTest {
 
-    private val json = Json(JsonConfiguration.Stable)
+    @Test(expected = IllegalArgumentException::class)
+    fun `should fail to create text note with wrong metadata`() {
+        testNote(type = NoteType.TEXT, metadata = ListNoteMetadata(emptyList()))
+    }
 
     @Test(expected = IllegalArgumentException::class)
-    fun `should fail to create list note without metadata`() {
-        testNote(type = NoteType.LIST, metadata = null)
+    fun `should fail to create list note with wrong metadata`() {
+        testNote(type = NoteType.LIST, metadata = BlankNoteMetadata)
+    }
+
+    @Test(expected = IllegalArgumentException::class)
+    fun `should fail to create list item with line break`() {
+        ListNoteItem("two\nlines", false)
     }
 
     @Test(expected = IllegalStateException::class)
     fun `should fail to get list items on text note`() {
         val note = testNote(type = NoteType.TEXT)
-        note.getListItems(json)
+        note.listItems
     }
 
     @Test
     fun `should get list items on list note`() {
-        val note = listNote(json, items = listOf(
+        val items = listOf(
                 ListNoteItem("0", false),
                 ListNoteItem("1", true),
-                ListNoteItem("2", true)
-        ))
-        assertEquals(listOf(
-                ListNoteItem("0", false),
-                ListNoteItem("1", true),
-                ListNoteItem("2", true)
-        ), note.getListItems(json))
+                ListNoteItem("2", true))
+        val note = listNote(items)
+        assertEquals(items, note.listItems)
     }
 
     @Test
     fun `should get no list items on empty list note`() {
-        val note = listNote(json, items = emptyList())
-        assertEquals(emptyList(), note.getListItems(json))
+        val note = listNote(emptyList())
+        assertEquals(emptyList(), note.listItems)
     }
 
     @Test
-    fun `should check if not is blank`() {
+    fun `should check if note is blank`() {
         val note1 = testNote(title = "note")
         val note2 = testNote(content = "content")
         val note3 = testNote(title = "   ", content = "")
-        val note4 = testNote(type = NoteType.LIST, title = "",
-                content = "  \n   ", metadata = "not blank")
+        val note4 = listNote(listOf(ListNoteItem("  ", true)), title = "  ")
 
         assertFalse(note1.isBlank)
         assertFalse(note2.isBlank)
@@ -80,45 +81,45 @@ class NoteTest {
     fun `should convert text note to list`() {
         val date = Date()
         val textNote = testNote(uuid = "0", content = "0\n1", added = date, modified = date)
-        val listNote = listNote(json, uuid = "0", items = listOf(
+        val listNote = listNote(listOf(
                 ListNoteItem("0", false),
                 ListNoteItem("1", false)
-        ), added = date, modified = date)
-        assertEquals(listNote, textNote.convertToType(NoteType.LIST, json))
+        ), uuid = "0", added = date, modified = date)
+        assertEquals(listNote, textNote.convertToType(NoteType.LIST))
     }
 
     @Test
     fun `should convert text note with bullets to list`() {
         val date = Date()
         val textNote = testNote(uuid = "0", content = "- 0\n* 1\n+ 2", added = date, modified = date)
-        val listNote = listNote(json, uuid = "0", items = listOf(
+        val listNote = listNote(listOf(
                 ListNoteItem("0", false),
                 ListNoteItem("1", false),
                 ListNoteItem("2", false)
-        ), added = date, modified = date)
-        assertEquals(listNote, textNote.convertToType(NoteType.LIST, json))
+        ), uuid = "0", added = date, modified = date)
+        assertEquals(listNote, textNote.convertToType(NoteType.LIST))
     }
 
     @Test
     fun `should convert empty list note with bullet to text`() {
         val date = Date()
-        val listNote = listNote(json, uuid = "0", items = listOf(
+        val listNote = listNote(listOf(
                 ListNoteItem("    ", false),
                 ListNoteItem("", true)
-        ), added = date, modified = date)
+        ), uuid = "0", added = date, modified = date)
         val textNote = testNote(uuid = "0", content = "", added = date, modified = date)
-        assertEquals(textNote, listNote.convertToType(NoteType.TEXT, json))
+        assertEquals(textNote, listNote.convertToType(NoteType.TEXT))
     }
 
     @Test
     fun `should convert list note to text`() {
         val date = Date()
-        val listNote = listNote(json, uuid = "0", items = listOf(
+        val listNote = listNote(listOf(
                 ListNoteItem("0", false),
                 ListNoteItem("1", false)
-        ), added = date, modified = date)
+        ), uuid = "0", added = date, modified = date)
         val textNote = testNote(uuid = "0", content = "- 0\n- 1", added = date, modified = date)
-        assertEquals(textNote, listNote.convertToType(NoteType.TEXT, json))
+        assertEquals(textNote, listNote.convertToType(NoteType.TEXT))
     }
 
 
@@ -143,22 +144,22 @@ class NoteTest {
     @Test
     fun `should represent text note as text`() {
         val note = testNote(title = "note title", content = "line 1\nline 2" )
-        assertEquals("note title\nline 1\nline 2", note.asText(json))
+        assertEquals("note title\nline 1\nline 2", note.asText())
     }
 
     @Test
     fun `should represent text note with no title as text`() {
         val note = testNote(title = "   ", content = "line 1\nline 2" )
-        assertEquals("line 1\nline 2", note.asText(json))
+        assertEquals("line 1\nline 2", note.asText())
     }
 
     @Test
     fun `should represent list note as text`() {
-        val note = listNote(json, title = "list title", items = listOf(
+        val note = listNote(listOf(
                 ListNoteItem("item 1", false),
                 ListNoteItem("item 2", true)
-        ))
-        assertEquals("list title\n- item 1\n- item 2", note.asText(json))
+        ), title = "list title")
+        assertEquals("list title\n- item 1\n- item 2", note.asText())
     }
 
 }

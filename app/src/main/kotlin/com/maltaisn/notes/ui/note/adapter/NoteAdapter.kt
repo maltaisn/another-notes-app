@@ -26,12 +26,11 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.maltaisn.notes.R
-import kotlinx.serialization.json.Json
 import java.util.*
 import kotlin.math.absoluteValue
 
 
-class NoteAdapter(val context: Context, val json: Json, val callback: Callback) :
+class NoteAdapter(val context: Context, val callback: Callback) :
         ListAdapter<NoteListItem, RecyclerView.ViewHolder>(NoteListDiffCallback()) {
 
     /**
