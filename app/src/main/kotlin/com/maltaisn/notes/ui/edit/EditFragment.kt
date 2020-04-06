@@ -16,6 +16,7 @@
 
 package com.maltaisn.notes.ui.edit
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.MenuItem
@@ -158,6 +159,15 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener {
             // A shared view model is used since snackbar can't be shown from this fragment,
             // which will be popped from backstack just after the status change.
             sharedViewModel.onMessageEvent(message)
+        })
+
+        viewModel.shareEvent.observe(viewLifecycleOwner, EventObserver { data ->
+            val intent = Intent(Intent.ACTION_SEND)
+            intent.type = "text/plain"
+            intent.putExtra(Intent.EXTRA_TITLE, data.title)
+            intent.putExtra(Intent.EXTRA_SUBJECT, data.title)
+            intent.putExtra(Intent.EXTRA_TEXT, data.content)
+            startActivity(Intent.createChooser(intent, null))
         })
 
         viewModel.exitEvent.observe(viewLifecycleOwner, EventObserver {

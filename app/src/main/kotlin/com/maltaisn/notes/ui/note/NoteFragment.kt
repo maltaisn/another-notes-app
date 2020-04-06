@@ -16,6 +16,7 @@
 
 package com.maltaisn.notes.ui.note
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.*
 import androidx.appcompat.widget.Toolbar
@@ -136,6 +137,15 @@ abstract class NoteFragment : Fragment(), ActionMode.Callback {
             }
         })
 
+        viewModel.shareEvent.observe(viewLifecycleOwner, EventObserver { data ->
+            val intent = Intent(Intent.ACTION_SEND)
+            intent.type = "text/plain"
+            intent.putExtra(Intent.EXTRA_TITLE, data.title)
+            intent.putExtra(Intent.EXTRA_SUBJECT, data.title)
+            intent.putExtra(Intent.EXTRA_TEXT, data.content)
+            startActivity(Intent.createChooser(intent, null))
+        })
+
         sharedViewModel.messageEvent.observe(viewLifecycleOwner, EventObserver { message ->
             when (message) {
                 is MessageEvent.BlankNoteDiscardEvent -> {
@@ -158,7 +168,7 @@ abstract class NoteFragment : Fragment(), ActionMode.Callback {
         when (item.itemId) {
             R.id.item_move -> viewModel.moveSelectedNotes()
             R.id.item_select_all -> viewModel.selectAll()
-            R.id.item_share -> Unit
+            R.id.item_share -> viewModel.shareNote()
             R.id.item_copy -> viewModel.copySelectedNote(
                     getString(R.string.copy_untitled_name), getString(R.string.copy_suffix))
             R.id.item_delete -> viewModel.deleteSelectedNotes()

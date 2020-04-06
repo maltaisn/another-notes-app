@@ -140,4 +140,25 @@ class NoteTest {
                 "  ", "untitled", "Copy"))
     }
 
+    @Test
+    fun `should represent text note as text`() {
+        val note = testNote(title = "note title", content = "line 1\nline 2" )
+        assertEquals("note title\nline 1\nline 2", note.asText(json))
+    }
+
+    @Test
+    fun `should represent text note with no title as text`() {
+        val note = testNote(title = "   ", content = "line 1\nline 2" )
+        assertEquals("line 1\nline 2", note.asText(json))
+    }
+
+    @Test
+    fun `should represent list note as text`() {
+        val note = listNote(json, title = "list title", items = listOf(
+                ListNoteItem("item 1", false),
+                ListNoteItem("item 2", true)
+        ))
+        assertEquals("list title\n- item 1\n- item 2", note.asText(json))
+    }
+
 }

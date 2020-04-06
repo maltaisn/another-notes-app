@@ -177,6 +177,17 @@ data class Note(
         return Note(id, uuid, type, title, content, metadata, addedDate, lastModifiedDate, status)
     }
 
+    fun asText(json: Json): String {
+        val textNote = convertToType(NoteType.TEXT, json)
+        return buildString {
+            if (title.isNotBlank()) {
+                append(textNote.title)
+                append('\n')
+            }
+            append(textNote.content)
+        }
+    }
+
     companion object {
         const val NO_ID = 0L
 

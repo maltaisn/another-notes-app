@@ -28,6 +28,7 @@ import com.maltaisn.notes.model.entity.NoteStatus
 import com.maltaisn.notes.model.entity.NoteType
 import com.maltaisn.notes.ui.Event
 import com.maltaisn.notes.ui.MessageEvent
+import com.maltaisn.notes.ui.ShareData
 import com.maltaisn.notes.ui.StatusChange
 import com.maltaisn.notes.ui.edit.adapter.*
 import kotlinx.coroutines.launch
@@ -70,6 +71,10 @@ class EditViewModel @Inject constructor(
     private val _messageEvent = MutableLiveData<Event<MessageEvent>>()
     val messageEvent: LiveData<Event<MessageEvent>>
         get() = _messageEvent
+
+    private val _shareEvent = MutableLiveData<Event<ShareData>>()
+    val shareEvent: LiveData<Event<ShareData>>
+        get() = _shareEvent
 
     private val _exitEvent = MutableLiveData<Event<Unit>>()
     val exitEvent: LiveData<Event<Unit>>
@@ -187,7 +192,8 @@ class EditViewModel @Inject constructor(
     }
 
     fun shareNote() {
-        // TODO start share intent
+        save()
+        _shareEvent.value = Event(ShareData(note.title, note.asText(json)))
     }
 
     fun deleteNote() {
