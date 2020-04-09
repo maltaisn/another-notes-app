@@ -16,9 +16,20 @@
 
 package com.maltaisn.notes.model.entity
 
+import androidx.room.ColumnInfo
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 
-enum class ChangeEventType(val value: Int) {
-    ADDED(0),
-    UPDATED(1),
-    DELETED(2)
-}
+
+/**
+ * Entity representing a note that was deleted forever.
+ */
+@Entity(tableName = "deleted_notes")
+data class DeletedNote(
+    @PrimaryKey(autoGenerate = true)
+    @ColumnInfo(name = "id")
+    val id: Int,
+
+    @ColumnInfo(name = "uuid")
+    val uuid: String
+)

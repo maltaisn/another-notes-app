@@ -42,7 +42,7 @@ object NoteMetadataConverter : KSerializer<NoteMetadata> {
     override fun serialize(encoder: Encoder, value: NoteMetadata) =
             encoder.encodeString(toString(value))
 
-    override fun deserialize(decoder: Decoder) = toMetadata(decoder.toString())
+    override fun deserialize(decoder: Decoder) = toMetadata(decoder.decodeString())
 
 
 }

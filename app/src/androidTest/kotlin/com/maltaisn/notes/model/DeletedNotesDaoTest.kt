@@ -20,8 +20,7 @@ import android.content.Context
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.maltaisn.notes.model.entity.ChangeEvent
-import com.maltaisn.notes.model.entity.ChangeEventType
+import com.maltaisn.notes.model.entity.DeletedNote
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Before
@@ -31,16 +30,16 @@ import kotlin.test.assertEquals
 
 
 @RunWith(AndroidJUnit4::class)
-class ChangeEventsDaoTest {
+class DeletedNotesDaoTest {
 
     private lateinit var database: NotesDatabase
-    private lateinit var changesDao: ChangeEventsDao
+    private lateinit var deletedNotesDao: DeletedNotesDao
 
     @Before
     fun createDatabase() {
         val context = ApplicationProvider.getApplicationContext<Context>()
         database = Room.inMemoryDatabaseBuilder(context, NotesDatabase::class.java).build()
-        changesDao = database.changeEventsDao()
+        deletedNotesDao = database.deletedNotesDao()
     }
 
     @After
@@ -50,15 +49,13 @@ class ChangeEventsDaoTest {
 
     @Test
     fun readWriteTests()  = runBlocking {
-        val event = ChangeEvent("1", ChangeEventType.ADDED)
+        val event = DeletedNote(0, "0")
 
-        changesDao.insert(event)
-        assertEquals(event, changesDao.getByUuid(event.uuid))
+        deletedNotesDao.insert(event)
+        assertEquals(listOf("0"), deletedNotesDao.getAllUuids())
 
-        assertEquals(listOf(event), changesDao.getAll())
-
-        changesDao.clear()
-        assertEquals(emptyList(), changesDao.getAll())
+        deletedNotesDao.clear()
+        assertEquals(emptyList(), deletedNotesDao.getAllUuids())
     }
 
 }

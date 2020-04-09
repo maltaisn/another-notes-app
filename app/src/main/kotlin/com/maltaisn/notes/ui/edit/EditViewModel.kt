@@ -86,7 +86,7 @@ class EditViewModel @Inject constructor(
                 // Note doesn't exist, create new blank text note.
                 val date = Date()
                 note = BLANK_NOTE.copy(uuid = Note.generateNoteUuid(),
-                        addedDate = date, lastModifiedDate = date)
+                        addedDate = date, lastModifiedDate = date, changed = true)
                 val id = notesRepository.insertNote(note)
                 note = note.copy(id = id)
             }
@@ -117,7 +117,7 @@ class EditViewModel @Inject constructor(
             }
         }
         note = Note(note.id, note.uuid, note.type, title, content, metadata,
-                note.addedDate, note.lastModifiedDate, note.status)
+                note.addedDate, note.lastModifiedDate, note.status, true)
 
         // Update note
         viewModelScope.launch {
@@ -175,7 +175,8 @@ class EditViewModel @Inject constructor(
                         uuid = Note.generateNoteUuid(),
                         title = newTitle,
                         addedDate = date,
-                        lastModifiedDate = date)
+                        lastModifiedDate = date,
+                        changed = true)
                 val id = notesRepository.insertNote(copy)
                 this@EditViewModel.note = copy.copy(id = id)
             }
@@ -213,7 +214,9 @@ class EditViewModel @Inject constructor(
             // If note is blank, it will be discarded on exit anyway, so don't change it.
             val oldNote = note
             val oldStatus = note.status
-            note = note.copy(status = newStatus, lastModifiedDate = Date())
+            note = note.copy(status = newStatus,
+                    lastModifiedDate = Date(),
+                    changed = true)
 
             // Show status change message.
             val statusChange = StatusChange(listOf(oldNote), oldStatus, newStatus)
@@ -330,8 +333,8 @@ class EditViewModel @Inject constructor(
     data class FocusChange(val itemPos: Int, val pos: Int, val itemExists: Boolean)
 
     companion object {
-        private val BLANK_NOTE = Note(Note.NO_ID, "", NoteType.TEXT,
-                "", "", BlankNoteMetadata, Date(0), Date(0), NoteStatus.ACTIVE)
+        private val BLANK_NOTE = Note(Note.NO_ID, "", NoteType.TEXT, "", "",
+                BlankNoteMetadata, Date(0), Date(0), NoteStatus.ACTIVE, false)
     }
 
 }

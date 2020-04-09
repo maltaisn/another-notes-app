@@ -18,8 +18,7 @@ package com.maltaisn.notes.model
 
 import android.content.SharedPreferences
 import com.maltaisn.notes.PreferenceHelper
-import com.maltaisn.notes.model.entity.ChangeEvent
-import com.maltaisn.notes.model.entity.ChangeEventType
+import com.maltaisn.notes.model.entity.DeletedNote
 import com.maltaisn.notes.testNote
 import com.nhaarman.mockitokotlin2.*
 import kotlinx.coroutines.runBlocking
@@ -31,7 +30,7 @@ import java.util.*
 class NotesRepositoryTest {
 
     private val notesDao: NotesDao = mock()
-    private val changesDao: ChangeEventsDao = mock()
+    private val deletedNotesDao: DeletedNotesDao = mock()
     private val notesService: NotesService = mock()
 
     private val prefsEditor: SharedPreferences.Editor = mock() {
@@ -42,51 +41,42 @@ class NotesRepositoryTest {
         on { getLong(any(), anyLong()) } doAnswer { it.arguments[1] as Long }
     }
 
-    private val notesRepo = NotesRepository(notesDao, changesDao, notesService, prefs)
-
-    @Test
-    fun `should add note in database`() = runBlocking {
-        val note = testNote()
-        notesRepo.insertNote(note)
-        verify(notesDao).insert(note)
-        verify(changesDao).insert(ChangeEvent(note.uuid, ChangeEventType.ADDED))
-    }
-
-    @Test
-    fun `should update note in database`() = runBlocking {
-        val note = testNote()
-        notesRepo.updateNote(note)
-        verify(notesDao).update(note)
-        verify(changesDao).insert(ChangeEvent(note.uuid, ChangeEventType.UPDATED))
-    }
+    private val notesRepo = NotesRepository(notesDao, deletedNotesDao, notesService, prefs)
 
     @Test
     fun `should delete note in database`() = runBlocking {
         val note = testNote()
         notesRepo.deleteNote(note)
         verify(notesDao).delete(note)
-        verify(changesDao).insert(ChangeEvent(note.uuid, ChangeEventType.DELETED))
+        verify(deletedNotesDao).insert(DeletedNote(any(), note.uuid))
     }
 
     @Test
     fun `should sync notes correctly`() = runBlocking {
-        val note1 = testNote(uuid = "0")
-        val note2 = testNote(uuid = "1")
-        whenever(notesDao.getByUuid("0")) doReturn note1
-        whenever(changesDao.getAll()) doReturn listOf(ChangeEvent("0", ChangeEventType.UPDATED))
+        // Local changes: 0 was changed, 1 is unchanged, 2 was deleted.
+        // Remote changes: 0 was deleted, 1 was updated.
+
+        val note0 = testNote(uuid = "0", changed = true)
+        whenever(deletedNotesDao.getAllUuids()) doReturn listOf("2")
+        whenever(notesDao.getChanged()) doReturn listOf(note0)
 
         val newSyncDate = Date()
-        whenever(notesService.syncNotes(any())) doReturn NotesService.SyncData(newSyncDate,
-                listOf(NotesService.ChangeEventData("1", note2, ChangeEventType.ADDED)))
+        val newNote1 = testNote(uuid = "1")
+        whenever(notesService.syncNotes(any())) doReturn NotesService.SyncData(
+                newSyncDate, listOf(newNote1), listOf("0"))
 
         notesRepo.syncNotes()
 
-        verify(notesService).syncNotes(NotesService.SyncData(Date(0),
-                listOf(NotesService.ChangeEventData("0", note1, ChangeEventType.UPDATED))))
-        verify(prefsEditor).putLong(PreferenceHelper.LAST_SYNC_TIME, newSyncDate.time)
+        verify(notesService).syncNotes(NotesService.SyncData(
+                Date(0), listOf(note0), listOf("2")))
+
         verify(notesDao).getIdByUuid("1")
-        verify(notesDao).insert(note2)
-        verify(changesDao).clear()
+        verify(notesDao).insertAll(listOf(newNote1))
+        verify(notesDao).deleteByUuid(listOf("0"))
+
+        verify(prefsEditor).putLong(PreferenceHelper.LAST_SYNC_TIME, newSyncDate.time)
+        verify(notesDao).resetChangedFlag()
+        verify(deletedNotesDao).clear()
     }
 
 }

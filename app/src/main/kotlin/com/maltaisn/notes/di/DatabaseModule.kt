@@ -39,6 +39,6 @@ object DatabaseModule {
 
     @Provides
     @JvmStatic
-    fun providesChangeEventsDao(database: NotesDatabase) = database.changeEventsDao()
+    fun providesDeletedNotesDao(database: NotesDatabase) = database.deletedNotesDao()
 
 }

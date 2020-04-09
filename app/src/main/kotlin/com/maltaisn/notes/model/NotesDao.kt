@@ -26,8 +26,11 @@ import java.util.*
 @Dao
 interface NotesDao {
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(note: Note): Long
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAll(notes: List<Note>)
 
     @Update
     suspend fun update(note: Note)
@@ -41,27 +44,56 @@ interface NotesDao {
     @Delete
     suspend fun deleteAll(notes: List<Note>)
 
-    @Query("DELETE FROM notes WHERE uuid == :uuid")
-    suspend fun delete(uuid: String)
+    /**
+     * Delete notes with a UUID contained in [uuids]. Used for syncing
+     * to delete local notes removed remotely.
+     */
+    @Query("DELETE FROM notes WHERE uuid IN (:uuids)")
+    suspend fun deleteByUuid(uuids: List<String>)
 
-    @Query("DELETE FROM notes WHERE status == :status")
-    suspend fun deleteByStatus(status: NoteStatus)
-
-    @Query("DELETE FROM notes WHERE status == :status AND modified_date < :minDate")
-    suspend fun deleteByStatusAndDate(status: NoteStatus, minDate: Date)
-
+    /**
+     * Get a note by its ID. Returns `null` if note doesn't exist.
+     */
     @Query("SELECT * FROM notes WHERE id == :id")
     suspend fun getById(id: Long): Note?
 
-    @Query("SELECT * FROM notes WHERE uuid == :uuid")
-    suspend fun getByUuid(uuid: String): Note?
-
+    /**
+     * Get a note ID from its [uuid]. Used for syncing to know which notes were added and which
+     * were updated, since local database uses ID as a key but server uses UUID.
+     */
     @Query("SELECT id FROM notes WHERE uuid == :uuid")
     suspend fun getIdByUuid(uuid: String): Long?
 
+    /**
+     * Get all notes with a [status], sorted by last modified date.
+     * This is used to display notes for each status.
+     */
     @Query("SELECT * FROM notes WHERE status == :status ORDER BY modified_date DESC")
     fun getByStatus(status: NoteStatus): Flow<List<Note>>
 
+    /**
+     * Get notes with a [status] and older than a [date][minDate].
+     * Used for deleting old notes in trash after a delay.
+     */
+    @Query("SELECT * FROM notes WHERE status == :status AND modified_date < :minDate")
+    suspend fun getByStatusAndDate(status: NoteStatus, minDate: Date): List<Note>
+
+    /**
+     * Get all notes with a changed flag set to `true`. Used for syncing.
+     */
+    @Query("SELECT * FROM notes WHERE changed == 1")
+    suspend fun getChanged(): List<Note>
+
+    /**
+     * Reset the changed flag of all notes to `false`. Used after syncing.
+     */
+    @Query("UPDATE notes SET changed = 0")
+    suspend fun resetChangedFlag()
+
+    /**
+     * Search active and archived notes for a [query] using full-text search,
+     * sorted by status first then by last modified date.
+     */
     @Query("""SELECT * FROM notes JOIN notes_fts ON notes_fts.rowid == notes.id
         WHERE notes_fts MATCH :query AND status != 2
         ORDER BY status ASC, modified_date DESC""")

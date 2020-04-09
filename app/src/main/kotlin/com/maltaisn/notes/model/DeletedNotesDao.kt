@@ -18,27 +18,27 @@ package com.maltaisn.notes.model
 
 import androidx.room.Dao
 import androidx.room.Insert
-import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.maltaisn.notes.model.entity.ChangeEvent
+import com.maltaisn.notes.model.entity.DeletedNote
 
 
+/**
+ * This DAO is used for syncing to send which notes were deleted from trash to server.
+ * The table is cleared after every successful sync.
+ */
 @Dao
-interface ChangeEventsDao {
+interface DeletedNotesDao {
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(event: ChangeEvent)
+    @Insert
+    suspend fun insert(note: DeletedNote)
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAll(events: List<ChangeEvent>)
+    @Insert
+    suspend fun insertAll(notes: List<DeletedNote>)
 
-    @Query("SELECT * FROM change_events")
-    suspend fun getAll(): List<ChangeEvent>
+    @Query("SELECT uuid FROM deleted_notes")
+    suspend fun getAllUuids(): List<String>
 
-    @Query("DELETE FROM change_events")
+    @Query("DELETE FROM deleted_notes")
     suspend fun clear()
-
-    @Query("SELECT * FROM change_events WHERE uuid == :uuid")
-    suspend fun getByUuid(uuid: String): ChangeEvent
 
 }

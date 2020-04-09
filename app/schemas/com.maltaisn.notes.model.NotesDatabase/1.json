@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "288e03c1cc026768dcb213eeed38662e",
+    "identityHash": "da356ab54e418b76c6c579a347afb023",
     "entities": [
       {
         "tableName": "notes",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `uuid` TEXT NOT NULL, `type` INTEGER NOT NULL, `title` TEXT NOT NULL, `content` TEXT NOT NULL, `metadata` TEXT NOT NULL, `added_date` TEXT NOT NULL, `modified_date` TEXT NOT NULL, `status` INTEGER NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `uuid` TEXT NOT NULL, `type` INTEGER NOT NULL, `title` TEXT NOT NULL, `content` TEXT NOT NULL, `metadata` TEXT NOT NULL, `added_date` TEXT NOT NULL, `modified_date` TEXT NOT NULL, `status` INTEGER NOT NULL, `changed` INTEGER NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
@@ -59,6 +59,12 @@
           {
             "fieldPath": "status",
             "columnName": "status",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "changed",
+            "columnName": "changed",
             "affinity": "INTEGER",
             "notNull": true
           }
@@ -131,27 +137,27 @@
         "foreignKeys": []
       },
       {
-        "tableName": "change_events",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`uuid` TEXT NOT NULL, `type` INTEGER NOT NULL, PRIMARY KEY(`uuid`))",
+        "tableName": "deleted_notes",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `uuid` TEXT NOT NULL)",
         "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
           {
             "fieldPath": "uuid",
             "columnName": "uuid",
             "affinity": "TEXT",
             "notNull": true
-          },
-          {
-            "fieldPath": "type",
-            "columnName": "type",
-            "affinity": "INTEGER",
-            "notNull": true
           }
         ],
         "primaryKey": {
           "columnNames": [
-            "uuid"
+            "id"
           ],
-          "autoGenerate": false
+          "autoGenerate": true
         },
         "indices": [],
         "foreignKeys": []
@@ -160,7 +166,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '288e03c1cc026768dcb213eeed38662e')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'da356ab54e418b76c6c579a347afb023')"
     ]
   }
 }

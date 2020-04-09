@@ -5,6 +5,7 @@
       "type": 0,
       "title": "note 1",
       "content": "content 1",
+      "metadata": "{\"type\":\"blank\"}",
       "added": "2019-12-15T00:00:00.000Z",
       "modified": "2020-02-02T12:10:00.000Z",
       "synced": "2020-02-02T12:10:00.000Z",
@@ -15,22 +16,18 @@
       "type": 0,
       "title": "note updated",
       "content": "archived content",
+      "metadata": "{\"type\":\"blank\"}",
       "added": "2019-12-15T00:00:00.000Z",
       "modified": "2020-03-02T12:03:14.000Z",
       "synced": "2020-03-02T12:03:14.000Z",
       "status": 1
-    },
-    "testDeleted": {
-      "uuid": "0",
-      "synced": "2020-02-02T12:10:00.000Z",
-      "status": 3
     },
     "testList": {
       "uuid": "1",
       "type": 1,
       "title": "note 1",
       "content": "item1\nitem2\nitem3\nitem4\nitem5\nitem6",
-      "metadata": "{\"checked\":[0,0,0,1,1,0]}",
+      "metadata": "{\"type\":\"list\",\"checked\":[0,0,0,1,1,0]}",
       "added": "2019-12-15T00:00:00.000Z",
       "modified": "2020-02-02T12:10:00.000Z",
       "synced": "2020-02-02T12:10:00.000Z",

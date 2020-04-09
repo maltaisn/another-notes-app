@@ -20,11 +20,11 @@ package com.maltaisn.notes.model
 import android.content.SharedPreferences
 import android.text.format.DateUtils
 import com.maltaisn.notes.PreferenceHelper
-import com.maltaisn.notes.model.entity.ChangeEvent
-import com.maltaisn.notes.model.entity.ChangeEventType
+import com.maltaisn.notes.model.entity.DeletedNote
 import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.model.entity.NoteStatus
 import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
 import java.io.IOException
 import java.util.*
@@ -35,83 +35,86 @@ import javax.inject.Singleton
 @Singleton
 class NotesRepository @Inject constructor(
         private val notesDao: NotesDao,
-        private val changeEventsDao: ChangeEventsDao,
+        private val deletedNotesDao: DeletedNotesDao,
         private val notesService: NotesService,
         private val prefs: SharedPreferences) {
 
     suspend fun insertNote(note: Note): Long = withContext(NonCancellable) {
-        changeEventsDao.insert(ChangeEvent(note.uuid, ChangeEventType.ADDED))
         notesDao.insert(note)
     }
 
     suspend fun updateNote(note: Note) = withContext(NonCancellable) {
-        changeEventsDao.insert(ChangeEvent(note.uuid, ChangeEventType.UPDATED))
         notesDao.update(note)
     }
 
     suspend fun updateNotes(notes: List<Note>) = withContext(NonCancellable) {
-        changeEventsDao.insertAll(notes.map { ChangeEvent(it.uuid, ChangeEventType.UPDATED) })
         notesDao.updateAll(notes)
     }
 
     suspend fun deleteNote(note: Note) = withContext(NonCancellable) {
-        changeEventsDao.insert(ChangeEvent(note.uuid, ChangeEventType.DELETED))
         notesDao.delete(note)
+        deletedNotesDao.insert(DeletedNote(0, note.uuid))
     }
 
     suspend fun deleteNotes(notes: List<Note>) = withContext(NonCancellable) {
-        changeEventsDao.insertAll(notes.map { ChangeEvent(it.uuid, ChangeEventType.DELETED) })
         notesDao.deleteAll(notes)
+        deletedNotesDao.insertAll(notes.map { DeletedNote(0, it.uuid) })
     }
 
     suspend fun getById(id: Long) = notesDao.getById(id)
 
-    fun searchNotes(query: String) = notesDao.search(query)
-
     fun getNotesByStatus(status: NoteStatus) = notesDao.getByStatus(status)
 
-    suspend fun emptyTrash() = notesDao.deleteByStatus(NoteStatus.TRASHED)
+    fun searchNotes(query: String) = notesDao.search(query)
+
+    suspend fun emptyTrash() {
+        deleteNotes(getNotesByStatus(NoteStatus.TRASHED).first())
+    }
 
     suspend fun deleteOldNotesInTrash() {
         val delay = PreferenceHelper.TRASH_AUTO_DELETE_DELAY * DateUtils.DAY_IN_MILLIS
         val minDate = Date(System.currentTimeMillis() - delay)
-        notesDao.deleteByStatusAndDate(NoteStatus.TRASHED, minDate)
+        deleteNotes(notesDao.getByStatusAndDate(NoteStatus.TRASHED, minDate))
     }
 
+    /**
+     * Sync local notes with the server. This happens in two steps:
+     * 1. Local changes (inserted and updated notes, deleted notes UUIDs) are sent to the server.
+     * 2. Server returns all remote changes since the last sync date (again, inserted and updated
+     * notes, deleted notes UUIDs) and this data is updated locally.
+     *
+     * @throws IOException Thrown when sync fails.
+     */
     suspend fun syncNotes() {
-        // Create a list of local changes to send
-        val localChanges = changeEventsDao.getAll().map { event ->
-            NotesService.ChangeEventData(event.uuid, notesDao.getByUuid(event.uuid), event.type)
-        }
+        // Get local sync data.
         val lastSyncTime = Date(prefs.getLong(PreferenceHelper.LAST_SYNC_TIME, 0))
-        val localData = NotesService.SyncData(lastSyncTime, localChanges)
+        val localChanged = notesDao.getChanged()
+        val localDeleted = deletedNotesDao.getAllUuids()
+        val localData = NotesService.SyncData(lastSyncTime, localChanged, localDeleted)
 
         // Send local changes to server, and receive remote changes
-        val remoteData = try {
-            notesService.syncNotes(localData)
-        } catch (e: IOException) {
-            throw IOException("Sync notes failed", e)
-        }
+        val remoteData = NotesService.SyncData(Date(), emptyList(), emptyList())
+//        val remoteData = try {
+//            notesService.syncNotes(localData)
+//        } catch (e: IOException) {
+//            throw IOException("Sync notes failed", e)
+//        }
 
-        // Clear local change events that were just synced.
-        changeEventsDao.clear()
+        // Sync was successful, update "changed" flag and remove "deleted" notes from database.
+        notesDao.resetChangedFlag()
+        deletedNotesDao.clear()
+
+        // Update local last sync time
+        prefs.edit().putLong(PreferenceHelper.LAST_SYNC_TIME, remoteData.lastSync.time).apply()
 
         // Update local notes
-        for (event in remoteData.events) {
-            when (event.type) {
-                ChangeEventType.ADDED, ChangeEventType.UPDATED -> {
-                    // Set existing ID on note if UUID already exists in database.
-                    // Otherwise use ID 0 so that it will be auto-generated.
-                    val note = event.note!!
-                    val id = notesDao.getIdByUuid(note.uuid) ?: 0
-                    notesDao.insert(note.copy(id = id))
-                }
-                ChangeEventType.DELETED -> notesDao.delete(event.uuid)
-            }
+        val remotedChanged = remoteData.changedNotes.map { note ->
+            note.copy(id = notesDao.getIdByUuid(note.uuid) ?: Note.NO_ID)
         }
+        notesDao.insertAll(remotedChanged)
 
-        // Update last sync time
-        prefs.edit().putLong(PreferenceHelper.LAST_SYNC_TIME, remoteData.lastSync.time).apply()
+        // Delete local notes
+        notesDao.deleteByUuid(remoteData.deletedUuids)
     }
 
 }

@@ -16,7 +16,6 @@
 
 package com.maltaisn.notes.ui.note.adapter
 
-import android.graphics.Color
 import android.view.View
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -31,7 +30,6 @@ import com.maltaisn.notes.model.entity.NoteType
 import com.maltaisn.notes.ui.note.HighlightHelper
 import kotlin.math.min
 
-val HIGHLIGHT_COLOR = Color.rgb(0, 200, 255)
 
 abstract class NoteViewHolder(itemView: View) :
         RecyclerView.ViewHolder(itemView) {

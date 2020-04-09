@@ -14,15 +14,13 @@
  * limitations under the License.
  */
 
-@file:UseSerializers(DateTimeConverter::class, ChangeEventTypeConverter::class)
+@file:UseSerializers(DateTimeConverter::class)
 
 package com.maltaisn.notes.model
 
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.functions.FirebaseFunctions
-import com.maltaisn.notes.model.converter.ChangeEventTypeConverter
 import com.maltaisn.notes.model.converter.DateTimeConverter
-import com.maltaisn.notes.model.entity.ChangeEventType
 import com.maltaisn.notes.model.entity.Note
 import kotlinx.coroutines.tasks.await
 import kotlinx.serialization.Serializable
@@ -43,7 +41,8 @@ open class NotesService @Inject constructor(
 
     /**
      * Send local data to sync with server, and return remote data to sync with local.
-     * Throws [IOException] if sync fails for any reason.
+     *
+     * @throws IOException If sync fails because user isn't authenticated or for any other reason.
      */
     open suspend fun syncNotes(localData: SyncData): SyncData {
         if (fbAuth.currentUser == null) {
@@ -66,13 +65,9 @@ open class NotesService @Inject constructor(
                     ?: throw IOException("Sync failed")
 
     @Serializable
-    data class ChangeEventData(val uuid: String,
-                               val note: Note?,
-                               val type: ChangeEventType)
-
-    @Serializable
     data class SyncData(val lastSync: Date,
-                        val events: List<ChangeEventData>)
+                        val changedNotes: List<Note>,
+                        val deletedUuids: List<String>)
 
 
     private fun jsonElementToStructure(element: JsonElement?): Any? = when (element) {

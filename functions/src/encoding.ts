@@ -15,33 +15,25 @@
  */
 
 
-import {ActiveNote, Note} from './types'
+import {Note} from './types'
 
 // The server encodes all note sensitive data (title, content, metadata) to base 64
-// as to prevent accicental eavesdropping but this is by no mean a security measure.
+// as to prevent accidental eavesdropping. This is a privacy measure, not a security one.
+
+const ENCODING = 'base64'
 
 export function base64EncodeNote(note: Note): Note {
-    if (!(note as ActiveNote).title) {
-        return note
-    }
-    const copy = Object.assign({}, note) as ActiveNote
-    copy.title = Buffer.from(copy.title).toString('base64')
-    copy.content = Buffer.from(copy.content).toString('base64')
-    if (copy.metadata) {
-        copy.metadata = Buffer.from(copy.metadata).toString('base64')
-    }
+    const copy = Object.assign({}, note)
+    copy.title = Buffer.from(copy.title).toString(ENCODING)
+    copy.content = Buffer.from(copy.content).toString(ENCODING)
+    copy.metadata = Buffer.from(copy.metadata).toString(ENCODING)
     return copy
 }
 
-export function base64DecodeNote(note: Note): Note {
-    if (!(note as ActiveNote).title) {
-        return note
-    }
-    const copy = Object.assign({}, note) as ActiveNote
-    copy.title = Buffer.from(copy.title, 'base64').toString()
-    copy.content = Buffer.from(copy.content, 'base64').toString()
-    if (copy.metadata) {
-        copy.metadata = Buffer.from(copy.metadata, 'base64').toString()
-    }
+export function base64DecodeNote<T>(note: Note): Note {
+    const copy = Object.assign({}, note)
+    copy.title = Buffer.from(copy.title, ENCODING).toString()
+    copy.content = Buffer.from(copy.content, ENCODING).toString()
+    copy.metadata = Buffer.from(copy.metadata, ENCODING).toString()
     return copy
 }

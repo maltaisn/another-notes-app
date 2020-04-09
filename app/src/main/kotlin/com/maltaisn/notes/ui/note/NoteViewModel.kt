@@ -123,7 +123,8 @@ abstract class NoteViewModel(
                     uuid = Note.generateNoteUuid(),
                     title = Note.getCopiedNoteTitle(note.title, untitledName, copySuffix),
                     addedDate = date,
-                    lastModifiedDate = date)
+                    lastModifiedDate = date,
+                    changed = true)
             notesRepository.insertNote(copy)
             clearSelection()
         }
@@ -172,7 +173,11 @@ abstract class NoteViewModel(
         viewModelScope.launch {
             val date = Date()
             val oldNotes = notes.toList()
-            val newNotes = oldNotes.map { it.copy(status = newStatus, lastModifiedDate = date) }
+            val newNotes = oldNotes.map { note ->
+                note.copy(status = newStatus,
+                        lastModifiedDate = date,
+                        changed = true)
+            }
             notesRepository.updateNotes(newNotes)
 
             // Show status change message.

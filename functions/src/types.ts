@@ -52,7 +52,9 @@ export const TDateString = new t.Type<Date, string, unknown>(
             const d = new Date(s)
             return isNaN(d.getTime()) ? t.failure(u, c, 'Invalid date value') : t.success(d)
         }),
-    a => a.toISOString()
+    a => {
+        return a.toISOString()
+    }
 )
 export type DateString = t.TypeOf<typeof TDateString>
 
@@ -71,18 +73,17 @@ enum NoteType { Text = 0, List = 1 }
 export const TNoteType = enumType(NoteType, 'NoteType')
 
 /**
- * Type for a change event.
- */
-export enum ChangeEventType { Added = 0, Updated = 1, Deleted = 2 }
-
-export const TChangeEventType = enumType(ChangeEventType, 'ChangeEventType')
-
-/**
  * Base class for a note. This is used to represent deleted notes,
  * which are kept for syncing but have no content.
  */
 export const TNote = t.type({
     uuid: t.string,
+    type: t.number,
+    title: t.string,
+    content: t.string,
+    metadata: t.string,
+    added: TDateString,
+    modified: TDateString,
     status: t.number,
 
     // This field is used to determine whether note data should be sent to the client or not,
@@ -93,42 +94,20 @@ export const TNote = t.type({
 export type Note = t.TypeOf<typeof TNote>
 
 /**
- * An active note i.e. not deleted, with content.
- */
-export const TActiveNote = t.intersection([
-    TNote,
-    t.type({
-        type: t.number,
-        title: t.string,
-        content: t.string,
-        metadata: t.union([t.string, t.undefined]),
-        added: TDateString,
-        modified: TDateString,
-    })
-])
-export type ActiveNote = t.TypeOf<typeof TActiveNote>
-
-/**
- * A change event describing a change in notes that happened locally or remotely.
- */
-export const TChangeEvent = t.type({
-    uuid: t.string,
-    note: t.union([TActiveNote, TNote, t.null, t.undefined]),
-    type: TChangeEventType
-})
-export type ChangeEvent = t.TypeOf<typeof TChangeEvent>
-
-/**
  * Sync data sent by the client and the server, containing a date of last sync
  * and a list of events that happened since that time.
  */
 export const TSyncData = t.type({
     lastSync: TDateString,
-    events: t.array(TChangeEvent)
+    changedNotes: t.array(TNote),
+    deletedUuids: t.array(t.string)
 })
 export type SyncData = t.TypeOf<typeof TSyncData>
 
 
+/**
+ * Try to decode a value of a given type, calling onError if decoding fails.
+ */
 export const decodeOrElse = function <A, O, I>(type: t.Type<A, O, I>, value: I,
                                                onError: (e: t.Errors) => A): A {
     return pipe(type.decode(value), fold(onError, t.identity))

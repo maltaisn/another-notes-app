@@ -16,9 +16,7 @@
 
 package com.maltaisn.notes
 
-import com.maltaisn.notes.model.entity.Note
-import com.maltaisn.notes.model.entity.NoteStatus
-import com.maltaisn.notes.model.entity.NoteType
+import com.maltaisn.notes.model.entity.*
 import java.util.*
 
 
@@ -28,8 +26,9 @@ fun atestNote(
         type: NoteType = NoteType.TEXT,
         title: String = "note",
         content: String = "content",
-        metadata: String? = null,
+        metadata: NoteMetadata = BlankNoteMetadata,
         added: Date = Date(),
         modified: Date = Date(),
-        status: NoteStatus = NoteStatus.ACTIVE
-) = Note(id, uuid, type, title, content, metadata, added, modified, status)
+        status: NoteStatus = NoteStatus.ACTIVE,
+        changed: Boolean = false
+) = Note(id, uuid, type, title, content, metadata, added, modified, status, changed)

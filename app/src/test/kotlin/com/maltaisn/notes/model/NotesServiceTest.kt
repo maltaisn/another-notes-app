@@ -17,9 +17,7 @@
 package com.maltaisn.notes.model
 
 import com.google.firebase.auth.FirebaseAuth
-import com.maltaisn.notes.model.NotesService.ChangeEventData
 import com.maltaisn.notes.model.NotesService.SyncData
-import com.maltaisn.notes.model.entity.ChangeEventType
 import com.maltaisn.notes.testNote
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
@@ -36,20 +34,13 @@ class NotesServiceTest {
     fun `should fail unauthenticated`() {
         val service = NotesService(mock(), mock())
         runBlocking {
-            service.syncNotes(SyncData(Date(), emptyList()))
+            service.syncNotes(SyncData(Date(), emptyList(), emptyList()))
         }
     }
 
     @Test
     fun `should encode and decode sync data structures`() = runBlocking {
-        // Note: ID is not serialized so ID 0 (the default) is used everywhere.
-        val note1 = testNote()
-        val note2 = testNote()
-        val syncData = SyncData(Date(), listOf(
-                ChangeEventData("1", note1, ChangeEventType.ADDED),
-                ChangeEventData("2", note2, ChangeEventType.UPDATED),
-                ChangeEventData("3", null, ChangeEventType.DELETED)
-        ))
+        val syncData = SyncData(Date(), listOf(testNote(), testNote()), listOf("0", "1"))
 
         // Mock auth so user appears authenticated
         val fbAuth = mock<FirebaseAuth> {

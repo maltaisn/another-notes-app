@@ -31,6 +31,8 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 
 
@@ -54,7 +56,6 @@ class NotesDaoTest {
 
     @Test
     fun readWriteTests() = runBlocking {
-        val time = DateTimeConverter.toDate("2020-01-01T00:00:00.000Z")
         val note = atestNote(id = 1, uuid = "1", title = "note")
 
         val id = notesDao.insert(note)
@@ -63,7 +64,6 @@ class NotesDaoTest {
         val updatedNote = atestNote(id = 1, uuid = "1", title = "updated note")
         notesDao.update(updatedNote)
         assertEquals(updatedNote, notesDao.getById(id))
-        assertEquals(updatedNote, notesDao.getByUuid("1"))
 
         notesDao.delete(updatedNote)
         assertNull(notesDao.getById(id))
@@ -104,21 +104,7 @@ class NotesDaoTest {
     }
 
     @Test
-    fun deleteByStatusTest() = runBlocking {
-        for (status in NoteStatus.values()) {
-            val note = atestNote(status = status)
-            notesDao.insert(note)
-        }
-
-        val trashFlow = notesDao.getByStatus(NoteStatus.TRASHED)
-        assertEquals(1, trashFlow.first().size)
-
-        notesDao.deleteByStatus(NoteStatus.TRASHED)
-        assertEquals(0, trashFlow.first().size)
-    }
-
-    @Test
-    fun deleteByStatusAndDateTest() = runBlocking {
+    fun getByStatusAndDateTest() = runBlocking {
         val dates = listOf(
                 "2019-01-01T00:00:00.000Z",
                 "2019-05-01T00:00:00.000Z",
@@ -127,17 +113,47 @@ class NotesDaoTest {
                 "2020-01-01T00:00:00.000Z",
                 "2020-01-02T00:00:00.000Z")
         val notes = dates.mapIndexed { i, date ->
-            val note = atestNote(id = i + 1L, modified = DateTimeConverter.toDate(date),
+            atestNote(id = i + 1L, modified = DateTimeConverter.toDate(date),
                     status = NoteStatus.TRASHED)
-            notesDao.insert(note)
-            note
         }
+        notesDao.insertAll(notes)
 
-        notesDao.deleteByStatusAndDate(NoteStatus.TRASHED,
+        val queryNotes = notesDao.getByStatusAndDate(NoteStatus.TRASHED,
                 DateTimeConverter.toDate("2020-01-01T00:00:00.000Z"))
+        assertEquals(notes.subList(0, 4).toSet(), queryNotes.toSet())
+    }
 
-        assertEquals(setOf(notes[5], notes[4]),
-                notesDao.getByStatus(NoteStatus.TRASHED).first().toSet())
+    @Test
+    fun getChangedTest() = runBlocking {
+        val note = atestNote(id = 1, changed = true)
+        notesDao.insertAll(listOf(note, atestNote(id = 2, changed = false)))
+
+        assertEquals(listOf(note), notesDao.getChanged())
+    }
+
+    @Test
+    fun deleteByUuidTest() = runBlocking {
+        notesDao.insertAll(listOf(
+                atestNote(id = 1, uuid = "0"),
+                atestNote(id = 2, uuid = "1"),
+                atestNote(id = 3, uuid = "2")))
+
+        notesDao.deleteByUuid(listOf("0", "2"))
+
+        assertNull(notesDao.getById(1))
+        assertNotNull(notesDao.getById(2))
+        assertNull(notesDao.getById(3))
+    }
+
+    @Test
+    fun resetChangedFlagTest() = runBlocking {
+        notesDao.insertAll(listOf(
+                atestNote(id = 1, changed = true),
+                atestNote(id = 2, changed = false)))
+
+        notesDao.resetChangedFlag()
+        assertFalse(notesDao.getById(1)!!.changed)
+        assertFalse(notesDao.getById(2)!!.changed)
     }
 
     @Test

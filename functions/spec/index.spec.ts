@@ -20,7 +20,7 @@ import * as chaiAsPromised from 'chai-as-promised'
 import * as admin from 'firebase-admin'
 import * as config from '../config.json'
 import * as testData from './test-data.json'
-import {ActiveNote, ChangeEvent, ChangeEventType, Note} from '../src/types'
+import {Note} from '../src/types'
 import {base64DecodeNote, base64EncodeNote} from '../src/encoding'
 
 chai.use(chaiAsPromised)
@@ -37,7 +37,9 @@ const callableContext = {
 }
 
 describe('cloud functions', () => {
-    const userDb = admin.database().ref(`users/${config.test.userUid}/notes`)
+    const userDb = admin.database().ref(`users/${config.test.userUid}`)
+    const notesDb = userDb.child('notes')
+    const deletedNotesDb = userDb.child('deletedNotes')
 
     before(() => {
         chai.should()
@@ -71,18 +73,27 @@ describe('cloud functions', () => {
             it('should fail wrong last sync date', async () => {
                 return expect(functions.sync.run({
                     lastSync: '2020/01/01 10:10:10.100 GMT',
-                    events: []
+                    changedNotes: [],
+                    deletedUuids: []
                 }, callableContext)).to.eventually.be.rejectedWith('Invalid sync data')
             })
 
-            it('should fail wrong event', async () => {
+            it('should fail wrong changed note', async () => {
                 return expect(functions.sync.run({
                     lastSync: '1970-01-01T00:00:00.000Z',
-                    events: [{
+                    changedNotes: [{
                         uuid: '0',
-                        note: {wrong: 'yes'},
                         type: 100
-                    }]
+                    }],
+                    deleteUuids: []
+                }, callableContext)).to.eventually.be.rejectedWith('Invalid sync data')
+            })
+
+            it('should fail wrong deleted uuid', async () => {
+                return expect(functions.sync.run({
+                    lastSync: '1970-01-01T00:00:00.000Z',
+                    changedNotes: [],
+                    deleteUuids: [1234]
                 }, callableContext)).to.eventually.be.rejectedWith('Invalid sync data')
             })
         })
@@ -91,112 +102,142 @@ describe('cloud functions', () => {
             it('should return new sync date', async () => {
                 const dateStr = (await functions.sync.run({
                     lastSync: '1970-01-01T00:00:00.000Z',
-                    events: []
+                    changedNotes: [],
+                    deletedUuids: []
                 }, callableContext)).lastSync
                 expect(new Date(dateStr).getTime())
-                    .to.approximately(new Date().getTime(), 100)
+                    .to.approximately(new Date().getTime(), 1000)
             })
 
             it('should return no events (no remote events)', async () => {
-                expect((await functions.sync.run({
+                const syncData = await functions.sync.run({
                     lastSync: '1970-01-01T00:00:00.000Z',
-                    events: []
-                }, callableContext)).events).to.be.empty
+                    changedNotes: [],
+                    deletedUuids: []
+                }, callableContext)
+                expect(syncData.changedNotes).to.be.empty
+                expect(syncData.deletedUuids).to.be.empty
             })
 
             it('should return no events (already synced)', async () => {
                 await setTestNote(testData.notes.test);
-                expect((await functions.sync.run({
+                const syncData = await functions.sync.run({
                     lastSync: '2030-01-01T00:00:00.000Z',
-                    events: []
-                }, callableContext)).events).to.be.empty
+                    changedNotes: [],
+                    deletedUuids: []
+                }, callableContext)
+                expect(syncData.changedNotes).to.be.empty
+                expect(syncData.deletedUuids).to.be.empty
             })
 
-            it('should return single add event', async () => {
+            it('should return single updated', async () => {
                 await setTestNote(testData.notes.test)
                 const syncData = await functions.sync.run({
                     lastSync: '2010-01-01T00:00:00.000Z',
-                    events: []
+                    changedNotes: [],
+                    deletedUuids: []
                 }, callableContext)
-                expectEventsToBeEqual(syncData.events,
-                    [createTestEvent(testData.notes.test, ChangeEventType.Added)])
+                expectNotesToBeEqual(syncData.changedNotes[0], testData.notes.test)
+                expect(syncData.deletedUuids).to.be.empty
             })
 
-            it('should return single delete event', async () => {
-                await setTestNote(testData.notes.testDeleted)
-                expect((await functions.sync.run({
+            it('should return single deleted', async () => {
+                await deletedNotesDb.child('0').set('2020-01-01T00:00:00.000Z')
+                const syncData = await functions.sync.run({
                     lastSync: '2010-01-01T00:00:00.000Z',
-                    events: []
-                }, callableContext)).events).to.deep.equal([{
-                    uuid: '0',
-                    type: ChangeEventType.Deleted
-                }])
+                    changedNotes: [],
+                    deletedUuids: []
+                }, callableContext)
+                expect(syncData.changedNotes).to.be.empty
+                expect(syncData.deletedUuids).to.deep.equal(['0'])
             })
         })
 
         describe('send local events', async () => {
-            // Note: for testing purposes, events
-
             it('should add no events', async () => {
                 await functions.sync.run({
                     lastSync: '1970-01-01T00:00:00.000Z',
-                    events: []
+                    changedNotes: [],
+                    deletedUuids: []
                 }, callableContext)
                 const snapshot = await userDb.once('value')
                 expect(snapshot.numChildren()).to.be.equal(0)
             })
 
-            it('should add event', async () => {
+            it('should add note', async () => {
                 const syncData = await functions.sync.run({
                     lastSync: '1970-01-01T00:00:00.000Z',
-                    events: [createTestEvent(testData.notes.test, ChangeEventType.Added)]
+                    changedNotes: [testData.notes.test],
+                    deletedUuids: []
                 }, callableContext)
-                return expectNoteToBeEventuallyEqual('0',
+                expectNotesToBeEqual(await getTestNote('0'),
                     testData.notes.test, syncData.lastSync)
             })
 
-            it('should update event', async () => {
+            it('should update note', async () => {
                 await setTestNote(testData.notes.test)
                 const syncData = await functions.sync.run({
                     lastSync: '1970-01-01T00:00:00.000Z',
-                    events: [createTestEvent(testData.notes.testUpdated, ChangeEventType.Updated)]
+                    changedNotes: [testData.notes.testUpdated],
+                    deletedUuids: []
                 }, callableContext)
-                return expectNoteToBeEventuallyEqual('0',
+                expectNotesToBeEqual(await getTestNote('0'),
                     testData.notes.testUpdated, syncData.lastSync)
             })
 
-            it('should delete event', async () => {
+            it('should delete note', async () => {
                 await setTestNote(testData.notes.test)
                 await functions.sync.run({
                     lastSync: '1970-01-01T00:00:00.000Z',
-                    events: [createTestEvent(testData.notes.testDeleted, ChangeEventType.Deleted)]
+                    changedNotes: [],
+                    deletedUuids: ['0']
                 }, callableContext)
-                const snapshot = await userDb.once('value')
-                expect(snapshot.numChildren()).to.be.equal(0)
+                const notesSnapshot = await notesDb.once('value')
+                expect(notesSnapshot.numChildren()).to.be.equal(0)
+                const deletedNotesSnapshot = await deletedNotesDb.once('value')
+                expect(deletedNotesSnapshot.numChildren()).to.be.equal(1)
             })
         })
 
         describe('send local event and return remote', async () => {
-            it('should update but not return event', async () => {
+            it('should update but not return event (same uuid)', async () => {
                 await setTestNote(testData.notes.test)
                 const syncData = await functions.sync.run({
                     lastSync: '1970-01-01T00:00:00.000Z',
-                    events: [createTestEvent(testData.notes.testUpdated, ChangeEventType.Updated)]
+                    changedNotes: [testData.notes.testUpdated],
+                    deletedUuids: []
                 }, callableContext)
-                expect(syncData.events).to.be.empty
-                return expectNoteToBeEventuallyEqual('0',
+                expect(syncData.changedNotes).to.be.empty
+                expect(syncData.deletedUuids).to.be.empty
+                expectNotesToBeEqual(await getTestNote('0'),
                     testData.notes.testUpdated, syncData.lastSync)
+            })
+
+            it('should delete but not return event (same uuid)', async () => {
+                await setTestNote(testData.notes.test)
+                const syncData = await functions.sync.run({
+                    lastSync: '1970-01-01T00:00:00.000Z',
+                    changedNotes: [],
+                    deletedUuids: ['0']
+                }, callableContext)
+                expect(syncData.changedNotes).to.be.empty
+                expect(syncData.deletedUuids).to.be.empty
+                const notesSnapshot = await notesDb.once('value')
+                expect(notesSnapshot.numChildren()).to.be.equal(0)
+                const deletedNotesSnapshot = await deletedNotesDb.once('value')
+                expect(deletedNotesSnapshot.numChildren()).to.be.equal(1)
             })
 
             it('should update and return event', async () => {
                 await setTestNote(testData.notes.test)
                 const syncData = await functions.sync.run({
                     lastSync: '1970-01-01T00:00:00.000Z',
-                    events: [createTestEvent(testData.notes.testList, ChangeEventType.Added)]
+                    changedNotes: [testData.notes.testList],
+                    deletedUuids: []
                 }, callableContext)
-                expectEventsToBeEqual(syncData.events,
-                    [createTestEvent(testData.notes.test, ChangeEventType.Added)])
-                return expectNoteToBeEventuallyEqual('1',
+                expectNotesToBeEqual(syncData.changedNotes[0], testData.notes.test)
+                expect(syncData.deletedUuids).to.be.empty
+                expectNotesToBeEqual(await getTestNote('1'),
                     testData.notes.testList, syncData.lastSync)
             })
         })
@@ -206,9 +247,10 @@ describe('cloud functions', () => {
                 const testNote = testData.notes.testList
                 await functions.sync.run({
                     lastSync: '1970-01-01T00:00:00.000Z',
-                    events: [createTestEvent(testNote, ChangeEventType.Added)]
+                    changedNotes: [testNote],
+                    deletedUuids: []
                 }, callableContext)
-                const note = await getTestNote(testNote.uuid, false) as ActiveNote
+                const note = await getTestNote(testNote.uuid, false)
                 expect(note.title).to.be.equal(Buffer.from(testNote.title).toString('base64'))
                 expect(note.content).to.be.equal(Buffer.from(testNote.content).toString('base64'))
                 expect(note.metadata).to.be.equal(Buffer.from(testNote.metadata).toString('base64'))
@@ -216,16 +258,8 @@ describe('cloud functions', () => {
         })
     })
 
-    function createTestEvent(note: any, type: ChangeEventType): ChangeEvent {
-        return {
-            uuid: note.uuid,
-            note: type === ChangeEventType.Deleted ? null : note,
-            type: type
-        }
-    }
-
     async function getTestNote(uuid: string, decode = true): Promise<Note> {
-        const val = await userDb.child(uuid).once('value')
+        const val = await notesDb.child(uuid).once('value')
         if (decode) {
             return base64DecodeNote(val.val())
         }
@@ -234,35 +268,17 @@ describe('cloud functions', () => {
 
     async function setTestNote(note: any): Promise<void> {
         const encoded = base64EncodeNote(note)
-        return userDb.child(encoded.uuid).set(encoded)
+        return notesDb.child(encoded.uuid).set(encoded)
     }
 
     /**
-     * Expect events to be equal ignoring the "synced" field.
+     * Expect notes to be equal given a synced date.
      */
-    function expectEventsToBeEqual(actual: any[], expected: any[]) {
-        const expectedNoSynced = []
-        for (const changeEvent of expected) {
-            // Copy the change event, removing the "synced" key in the note.
-            const changed = Object.assign({}, changeEvent)
-            if (changed.note) {
-                changed.note = Object.assign({}, changed.note)
-                delete changed.note.synced
-            }
-            expectedNoSynced.push(changed)
-        }
-        expect(actual).to.be.deep.equal(expectedNoSynced)
-    }
-
-    /**
-     * Expect note to be equal to a note with a UUID on the server given a synced date.
-     */
-    async function expectNoteToBeEventuallyEqual(uuid: string, expected: any, date: string): Promise<void> {
+    function expectNotesToBeEqual(actual: any, expected: any, date: string | undefined = undefined) {
         // Set the synced date on a copy of the expected note.
-        const note = await getTestNote(uuid)
         const expectedNoSynced = Object.assign({}, expected)
         expectedNoSynced.synced = date
-        expect(note).to.be.deep.equal(expectedNoSynced)
+        expect(actual).to.be.deep.equal(expectedNoSynced)
     }
 
 })
