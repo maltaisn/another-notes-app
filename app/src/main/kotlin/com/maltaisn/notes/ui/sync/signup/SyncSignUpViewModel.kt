@@ -26,6 +26,7 @@ import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.maltaisn.notes.R
 import com.maltaisn.notes.ui.Event
+import com.maltaisn.notes.ui.send
 import com.maltaisn.notes.ui.sync.SyncPage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -62,7 +63,7 @@ class SyncSignUpViewModel @Inject constructor(private val fbAuth: FirebaseAuth) 
 
 
     fun goToPage(page: SyncPage) {
-        _changePageEvent.value = Event(page)
+        _changePageEvent.send(page)
     }
 
     fun setEnteredEmail(email: CharSequence) {
@@ -125,9 +126,9 @@ class SyncSignUpViewModel @Inject constructor(private val fbAuth: FirebaseAuth) 
                     fbAuth.currentUser?.sendEmailVerification()?.await()
                 }
 
-                _messageEvent.value = Event(R.string.sync_sign_up_success_message)
+                _messageEvent.send(R.string.sync_sign_up_success_message)
                 _fieldError.value = null
-                _clearFieldsEvent.value = Event(Unit)
+                _clearFieldsEvent.send()
 
                 goToPage(SyncPage.MAIN)
 
@@ -140,11 +141,11 @@ class SyncSignUpViewModel @Inject constructor(private val fbAuth: FirebaseAuth) 
                     }
                     is FirebaseAuthUserCollisionException -> {
                         // Email is already in use.
-                        _messageEvent.value = Event(R.string.sync_sign_up_failed_email_used_message)
+                        _messageEvent.send(R.string.sync_sign_up_failed_email_used_message)
                     }
                     else -> {
                         // No internet connection, too many requests, or other error.
-                        _messageEvent.value = Event(R.string.sync_sign_in_failed_unknown_message)
+                        _messageEvent.send(R.string.sync_sign_in_failed_unknown_message)
                     }
                 }
             }

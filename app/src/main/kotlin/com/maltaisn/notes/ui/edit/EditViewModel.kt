@@ -23,10 +23,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.maltaisn.notes.model.NotesRepository
 import com.maltaisn.notes.model.entity.*
-import com.maltaisn.notes.ui.Event
-import com.maltaisn.notes.ui.MessageEvent
-import com.maltaisn.notes.ui.ShareData
-import com.maltaisn.notes.ui.StatusChange
+import com.maltaisn.notes.ui.*
 import com.maltaisn.notes.ui.edit.adapter.*
 import kotlinx.coroutines.launch
 import java.util.*
@@ -130,11 +127,11 @@ class EditViewModel @Inject constructor(
             // Delete blank note
             viewModelScope.launch {
                 notesRepository.deleteNote(note)
-                _messageEvent.value = Event(MessageEvent.BlankNoteDiscardEvent)
-                _exitEvent.value = Event(Unit)
+                _messageEvent.send(MessageEvent.BlankNoteDiscardEvent)
+                _exitEvent.send()
             }
         } else {
-            _exitEvent.value = Event(Unit)
+            _exitEvent.send()
         }
     }
 
@@ -189,7 +186,7 @@ class EditViewModel @Inject constructor(
 
     fun shareNote() {
         save()
-        _shareEvent.value = Event(ShareData(note.title, note.asText()))
+        _shareEvent.send(ShareData(note.title, note.asText()))
     }
 
     fun deleteNote() {
@@ -220,7 +217,7 @@ class EditViewModel @Inject constructor(
 
             // Show status change message.
             val statusChange = StatusChange(listOf(oldNote), oldStatus, newStatus)
-            _messageEvent.value = Event(MessageEvent.StatusChangeEvent(statusChange))
+            _messageEvent.send(MessageEvent.StatusChangeEvent(statusChange))
         }
 
         exit()
@@ -310,7 +307,7 @@ class EditViewModel @Inject constructor(
     }
 
     private fun focusItemAt(pos: Int, textPos: Int, itemExists: Boolean) {
-        _focusEvent.value = Event(FocusChange(pos, textPos, itemExists))
+        _focusEvent.send(FocusChange(pos, textPos, itemExists))
     }
 
     private fun deleteNoteItem(pos: Int) {

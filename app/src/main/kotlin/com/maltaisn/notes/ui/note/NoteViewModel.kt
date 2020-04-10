@@ -25,10 +25,7 @@ import com.maltaisn.notes.PreferenceHelper
 import com.maltaisn.notes.model.NotesRepository
 import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.model.entity.NoteStatus
-import com.maltaisn.notes.ui.Event
-import com.maltaisn.notes.ui.MessageEvent
-import com.maltaisn.notes.ui.ShareData
-import com.maltaisn.notes.ui.StatusChange
+import com.maltaisn.notes.ui.*
 import com.maltaisn.notes.ui.note.adapter.*
 import kotlinx.coroutines.launch
 import java.util.*
@@ -135,7 +132,7 @@ abstract class NoteViewModel(
             return
         }
         val note = selectedNotes.first()
-        _shareEvent.value = Event(ShareData(note.title, note.asText()))
+        _shareEvent.send(ShareData(note.title, note.asText()))
     }
 
     private fun setAllSelected(selected: Boolean) {
@@ -182,7 +179,7 @@ abstract class NoteViewModel(
 
             // Show status change message.
             val statusChange = StatusChange(oldNotes, oldNotes.first().status, newStatus)
-            _messageEvent.value = Event(MessageEvent.StatusChangeEvent(statusChange))
+            _messageEvent.send(MessageEvent.StatusChangeEvent(statusChange))
         }
     }
 
@@ -196,7 +193,7 @@ abstract class NoteViewModel(
     override fun onNoteItemClicked(item: NoteItem, pos: Int) {
         if (selectedNotes.isEmpty()) {
             // Edit item
-            _editItemEvent.value = Event(item)
+            _editItemEvent.send(item)
         } else {
             // Toggle item selection
             toggleItemChecked(item, pos)

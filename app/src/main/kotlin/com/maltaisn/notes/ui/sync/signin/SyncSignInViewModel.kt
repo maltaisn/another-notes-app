@@ -26,6 +26,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthException
 import com.maltaisn.notes.R
 import com.maltaisn.notes.ui.Event
+import com.maltaisn.notes.ui.send
 import com.maltaisn.notes.ui.sync.SyncPage
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
@@ -54,7 +55,7 @@ class SyncSignInViewModel @Inject constructor(private val fbAuth: FirebaseAuth) 
     private var password: CharSequence = ""
 
     fun goToPage(page: SyncPage) {
-        _changePageEvent.value = Event(page)
+        _changePageEvent.send(page)
     }
 
     fun setEnteredEmail(email: CharSequence) {
@@ -91,14 +92,14 @@ class SyncSignInViewModel @Inject constructor(private val fbAuth: FirebaseAuth) 
                 fbAuth.signInWithEmailAndPassword(
                         email.toString(), password.toString()).await()
 
-                _messageEvent.value = Event(R.string.sync_sign_in_success_message)
+                _messageEvent.send(R.string.sync_sign_in_success_message)
                 _fieldError.value = null
-                _clearFieldsEvent.value = Event(Unit)
+                _clearFieldsEvent.send()
 
                 goToPage(SyncPage.MAIN)
 
             } catch (e: FirebaseException) {
-                _messageEvent.value = Event(when (e) {
+                _messageEvent.send(when (e) {
                     is FirebaseAuthException -> {
                         // Invalid email or password.
                         R.string.sync_sign_in_failed_wrong_message

@@ -25,6 +25,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.maltaisn.notes.R
 import com.maltaisn.notes.ui.Event
+import com.maltaisn.notes.ui.send
 import com.maltaisn.notes.ui.sync.SyncPage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -56,12 +57,12 @@ class SyncMainViewModel @Inject constructor(private val fbAuth: FirebaseAuth) : 
     }
 
     fun goToPage(page: SyncPage) {
-        _changePageEvent.value = Event(page)
+        _changePageEvent.send(page)
     }
 
     fun signOut() {
         fbAuth.signOut()
-        _messageEvent.value = Event(R.string.sync_sign_out_success_message)
+        _messageEvent.send(R.string.sync_sign_out_success_message)
     }
 
     fun resendVerification() {
@@ -70,10 +71,10 @@ class SyncMainViewModel @Inject constructor(private val fbAuth: FirebaseAuth) : 
                 withContext(Dispatchers.IO) {
                     fbAuth.currentUser?.sendEmailVerification()?.await()
                 }
-                _messageEvent.value = Event(R.string.sync_verification_success_message)
+                _messageEvent.send(R.string.sync_verification_success_message)
             } catch (e: FirebaseException) {
                 // Network error, too many requests, or other unknown error.
-                _messageEvent.value = Event(R.string.sync_verification_failed_message)
+                _messageEvent.send(R.string.sync_verification_failed_message)
             }
         }
     }

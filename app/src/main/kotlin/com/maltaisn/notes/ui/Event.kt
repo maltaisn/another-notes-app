@@ -16,27 +16,26 @@
 
 package com.maltaisn.notes.ui
 
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 
 
 /**
  * Used as a wrapper for data that is exposed via a LiveData that represents an event.
  * Taken from: [https://github.com/android/architecture-samples]
+ * Changes were made to allow unhandled `null` values.
  */
 open class Event<out T>(private val content: T) {
 
-    private var hasBeenHandled = false
+    var hasBeenHandled = false
+        private set
 
     /**
-     * Returns the content and prevents its use again.
+     * Returns the content if not handled, otherwise throws an exception.
      */
-    fun getContentIfNotHandled(): T? {
-        return if (hasBeenHandled) {
-            null
-        } else {
-            hasBeenHandled = true
-            content
-        }
+    fun requireUnhandledContent(): T {
+        check(!hasBeenHandled)
+        return content
     }
 }
 
@@ -48,8 +47,16 @@ open class Event<out T>(private val content: T) {
  */
 class EventObserver<T>(private val onEventUnhandledContent: (T) -> Unit) : Observer<Event<T>> {
     override fun onChanged(event: Event<T>?) {
-        event?.getContentIfNotHandled()?.let {
-            onEventUnhandledContent(it)
+        if (event?.hasBeenHandled == false) {
+            onEventUnhandledContent(event.requireUnhandledContent())
         }
     }
+}
+
+fun <T> MutableLiveData<Event<T>>.send(value: T) {
+    this.value = Event(value)
+}
+
+fun MutableLiveData<Event<Unit>>.send() {
+    this.send(Unit)
 }

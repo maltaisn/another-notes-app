@@ -40,7 +40,7 @@ class SharedViewModel @Inject constructor(
             lastStatusChange = message.statusChange
         }
 
-        _messageEvent.value = Event(message)
+        _messageEvent.send(message)
     }
 
     fun undoStatusChange() {
