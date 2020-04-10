@@ -14,23 +14,11 @@
  * limitations under the License.
  */
 
-package com.maltaisn.notes.model
-
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
-import kotlinx.coroutines.tasks.await
-import javax.inject.Inject
-import javax.inject.Singleton
+package com.maltaisn.notes.ui.sync
 
 
-@Singleton
-class LoginRepository @Inject constructor(private val fbAuth: FirebaseAuth) {
-
-    suspend fun signIn(email: String, password: String): FirebaseUser? {
-        fbAuth.signInWithEmailAndPassword(email, password).await()
-        return fbAuth.currentUser
-    }
-
-    fun signOut() = fbAuth.signOut()
-
+enum class SyncPage(val pos: Int) {
+    MAIN(0),
+    SIGN_IN(1),
+    SIGN_UP(2)
 }

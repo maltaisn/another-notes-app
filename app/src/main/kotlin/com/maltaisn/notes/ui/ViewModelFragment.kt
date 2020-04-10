@@ -14,31 +14,22 @@
  * limitations under the License.
  */
 
-package com.maltaisn.notes.di
+package com.maltaisn.notes.ui
 
-import android.content.Context
-import com.maltaisn.notes.ui.ViewModelFragment
-import com.maltaisn.notes.ui.main.MainActivity
-import dagger.BindsInstance
-import dagger.Component
-import javax.inject.Singleton
+import android.os.Bundle
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
+import com.maltaisn.notes.App
+import javax.inject.Inject
 
 
-@Singleton
-@Component(modules = [
-    AppModule::class,
-    ViewModelModule::class,
-    DatabaseModule::class,
-    FirebaseModule::class
-])
-interface AppComponent {
+abstract class ViewModelFragment : Fragment() {
 
-    fun inject(activity: MainActivity)
-    fun inject(fragment: ViewModelFragment)
+    @Inject lateinit var viewModelFactory: ViewModelProvider.Factory
 
-    @Component.Factory
-    interface Factory {
-        fun create(@BindsInstance appContext: Context): AppComponent
+    override fun onCreate(state: Bundle?) {
+        super.onCreate(state)
+        (requireContext().applicationContext as App).appComponent.inject(this)
     }
 
 }

@@ -24,6 +24,9 @@ import com.maltaisn.notes.ui.ViewModelKey
 import com.maltaisn.notes.ui.edit.EditViewModel
 import com.maltaisn.notes.ui.main.MainViewModel
 import com.maltaisn.notes.ui.search.SearchViewModel
+import com.maltaisn.notes.ui.sync.main.SyncMainViewModel
+import com.maltaisn.notes.ui.sync.signin.SyncSignInViewModel
+import com.maltaisn.notes.ui.sync.signup.SyncSignUpViewModel
 import dagger.Binds
 import dagger.Module
 import dagger.multibindings.IntoMap
@@ -31,6 +34,9 @@ import dagger.multibindings.IntoMap
 
 @Module
 abstract class ViewModelModule {
+
+    @Binds
+    abstract fun bindsViewModelFactory(factory: ViewModelFactory): ViewModelProvider.Factory
 
     @Binds
     @IntoMap
@@ -53,6 +59,17 @@ abstract class ViewModelModule {
     abstract fun bindsEditViewModel(viewModel: EditViewModel): ViewModel
 
     @Binds
-    abstract fun bindsViewModelFactory(factory: ViewModelFactory): ViewModelProvider.Factory
+    @IntoMap
+    @ViewModelKey(SyncMainViewModel::class)
+    abstract fun bindsSyncMainViewModel(viewModel: SyncMainViewModel): ViewModel
 
+    @Binds
+    @IntoMap
+    @ViewModelKey(SyncSignInViewModel::class)
+    abstract fun bindsSyncSignInViewModel(viewModel: SyncSignInViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(SyncSignUpViewModel::class)
+    abstract fun bindsSyncSignUpViewModel(viewModel: SyncSignUpViewModel): ViewModel
 }

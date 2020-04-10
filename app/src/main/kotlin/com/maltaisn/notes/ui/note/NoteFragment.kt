@@ -22,39 +22,30 @@ import android.view.*
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.google.android.material.snackbar.Snackbar
-import com.maltaisn.notes.App
 import com.maltaisn.notes.R
 import com.maltaisn.notes.model.entity.NoteStatus
 import com.maltaisn.notes.ui.EventObserver
 import com.maltaisn.notes.ui.MessageEvent
 import com.maltaisn.notes.ui.SharedViewModel
+import com.maltaisn.notes.ui.ViewModelFragment
 import com.maltaisn.notes.ui.note.adapter.NoteAdapter
 import com.maltaisn.notes.ui.note.adapter.NoteListLayoutMode
 import java.text.NumberFormat
-import javax.inject.Inject
 
 
-abstract class NoteFragment : Fragment(), ActionMode.Callback {
+abstract class NoteFragment : ViewModelFragment(), ActionMode.Callback {
 
-    @Inject lateinit var viewModelFactory: ViewModelProvider.Factory
     private val sharedViewModel: SharedViewModel by activityViewModels { viewModelFactory }
     protected abstract val viewModel: NoteViewModel
 
     protected lateinit var drawerLayout: DrawerLayout
     private var actionMode: ActionMode? = null
 
-
-    override fun onCreate(state: Bundle?) {
-        super.onCreate(state)
-        (requireContext().applicationContext as App).appComponent.inject(this)
-    }
 
     abstract override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                                        savedInstanceState: Bundle?): View

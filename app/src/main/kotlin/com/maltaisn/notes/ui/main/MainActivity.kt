@@ -21,6 +21,7 @@ import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import com.google.android.material.navigation.NavigationView
 import com.maltaisn.notes.App
@@ -31,7 +32,7 @@ import com.maltaisn.notes.model.entity.NoteStatus
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
     private lateinit var drawerLayout: DrawerLayout
-
+    private lateinit var navController: NavController
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,7 +45,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val navView: NavigationView = findViewById(R.id.drawer_nav_view)
         navView.setNavigationItemSelectedListener(this)
 
-        findNavController(R.id.fragment_nav_host).addOnDestinationChangedListener { _, ds, _ ->
+        navController = findNavController(R.id.fragment_nav_host)
+        navController.addOnDestinationChangedListener { _, ds, _ ->
             drawerLayout.setDrawerLockMode(if (ds.id == R.id.fragment_main) {
                 DrawerLayout.LOCK_MODE_UNLOCKED
             } else {
@@ -64,7 +66,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             R.id.item_location_active -> mainFragment.changeShownNotesStatus(NoteStatus.ACTIVE)
             R.id.item_location_archived -> mainFragment.changeShownNotesStatus(NoteStatus.ARCHIVED)
             R.id.item_location_deleted -> mainFragment.changeShownNotesStatus(NoteStatus.TRASHED)
-            R.id.item_sync -> Unit
+            R.id.item_sync -> navController.navigate(R.id.action_main_to_sync)
             R.id.item_settings -> Unit
             else -> return false
         }

@@ -24,16 +24,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.addCallback
 import androidx.appcompat.widget.Toolbar
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.maltaisn.notes.App
 import com.maltaisn.notes.R
 import com.maltaisn.notes.hideKeyboard
 import com.maltaisn.notes.model.entity.Note
@@ -41,13 +38,12 @@ import com.maltaisn.notes.model.entity.NoteStatus
 import com.maltaisn.notes.model.entity.NoteType
 import com.maltaisn.notes.ui.EventObserver
 import com.maltaisn.notes.ui.SharedViewModel
+import com.maltaisn.notes.ui.ViewModelFragment
 import com.maltaisn.notes.ui.edit.adapter.EditAdapter
-import javax.inject.Inject
 
 
-class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener {
+class EditFragment : ViewModelFragment(), Toolbar.OnMenuItemClickListener {
 
-    @Inject lateinit var viewModelFactory: ViewModelProvider.Factory
     private val viewModel: EditViewModel by viewModels { viewModelFactory }
     private val sharedViewModel: SharedViewModel by activityViewModels { viewModelFactory }
 
@@ -55,11 +51,6 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener {
 
     private lateinit var toolbar: Toolbar
 
-
-    override fun onCreate(state: Bundle?) {
-        super.onCreate(state)
-        (requireContext().applicationContext as App).appComponent.inject(this)
-    }
 
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?, state: Bundle?): View =

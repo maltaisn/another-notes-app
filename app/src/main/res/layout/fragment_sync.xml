@@ -17,7 +17,6 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/layout_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -37,24 +36,18 @@
             android:layout_width="match_parent"
             android:layout_height="?actionBarSize"
             android:contentDescription="@string/content_descrp_back"
-            app:menu="@menu/search_toolbar"
             app:navigationIcon="@drawable/ic_arrow_left"
+            app:titleTextColor="?colorControlNormal"
+            app:title="@string/action_sync"
             />
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rcv_notes"
+    <androidx.viewpager.widget.ViewPager
+        android:id="@+id/view_pager_sync"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:paddingTop="5dp"
-        android:paddingBottom="10dp"
-        android:paddingStart="5dp"
-        android:paddingEnd="5dp"
-        android:clipToPadding="false"
         android:layout_weight="1"
-        tools:itemCount="3"
-        tools:listitem="@layout/item_note_text"
         />
 
 </LinearLayout>
