@@ -151,10 +151,12 @@ abstract class NoteViewModel(
                 newList[i] = item.copy(checked = selected)
                 if (selected) {
                     selectedNotes += item.note
-                } else {
-                    selectedNotes -= item.note
                 }
             }
+        }
+
+        if (!selected) {
+            selectedNotes.clear()
         }
 
         if (selectedBefore != selectedNotes.size) {
