@@ -22,7 +22,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
-import android.widget.Toast
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
@@ -37,7 +36,7 @@ import com.maltaisn.notes.ui.sync.SyncPage
 import com.maltaisn.notes.ui.sync.signin.SyncSignInViewModel.FieldError
 
 
-class SyncSignInFragment : ViewModelFragment() {
+class SyncSignInFragment : ViewModelFragment(), PasswordResetDialog.Callback {
 
     private val viewModel: SyncSignInViewModel by viewModels { viewModelFactory }
 
@@ -65,8 +64,8 @@ class SyncSignInFragment : ViewModelFragment() {
             viewModel.signIn()
         }
         forgotPasswordBtn.setOnClickListener {
-            // TODO ask user for email and send password reset email
-            Toast.makeText(requireContext(), "Forgot password", Toast.LENGTH_SHORT).show()
+            PasswordResetDialog.newInstance(emailEdt.text.toString())
+                    .show(childFragmentManager, "password_reset_dialog")
         }
 
         emailEdt.doAfterTextChanged {
@@ -108,6 +107,10 @@ class SyncSignInFragment : ViewModelFragment() {
             emailEdt.clearFocus()
             passwordEdt.clearFocus()
         })
+    }
+
+    override fun onPasswordResetButtonClicked(email: String) {
+        viewModel.resetPassword(email)
     }
 
 }

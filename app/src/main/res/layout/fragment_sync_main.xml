@@ -94,6 +94,7 @@
             android:layout_width="0dp"
             android:layout_height="0dp"
             app:constraint_referenced_ids="btn_sign_in,btn_sign_up"
+            android:visibility="gone"
             tools:visibility="gone"
             />
 
@@ -179,6 +180,7 @@
             android:layout_width="0dp"
             android:layout_height="0dp"
             app:constraint_referenced_ids="div_verification,txv_sync_signed_in_verification,btn_resend_verification"
+            android:visibility="gone"
             tools:visibility="visible"
             />
 
@@ -187,6 +189,7 @@
             android:layout_width="0dp"
             android:layout_height="0dp"
             app:constraint_referenced_ids="txv_sync_signed_in_label,txv_sync_signed_in_email,btn_sign_out"
+            android:visibility="gone"
             tools:visibility="visible"
             />
 

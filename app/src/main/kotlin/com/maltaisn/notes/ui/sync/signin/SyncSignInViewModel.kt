@@ -128,6 +128,17 @@ class SyncSignInViewModel @Inject constructor(
         }
     }
 
+    fun resetPassword(email: String) {
+        viewModelScope.launch {
+            try {
+                loginRepository.sendPasswordResetEmail(email)
+                _messageEvent.send(R.string.sync_password_reset_success_message)
+            } catch (e: FirebaseException) {
+                _messageEvent.send(R.string.sync_password_reset_failed_message)
+            }
+        }
+    }
+
     class FieldError(val location: Location, val messageId: Int) {
         enum class Location {
             EMAIL,
