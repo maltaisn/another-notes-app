@@ -21,21 +21,21 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.FirebaseException
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.maltaisn.notes.R
+import com.maltaisn.notes.model.LoginRepository
 import com.maltaisn.notes.ui.Event
 import com.maltaisn.notes.ui.send
 import com.maltaisn.notes.ui.sync.SyncPage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 
-class SyncSignUpViewModel @Inject constructor(private val fbAuth: FirebaseAuth) : ViewModel() {
+class SyncSignUpViewModel @Inject constructor(
+        private val loginRepository: LoginRepository) : ViewModel() {
 
     private val _changePageEvent = MutableLiveData<Event<SyncPage>>()
     val changePageEvent: LiveData<Event<SyncPage>>
@@ -121,9 +121,9 @@ class SyncSignUpViewModel @Inject constructor(private val fbAuth: FirebaseAuth) 
             try {
                 // Create new account and send verification email.
                 withContext(Dispatchers.IO) {
-                    fbAuth.createUserWithEmailAndPassword(
-                            email.toString(), password.toString()).await()
-                    fbAuth.currentUser?.sendEmailVerification()?.await()
+
+                    loginRepository.signUp(email.toString(), password.toString())
+                    loginRepository.sendVerificationEmail()
                 }
 
                 _messageEvent.send(R.string.sync_sign_up_success_message)

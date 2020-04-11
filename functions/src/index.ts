@@ -41,8 +41,9 @@ export const sync = functions.https.onCall(async (data, context) => {
     const userUid = context.auth.uid
 
     // Decode and validate sync data.
-    const syncData = decodeOrElse(TSyncData, data, () => {
-        throw new HttpsError('invalid-argument', 'Invalid sync data')
+    const syncData = decodeOrElse(TSyncData, data, (e) => {
+        console.error('Invalid sync data', e)
+        throw new HttpsError('invalid-argument', 'Invalid sync data: ')
     })
     const syncTime = new Date()
 
@@ -51,7 +52,8 @@ export const sync = functions.https.onCall(async (data, context) => {
     await syncLocalChangeEvents(userUid, syncData, syncTime)
 
     // Encode and return remote sync data.
-    return TSyncData.encode(remoteSyncData)
+    // Need to be cleaned to remove ``
+    return cleanObject(TSyncData.encode(remoteSyncData))
 })
 
 /**
@@ -63,8 +65,8 @@ async function syncRemoteChangeEvents(userUid: string, syncData: SyncData,
     // Create a set of all locally changed or deleted notes UUID from sync data.
     // Notes with these UUID aren't sent back to client since client overwrites them.
     const localChangedUuids = new Set()
-    syncData.changedNotes.forEach(note => localChangedUuids.add(note.uuid))
-    syncData.deletedUuids.forEach(uuid => localChangedUuids.add(uuid))
+    syncData.changedNotes?.forEach(note => localChangedUuids.add(note.uuid))
+    syncData.deletedUuids?.forEach(uuid => localChangedUuids.add(uuid))
 
     const changedNotes: Note[] = []
     const deletedUuids: string[] = []
@@ -79,8 +81,9 @@ async function syncRemoteChangeEvents(userUid: string, syncData: SyncData,
             .startAt(startDate)
             .once('value')
         notesSnapshot.forEach((childSnapshot) => {
-            const note = decodeOrElse(TNote, childSnapshot.val(), () => {
-                throw new HttpsError('internal', 'Invalid server note data')
+            const note = decodeOrElse(TNote, childSnapshot.val(), (e) => {
+                console.error('Invalid server note data', e)
+                throw new HttpsError('internal', 'Invalid server note data', e)
             })
             delete note.synced
 
@@ -105,9 +108,9 @@ async function syncRemoteChangeEvents(userUid: string, syncData: SyncData,
             }
         })
 
-    } catch (error) {
-        console.log('Could not get notes from server', error.message)
-        throw new HttpsError('internal', 'Could not get notes')
+    } catch (e) {
+        console.error('Could not get notes', e)
+        throw new HttpsError('internal', 'Could not get notes', e.message)
     }
 
     return {
@@ -124,22 +127,37 @@ async function syncLocalChangeEvents(userUid: string, syncData: SyncData, syncTi
     try {
         // Add local changes
         const notesSnapshot = admin.database().ref(`/users/${userUid}/notes`)
-        for (const note of syncData.changedNotes) {
-            const encoded = base64EncodeNote(note)
-            encoded.synced = syncTime
-            const obj = TNote.encode(encoded)
-            await notesSnapshot.child(note.uuid).set(obj)
+        if (syncData.changedNotes) {
+            for (const note of syncData.changedNotes) {
+                const encoded = base64EncodeNote(note)
+                encoded.synced = syncTime
+                const obj = TNote.encode(encoded)
+                await notesSnapshot.child(note.uuid).set(obj)
+            }
         }
 
         // Add local deletions
-        const deletedNotesSnapshot = admin.database().ref(`/users/${userUid}/deletedNotes`)
-        for (const uuid of syncData.deletedUuids) {
-            await notesSnapshot.child(uuid).remove()
-            await deletedNotesSnapshot.child(uuid).set(TDateString.encode(syncTime))
+        if (syncData.deletedUuids) {
+            const deletedNotesSnapshot = admin.database().ref(`/users/${userUid}/deletedNotes`)
+            for (const uuid of syncData.deletedUuids) {
+                await notesSnapshot.child(uuid).remove()
+                await deletedNotesSnapshot.child(uuid).set(TDateString.encode(syncTime))
+            }
         }
 
-    } catch (error) {
-        console.log('Could not update notes in database', error.message)
-        throw new HttpsError('internal', 'Could not set notes')
+    } catch (e) {
+        console.error('Could not set notes', e)
+        throw new HttpsError('internal', 'Could not set notes', e.message)
     }
+}
+
+function cleanObject(obj: { [s: string]: any }): { [s: string]: any } {
+    for (const [key, value] of Object.entries(obj)) {
+        if (value === null || value === undefined) {
+            delete obj[key]
+        } else if (typeof obj === 'object') {
+            cleanObject(value)
+        }
+    }
+    return obj
 }

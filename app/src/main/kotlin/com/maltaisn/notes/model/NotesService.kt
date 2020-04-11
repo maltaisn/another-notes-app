@@ -18,12 +18,15 @@
 
 package com.maltaisn.notes.model
 
+import android.security.keystore.UserNotAuthenticatedException
+import com.google.firebase.FirebaseException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.functions.FirebaseFunctions
 import com.maltaisn.notes.model.converter.DateTimeConverter
 import com.maltaisn.notes.model.entity.Note
 import kotlinx.coroutines.tasks.await
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.SerializationException
 import kotlinx.serialization.UseSerializers
 import kotlinx.serialization.json.*
 import java.io.IOException
@@ -35,14 +38,14 @@ import javax.inject.Singleton
 @Singleton
 open class NotesService @Inject constructor(
         private val fbAuth: FirebaseAuth,
-        private val fbFunctions: FirebaseFunctions) {
-
-    private val json = Json(JsonConfiguration.Stable)
+        private val fbFunctions: FirebaseFunctions,
+        private val json: Json) {
 
     /**
      * Send local data to sync with server, and return remote data to sync with local.
      *
-     * @throws IOException If sync fails because user isn't authenticated or for any other reason.
+     * @throws UserNotAuthenticatedException If user isn't authenticated.
+     * @throws IOException If sync fails for an unknown reason.
      */
     open suspend fun syncNotes(localData: SyncData): SyncData {
         if (fbAuth.currentUser == null) {
@@ -55,14 +58,21 @@ open class NotesService @Inject constructor(
         val result = callSyncFunction(jsonElementToStructure(localDataJson))
 
         val remoteDataJson = structureToJsonElement(result)
-        return json.fromJson(SyncData.serializer(), remoteDataJson)
+        try {
+            return json.fromJson(SyncData.serializer(), remoteDataJson)
+        } catch (e: SerializationException) {
+            // Unexpected response.
+            throw IOException("Sync failed", e)
+        }
     }
 
-    open suspend fun callSyncFunction(data: Any?): Any? =
-            fbFunctions.getHttpsCallable("sync")
-                    .call(data)
-                    .await()?.data
-                    ?: throw IOException("Sync failed")
+    open suspend fun callSyncFunction(data: Any?): Any? {
+        try {
+            return fbFunctions.getHttpsCallable("sync").call(data).await().data
+        } catch (e: FirebaseException) {
+            throw IOException("Sync failed", e)
+        }
+    }
 
     @Serializable
     data class SyncData(val lastSync: Date,

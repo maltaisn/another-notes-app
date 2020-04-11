@@ -21,10 +21,14 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.maltaisn.notes.R
 import com.maltaisn.notes.model.NotesRepository
 import com.maltaisn.notes.model.entity.*
-import com.maltaisn.notes.ui.*
+import com.maltaisn.notes.ui.Event
+import com.maltaisn.notes.ui.ShareData
+import com.maltaisn.notes.ui.StatusChange
 import com.maltaisn.notes.ui.edit.adapter.*
+import com.maltaisn.notes.ui.send
 import kotlinx.coroutines.launch
 import java.util.*
 import javax.inject.Inject
@@ -61,9 +65,13 @@ class EditViewModel @Inject constructor(
     val focusEvent: LiveData<Event<FocusChange>>
         get() = _focusEvent
 
-    private val _messageEvent = MutableLiveData<Event<MessageEvent>>()
-    val messageEvent: LiveData<Event<MessageEvent>>
+    private val _messageEvent = MutableLiveData<Event<Int>>()
+    val messageEvent: LiveData<Event<Int>>
         get() = _messageEvent
+
+    private val _statusChangeEvent = MutableLiveData<Event<StatusChange>>()
+    val statusChangeEvent: LiveData<Event<StatusChange>>
+        get() = _statusChangeEvent
 
     private val _shareEvent = MutableLiveData<Event<ShareData>>()
     val shareEvent: LiveData<Event<ShareData>>
@@ -127,7 +135,7 @@ class EditViewModel @Inject constructor(
             // Delete blank note
             viewModelScope.launch {
                 notesRepository.deleteNote(note)
-                _messageEvent.send(MessageEvent.BlankNoteDiscardEvent)
+                _messageEvent.send(R.string.message_blank_note_discarded)
                 _exitEvent.send()
             }
         } else {
@@ -217,7 +225,7 @@ class EditViewModel @Inject constructor(
 
             // Show status change message.
             val statusChange = StatusChange(listOf(oldNote), oldStatus, newStatus)
-            _messageEvent.send(MessageEvent.StatusChangeEvent(statusChange))
+            _statusChangeEvent.send(statusChange)
         }
 
         exit()

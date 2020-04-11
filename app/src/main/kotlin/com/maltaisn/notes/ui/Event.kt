@@ -35,6 +35,7 @@ open class Event<out T>(private val content: T) {
      */
     fun requireUnhandledContent(): T {
         check(!hasBeenHandled)
+        hasBeenHandled = true
         return content
     }
 }

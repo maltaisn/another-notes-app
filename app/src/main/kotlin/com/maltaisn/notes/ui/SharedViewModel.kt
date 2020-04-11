@@ -30,17 +30,14 @@ class SharedViewModel @Inject constructor(
 
     private var lastStatusChange: StatusChange? = null
 
-    private val _messageEvent = MutableLiveData<Event<MessageEvent>>()
-    val messageEvent: LiveData<Event<MessageEvent>>
-        get() = _messageEvent
+    private val _statusChangeEvent = MutableLiveData<Event<StatusChange>>()
+    val statusChangeEvent: LiveData<Event<StatusChange>>
+        get() = _statusChangeEvent
 
 
-    fun onMessageEvent(message: MessageEvent) {
-        if (message is MessageEvent.StatusChangeEvent) {
-            lastStatusChange = message.statusChange
-        }
-
-        _messageEvent.send(message)
+    fun onStatusChange(statusChange: StatusChange) {
+        lastStatusChange = statusChange
+        _statusChangeEvent.send(statusChange)
     }
 
     fun undoStatusChange() {

@@ -25,8 +25,11 @@ import com.maltaisn.notes.PreferenceHelper
 import com.maltaisn.notes.model.NotesRepository
 import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.model.entity.NoteStatus
-import com.maltaisn.notes.ui.*
+import com.maltaisn.notes.ui.Event
+import com.maltaisn.notes.ui.ShareData
+import com.maltaisn.notes.ui.StatusChange
 import com.maltaisn.notes.ui.note.adapter.*
+import com.maltaisn.notes.ui.send
 import kotlinx.coroutines.launch
 import java.util.*
 
@@ -60,9 +63,9 @@ abstract class NoteViewModel(
     val shareEvent: LiveData<Event<ShareData>>
         get() = _shareEvent
 
-    private val _messageEvent = MutableLiveData<Event<MessageEvent>>()
-    val messageEvent: LiveData<Event<MessageEvent>>
-        get() = _messageEvent
+    private val _statusChangeEvent = MutableLiveData<Event<StatusChange>>()
+    val statusChangeEvent: LiveData<Event<StatusChange>>
+        get() = _statusChangeEvent
 
     private val _currentSelection = MutableLiveData<NoteSelection>()
     val currentSelection: LiveData<NoteSelection>
@@ -179,7 +182,7 @@ abstract class NoteViewModel(
 
             // Show status change message.
             val statusChange = StatusChange(oldNotes, oldNotes.first().status, newStatus)
-            _messageEvent.send(MessageEvent.StatusChangeEvent(statusChange))
+            _statusChangeEvent.send(statusChange)
         }
     }
 

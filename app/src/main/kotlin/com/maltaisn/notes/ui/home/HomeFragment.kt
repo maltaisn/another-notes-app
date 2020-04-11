@@ -14,37 +14,32 @@
  * limitations under the License.
  */
 
-package com.maltaisn.notes.ui.main
+package com.maltaisn.notes.ui.home
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.viewModelScope
 import androidx.navigation.fragment.findNavController
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.snackbar.Snackbar
 import com.maltaisn.notes.App
 import com.maltaisn.notes.R
 import com.maltaisn.notes.model.entity.NoteStatus
 import com.maltaisn.notes.ui.EventObserver
 import com.maltaisn.notes.ui.note.NoteFragment
 import com.maltaisn.notes.ui.note.adapter.NoteListLayoutMode
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 
-class MainFragment : NoteFragment(), Toolbar.OnMenuItemClickListener {
+class HomeFragment : NoteFragment(), Toolbar.OnMenuItemClickListener {
 
-    override val viewModel: MainViewModel by viewModels { viewModelFactory }
+    override val viewModel: HomeViewModel by viewModels { viewModelFactory }
 
     override fun onCreate(state: Bundle?) {
         super.onCreate(state)
@@ -53,7 +48,7 @@ class MainFragment : NoteFragment(), Toolbar.OnMenuItemClickListener {
 
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?, savedInstanceState: Bundle?): View =
-            inflater.inflate(R.layout.fragment_main, container, false)
+            inflater.inflate(R.layout.fragment_home, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -70,19 +65,13 @@ class MainFragment : NoteFragment(), Toolbar.OnMenuItemClickListener {
         // Swipe refresh
         val swipeRefresh: SwipeRefreshLayout = view.findViewById(R.id.layout_swipe_refresh)
         swipeRefresh.setOnRefreshListener {
-            viewModel.viewModelScope.launch(Dispatchers.Default) {
-                delay(2000)
-                withContext(Dispatchers.Main) {
-                    swipeRefresh.isRefreshing = false
-                    Toast.makeText(context, "Refreshed!", Toast.LENGTH_SHORT).show()
-                }
-            }
+            viewModel.syncNotes()
         }
 
         // Floating action button
         val fab: FloatingActionButton = view.findViewById(R.id.fab)
         fab.setOnClickListener {
-            navController.navigate(MainFragmentDirections.actionMainToEdit())
+            navController.navigate(HomeFragmentDirections.actionHomeToEdit())
         }
 
         // Observers
@@ -105,6 +94,14 @@ class MainFragment : NoteFragment(), Toolbar.OnMenuItemClickListener {
             }
         })
 
+        viewModel.messageEvent.observe(viewLifecycleOwner, EventObserver { messageId ->
+            Snackbar.make(view, messageId, Snackbar.LENGTH_SHORT).show()
+        })
+
+        viewModel.stopRefreshEvent.observe(viewLifecycleOwner, EventObserver {
+            swipeRefresh.isRefreshing = false
+        })
+
         viewModel.listLayoutMode.observe(viewLifecycleOwner, Observer { mode ->
             val layoutItem = toolbar.menu.findItem(R.id.item_layout)
             layoutItem.setIcon(when (mode!!) {
@@ -114,14 +111,9 @@ class MainFragment : NoteFragment(), Toolbar.OnMenuItemClickListener {
         })
 
         viewModel.editItemEvent.observe(viewLifecycleOwner, EventObserver { item ->
-            navController.navigate(MainFragmentDirections.actionMainToEdit(item.note.id))
+            navController.navigate(HomeFragmentDirections.actionHomeToEdit(item.note.id))
         })
 
-    }
-
-    override fun onResume() {
-        super.onResume()
-        viewModel.onResume()
     }
 
     fun changeShownNotesStatus(status: NoteStatus) {
@@ -130,7 +122,7 @@ class MainFragment : NoteFragment(), Toolbar.OnMenuItemClickListener {
 
     override fun onMenuItemClick(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.item_search -> findNavController().navigate(R.id.action_main_to_search)
+            R.id.item_search -> findNavController().navigate(R.id.action_home_to_search)
             R.id.item_layout -> viewModel.toggleListLayoutMode()
             R.id.item_empty_trash -> viewModel.emptyTrash()
             R.id.item_add_debug_notes -> viewModel.addDebugNotes()

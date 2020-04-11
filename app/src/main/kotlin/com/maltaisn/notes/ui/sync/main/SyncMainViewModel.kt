@@ -21,20 +21,20 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.FirebaseException
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.maltaisn.notes.R
+import com.maltaisn.notes.model.LoginRepository
 import com.maltaisn.notes.ui.Event
 import com.maltaisn.notes.ui.send
 import com.maltaisn.notes.ui.sync.SyncPage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 
-class SyncMainViewModel @Inject constructor(private val fbAuth: FirebaseAuth) : ViewModel() {
+class SyncMainViewModel @Inject constructor(
+        private val loginRepository: LoginRepository) : ViewModel() {
 
     private val _changePageEvent = MutableLiveData<Event<SyncPage>>()
     val changePageEvent: LiveData<Event<SyncPage>>
@@ -50,9 +50,8 @@ class SyncMainViewModel @Inject constructor(private val fbAuth: FirebaseAuth) : 
 
 
     init {
-        fbAuth.addAuthStateListener {
-            val user = fbAuth.currentUser
-            _currentUser.value = user
+        loginRepository.addAuthStateListener {
+            _currentUser.value = loginRepository.currentUser
         }
     }
 
@@ -61,7 +60,7 @@ class SyncMainViewModel @Inject constructor(private val fbAuth: FirebaseAuth) : 
     }
 
     fun signOut() {
-        fbAuth.signOut()
+        loginRepository.signOut()
         _messageEvent.send(R.string.sync_sign_out_success_message)
     }
 
@@ -69,7 +68,7 @@ class SyncMainViewModel @Inject constructor(private val fbAuth: FirebaseAuth) : 
         viewModelScope.launch {
             try {
                 withContext(Dispatchers.IO) {
-                    fbAuth.currentUser?.sendEmailVerification()?.await()
+                    loginRepository.sendVerificationEmail()
                 }
                 _messageEvent.send(R.string.sync_verification_success_message)
             } catch (e: FirebaseException) {
@@ -82,10 +81,8 @@ class SyncMainViewModel @Inject constructor(private val fbAuth: FirebaseAuth) : 
     fun checkVerification() {
         viewModelScope.launch {
             try {
-                withContext(Dispatchers.IO) {
-                    fbAuth.currentUser?.reload()?.await()
-                }
-                _currentUser.value = fbAuth.currentUser
+                loginRepository.reloadUser()
+                _currentUser.value = loginRepository.currentUser
             } catch (e: FirebaseException) {
                 // Network error, too many requests, or other unknown error.
             }

@@ -18,21 +18,29 @@ package com.maltaisn.notes.ui.main
 
 import android.os.Bundle
 import android.view.MenuItem
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import com.google.android.material.navigation.NavigationView
 import com.maltaisn.notes.App
 import com.maltaisn.notes.R
 import com.maltaisn.notes.model.entity.NoteStatus
+import com.maltaisn.notes.ui.home.HomeFragment
+import javax.inject.Inject
 
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
+    @Inject lateinit var viewModelFactory: ViewModelProvider.Factory
+    private val viewModel: MainViewModel by viewModels { viewModelFactory }
+
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var navController: NavController
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,7 +55,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         navController = findNavController(R.id.fragment_nav_host)
         navController.addOnDestinationChangedListener { _, ds, _ ->
-            drawerLayout.setDrawerLockMode(if (ds.id == R.id.fragment_main) {
+            drawerLayout.setDrawerLockMode(if (ds.id == R.id.fragment_home) {
                 DrawerLayout.LOCK_MODE_UNLOCKED
             } else {
                 DrawerLayout.LOCK_MODE_LOCKED_CLOSED
@@ -56,17 +64,17 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        // Get main fragment. If not found, then do nothing since drawer is only accessible from it.
+        // Get home fragment. If not found, then do nothing since drawer is only accessible from it.
         val navHostFragment = supportFragmentManager
                 .findFragmentById(R.id.fragment_nav_host) ?: return false
-        val mainFragment = navHostFragment.childFragmentManager
-                .fragments.first() as? MainFragment ?: return false
+        val homeFragment = navHostFragment.childFragmentManager
+                .fragments.first() as? HomeFragment ?: return false
 
         when (item.itemId) {
-            R.id.item_location_active -> mainFragment.changeShownNotesStatus(NoteStatus.ACTIVE)
-            R.id.item_location_archived -> mainFragment.changeShownNotesStatus(NoteStatus.ARCHIVED)
-            R.id.item_location_deleted -> mainFragment.changeShownNotesStatus(NoteStatus.TRASHED)
-            R.id.item_sync -> navController.navigate(R.id.action_main_to_sync)
+            R.id.item_location_active -> homeFragment.changeShownNotesStatus(NoteStatus.ACTIVE)
+            R.id.item_location_archived -> homeFragment.changeShownNotesStatus(NoteStatus.ARCHIVED)
+            R.id.item_location_deleted -> homeFragment.changeShownNotesStatus(NoteStatus.TRASHED)
+            R.id.item_sync -> navController.navigate(R.id.action_home_to_sync)
             R.id.item_settings -> Unit
             else -> return false
         }
@@ -82,6 +90,16 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         } else {
             super.onBackPressed()
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.onResume()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        viewModel.onPause()
     }
 
 }

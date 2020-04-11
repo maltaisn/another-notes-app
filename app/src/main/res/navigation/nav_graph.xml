@@ -19,24 +19,24 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/fragment_main"
+    app:startDestination="@id/fragment_home"
     >
 
     <fragment
-        android:id="@+id/fragment_main"
-        android:name="com.maltaisn.notes.ui.main.MainFragment"
-        tools:layout="@layout/fragment_main"
+        android:id="@+id/fragment_home"
+        android:name="com.maltaisn.notes.ui.home.HomeFragment"
+        tools:layout="@layout/fragment_home"
         >
         <action
-            android:id="@+id/action_main_to_edit"
+            android:id="@+id/action_home_to_edit"
             app:destination="@id/fragment_edit"
             />
         <action
-            android:id="@+id/action_main_to_search"
+            android:id="@+id/action_home_to_search"
             app:destination="@id/fragment_search"
             />
         <action
-            android:id="@+id/action_main_to_sync"
+            android:id="@+id/action_home_to_sync"
             app:destination="@id/fragment_sync"
             />
     </fragment>

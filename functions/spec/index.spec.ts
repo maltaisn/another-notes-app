@@ -72,9 +72,7 @@ describe('cloud functions', () => {
 
             it('should fail wrong last sync date', async () => {
                 return expect(functions.sync.run({
-                    lastSync: '2020/01/01 10:10:10.100 GMT',
-                    changedNotes: [],
-                    deletedUuids: []
+                    lastSync: '2020/01/01 10:10:10.100 GMT'
                 }, callableContext)).to.eventually.be.rejectedWith('Invalid sync data')
             })
 
@@ -84,16 +82,14 @@ describe('cloud functions', () => {
                     changedNotes: [{
                         uuid: '0',
                         type: 100
-                    }],
-                    deleteUuids: []
+                    }]
                 }, callableContext)).to.eventually.be.rejectedWith('Invalid sync data')
             })
 
             it('should fail wrong deleted uuid', async () => {
                 return expect(functions.sync.run({
                     lastSync: '1970-01-01T00:00:00.000Z',
-                    changedNotes: [],
-                    deleteUuids: [1234]
+                    deletedUuids: [1234]
                 }, callableContext)).to.eventually.be.rejectedWith('Invalid sync data')
             })
         })
@@ -101,9 +97,7 @@ describe('cloud functions', () => {
         describe('return remote events', async () => {
             it('should return new sync date', async () => {
                 const dateStr = (await functions.sync.run({
-                    lastSync: '1970-01-01T00:00:00.000Z',
-                    changedNotes: [],
-                    deletedUuids: []
+                    lastSync: '1970-01-01T00:00:00.000Z'
                 }, callableContext)).lastSync
                 expect(new Date(dateStr).getTime())
                     .to.approximately(new Date().getTime(), 1000)
@@ -111,9 +105,7 @@ describe('cloud functions', () => {
 
             it('should return no events (no remote events)', async () => {
                 const syncData = await functions.sync.run({
-                    lastSync: '1970-01-01T00:00:00.000Z',
-                    changedNotes: [],
-                    deletedUuids: []
+                    lastSync: '1970-01-01T00:00:00.000Z'
                 }, callableContext)
                 expect(syncData.changedNotes).to.be.empty
                 expect(syncData.deletedUuids).to.be.empty
@@ -122,9 +114,7 @@ describe('cloud functions', () => {
             it('should return no events (already synced)', async () => {
                 await setTestNote(testData.notes.test);
                 const syncData = await functions.sync.run({
-                    lastSync: '2030-01-01T00:00:00.000Z',
-                    changedNotes: [],
-                    deletedUuids: []
+                    lastSync: '2030-01-01T00:00:00.000Z'
                 }, callableContext)
                 expect(syncData.changedNotes).to.be.empty
                 expect(syncData.deletedUuids).to.be.empty
@@ -133,9 +123,7 @@ describe('cloud functions', () => {
             it('should return single updated', async () => {
                 await setTestNote(testData.notes.test)
                 const syncData = await functions.sync.run({
-                    lastSync: '2010-01-01T00:00:00.000Z',
-                    changedNotes: [],
-                    deletedUuids: []
+                    lastSync: '2010-01-01T00:00:00.000Z'
                 }, callableContext)
                 expectNotesToBeEqual(syncData.changedNotes[0], testData.notes.test)
                 expect(syncData.deletedUuids).to.be.empty
@@ -144,9 +132,7 @@ describe('cloud functions', () => {
             it('should return single deleted', async () => {
                 await deletedNotesDb.child('0').set('2020-01-01T00:00:00.000Z')
                 const syncData = await functions.sync.run({
-                    lastSync: '2010-01-01T00:00:00.000Z',
-                    changedNotes: [],
-                    deletedUuids: []
+                    lastSync: '2010-01-01T00:00:00.000Z'
                 }, callableContext)
                 expect(syncData.changedNotes).to.be.empty
                 expect(syncData.deletedUuids).to.deep.equal(['0'])
@@ -156,40 +142,33 @@ describe('cloud functions', () => {
         describe('send local events', async () => {
             it('should add no events', async () => {
                 await functions.sync.run({
-                    lastSync: '1970-01-01T00:00:00.000Z',
-                    changedNotes: [],
-                    deletedUuids: []
+                    lastSync: '1970-01-01T00:00:00.000Z'
                 }, callableContext)
                 const snapshot = await userDb.once('value')
                 expect(snapshot.numChildren()).to.be.equal(0)
             })
 
             it('should add note', async () => {
-                const syncData = await functions.sync.run({
+                await functions.sync.run({
                     lastSync: '1970-01-01T00:00:00.000Z',
-                    changedNotes: [testData.notes.test],
-                    deletedUuids: []
+                    changedNotes: [testData.notes.test]
                 }, callableContext)
-                expectNotesToBeEqual(await getTestNote('0'),
-                    testData.notes.test, syncData.lastSync)
+                expectNotesToBeEqual(await getTestNote('0'), testData.notes.test)
             })
 
             it('should update note', async () => {
                 await setTestNote(testData.notes.test)
-                const syncData = await functions.sync.run({
+                await functions.sync.run({
                     lastSync: '1970-01-01T00:00:00.000Z',
-                    changedNotes: [testData.notes.testUpdated],
-                    deletedUuids: []
+                    changedNotes: [testData.notes.testUpdated]
                 }, callableContext)
-                expectNotesToBeEqual(await getTestNote('0'),
-                    testData.notes.testUpdated, syncData.lastSync)
+                expectNotesToBeEqual(await getTestNote('0'), testData.notes.testUpdated)
             })
 
             it('should delete note', async () => {
                 await setTestNote(testData.notes.test)
                 await functions.sync.run({
                     lastSync: '1970-01-01T00:00:00.000Z',
-                    changedNotes: [],
                     deletedUuids: ['0']
                 }, callableContext)
                 const notesSnapshot = await notesDb.once('value')
@@ -204,20 +183,17 @@ describe('cloud functions', () => {
                 await setTestNote(testData.notes.test)
                 const syncData = await functions.sync.run({
                     lastSync: '1970-01-01T00:00:00.000Z',
-                    changedNotes: [testData.notes.testUpdated],
-                    deletedUuids: []
+                    changedNotes: [testData.notes.testUpdated]
                 }, callableContext)
                 expect(syncData.changedNotes).to.be.empty
                 expect(syncData.deletedUuids).to.be.empty
-                expectNotesToBeEqual(await getTestNote('0'),
-                    testData.notes.testUpdated, syncData.lastSync)
+                expectNotesToBeEqual(await getTestNote('0'), testData.notes.testUpdated)
             })
 
             it('should delete but not return event (same uuid)', async () => {
                 await setTestNote(testData.notes.test)
                 const syncData = await functions.sync.run({
                     lastSync: '1970-01-01T00:00:00.000Z',
-                    changedNotes: [],
                     deletedUuids: ['0']
                 }, callableContext)
                 expect(syncData.changedNotes).to.be.empty
@@ -232,13 +208,11 @@ describe('cloud functions', () => {
                 await setTestNote(testData.notes.test)
                 const syncData = await functions.sync.run({
                     lastSync: '1970-01-01T00:00:00.000Z',
-                    changedNotes: [testData.notes.testList],
-                    deletedUuids: []
+                    changedNotes: [testData.notes.testList]
                 }, callableContext)
                 expectNotesToBeEqual(syncData.changedNotes[0], testData.notes.test)
                 expect(syncData.deletedUuids).to.be.empty
-                expectNotesToBeEqual(await getTestNote('1'),
-                    testData.notes.testList, syncData.lastSync)
+                expectNotesToBeEqual(await getTestNote('1'), testData.notes.testList)
             })
         })
 
@@ -247,8 +221,7 @@ describe('cloud functions', () => {
                 const testNote = testData.notes.testList
                 await functions.sync.run({
                     lastSync: '1970-01-01T00:00:00.000Z',
-                    changedNotes: [testNote],
-                    deletedUuids: []
+                    changedNotes: [testNote]
                 }, callableContext)
                 const note = await getTestNote(testNote.uuid, false)
                 expect(note.title).to.be.equal(Buffer.from(testNote.title).toString('base64'))
@@ -272,13 +245,15 @@ describe('cloud functions', () => {
     }
 
     /**
-     * Expect notes to be equal given a synced date.
+     * Expect notes to be equal ignoring the 'synced' field.
      */
-    function expectNotesToBeEqual(actual: any, expected: any, date: string | undefined = undefined) {
+    function expectNotesToBeEqual(actual: any, expected: any) {
         // Set the synced date on a copy of the expected note.
         const expectedNoSynced = Object.assign({}, expected)
-        expectedNoSynced.synced = date
-        expect(actual).to.be.deep.equal(expectedNoSynced)
+        const actualNoSynced = Object.assign({}, actual)
+        delete expectedNoSynced.synced
+        delete actualNoSynced.synced
+        expect(actualNoSynced).to.be.deep.equal(expectedNoSynced)
     }
 
 })

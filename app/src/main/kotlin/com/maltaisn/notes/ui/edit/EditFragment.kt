@@ -31,6 +31,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.snackbar.Snackbar
 import com.maltaisn.notes.R
 import com.maltaisn.notes.hideKeyboard
 import com.maltaisn.notes.model.entity.Note
@@ -146,10 +147,12 @@ class EditFragment : ViewModelFragment(), Toolbar.OnMenuItemClickListener {
             adapter.setItemFocus(focus)
         })
 
-        viewModel.messageEvent.observe(viewLifecycleOwner, EventObserver { message ->
-            // A shared view model is used since snackbar can't be shown from this fragment,
-            // which will be popped from backstack just after the status change.
-            sharedViewModel.onMessageEvent(message)
+        viewModel.messageEvent.observe(viewLifecycleOwner, EventObserver { messageId ->
+            Snackbar.make(view, messageId, Snackbar.LENGTH_SHORT).show()
+        })
+
+        viewModel.statusChangeEvent.observe(viewLifecycleOwner, EventObserver { statusChange ->
+            sharedViewModel.onStatusChange(statusChange)
         })
 
         viewModel.shareEvent.observe(viewLifecycleOwner, EventObserver { data ->

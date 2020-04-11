@@ -18,7 +18,6 @@
 package com.maltaisn.notes.model
 
 import android.content.SharedPreferences
-import android.text.format.DateUtils
 import com.maltaisn.notes.PreferenceHelper
 import com.maltaisn.notes.model.entity.DeletedNote
 import com.maltaisn.notes.model.entity.Note
@@ -72,7 +71,7 @@ class NotesRepository @Inject constructor(
     }
 
     suspend fun deleteOldNotesInTrash() {
-        val delay = PreferenceHelper.TRASH_AUTO_DELETE_DELAY * DateUtils.DAY_IN_MILLIS
+        val delay = PreferenceHelper.TRASH_AUTO_DELETE_DELAY.toLongMilliseconds()
         val minDate = Date(System.currentTimeMillis() - delay)
         deleteNotes(notesDao.getByStatusAndDate(NoteStatus.TRASHED, minDate))
     }
@@ -85,20 +84,20 @@ class NotesRepository @Inject constructor(
      *
      * @throws IOException Thrown when sync fails.
      */
-    suspend fun syncNotes() {
+    suspend fun syncNotes(receive: Boolean = true) {
         // Get local sync data.
         val lastSyncTime = Date(prefs.getLong(PreferenceHelper.LAST_SYNC_TIME, 0))
         val localChanged = notesDao.getChanged()
         val localDeleted = deletedNotesDao.getAllUuids()
-        val localData = NotesService.SyncData(lastSyncTime, localChanged, localDeleted)
+
+        if (!receive && localChanged.isEmpty() && localDeleted.isEmpty()) {
+            // Don't receive remote remotes and no local changes, so no sync to do.
+            return
+        }
 
         // Send local changes to server, and receive remote changes
-        val remoteData = NotesService.SyncData(Date(), emptyList(), emptyList())
-//        val remoteData = try {
-//            notesService.syncNotes(localData)
-//        } catch (e: IOException) {
-//            throw IOException("Sync notes failed", e)
-//        }
+        val localData = NotesService.SyncData(lastSyncTime, localChanged, localDeleted)
+        val remoteData = notesService.syncNotes(localData)
 
         // Sync was successful, update "changed" flag and remove "deleted" notes from database.
         notesDao.resetChangedFlag()
@@ -109,7 +108,14 @@ class NotesRepository @Inject constructor(
 
         // Update local notes
         val remotedChanged = remoteData.changedNotes.map { note ->
-            note.copy(id = notesDao.getIdByUuid(note.uuid) ?: Note.NO_ID)
+            val id = notesDao.getIdByUuid(note.uuid)
+            if (id == null) {
+                // No ID (added note).
+                note
+            } else {
+                // ID found (updated note).
+                note.copy(id = id)
+            }
         }
         notesDao.insertAll(remotedChanged)
 

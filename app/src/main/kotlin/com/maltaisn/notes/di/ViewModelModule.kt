@@ -22,6 +22,7 @@ import com.maltaisn.notes.ui.SharedViewModel
 import com.maltaisn.notes.ui.ViewModelFactory
 import com.maltaisn.notes.ui.ViewModelKey
 import com.maltaisn.notes.ui.edit.EditViewModel
+import com.maltaisn.notes.ui.home.HomeViewModel
 import com.maltaisn.notes.ui.main.MainViewModel
 import com.maltaisn.notes.ui.search.SearchViewModel
 import com.maltaisn.notes.ui.sync.main.SyncMainViewModel
@@ -40,13 +41,18 @@ abstract class ViewModelModule {
 
     @Binds
     @IntoMap
+    @ViewModelKey(MainViewModel::class)
+    abstract fun bindsMainViewModel(viewModel: MainViewModel): ViewModel
+
+    @Binds
+    @IntoMap
     @ViewModelKey(SharedViewModel::class)
     abstract fun bindsSharedViewModel(viewModel: SharedViewModel): ViewModel
 
     @Binds
     @IntoMap
-    @ViewModelKey(MainViewModel::class)
-    abstract fun bindsMainViewModel(viewModel: MainViewModel): ViewModel
+    @ViewModelKey(HomeViewModel::class)
+    abstract fun bindsHomeViewModel(viewModel: HomeViewModel): ViewModel
 
     @Binds
     @IntoMap

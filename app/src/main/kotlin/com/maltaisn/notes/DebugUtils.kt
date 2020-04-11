@@ -21,6 +21,7 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
 import java.util.*
 import kotlin.random.Random
+import kotlin.time.days
 
 
 object DebugUtils {
@@ -56,7 +57,7 @@ object DebugUtils {
         val added = getRandomDate()
         val modified = getRandomDate(added)
 
-        return Note(0, uuid, type, title, content, metadata, added, modified, status)
+        return Note(0, uuid, type, title, content, metadata, added, modified, status, true)
     }
 
     private fun getRandomString(size: IntRange): String {
@@ -79,8 +80,11 @@ object DebugUtils {
                 .trim().capitalize(Locale.getDefault())
     }
 
-    private fun getRandomDate(min: Date? = null) =
-            Date(((min?.time ?: 946702800000)..System.currentTimeMillis()).random())
+    private fun getRandomDate(min: Date? = null): Date {
+        val current = System.currentTimeMillis()
+        val minDate = min?.time ?: (current - 5.days.toLongMilliseconds())
+        return Date((minDate..current).random())
+    }
 
     private val LOREM_IPSUM = """
          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce nunc lorem, tempus quis est

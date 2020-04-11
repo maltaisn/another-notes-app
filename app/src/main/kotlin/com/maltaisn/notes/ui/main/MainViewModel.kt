@@ -17,48 +17,30 @@
 package com.maltaisn.notes.ui.main
 
 import android.content.SharedPreferences
-import android.text.format.DateUtils
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.maltaisn.notes.DebugUtils
 import com.maltaisn.notes.PreferenceHelper
-import com.maltaisn.notes.R
+import com.maltaisn.notes.model.LoginRepository
 import com.maltaisn.notes.model.NotesRepository
-import com.maltaisn.notes.model.entity.Note
-import com.maltaisn.notes.model.entity.NoteStatus
-import com.maltaisn.notes.ui.note.NoteViewModel
-import com.maltaisn.notes.ui.note.adapter.MessageItem
-import com.maltaisn.notes.ui.note.adapter.NoteAdapter
-import com.maltaisn.notes.ui.note.adapter.NoteItem
-import com.maltaisn.notes.ui.note.adapter.NoteListLayoutMode
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import java.io.IOException
 import javax.inject.Inject
+import kotlin.time.hours
 
 
 class MainViewModel @Inject constructor(
-        notesRepository: NotesRepository,
-        prefs: SharedPreferences
-) : NoteViewModel(notesRepository, prefs), NoteAdapter.Callback {
-
-    private var noteListJob: Job? = null
-
-    private val _noteStatus = MutableLiveData<NoteStatus>()
-    val noteStatus: LiveData<NoteStatus>
-        get() = _noteStatus
-
+        private val notesRepository: NotesRepository,
+        private val loginRepository: LoginRepository,
+        private val prefs: SharedPreferences
+) : ViewModel() {
 
     init {
-        setNoteStatus(NoteStatus.ACTIVE)
-
         // Job to periodically remove old notes in trash
         viewModelScope.launch {
             while (true) {
                 notesRepository.deleteOldNotesInTrash()
-                delay(TRASH_AUTO_DELETE_INTERVAL)
+                delay(TRASH_AUTO_DELETE_INTERVAL.toLongMilliseconds())
             }
         }
     }
@@ -66,91 +48,36 @@ class MainViewModel @Inject constructor(
     fun onResume() {
         viewModelScope.launch {
             notesRepository.deleteOldNotesInTrash()
+            syncNotesIfNeeded()
         }
     }
 
-    fun setNoteStatus(status: NoteStatus) {
-        _noteStatus.value = status
-
-        // Cancel previous flow collection
-        noteListJob?.cancel()
-
-        // Update note items live data when database flow emits a list.
-        noteListJob = viewModelScope.launch {
-            notesRepository.getNotesByStatus(status).collect { notes ->
-                createListItems(status, notes)
-            }
-        }
-    }
-
-    fun toggleListLayoutMode() {
-        val mode = when (_listLayoutMode.value!!) {
-            NoteListLayoutMode.LIST -> NoteListLayoutMode.GRID
-            NoteListLayoutMode.GRID -> NoteListLayoutMode.LIST
-        }
-        _listLayoutMode.value = mode
-        prefs.edit().putInt(PreferenceHelper.LIST_LAYOUT_MODE, mode.value).apply()
-    }
-
-    fun emptyTrash() {
+    fun onPause() {
         viewModelScope.launch {
-            notesRepository.emptyTrash()
+            // Send changes to server if needed.
+            notesRepository.syncNotes(receive = false)
         }
     }
 
-    fun addDebugNotes() {
-        viewModelScope.launch {
-            val status = _noteStatus.value!!
-            repeat(3) {
-                notesRepository.insertNote(DebugUtils.getRandomNote(status))
-            }
-        }
-    }
-
-    override val selectedNoteStatus: NoteStatus?
-        get() = noteStatus.value
-
-    override fun onMessageItemDismissed(item: MessageItem, pos: Int) {
-        // Update last remind time when user dismisses message.
-        prefs.edit().putLong(PreferenceHelper.LAST_TRASH_REMIND_TIME,
-                System.currentTimeMillis()).apply()
-
-        // Remove message item in list
-        changeListItems { it.removeAt(pos) }
-    }
-
-    override val isNoteSwipeEnabled: Boolean
-        get() = noteStatus.value == NoteStatus.ACTIVE && selectedNotes.isEmpty()
-
-    override fun onNoteSwiped(pos: Int) {
-        // Archive note
-        val note = (noteItems.value!![pos] as NoteItem).note
-        changeNotesStatus(setOf(note), NoteStatus.ARCHIVED)
-    }
-
-    private fun createListItems(status: NoteStatus, notes: List<Note>) {
-        listItems = buildList {
-            if (status == NoteStatus.TRASHED && notes.isNotEmpty()) {
-                // If needed, add reminder that notes get auto-deleted when in trash.
-                val lastReminder = prefs.getLong(PreferenceHelper.LAST_TRASH_REMIND_TIME, 0)
-                if (System.currentTimeMillis() - lastReminder >
-                        PreferenceHelper.TRASH_REMINDER_DELAY * DateUtils.DAY_IN_MILLIS) {
-                    this += MessageItem(TRASH_REMINDER_ITEM_ID, R.string.message_trash_reminder,
-                            PreferenceHelper.TRASH_AUTO_DELETE_DELAY)
+    private fun syncNotesIfNeeded() {
+        if (loginRepository.isUserSignedIn) {
+            // Sync notes if last sync was beyond delay for automatic syncing.
+            val lastSync = prefs.getLong(PreferenceHelper.LAST_SYNC_TIME, 0)
+            val nextSyncTime = lastSync + PreferenceHelper.MIN_AUTO_SYNC_INTERVAL.toLongMilliseconds()
+            if (System.currentTimeMillis() >= nextSyncTime) {
+                viewModelScope.launch {
+                    try {
+                        notesRepository.syncNotes()
+                    } catch (e: IOException) {
+                        // Sync failed for unknown reason.
+                    }
                 }
-            }
-
-            // Add note items
-            for (note in notes) {
-                val checked = selectedNotes.any { it.id == note.id }
-                this += NoteItem(note.id, note, checked, emptyList(), emptyList())
             }
         }
     }
 
     companion object {
-        private const val TRASH_REMINDER_ITEM_ID = -1L
-        private const val TRASH_AUTO_DELETE_INTERVAL = DateUtils.HOUR_IN_MILLIS
+        private val TRASH_AUTO_DELETE_INTERVAL = 1.hours
     }
 
 }

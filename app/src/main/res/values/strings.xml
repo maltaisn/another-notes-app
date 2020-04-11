@@ -104,6 +104,7 @@
     <string name="sync_sign_out_success_message">Signed out successfully.</string>
     <string name="sync_verification_failed_message">Couldn\'t resend verification email. Make sure you have an internet connection.</string>
     <string name="sync_verification_success_message">Verification email was sent.</string>
+    <string name="sync_failed_message">Couldn\'t sync notes. Make sure you have an internet connection.</string>
 
     <string name="content_descrp_open_drawer">Open drawer</string>
     <string name="content_descrp_back">Go back</string>

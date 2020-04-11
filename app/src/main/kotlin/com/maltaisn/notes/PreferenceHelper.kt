@@ -16,6 +16,10 @@
 
 package com.maltaisn.notes
 
+import kotlin.time.days
+import kotlin.time.minutes
+import kotlin.time.seconds
+
 
 object PreferenceHelper {
 
@@ -24,7 +28,10 @@ object PreferenceHelper {
     const val LIST_LAYOUT_MODE = "is_in_list_layout"
     const val LAST_TRASH_REMIND_TIME = "last_deleted_remind_time"
 
-    const val TRASH_AUTO_DELETE_DELAY = 7
-    const val TRASH_REMINDER_DELAY = 60
+    val MIN_AUTO_SYNC_INTERVAL = 10.minutes
+    val MIN_MANUAL_SYNC_INTERVAL = 15.seconds
+
+    val TRASH_AUTO_DELETE_DELAY = 7.days
+    val TRASH_REMINDER_DELAY = 60.days
 
 }

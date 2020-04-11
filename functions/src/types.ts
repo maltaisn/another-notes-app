@@ -17,6 +17,7 @@
 import * as t from 'io-ts'
 import {either, fold} from 'fp-ts/lib/Either'
 import {pipe} from 'fp-ts/lib/pipeable'
+import {PathReporter} from 'io-ts/lib/PathReporter'
 
 class EnumType<A> extends t.Type<A> {
     public readonly _tag = 'EnumType'
@@ -99,8 +100,8 @@ export type Note = t.TypeOf<typeof TNote>
  */
 export const TSyncData = t.type({
     lastSync: TDateString,
-    changedNotes: t.array(TNote),
-    deletedUuids: t.array(t.string)
+    changedNotes: t.union([t.array(TNote), t.undefined]),
+    deletedUuids: t.union([t.array(t.string), t.undefined])
 })
 export type SyncData = t.TypeOf<typeof TSyncData>
 
@@ -109,6 +110,7 @@ export type SyncData = t.TypeOf<typeof TSyncData>
  * Try to decode a value of a given type, calling onError if decoding fails.
  */
 export const decodeOrElse = function <A, O, I>(type: t.Type<A, O, I>, value: I,
-                                               onError: (e: t.Errors) => A): A {
-    return pipe(type.decode(value), fold(onError, t.identity))
+                                               onError: (e: string) => A): A {
+    const r = type.decode(value)
+    return pipe(r, fold(() => onError(PathReporter.report(r).join(', ')), t.identity))
 }

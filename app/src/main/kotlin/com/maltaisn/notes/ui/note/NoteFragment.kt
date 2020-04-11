@@ -30,7 +30,6 @@ import com.google.android.material.snackbar.Snackbar
 import com.maltaisn.notes.R
 import com.maltaisn.notes.model.entity.NoteStatus
 import com.maltaisn.notes.ui.EventObserver
-import com.maltaisn.notes.ui.MessageEvent
 import com.maltaisn.notes.ui.SharedViewModel
 import com.maltaisn.notes.ui.ViewModelFragment
 import com.maltaisn.notes.ui.note.adapter.NoteAdapter
@@ -77,10 +76,6 @@ abstract class NoteFragment : ViewModelFragment(), ActionMode.Callback {
                 NoteListLayoutMode.GRID -> 2
             }
             adapter.listLayoutMode = mode
-        })
-
-        viewModel.messageEvent.observe(viewLifecycleOwner, EventObserver { message ->
-            sharedViewModel.onMessageEvent(message)
         })
 
         viewModel.currentSelection.observe(viewLifecycleOwner, Observer { selection ->
@@ -134,21 +129,27 @@ abstract class NoteFragment : ViewModelFragment(), ActionMode.Callback {
             startActivity(Intent.createChooser(intent, null))
         })
 
-        sharedViewModel.messageEvent.observe(viewLifecycleOwner, EventObserver { message ->
-            when (message) {
-                is MessageEvent.BlankNoteDiscardEvent -> {
-                    Snackbar.make(view, R.string.message_blank_note_discarded, Snackbar.LENGTH_SHORT)
-                            .show()
+        viewModel.statusChangeEvent.observe(viewLifecycleOwner, EventObserver { statusChange ->
+            sharedViewModel.onStatusChange(statusChange)
+        })
+
+        sharedViewModel.statusChangeEvent.observe(viewLifecycleOwner, EventObserver { statusChange ->
+            val messageId = when (statusChange.newStatus) {
+                NoteStatus.ACTIVE -> if (statusChange.oldStatus == NoteStatus.TRASHED) {
+                    R.plurals.message_move_restore
+                } else {
+                    R.plurals.message_move_unarchive
                 }
-                is MessageEvent.StatusChangeEvent -> {
-                    val count = message.statusChange.oldNotes.size
-                    Snackbar.make(view, context.resources.getQuantityString(
-                            message.messageId, count, count), Snackbar.LENGTH_SHORT)
-                            .setAction(R.string.action_undo) {
-                                sharedViewModel.undoStatusChange()
-                            }.show()
-                }
+                NoteStatus.ARCHIVED -> R.plurals.message_move_archive
+                NoteStatus.TRASHED -> R.plurals.message_move_delete
             }
+            val count = statusChange.oldNotes.size
+            val message = context.resources.getQuantityString(messageId, count, count)
+
+            Snackbar.make(view, message, Snackbar.LENGTH_SHORT)
+                    .setAction(R.string.action_undo) {
+                        sharedViewModel.undoStatusChange()
+                    }.show()
         })
     }
 
