@@ -17,7 +17,6 @@
 package com.maltaisn.notes.ui.main
 
 import android.os.Bundle
-import android.view.MenuItem
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
@@ -25,15 +24,12 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
-import com.google.android.material.navigation.NavigationView
 import com.maltaisn.notes.App
 import com.maltaisn.notes.R
-import com.maltaisn.notes.model.entity.NoteStatus
-import com.maltaisn.notes.ui.home.HomeFragment
 import javax.inject.Inject
 
 
-class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
+class MainActivity : AppCompatActivity() {
 
     @Inject lateinit var viewModelFactory: ViewModelProvider.Factory
     private val viewModel: MainViewModel by viewModels { viewModelFactory }
@@ -50,8 +46,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         // Setup drawer layout
         drawerLayout = findViewById(R.id.drawer_layout)
-        val navView: NavigationView = findViewById(R.id.drawer_nav_view)
-        navView.setNavigationItemSelectedListener(this)
 
         navController = findNavController(R.id.fragment_nav_host)
         navController.addOnDestinationChangedListener { _, ds, _ ->
@@ -61,27 +55,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 DrawerLayout.LOCK_MODE_LOCKED_CLOSED
             }, GravityCompat.START)
         }
-    }
-
-    override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        // Get home fragment. If not found, then do nothing since drawer is only accessible from it.
-        val navHostFragment = supportFragmentManager
-                .findFragmentById(R.id.fragment_nav_host) ?: return false
-        val homeFragment = navHostFragment.childFragmentManager
-                .fragments.first() as? HomeFragment ?: return false
-
-        when (item.itemId) {
-            R.id.item_location_active -> homeFragment.changeShownNotesStatus(NoteStatus.ACTIVE)
-            R.id.item_location_archived -> homeFragment.changeShownNotesStatus(NoteStatus.ARCHIVED)
-            R.id.item_location_deleted -> homeFragment.changeShownNotesStatus(NoteStatus.TRASHED)
-            R.id.item_sync -> navController.navigate(R.id.action_home_to_sync)
-            R.id.item_settings -> Unit
-            else -> return false
-        }
-
-        drawerLayout.closeDrawers()
-
-        return true
     }
 
     override fun onBackPressed() {

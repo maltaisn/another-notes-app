@@ -20,8 +20,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.*
 import androidx.appcompat.widget.Toolbar
-import androidx.core.view.GravityCompat
-import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.RecyclerView
@@ -42,8 +40,7 @@ abstract class NoteFragment : ViewModelFragment(), ActionMode.Callback {
     private val sharedViewModel: SharedViewModel by activityViewModels { viewModelFactory }
     protected abstract val viewModel: NoteViewModel
 
-    protected lateinit var drawerLayout: DrawerLayout
-    private var actionMode: ActionMode? = null
+    protected var actionMode: ActionMode? = null
 
 
     abstract override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -51,11 +48,9 @@ abstract class NoteFragment : ViewModelFragment(), ActionMode.Callback {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val context = requireContext()
-        val activity = requireActivity()
 
         // Setup toolbar with drawer
         val toolbar: Toolbar = view.findViewById(R.id.toolbar)
-        drawerLayout = activity.findViewById(R.id.drawer_layout)
 
         // Recycler view
         val rcv: RecyclerView = view.findViewById(R.id.rcv_notes)
@@ -81,7 +76,6 @@ abstract class NoteFragment : ViewModelFragment(), ActionMode.Callback {
         viewModel.currentSelection.observe(viewLifecycleOwner, Observer { selection ->
             if (selection.count != 0 && actionMode == null) {
                 actionMode = toolbar.startActionMode(this)
-                drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED, GravityCompat.START)
 
             } else if (selection.count == 0 && actionMode != null) {
                 actionMode?.finish()
@@ -176,7 +170,6 @@ abstract class NoteFragment : ViewModelFragment(), ActionMode.Callback {
     override fun onDestroyActionMode(mode: ActionMode) {
         actionMode = null
         viewModel.clearSelection()
-        drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED, GravityCompat.START)
     }
 
     companion object {

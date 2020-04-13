@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.maltaisn.notes
+package com.maltaisn.notes.ui.settings
 
 import kotlin.time.days
 import kotlin.time.minutes
@@ -23,10 +23,27 @@ import kotlin.time.seconds
 
 object PreferenceHelper {
 
+    // Settings keys
+    const val THEME = "theme"
+    const val SYNC_OVER_WIFI = "sync_over_wifi"
+    const val EXPORT_DATA = "export_data"
+    const val CLEAR_DATA = "clear_data"
+    const val PRIVACY_POLICY = "privacy_policy"
+    const val VIEW_SOURCE = "view_source"
+    const val VIEW_LICENSES = "view_licenses"
+    const val VERSION = "version"
+
+    // Other keys
     const val LAST_SYNC_TIME = "last_sync_time"
 
     const val LIST_LAYOUT_MODE = "is_in_list_layout"
     const val LAST_TRASH_REMIND_TIME = "last_deleted_remind_time"
+
+    const val THEME_LIGHT = "light"
+    const val THEME_DARK = "dark"
+    const val THEME_SYSTEM = "system"
+
+    const val VIEW_SOURCE_URL = "http://example.com/"
 
     val MIN_AUTO_SYNC_INTERVAL = 10.minutes
     val MIN_MANUAL_SYNC_INTERVAL = 15.seconds

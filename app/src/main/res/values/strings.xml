@@ -84,6 +84,9 @@
     <string name="copy_untitled_name">untitled</string>
     <string name="copy_suffix">Copy</string>
 
+    <string name="content_descrp_open_drawer">Open drawer</string>
+    <string name="content_descrp_back">Go back</string>
+
     <string name="sync_message">Backup your notes on the cloud and synchronize them across multiple devices.</string>
     <string name="sync_sign_in">Log in to an account</string>
     <string name="sync_sign_up">Create an account</string>
@@ -112,7 +115,28 @@
     <string name="sync_password_reset_success_message">An email was sent to reset your password.</string>
     <string name="sync_password_reset_failed_message">Couldn\'t send password reset email. Make sure email is valid.</string>
 
-    <string name="content_descrp_open_drawer">Open drawer</string>
-    <string name="content_descrp_back">Go back</string>
+    <string name="pref_group_appearance">Appearance</string>
+    <string name="pref_theme">App theme</string>
+    <string name="pref_theme_light">Light</string>
+    <string name="pref_theme_dark">Dark</string>
+    <string name="pref_theme_system">Follow system</string>
+
+    <string name="pref_group_sync">Sync &amp; backup</string>
+    <string name="pref_sync_over_wifi">Sync only over Wi-Fi</string>
+    <string name="pref_sync_over_wifi_summary">Prevent syncing over cellular or metered network</string>
+
+    <string name="pref_group_data">Data</string>
+    <string name="pref_data_export">Export data</string>
+    <string name="pref_data_export_summary">Export notes data as JSON</string>
+    <string name="pref_data_export_title">Exported notes data</string>
+    <string name="pref_data_clear">Clear all data</string>
+    <string name="pref_data_clear_message">All data was cleared successfully.</string>
+
+    <string name="pref_group_about">About</string>
+    <string name="pref_about_privacy_policy">Privacy policy</string>
+    <string name="pref_about_view_source">View on Github</string>
+    <string name="pref_about_view_licenses">Open source licenses</string>
+    <string name="pref_about_version">Version</string>
+
 
 </resources>

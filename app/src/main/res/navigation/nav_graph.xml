@@ -39,6 +39,10 @@
             android:id="@+id/action_home_to_sync"
             app:destination="@id/fragment_sync"
             />
+        <action
+            android:id="@+id/action_home_to_settings"
+            app:destination="@id/fragment_settings"
+            />
     </fragment>
 
     <fragment
@@ -68,6 +72,12 @@
         android:id="@+id/fragment_sync"
         android:name="com.maltaisn.notes.ui.sync.SyncFragment"
         tools:layout="@layout/fragment_sync"
+        />
+
+    <fragment
+        android:id="@+id/fragment_settings"
+        android:name="com.maltaisn.notes.ui.settings.SettingsFragment"
+        tools:layout="@layout/fragment_settings"
         />
 
 </navigation>

@@ -22,6 +22,8 @@ import com.maltaisn.notes.testNote
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import kotlinx.coroutines.runBlocking
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonConfiguration
 import org.junit.Test
 import java.io.IOException
 import java.util.*
@@ -32,7 +34,7 @@ class NotesServiceTest {
 
     @Test(expected = IOException::class)
     fun `should fail unauthenticated`() {
-        val service = NotesService(mock(), mock())
+        val service = NotesService(mock(), mock(), Json(JsonConfiguration.Stable))
         runBlocking {
             service.syncNotes(SyncData(Date(), emptyList(), emptyList()))
         }
@@ -48,7 +50,7 @@ class NotesServiceTest {
         }
 
         // "Mock" service so that sync just returns the same data it was passed.
-        val service = object : NotesService(fbAuth, mock()) {
+        val service = object : NotesService(fbAuth, mock(), Json(JsonConfiguration.Stable)) {
             override suspend fun callSyncFunction(data: Any?) = data
         }
 

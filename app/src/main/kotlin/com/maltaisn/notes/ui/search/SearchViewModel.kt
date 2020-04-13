@@ -18,7 +18,6 @@ package com.maltaisn.notes.ui.search
 
 import android.content.SharedPreferences
 import androidx.lifecycle.viewModelScope
-import com.maltaisn.notes.PreferenceHelper
 import com.maltaisn.notes.R
 import com.maltaisn.notes.model.NotesRepository
 import com.maltaisn.notes.model.entity.Note
@@ -29,6 +28,7 @@ import com.maltaisn.notes.ui.note.adapter.HeaderItem
 import com.maltaisn.notes.ui.note.adapter.NoteAdapter
 import com.maltaisn.notes.ui.note.adapter.NoteItem
 import com.maltaisn.notes.ui.note.adapter.NoteListLayoutMode
+import com.maltaisn.notes.ui.settings.PreferenceHelper
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect

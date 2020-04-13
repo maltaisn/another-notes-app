@@ -17,19 +17,17 @@
 package com.maltaisn.notes.ui.home
 
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.MenuItem
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
-import com.maltaisn.notes.App
 import com.maltaisn.notes.R
 import com.maltaisn.notes.model.entity.NoteStatus
 import com.maltaisn.notes.ui.EventObserver
@@ -37,14 +35,14 @@ import com.maltaisn.notes.ui.note.NoteFragment
 import com.maltaisn.notes.ui.note.adapter.NoteListLayoutMode
 
 
-class HomeFragment : NoteFragment(), Toolbar.OnMenuItemClickListener {
+class HomeFragment : NoteFragment(), Toolbar.OnMenuItemClickListener,
+        NavigationView.OnNavigationItemSelectedListener {
 
     override val viewModel: HomeViewModel by viewModels { viewModelFactory }
 
-    override fun onCreate(state: Bundle?) {
-        super.onCreate(state)
-        (requireContext().applicationContext as App).appComponent.inject(this)
-    }
+    private lateinit var drawerLayout: DrawerLayout
+    private lateinit var navView: NavigationView
+
 
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?, savedInstanceState: Bundle?): View =
@@ -54,6 +52,12 @@ class HomeFragment : NoteFragment(), Toolbar.OnMenuItemClickListener {
         super.onViewCreated(view, savedInstanceState)
 
         val navController = findNavController()
+
+        // Drawer
+        val activity = requireActivity()
+        drawerLayout = activity.findViewById(R.id.drawer_layout)
+        navView = activity.findViewById(R.id.drawer_nav_view)
+        navView.setNavigationItemSelectedListener(this)
 
         // Toolbar
         val toolbar: Toolbar = view.findViewById(R.id.toolbar)
@@ -94,6 +98,12 @@ class HomeFragment : NoteFragment(), Toolbar.OnMenuItemClickListener {
             }
         })
 
+        viewModel.currentSelection.observe(viewLifecycleOwner, Observer { selection ->
+            if (selection.count != 0 && actionMode == null) {
+                drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED, GravityCompat.START)
+            }
+        })
+
         viewModel.messageEvent.observe(viewLifecycleOwner, EventObserver { messageId ->
             Snackbar.make(view, messageId, Snackbar.LENGTH_SHORT).show()
         })
@@ -113,11 +123,11 @@ class HomeFragment : NoteFragment(), Toolbar.OnMenuItemClickListener {
         viewModel.editItemEvent.observe(viewLifecycleOwner, EventObserver { item ->
             navController.navigate(HomeFragmentDirections.actionHomeToEdit(item.note.id))
         })
-
     }
 
-    fun changeShownNotesStatus(status: NoteStatus) {
-        viewModel.setNoteStatus(status)
+    override fun onDestroyView() {
+        super.onDestroyView()
+        navView.setNavigationItemSelectedListener(null)
     }
 
     override fun onMenuItemClick(item: MenuItem): Boolean {
@@ -129,6 +139,25 @@ class HomeFragment : NoteFragment(), Toolbar.OnMenuItemClickListener {
             else -> return false
         }
         return true
+    }
+
+    override fun onNavigationItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.item_location_active -> viewModel.setNoteStatus(NoteStatus.ACTIVE)
+            R.id.item_location_archived -> viewModel.setNoteStatus(NoteStatus.ARCHIVED)
+            R.id.item_location_deleted -> viewModel.setNoteStatus(NoteStatus.TRASHED)
+            R.id.item_sync -> findNavController().navigate(R.id.action_home_to_sync)
+            R.id.item_settings -> findNavController().navigate(R.id.action_home_to_settings)
+            else -> return false
+        }
+
+        drawerLayout.closeDrawers()
+        return true
+    }
+
+    override fun onDestroyActionMode(mode: ActionMode) {
+        super.onDestroyActionMode(mode)
+        drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED, GravityCompat.START)
     }
 
 }

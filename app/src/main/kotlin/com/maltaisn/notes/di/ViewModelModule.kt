@@ -25,6 +25,7 @@ import com.maltaisn.notes.ui.edit.EditViewModel
 import com.maltaisn.notes.ui.home.HomeViewModel
 import com.maltaisn.notes.ui.main.MainViewModel
 import com.maltaisn.notes.ui.search.SearchViewModel
+import com.maltaisn.notes.ui.settings.SettingsViewModel
 import com.maltaisn.notes.ui.sync.main.SyncMainViewModel
 import com.maltaisn.notes.ui.sync.signin.SyncSignInViewModel
 import com.maltaisn.notes.ui.sync.signup.SyncSignUpViewModel
@@ -78,4 +79,9 @@ abstract class ViewModelModule {
     @IntoMap
     @ViewModelKey(SyncSignUpViewModel::class)
     abstract fun bindsSyncSignUpViewModel(viewModel: SyncSignUpViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(SettingsViewModel::class)
+    abstract fun bindsSettingsViewModel(viewModel: SettingsViewModel): ViewModel
 }

@@ -17,14 +17,21 @@
 package com.maltaisn.notes.model
 
 import android.content.SharedPreferences
-import com.maltaisn.notes.PreferenceHelper
+import com.maltaisn.notes.model.converter.DateTimeConverter
+import com.maltaisn.notes.model.entity.BlankNoteMetadata
 import com.maltaisn.notes.model.entity.DeletedNote
+import com.maltaisn.notes.model.entity.NoteStatus
+import com.maltaisn.notes.model.entity.NoteType
 import com.maltaisn.notes.testNote
+import com.maltaisn.notes.ui.settings.PreferenceHelper
 import com.nhaarman.mockitokotlin2.*
 import kotlinx.coroutines.runBlocking
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonConfiguration
 import org.junit.Test
 import org.mockito.ArgumentMatchers.anyLong
 import java.util.*
+import kotlin.test.assertEquals
 
 
 class NotesRepositoryTest {
@@ -41,7 +48,8 @@ class NotesRepositoryTest {
         on { getLong(any(), anyLong()) } doAnswer { it.arguments[1] as Long }
     }
 
-    private val notesRepo = NotesRepository(notesDao, deletedNotesDao, notesService, prefs)
+    private val notesRepo = NotesRepository(notesDao, deletedNotesDao,
+            notesService, prefs, Json(JsonConfiguration.Stable))
 
     @Test
     fun `should delete note in database`() = runBlocking {
@@ -77,6 +85,20 @@ class NotesRepositoryTest {
         verify(prefsEditor).putLong(PreferenceHelper.LAST_SYNC_TIME, newSyncDate.time)
         verify(notesDao).resetChangedFlag()
         verify(deletedNotesDao).clear()
+    }
+
+    @Test
+    fun `should return all notes data in json`() = runBlocking {
+        val date = DateTimeConverter.toDate("2020-01-01T00:00:00.000Z")
+        whenever(notesDao.getAll()) doReturn listOf(
+                testNote(1, "0", NoteType.TEXT, "note",
+                        "content", BlankNoteMetadata, date, date, NoteStatus.ACTIVE))
+
+        val data = notesRepo.getJsonData()
+
+        assertEquals("""{"0":{"uuid":"0","type":0,"title":"note","content":"content",""" +
+            """"metadata":"{\"type\":\"blank\"}","added":"2020-01-01T00:00:00.000Z",""" +
+            """"modified":"2020-01-01T00:00:00.000Z","status":0}}""", data)
     }
 
 }

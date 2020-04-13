@@ -19,8 +19,6 @@
     <style name="AppTheme.DayNight" parent="Base.AppTheme"/>
 
     <style name="Base.AppTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar" tools:ignore="NewApi">
-        <item name="android:forceDarkAllowed">false</item>
-
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryVariant">@color/colorPrimaryVariant</item>
         <item name="colorSecondary">@color/colorSecondary</item>
@@ -51,6 +49,15 @@
         <item name="actionBarTheme">@style/ThemeOverlay.MaterialComponents.Toolbar.Primary</item>
         <item name="actionModeStyle">@style/ActionModeStyle</item>
         <item name="actionModeCloseDrawable">@drawable/ic_close</item>
+
+        <item name="preferenceTheme">@style/PreferenceTheme</item>
+
+        <item name="android:windowAnimationStyle">@style/WindowAnimationTransition</item>
+    </style>
+
+    <style name="WindowAnimationTransition">
+        <item name="android:windowEnterAnimation">@android:anim/fade_in</item>
+        <item name="android:windowExitAnimation">@android:anim/fade_out</item>
     </style>
 
     <style name="ActionModeStyle" parent="Widget.AppCompat.ActionMode">
@@ -62,6 +69,10 @@
         <item name="android:editTextColor">?colorControlNormal</item>
         <item name="android:textColorHint">@color/color_toolbar_hint</item>
         <item name="android:colorControlActivated">@color/material_on_primary_emphasis_high_type</item>
+    </style>
+    
+    <style name="PreferenceTheme" parent="PreferenceThemeOverlay">
+        <item name="android:layout">@layout/fragment_settings</item>
     </style>
 
 </resources>

@@ -52,6 +52,13 @@ interface NotesDao {
     suspend fun deleteByUuid(uuids: List<String>)
 
     /**
+     * Get all notes in database.
+     * Used for exporting data.
+     */
+    @Query("SELECT * FROM notes")
+    suspend fun getAll(): List<Note>
+
+    /**
      * Get a note by its ID. Returns `null` if note doesn't exist.
      */
     @Query("SELECT * FROM notes WHERE id == :id")

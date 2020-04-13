@@ -18,11 +18,11 @@ package com.maltaisn.notes.ui.home
 
 import android.content.SharedPreferences
 import android.util.Log
+import androidx.core.content.edit
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.maltaisn.notes.DebugUtils
-import com.maltaisn.notes.PreferenceHelper
 import com.maltaisn.notes.R
 import com.maltaisn.notes.model.LoginRepository
 import com.maltaisn.notes.model.NotesRepository
@@ -35,6 +35,7 @@ import com.maltaisn.notes.ui.note.adapter.NoteAdapter
 import com.maltaisn.notes.ui.note.adapter.NoteItem
 import com.maltaisn.notes.ui.note.adapter.NoteListLayoutMode
 import com.maltaisn.notes.ui.send
+import com.maltaisn.notes.ui.settings.PreferenceHelper
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
@@ -87,7 +88,7 @@ class HomeViewModel @Inject constructor(
             NoteListLayoutMode.GRID -> NoteListLayoutMode.LIST
         }
         _listLayoutMode.value = mode
-        prefs.edit().putInt(PreferenceHelper.LIST_LAYOUT_MODE, mode.value).apply()
+        prefs.edit { putInt(PreferenceHelper.LIST_LAYOUT_MODE, mode.value) }
     }
 
     fun emptyTrash() {
@@ -130,8 +131,7 @@ class HomeViewModel @Inject constructor(
 
     override fun onMessageItemDismissed(item: MessageItem, pos: Int) {
         // Update last remind time when user dismisses message.
-        prefs.edit().putLong(PreferenceHelper.LAST_TRASH_REMIND_TIME,
-                System.currentTimeMillis()).apply()
+        prefs.edit { putLong(PreferenceHelper.LAST_TRASH_REMIND_TIME, System.currentTimeMillis()) }
 
         // Remove message item in list
         changeListItems { it.removeAt(pos) }

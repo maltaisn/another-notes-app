@@ -19,9 +19,9 @@ package com.maltaisn.notes.ui.main
 import android.content.SharedPreferences
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.maltaisn.notes.PreferenceHelper
 import com.maltaisn.notes.model.LoginRepository
 import com.maltaisn.notes.model.NotesRepository
+import com.maltaisn.notes.ui.settings.PreferenceHelper
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.io.IOException
@@ -55,7 +55,9 @@ class MainViewModel @Inject constructor(
     fun onPause() {
         viewModelScope.launch {
             // Send changes to server if needed.
-            notesRepository.syncNotes(receive = false)
+            if (loginRepository.isUserSignedIn) {
+                notesRepository.syncNotes(receive = false)
+            }
         }
     }
 

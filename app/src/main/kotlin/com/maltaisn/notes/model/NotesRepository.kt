@@ -18,13 +18,16 @@
 package com.maltaisn.notes.model
 
 import android.content.SharedPreferences
-import com.maltaisn.notes.PreferenceHelper
+import androidx.core.content.edit
 import com.maltaisn.notes.model.entity.DeletedNote
 import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.model.entity.NoteStatus
+import com.maltaisn.notes.ui.settings.PreferenceHelper
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonObject
 import java.io.IOException
 import java.util.*
 import javax.inject.Inject
@@ -36,7 +39,15 @@ class NotesRepository @Inject constructor(
         private val notesDao: NotesDao,
         private val deletedNotesDao: DeletedNotesDao,
         private val notesService: NotesService,
-        private val prefs: SharedPreferences) {
+        private val prefs: SharedPreferences,
+        private val json: Json) {
+
+    private var lastSyncTime: Long
+        get() = prefs.getLong(PreferenceHelper.LAST_SYNC_TIME, 0)
+        set(value) {
+            prefs.edit { putLong(PreferenceHelper.LAST_SYNC_TIME, value) }
+        }
+
 
     suspend fun insertNote(note: Note): Long = withContext(NonCancellable) {
         notesDao.insert(note)
@@ -86,7 +97,6 @@ class NotesRepository @Inject constructor(
      */
     suspend fun syncNotes(receive: Boolean = true) {
         // Get local sync data.
-        val lastSyncTime = Date(prefs.getLong(PreferenceHelper.LAST_SYNC_TIME, 0))
         val localChanged = notesDao.getChanged()
         val localDeleted = deletedNotesDao.getAllUuids()
 
@@ -96,7 +106,7 @@ class NotesRepository @Inject constructor(
         }
 
         // Send local changes to server, and receive remote changes
-        val localData = NotesService.SyncData(lastSyncTime, localChanged, localDeleted)
+        val localData = NotesService.SyncData(Date(lastSyncTime), localChanged, localDeleted)
         val remoteData = notesService.syncNotes(localData)
 
         // Sync was successful, update "changed" flag and remove "deleted" notes from database.
@@ -104,7 +114,7 @@ class NotesRepository @Inject constructor(
         deletedNotesDao.clear()
 
         // Update local last sync time
-        prefs.edit().putLong(PreferenceHelper.LAST_SYNC_TIME, remoteData.lastSync.time).apply()
+        lastSyncTime = remoteData.lastSync.time
 
         // Update local notes
         val remotedChanged = remoteData.changedNotes.map { note ->
@@ -121,6 +131,18 @@ class NotesRepository @Inject constructor(
 
         // Delete local notes
         notesDao.deleteByUuid(remoteData.deletedUuids)
+    }
+
+    suspend fun getJsonData(): String {
+        val notesList = notesDao.getAll()
+        val notesJson = JsonObject(notesList.associate { note ->
+            note.uuid to json.toJson(Note.serializer(), note)
+        })
+        return json.stringify(JsonObject.serializer(), notesJson)
+    }
+
+    suspend fun clearAllData() {
+        deleteNotes(notesDao.getAll())
     }
 
 }
