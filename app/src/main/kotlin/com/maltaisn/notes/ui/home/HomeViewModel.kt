@@ -62,6 +62,10 @@ class HomeViewModel @Inject constructor(
     val stopRefreshEvent: LiveData<Event<Unit>>
         get() = _stopRefreshEvent
 
+    private val _showEmptyTrashDialogEvent = MutableLiveData<Event<Unit>>()
+    val showEmptyTrashDialogEvent: LiveData<Event<Unit>>
+        get() = _showEmptyTrashDialogEvent
+
 
     init {
         setNoteStatus(NoteStatus.ACTIVE)
@@ -88,6 +92,12 @@ class HomeViewModel @Inject constructor(
         }
         _listLayoutMode.value = mode
         prefs.edit { putInt(PreferenceHelper.LIST_LAYOUT_MODE, mode.value) }
+    }
+
+    fun emptyTrashPre() {
+        if (listItems.isNotEmpty()) {
+            _showEmptyTrashDialogEvent.send()
+        }
     }
 
     fun emptyTrash() {
@@ -144,7 +154,7 @@ class HomeViewModel @Inject constructor(
                 if (System.currentTimeMillis() - lastReminder >
                         PreferenceHelper.TRASH_REMINDER_DELAY.toLongMilliseconds()) {
                     this += MessageItem(TRASH_REMINDER_ITEM_ID,
-                            R.string.message_trash_reminder,
+                            R.string.trash_reminder_message,
                             PreferenceHelper.TRASH_AUTO_DELETE_DELAY.inDays.toInt())
                 }
             }

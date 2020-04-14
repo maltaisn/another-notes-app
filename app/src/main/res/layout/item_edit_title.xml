@@ -26,6 +26,6 @@
     android:inputType="textMultiLine|textShortMessage"
     android:imeOptions="flagNoExtractUi"
     android:textAppearance="?textAppearanceHeadline6"
-    android:hint="@string/hint_note_title"
+    android:hint="@string/edit_hint_note_title"
     android:importantForAutofill="no"
     />

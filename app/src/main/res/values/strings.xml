@@ -18,13 +18,6 @@
 
     <string name="app_name">Notes</string>
 
-    <string name="note_location_active">Notes</string>
-    <string name="note_location_archived">Archived</string>
-    <string name="note_location_deleted">Deleted</string>
-
-    <string name="edit_add_title">Create note</string>
-    <string name="edit_change_title">Edit note</string>
-
     <string name="action_archive">Archive</string>
     <string name="action_cancel">Cancel</string>
     <string name="action_convert_to_list">Convert to list</string>
@@ -33,6 +26,7 @@
     <string name="action_delete">Delete</string>
     <string name="action_delete_forever">Delete forever</string>
     <string name="action_empty_trash">Empty recycle bin</string>
+    <string name="action_empty_trash_short">Empty</string>
     <string name="action_layout_grid">View as grid</string>
     <string name="action_layout_list">View as list</string>
     <string name="action_password_forgot">Forgot password</string>
@@ -50,43 +44,50 @@
     <string name="action_unarchive">Unarchive</string>
     <string name="action_undo">Undo</string>
 
-    <string name="hint_search">Search notes</string>
-
-    <string name="hint_note_title">Title</string>
-    <string name="hint_note_content">Note</string>
-    <string name="hint_note_item">List item</string>
-
-    <plurals name="message_move_archive">
-        <item quantity="one">Note archived</item>
-        <item quantity="other">Notes archived</item>
-    </plurals>
-    <plurals name="message_move_delete">
-        <item quantity="one">Note moved to recycle bin</item>
-        <item quantity="other">Notes moved to recycle bin</item>
-    </plurals>
-    <plurals name="message_move_restore">
-        <item quantity="one">Note restored</item>
-        <item quantity="other">Notes restored</item>
-    </plurals>
-    <plurals name="message_move_unarchive">
-        <item quantity="one">Note unarchived</item>
-        <item quantity="other">Notes unarchived</item>
-    </plurals>
-
-    <string name="message_blank_note_discarded">Blank note discarded</string>
-    <string name="message_trash_reminder">Notes in recycle bin are automatically deleted after %d days.</string>
+    <!-- Home -->
+    <string name="note_location_active">Notes</string>
+    <string name="note_location_archived">Archived</string>
+    <string name="note_location_deleted">Deleted</string>
 
     <plurals name="note_list_item_info">
         <item quantity="one">+ %d other list item</item>
         <item quantity="other">+ %d other list items</item>
     </plurals>
 
-    <string name="copy_untitled_name">untitled</string>
-    <string name="copy_suffix">Copy</string>
+    <string name="trash_reminder_message">Notes in recycle bin are automatically deleted after %d days.</string>
+    <string name="trash_empty_message">All notes in recycle bin will be permanently deleted.</string>
 
-    <string name="content_descrp_open_drawer">Open drawer</string>
-    <string name="content_descrp_back">Go back</string>
+    <string name="search_hint">Search notes</string>
 
+    <!-- Edit -->
+    <string name="edit_add_title">Create note</string>
+    <string name="edit_change_title">Edit note</string>
+    <string name="edit_hint_note_title">Title</string>
+    <string name="edit_hint_note_content">Note</string>
+    <string name="edit_hint_note_item">List item</string>
+
+    <string name="edit_message_blank_note_discarded">Blank note discarded</string>
+    <plurals name="edit_move_archive_message">
+        <item quantity="one">Note archived</item>
+        <item quantity="other">Notes archived</item>
+    </plurals>
+    <plurals name="edit_message_move_delete">
+        <item quantity="one">Note moved to recycle bin</item>
+        <item quantity="other">Notes moved to recycle bin</item>
+    </plurals>
+    <plurals name="edit_message_move_restore">
+        <item quantity="one">Note restored</item>
+        <item quantity="other">Notes restored</item>
+    </plurals>
+    <plurals name="edit_message_move_unarchive">
+        <item quantity="one">Note unarchived</item>
+        <item quantity="other">Notes unarchived</item>
+    </plurals>
+
+    <string name="edit_copy_suffix">Copy</string>
+    <string name="edit_copy_untitled_name">untitled</string>
+
+    <!-- Sync & backup -->
     <string name="sync_message">Backup your notes on the cloud and synchronize them across multiple devices.</string>
     <string name="sync_sign_in">Log in to an account</string>
     <string name="sync_sign_up">Create an account</string>
@@ -115,6 +116,7 @@
     <string name="sync_password_reset_success_message">An email was sent to reset your password.</string>
     <string name="sync_password_reset_failed_message">Couldn\'t send password reset email. Make sure email is valid.</string>
 
+    <!-- Settings -->
     <string name="pref_group_appearance">Appearance</string>
     <string name="pref_theme">App theme</string>
     <string name="pref_theme_light">Light</string>
@@ -138,5 +140,8 @@
     <string name="pref_about_view_licenses">Open source licenses</string>
     <string name="pref_about_version">Version</string>
 
+    <!-- Content description -->
+    <string name="content_descrp_open_drawer">Open drawer</string>
+    <string name="content_descrp_back">Go back</string>
 
 </resources>

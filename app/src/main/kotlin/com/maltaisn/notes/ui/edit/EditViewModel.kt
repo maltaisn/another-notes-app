@@ -135,7 +135,7 @@ class EditViewModel @Inject constructor(
             // Delete blank note
             viewModelScope.launch {
                 notesRepository.deleteNote(note)
-                _messageEvent.send(R.string.message_blank_note_discarded)
+                _messageEvent.send(R.string.edit_message_blank_note_discarded)
                 _exitEvent.send()
             }
         } else {

@@ -27,6 +27,6 @@
     app:closeIcon="@drawable/ic_close"
     app:iconifiedByDefault="false"
     app:queryBackground="@null"
-    app:queryHint="@string/hint_search"
+    app:queryHint="@string/search_hint"
     app:searchIcon="@null"
     />

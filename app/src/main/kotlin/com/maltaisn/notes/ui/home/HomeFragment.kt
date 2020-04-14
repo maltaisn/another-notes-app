@@ -31,12 +31,13 @@ import com.google.android.material.snackbar.Snackbar
 import com.maltaisn.notes.R
 import com.maltaisn.notes.model.entity.NoteStatus
 import com.maltaisn.notes.ui.EventObserver
+import com.maltaisn.notes.ui.common.ConfirmDialog
 import com.maltaisn.notes.ui.note.NoteFragment
 import com.maltaisn.notes.ui.note.adapter.NoteListLayoutMode
 
 
 class HomeFragment : NoteFragment(), Toolbar.OnMenuItemClickListener,
-        NavigationView.OnNavigationItemSelectedListener {
+        NavigationView.OnNavigationItemSelectedListener, ConfirmDialog.Callback {
 
     override val viewModel: HomeViewModel by viewModels { viewModelFactory }
 
@@ -123,6 +124,14 @@ class HomeFragment : NoteFragment(), Toolbar.OnMenuItemClickListener,
         viewModel.editItemEvent.observe(viewLifecycleOwner, EventObserver { item ->
             navController.navigate(HomeFragmentDirections.actionHomeToEdit(item.note.id))
         })
+
+        viewModel.showEmptyTrashDialogEvent.observe(viewLifecycleOwner, EventObserver {
+            ConfirmDialog.newInstance(
+                    title = R.string.action_empty_trash,
+                    message = R.string.trash_empty_message,
+                    btnPositive = R.string.action_empty_trash_short
+            ).show(childFragmentManager, EMPTY_TRASH_DIALOG_TAG)
+        })
     }
 
     override fun onDestroyView() {
@@ -134,7 +143,7 @@ class HomeFragment : NoteFragment(), Toolbar.OnMenuItemClickListener,
         when (item.itemId) {
             R.id.item_search -> findNavController().navigate(R.id.action_home_to_search)
             R.id.item_layout -> viewModel.toggleListLayoutMode()
-            R.id.item_empty_trash -> viewModel.emptyTrash()
+            R.id.item_empty_trash -> viewModel.emptyTrashPre()
             R.id.item_add_debug_notes -> viewModel.addDebugNotes()
             else -> return false
         }
@@ -158,6 +167,16 @@ class HomeFragment : NoteFragment(), Toolbar.OnMenuItemClickListener,
     override fun onDestroyActionMode(mode: ActionMode) {
         super.onDestroyActionMode(mode)
         drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED, GravityCompat.START)
+    }
+
+    override fun onDialogConfirmed(tag: String?) {
+        if (tag == EMPTY_TRASH_DIALOG_TAG) {
+            viewModel.emptyTrash()
+        }
+    }
+
+    companion object {
+        private const val EMPTY_TRASH_DIALOG_TAG = "empty_trash_dialog"
     }
 
 }

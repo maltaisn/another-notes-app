@@ -43,8 +43,8 @@ class PasswordResetDialog : DialogFragment() {
 
         // Set initial email
         if (state == null) {
-            val args = arguments
-            if (args?.containsKey(ARG_EMAIL) == true) {
+            val args = requireArguments()
+            if (args.containsKey(ARG_EMAIL)) {
                 emailEdt.setText(args.getString(ARG_EMAIL))
             }
         }
@@ -60,7 +60,8 @@ class PasswordResetDialog : DialogFragment() {
                 }
                 .setNegativeButton(R.string.action_cancel, null)
                 .create()
-        dialog.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+
+        dialog.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE)
 
         dialog.setOnShowListener {
             // Add listener to disable "Reset" button when email is blank.

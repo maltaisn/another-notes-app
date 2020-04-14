@@ -130,12 +130,12 @@ abstract class NoteFragment : ViewModelFragment(), ActionMode.Callback {
         sharedViewModel.statusChangeEvent.observe(viewLifecycleOwner, EventObserver { statusChange ->
             val messageId = when (statusChange.newStatus) {
                 NoteStatus.ACTIVE -> if (statusChange.oldStatus == NoteStatus.TRASHED) {
-                    R.plurals.message_move_restore
+                    R.plurals.edit_message_move_restore
                 } else {
-                    R.plurals.message_move_unarchive
+                    R.plurals.edit_message_move_unarchive
                 }
-                NoteStatus.ARCHIVED -> R.plurals.message_move_archive
-                NoteStatus.TRASHED -> R.plurals.message_move_delete
+                NoteStatus.ARCHIVED -> R.plurals.edit_move_archive_message
+                NoteStatus.TRASHED -> R.plurals.edit_message_move_delete
             }
             val count = statusChange.oldNotes.size
             val message = context.resources.getQuantityString(messageId, count, count)
@@ -153,7 +153,7 @@ abstract class NoteFragment : ViewModelFragment(), ActionMode.Callback {
             R.id.item_select_all -> viewModel.selectAll()
             R.id.item_share -> viewModel.shareNote()
             R.id.item_copy -> viewModel.copySelectedNote(
-                    getString(R.string.copy_untitled_name), getString(R.string.copy_suffix))
+                    getString(R.string.edit_copy_untitled_name), getString(R.string.edit_copy_suffix))
             R.id.item_delete -> viewModel.deleteSelectedNotes()
             else -> return false
         }

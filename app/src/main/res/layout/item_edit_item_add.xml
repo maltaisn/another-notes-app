@@ -46,7 +46,7 @@
         android:layout_gravity="center"
         android:textAppearance="?textAppearanceBody1"
         android:textColor="?android:textColorHint"
-        android:text="@string/hint_note_item"
+        android:text="@string/edit_hint_note_item"
         android:padding="5dp"
         />
 

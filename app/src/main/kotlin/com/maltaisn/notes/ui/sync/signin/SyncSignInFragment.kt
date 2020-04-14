@@ -65,7 +65,7 @@ class SyncSignInFragment : ViewModelFragment(), PasswordResetDialog.Callback {
         }
         forgotPasswordBtn.setOnClickListener {
             PasswordResetDialog.newInstance(emailEdt.text.toString())
-                    .show(childFragmentManager, "password_reset_dialog")
+                    .show(childFragmentManager, PASSWORD_RESET_DIALOG_TAG)
         }
 
         emailEdt.doAfterTextChanged {
@@ -111,6 +111,10 @@ class SyncSignInFragment : ViewModelFragment(), PasswordResetDialog.Callback {
 
     override fun onPasswordResetButtonClicked(email: String) {
         viewModel.resetPassword(email)
+    }
+
+    companion object {
+        private const val PASSWORD_RESET_DIALOG_TAG = "password_reset_dialog"
     }
 
 }

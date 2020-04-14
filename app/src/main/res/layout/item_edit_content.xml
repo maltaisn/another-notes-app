@@ -26,6 +26,6 @@
     android:inputType="textMultiLine|textLongMessage"
     android:imeOptions="flagNoExtractUi"
     android:textAppearance="?textAppearanceBody1"
-    android:hint="@string/hint_note_content"
+    android:hint="@string/edit_hint_note_content"
     android:importantForAutofill="no"
     />
