@@ -56,7 +56,7 @@ class NotesRepositoryTest {
         val note = testNote()
         notesRepo.deleteNote(note)
         verify(notesDao).delete(note)
-        verify(deletedNotesDao).insert(DeletedNote(any(), note.uuid))
+        verify(deletedNotesDao).insert(DeletedNote(0, note.uuid))
     }
 
     @Test
@@ -73,7 +73,7 @@ class NotesRepositoryTest {
         whenever(notesService.syncNotes(any())) doReturn NotesService.SyncData(
                 newSyncDate, listOf(newNote1), listOf("0"))
 
-        notesRepo.syncNotes()
+        notesRepo.syncNotes(true)
 
         verify(notesService).syncNotes(NotesService.SyncData(
                 Date(0), listOf(note0), listOf("2")))

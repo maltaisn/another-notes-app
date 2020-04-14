@@ -25,18 +25,17 @@ import com.google.firebase.FirebaseTooManyRequestsException
 import com.google.firebase.auth.FirebaseAuthException
 import com.maltaisn.notes.R
 import com.maltaisn.notes.model.LoginRepository
-import com.maltaisn.notes.model.NotesRepository
+import com.maltaisn.notes.model.SyncManager
 import com.maltaisn.notes.ui.Event
 import com.maltaisn.notes.ui.send
 import com.maltaisn.notes.ui.sync.SyncPage
 import kotlinx.coroutines.launch
-import java.io.IOException
 import javax.inject.Inject
 
 
 class SyncSignInViewModel @Inject constructor(
-        private val notesRepository: NotesRepository,
-        private val loginRepository: LoginRepository) : ViewModel() {
+        private val loginRepository: LoginRepository,
+        private val syncManager: SyncManager) : ViewModel() {
 
     private val _changePageEvent = MutableLiveData<Event<SyncPage>>()
     val changePageEvent: LiveData<Event<SyncPage>>
@@ -95,13 +94,7 @@ class SyncSignInViewModel @Inject constructor(
                 loginRepository.signIn(email.toString(), password.toString())
 
                 // Sync notes
-                if (loginRepository.isUserSignedIn) {
-                    try {
-                        notesRepository.syncNotes()
-                    } catch (e: IOException) {
-                        // Sync failed for unknown reason.
-                    }
-                }
+                syncManager.syncNotes()
 
                 _messageEvent.send(R.string.sync_sign_in_success_message)
                 _fieldError.value = null

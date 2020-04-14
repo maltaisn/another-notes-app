@@ -16,15 +16,14 @@
 
 package com.maltaisn.notes.ui.main
 
-import android.content.SharedPreferences
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.maltaisn.notes.model.LoginRepository
 import com.maltaisn.notes.model.NotesRepository
+import com.maltaisn.notes.model.SyncManager
 import com.maltaisn.notes.ui.settings.PreferenceHelper
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import java.io.IOException
 import javax.inject.Inject
 import kotlin.time.hours
 
@@ -32,7 +31,7 @@ import kotlin.time.hours
 class MainViewModel @Inject constructor(
         private val notesRepository: NotesRepository,
         private val loginRepository: LoginRepository,
-        private val prefs: SharedPreferences
+        private val syncManager: SyncManager
 ) : ViewModel() {
 
     init {
@@ -48,33 +47,13 @@ class MainViewModel @Inject constructor(
     fun onResume() {
         viewModelScope.launch {
             notesRepository.deleteOldNotesInTrash()
-            syncNotesIfNeeded()
+            syncManager.syncNotes(delay = PreferenceHelper.MIN_AUTO_SYNC_INTERVAL)
         }
     }
 
     fun onPause() {
         viewModelScope.launch {
-            // Send changes to server if needed.
-            if (loginRepository.isUserSignedIn) {
-                notesRepository.syncNotes(receive = false)
-            }
-        }
-    }
-
-    private fun syncNotesIfNeeded() {
-        if (loginRepository.isUserSignedIn) {
-            // Sync notes if last sync was beyond delay for automatic syncing.
-            val lastSync = prefs.getLong(PreferenceHelper.LAST_SYNC_TIME, 0)
-            val nextSyncTime = lastSync + PreferenceHelper.MIN_AUTO_SYNC_INTERVAL.toLongMilliseconds()
-            if (System.currentTimeMillis() >= nextSyncTime) {
-                viewModelScope.launch {
-                    try {
-                        notesRepository.syncNotes()
-                    } catch (e: IOException) {
-                        // Sync failed for unknown reason.
-                    }
-                }
-            }
+            syncManager.syncNotes(receive = false)
         }
     }
 

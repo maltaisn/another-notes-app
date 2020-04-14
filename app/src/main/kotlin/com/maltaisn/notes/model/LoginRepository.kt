@@ -26,13 +26,13 @@ import javax.inject.Singleton
 
 
 @Singleton
-class LoginRepository @Inject constructor(
+open class LoginRepository @Inject constructor(
         private val fbAuth: FirebaseAuth) {
 
     val currentUser: FirebaseUser?
         get() = fbAuth.currentUser
 
-    val isUserSignedIn: Boolean
+    open val isUserSignedIn: Boolean
         get() = currentUser != null
 
 

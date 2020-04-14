@@ -24,8 +24,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.maltaisn.notes.DebugUtils
 import com.maltaisn.notes.R
-import com.maltaisn.notes.model.LoginRepository
 import com.maltaisn.notes.model.NotesRepository
+import com.maltaisn.notes.model.SyncManager
 import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.model.entity.NoteStatus
 import com.maltaisn.notes.ui.Event
@@ -39,14 +39,13 @@ import com.maltaisn.notes.ui.settings.PreferenceHelper
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import java.io.IOException
 import javax.inject.Inject
 
 
 class HomeViewModel @Inject constructor(
         notesRepository: NotesRepository,
-        val loginRepository: LoginRepository,
-        prefs: SharedPreferences
+        prefs: SharedPreferences,
+        val syncManager: SyncManager
 ) : NoteViewModel(notesRepository, prefs), NoteAdapter.Callback {
 
     private var noteListJob: Job? = null
@@ -99,19 +98,10 @@ class HomeViewModel @Inject constructor(
 
     fun syncNotes() {
         viewModelScope.launch {
-            if (loginRepository.isUserSignedIn) {
-                // Sync notes if last sync was beyond delay for manual syncing.
-                val lastSync = prefs.getLong(PreferenceHelper.LAST_SYNC_TIME, 0)
-                val nextSyncTime = lastSync + PreferenceHelper.MIN_MANUAL_SYNC_INTERVAL.toLongMilliseconds()
-                if (System.currentTimeMillis() >= nextSyncTime) {
-                    try {
-                        notesRepository.syncNotes()
-                    } catch (e: IOException) {
-                        // Sync failed for unknown reason.
-                        Log.e(TAG, "Couldn't sync notes", e)
-                        _messageEvent.send(R.string.sync_failed_message)
-                    }
-                }
+            syncManager.syncNotes(delay = PreferenceHelper.MIN_MANUAL_SYNC_INTERVAL) { e ->
+                // Sync failed for unknown reason.
+                Log.e(TAG, "Couldn't sync notes", e)
+                _messageEvent.send(R.string.sync_failed_message)
             }
             _stopRefreshEvent.send()
         }

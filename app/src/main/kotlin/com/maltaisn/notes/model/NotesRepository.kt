@@ -35,7 +35,7 @@ import javax.inject.Singleton
 
 
 @Singleton
-class NotesRepository @Inject constructor(
+open class NotesRepository @Inject constructor(
         private val notesDao: NotesDao,
         private val deletedNotesDao: DeletedNotesDao,
         private val notesService: NotesService,
@@ -93,9 +93,12 @@ class NotesRepository @Inject constructor(
      * 2. Server returns all remote changes since the last sync date (again, inserted and updated
      * notes, deleted notes UUIDs) and this data is updated locally.
      *
+     * @param receive Whether receiving remote notes is important or not. If not and there are no
+     * local changes, no call will be made to the server.
+     *
      * @throws IOException Thrown when sync fails.
      */
-    suspend fun syncNotes(receive: Boolean = true) {
+    open suspend fun syncNotes(receive: Boolean) {
         // Get local sync data.
         val localChanged = notesDao.getChanged()
         val localDeleted = deletedNotesDao.getAllUuids()
