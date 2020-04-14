@@ -20,6 +20,7 @@
 
     <string name="action_archive">Archive</string>
     <string name="action_cancel">Cancel</string>
+    <string name="action_clear">Clear</string>
     <string name="action_convert_to_list">Convert to list</string>
     <string name="action_convert_to_text">Convert to text</string>
     <string name="action_copy">Make a copy</string>
@@ -132,7 +133,8 @@
     <string name="pref_data_export_summary">Export notes data as JSON</string>
     <string name="pref_data_export_title">Exported notes data</string>
     <string name="pref_data_clear">Clear all data</string>
-    <string name="pref_data_clear_message">All data was cleared successfully.</string>
+    <string name="pref_data_clear_confirm_message">All notes data will be cleared permanently! This may not fully affect other devices if sync is not up to date.</string>
+    <string name="pref_data_clear_success_message">All data was cleared successfully.</string>
 
     <string name="pref_group_about">About</string>
     <string name="pref_about_privacy_policy">Privacy policy</string>

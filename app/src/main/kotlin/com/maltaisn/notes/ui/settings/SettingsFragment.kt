@@ -33,10 +33,11 @@ import com.maltaisn.notes.App
 import com.maltaisn.notes.BuildConfig
 import com.maltaisn.notes.R
 import com.maltaisn.notes.ui.EventObserver
+import com.maltaisn.notes.ui.common.ConfirmDialog
 import javax.inject.Inject
 
 
-class SettingsFragment : PreferenceFragmentCompat() {
+class SettingsFragment : PreferenceFragmentCompat(), ConfirmDialog.Callback {
 
     @Inject lateinit var viewModelFactory: ViewModelProvider.Factory
     private val viewModel: SettingsViewModel by viewModels { viewModelFactory }
@@ -89,7 +90,11 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
         requirePreference<Preference>(PreferenceHelper.CLEAR_DATA)
                 .setOnPreferenceClickListener {
-                    viewModel.clearData()
+                    ConfirmDialog.newInstance(
+                            title = R.string.pref_data_clear,
+                            message = R.string.pref_data_clear_confirm_message,
+                            btnPositive = R.string.action_clear
+                    ).show(childFragmentManager, CLEAR_DATA_DIALOG_TAG)
                     true
                 }
 
@@ -120,5 +125,16 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
     private fun <T : Preference> requirePreference(key: CharSequence) =
             checkNotNull(findPreference<T>(key)) { "Could not find preference with key '$key'." }
+
+
+    override fun onDialogConfirmed(tag: String?) {
+        if (tag == CLEAR_DATA_DIALOG_TAG) {
+            viewModel.clearData()
+        }
+    }
+
+    companion object {
+        private const val CLEAR_DATA_DIALOG_TAG = "clear_data_dialog"
+    }
 
 }

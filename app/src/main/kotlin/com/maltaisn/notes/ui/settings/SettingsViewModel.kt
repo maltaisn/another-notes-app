@@ -49,7 +49,7 @@ class SettingsViewModel @Inject constructor(
     fun clearData() {
         viewModelScope.launch {
             notesRepository.clearAllData()
-            _messageEvent.send(R.string.pref_data_clear_message)
+            _messageEvent.send(R.string.pref_data_clear_success_message)
         }
     }
 
