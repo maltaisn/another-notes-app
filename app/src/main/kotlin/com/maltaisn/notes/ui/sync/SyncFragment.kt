@@ -22,12 +22,12 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.Toolbar
-import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.FragmentStatePagerAdapter
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
-import androidx.viewpager.widget.ViewPager
+import androidx.viewpager2.adapter.FragmentStateAdapter
+import androidx.viewpager2.widget.ViewPager2
 import com.maltaisn.notes.R
 import com.maltaisn.notes.hideKeyboard
 import com.maltaisn.notes.ui.common.ViewModelFragment
@@ -41,7 +41,7 @@ class SyncFragment : ViewModelFragment(), Toolbar.OnMenuItemClickListener {
 
     private val viewModel: SyncViewModel by viewModels { viewModelFactory }
 
-    private lateinit var viewPager: ViewPager
+    private lateinit var viewPager: ViewPager2
 
 
     override fun onCreateView(inflater: LayoutInflater,
@@ -64,7 +64,8 @@ class SyncFragment : ViewModelFragment(), Toolbar.OnMenuItemClickListener {
 
         // View pager
         viewPager = view.findViewById(R.id.view_pager_sync)
-        viewPager.adapter = SyncPageAdapter(childFragmentManager)
+        viewPager.adapter = SyncPageAdapter(this)
+        viewPager.offscreenPageLimit = 1
 
         // Observers
         viewModel.currentUser.observe(viewLifecycleOwner, Observer { user ->
@@ -72,6 +73,9 @@ class SyncFragment : ViewModelFragment(), Toolbar.OnMenuItemClickListener {
             val signedIn = user != null
             menu.findItem(R.id.item_password_change).isVisible = signedIn
             menu.findItem(R.id.item_account_delete).isVisible = signedIn
+
+            // Prevent user from swiping when user is signed in.
+            viewPager.isUserInputEnabled = !signedIn
         })
     }
 
@@ -89,12 +93,11 @@ class SyncFragment : ViewModelFragment(), Toolbar.OnMenuItemClickListener {
         viewPager.currentItem = page.pos
     }
 
-    private class SyncPageAdapter(fm: FragmentManager) :
-            FragmentStatePagerAdapter(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
+    private class SyncPageAdapter(fragment: Fragment) : FragmentStateAdapter(fragment) {
 
-        override fun getCount() = 3
+        override fun getItemCount() = 3
 
-        override fun getItem(position: Int) = when (position) {
+        override fun createFragment(position: Int) = when (position) {
             SyncPage.MAIN.pos -> SyncMainFragment()
             SyncPage.SIGN_IN.pos -> SyncSignInFragment()
             SyncPage.SIGN_UP.pos -> SyncSignUpFragment()
