@@ -31,9 +31,9 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import kotlin.test.assertEquals
-import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 
 @RunWith(AndroidJUnit4::class)
@@ -125,10 +125,10 @@ class NotesDaoTest {
 
     @Test
     fun getChangedTest() = runBlocking {
-        val note = atestNote(id = 1, changed = true)
-        notesDao.insertAll(listOf(note, atestNote(id = 2, changed = false)))
+        val note = atestNote(id = 1, synced = false)
+        notesDao.insertAll(listOf(note, atestNote(id = 2, synced = true)))
 
-        assertEquals(listOf(note), notesDao.getChanged())
+        assertEquals(listOf(note), notesDao.getNotSynced())
     }
 
     @Test
@@ -148,12 +148,12 @@ class NotesDaoTest {
     @Test
     fun resetChangedFlagTest() = runBlocking {
         notesDao.insertAll(listOf(
-                atestNote(id = 1, changed = true),
-                atestNote(id = 2, changed = false)))
+                atestNote(id = 1, synced = false),
+                atestNote(id = 2, synced = true)))
 
-        notesDao.setChangedFlag(false)
-        assertFalse(notesDao.getById(1)!!.changed)
-        assertFalse(notesDao.getById(2)!!.changed)
+        notesDao.setSyncedFlag(true)
+        assertTrue(notesDao.getById(1)!!.synced)
+        assertTrue(notesDao.getById(2)!!.synced)
     }
 
     @Test

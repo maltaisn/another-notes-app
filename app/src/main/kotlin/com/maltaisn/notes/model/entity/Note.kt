@@ -99,12 +99,11 @@ data class Note(
         val status: NoteStatus,
 
         /**
-         * Whether the note was changed since last sync and needs
-         * to be synced again.
+         * Whether the note is synced with server or not.
          */
         @Transient
-        @ColumnInfo(name = "changed")
-        val changed: Boolean = false
+        @ColumnInfo(name = "synced")
+        val synced: Boolean = true
 ) {
 
     init {
@@ -187,7 +186,7 @@ data class Note(
                 metadata = ListNoteMetadata(List(lines.size) { false })
             }
         }
-        return Note(id, uuid, type, title, content, metadata, addedDate, lastModifiedDate, status)
+        return Note(id, uuid, type, title, content, metadata, addedDate, lastModifiedDate, status, synced)
     }
 
     fun asText(): String {

@@ -30,8 +30,8 @@ fun testNote(
         added: Date = Date(),
         modified: Date = Date(),
         status: NoteStatus = NoteStatus.ACTIVE,
-        changed: Boolean = false
-) = Note(id, uuid, type, title, content, metadata, added, modified, status, changed)
+        synced: Boolean = true
+) = Note(id, uuid, type, title, content, metadata, added, modified, status, synced)
 
 fun listNote(
         items: List<ListNoteItem>,
@@ -41,6 +41,6 @@ fun listNote(
         added: Date = Date(),
         modified: Date = Date(),
         status: NoteStatus = NoteStatus.ACTIVE,
-        changed: Boolean = false
+        synced: Boolean = true
 ) = Note(id, uuid, NoteType.LIST, title, items.joinToString("\n") { it.content },
-        ListNoteMetadata(items.map { it.checked }), added, modified, status, changed)
+        ListNoteMetadata(items.map { it.checked }), added, modified, status, synced)

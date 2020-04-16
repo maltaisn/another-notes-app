@@ -36,6 +36,7 @@ class SyncManagerTest {
 
     init {
         whenever(loginRepo.isUserSignedIn) doReturn true
+        whenever(loginRepo.isUserEmailVerified) doReturn true
         whenever(prefs.getBoolean(eq(PreferenceHelper.SYNC_OVER_WIFI), any())) doReturn false
     }
 
@@ -43,7 +44,15 @@ class SyncManagerTest {
     fun `should not sync notes if not signed in`() = runBlocking {
         whenever(loginRepo.isUserSignedIn) doReturn false
         whenever(prefs.getLong(eq(PreferenceHelper.LAST_SYNC_TIME), any())) doReturn System.currentTimeMillis()
-        syncManager.syncNotes(delay = 1.hours)
+        syncManager.syncNotes()
+        verify(notesRepo, never()).syncNotes(true)
+    }
+
+    @Test
+    fun `should not sync notes if email not verified`() = runBlocking {
+        whenever(loginRepo.isUserEmailVerified) doReturn false
+        whenever(prefs.getLong(eq(PreferenceHelper.LAST_SYNC_TIME), any())) doReturn System.currentTimeMillis()
+        syncManager.syncNotes()
         verify(notesRepo, never()).syncNotes(true)
     }
 

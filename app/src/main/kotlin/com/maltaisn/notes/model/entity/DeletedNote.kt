@@ -31,5 +31,8 @@ data class DeletedNote(
     val id: Int,
 
     @ColumnInfo(name = "uuid")
-    val uuid: String
+    val uuid: String,
+
+    @ColumnInfo(name = "synced")
+    val synced: Boolean
 )

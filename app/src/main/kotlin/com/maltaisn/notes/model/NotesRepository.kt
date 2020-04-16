@@ -63,12 +63,12 @@ open class NotesRepository @Inject constructor(
 
     suspend fun deleteNote(note: Note) = withContext(NonCancellable) {
         notesDao.delete(note)
-        deletedNotesDao.insert(DeletedNote(0, note.uuid))
+        deletedNotesDao.insert(DeletedNote(0, note.uuid, false))
     }
 
     suspend fun deleteNotes(notes: List<Note>) = withContext(NonCancellable) {
         notesDao.deleteAll(notes)
-        deletedNotesDao.insertAll(notes.map { DeletedNote(0, it.uuid) })
+        deletedNotesDao.insertAll(notes.map { DeletedNote(0, it.uuid, false) })
     }
 
     suspend fun getById(id: Long) = notesDao.getById(id)
@@ -100,8 +100,8 @@ open class NotesRepository @Inject constructor(
      */
     open suspend fun syncNotes(receive: Boolean) {
         // Get local sync data.
-        val localChanged = notesDao.getChanged()
-        val localDeleted = deletedNotesDao.getAllUuids()
+        val localChanged = notesDao.getNotSynced()
+        val localDeleted = deletedNotesDao.getNotSyncedUuids()
 
         if (!receive && localChanged.isEmpty() && localDeleted.isEmpty()) {
             // Don't receive remote remotes and no local changes, so no sync to do.
@@ -113,13 +113,14 @@ open class NotesRepository @Inject constructor(
         val remoteData = notesService.syncNotes(localData)
 
         // Sync was successful, update "changed" flag and remove "deleted" notes from database.
-        notesDao.setChangedFlag(false)
+        notesDao.setSyncedFlag(true)
         deletedNotesDao.clear()
 
         // Update local last sync time
         lastSyncTime = remoteData.lastSync.time
 
-        // Update local notes
+        // Update local notes.
+        // Server doesn't return the 'synced' property, but it defaults to true.
         val remotedChanged = remoteData.changedNotes.map { note ->
             val id = notesDao.getIdByUuid(note.uuid)
             if (id == null) {
@@ -132,8 +133,16 @@ open class NotesRepository @Inject constructor(
         }
         notesDao.insertAll(remotedChanged)
 
-        // Delete local notes
-        notesDao.deleteByUuid(remoteData.deletedUuids)
+        // Mark deleted UUIDs as synced.
+        notesDao.setSyncedFlag(true)
+    }
+
+    /**
+     * Set all notes and all deleted UUIDs as not synced.
+     */
+    suspend fun setAllNotSynced() {
+        notesDao.setSyncedFlag(false)
+        deletedNotesDao.setSyncedFlag(false)
     }
 
     suspend fun getJsonData(): String {

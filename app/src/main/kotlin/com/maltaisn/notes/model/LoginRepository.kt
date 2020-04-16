@@ -17,7 +17,6 @@
 
 package com.maltaisn.notes.model
 
-import android.content.SharedPreferences
 import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -28,9 +27,7 @@ import javax.inject.Singleton
 
 @Singleton
 open class LoginRepository @Inject constructor(
-        private val fbAuth: FirebaseAuth,
-        private val prefs: SharedPreferences,
-        private val notesDao: NotesDao) {
+        private val fbAuth: FirebaseAuth) {
 
     val currentUser: FirebaseUser?
         get() = fbAuth.currentUser
@@ -38,6 +35,8 @@ open class LoginRepository @Inject constructor(
     open val isUserSignedIn: Boolean
         get() = currentUser != null
 
+    open val isUserEmailVerified: Boolean
+        get() = currentUser?.isEmailVerified == true
 
     fun addAuthStateListener(onAuth: () -> Unit) {
         fbAuth.addAuthStateListener { onAuth() }

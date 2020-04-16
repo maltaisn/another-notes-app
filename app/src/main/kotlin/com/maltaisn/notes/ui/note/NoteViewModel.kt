@@ -124,7 +124,7 @@ abstract class NoteViewModel(
                     title = Note.getCopiedNoteTitle(note.title, untitledName, copySuffix),
                     addedDate = date,
                     lastModifiedDate = date,
-                    changed = true)
+                    synced = false)
             notesRepository.insertNote(copy)
             clearSelection()
         }
@@ -178,7 +178,7 @@ abstract class NoteViewModel(
             val newNotes = oldNotes.map { note ->
                 note.copy(status = newStatus,
                         lastModifiedDate = date,
-                        changed = true)
+                        synced = false)
             }
             notesRepository.updateNotes(newNotes)
 

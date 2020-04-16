@@ -88,16 +88,16 @@ interface NotesDao {
     /**
      * Get all notes with a changed flag set to `true`. Used for syncing.
      */
-    @Query("SELECT * FROM notes WHERE changed == 1")
-    suspend fun getChanged(): List<Note>
+    @Query("SELECT * FROM notes WHERE synced == 0")
+    suspend fun getNotSynced(): List<Note>
 
     /**
-     * Reset the changed flag of all notes to [changed]. Used after syncing.
+     * Reset the changed flag of all notes to [synced]. Used after syncing.
      * This is also used when user signs out of its account to make sure sync will work
      * if a different account is used afterwards.
      */
-    @Query("UPDATE notes SET changed = :changed")
-    suspend fun setChangedFlag(changed: Boolean)
+    @Query("UPDATE notes SET synced = :synced")
+    suspend fun setSyncedFlag(synced: Boolean)
 
     /**
      * Search active and archived notes for a [query] using full-text search,

@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "da356ab54e418b76c6c579a347afb023",
+    "identityHash": "8e34ac54668d96c2e2b215981f678246",
     "entities": [
       {
         "tableName": "notes",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `uuid` TEXT NOT NULL, `type` INTEGER NOT NULL, `title` TEXT NOT NULL, `content` TEXT NOT NULL, `metadata` TEXT NOT NULL, `added_date` TEXT NOT NULL, `modified_date` TEXT NOT NULL, `status` INTEGER NOT NULL, `changed` INTEGER NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `uuid` TEXT NOT NULL, `type` INTEGER NOT NULL, `title` TEXT NOT NULL, `content` TEXT NOT NULL, `metadata` TEXT NOT NULL, `added_date` TEXT NOT NULL, `modified_date` TEXT NOT NULL, `status` INTEGER NOT NULL, `synced` INTEGER NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
@@ -63,8 +63,8 @@
             "notNull": true
           },
           {
-            "fieldPath": "changed",
-            "columnName": "changed",
+            "fieldPath": "synced",
+            "columnName": "synced",
             "affinity": "INTEGER",
             "notNull": true
           }
@@ -138,7 +138,7 @@
       },
       {
         "tableName": "deleted_notes",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `uuid` TEXT NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `uuid` TEXT NOT NULL, `synced` INTEGER NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
@@ -150,6 +150,12 @@
             "fieldPath": "uuid",
             "columnName": "uuid",
             "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "synced",
+            "columnName": "synced",
+            "affinity": "INTEGER",
             "notNull": true
           }
         ],
@@ -166,7 +172,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'da356ab54e418b76c6c579a347afb023')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '8e34ac54668d96c2e2b215981f678246')"
     ]
   }
 }

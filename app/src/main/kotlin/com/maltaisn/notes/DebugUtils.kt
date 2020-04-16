@@ -57,7 +57,7 @@ object DebugUtils {
         val added = getRandomDate()
         val modified = getRandomDate(added)
 
-        return Note(0, uuid, type, title, content, metadata, added, modified, status, true)
+        return Note(0, uuid, type, title, content, metadata, added, modified, status, false)
     }
 
     private fun getRandomString(size: IntRange): String {

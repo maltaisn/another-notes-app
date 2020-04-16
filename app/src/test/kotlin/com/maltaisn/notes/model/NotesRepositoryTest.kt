@@ -56,7 +56,7 @@ class NotesRepositoryTest {
         val note = testNote()
         notesRepo.deleteNote(note)
         verify(notesDao).delete(note)
-        verify(deletedNotesDao).insert(DeletedNote(0, note.uuid))
+        verify(deletedNotesDao).insert(DeletedNote(0, note.uuid, false))
     }
 
     @Test
@@ -64,9 +64,9 @@ class NotesRepositoryTest {
         // Local changes: 0 was changed, 1 is unchanged, 2 was deleted.
         // Remote changes: 0 was deleted, 1 was updated.
 
-        val note0 = testNote(uuid = "0", changed = true)
+        val note0 = testNote(uuid = "0", synced = false)
         whenever(deletedNotesDao.getAllUuids()) doReturn listOf("2")
-        whenever(notesDao.getChanged()) doReturn listOf(note0)
+        whenever(notesDao.getNotSynced()) doReturn listOf(note0)
 
         val newSyncDate = Date()
         val newNote1 = testNote(uuid = "1")
@@ -83,7 +83,7 @@ class NotesRepositoryTest {
         verify(notesDao).deleteByUuid(listOf("0"))
 
         verify(prefsEditor).putLong(PreferenceHelper.LAST_SYNC_TIME, newSyncDate.time)
-        verify(notesDao).setChangedFlag()
+        verify(notesDao).setSyncedFlag(true)
         verify(deletedNotesDao).clear()
     }
 

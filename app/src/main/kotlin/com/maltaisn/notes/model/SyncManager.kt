@@ -56,7 +56,7 @@ class SyncManager @Inject constructor(
                           receive: Boolean = true,
                           onError: (IOException) -> Unit = {}) {
         if (loginRepository.isUserSignedIn &&
-                loginRepository.currentUser?.isEmailVerified == true &&
+                loginRepository.isUserEmailVerified &&
                 canSyncOverCurrentNetwork) {
             val shouldSync = if (delay.isPositive()) {
                 // Check if last sync time is within required delay.

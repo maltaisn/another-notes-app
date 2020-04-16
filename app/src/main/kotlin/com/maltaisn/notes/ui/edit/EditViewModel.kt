@@ -91,7 +91,7 @@ class EditViewModel @Inject constructor(
                 // Note doesn't exist, create new blank text note.
                 val date = Date()
                 note = BLANK_NOTE.copy(uuid = Note.generateNoteUuid(),
-                        addedDate = date, lastModifiedDate = date, changed = true)
+                        addedDate = date, lastModifiedDate = date, synced = false)
                 val id = notesRepository.insertNote(note)
                 note = note.copy(id = id)
             }
@@ -122,7 +122,7 @@ class EditViewModel @Inject constructor(
             }
         }
         note = Note(note.id, note.uuid, note.type, title, content, metadata,
-                note.addedDate, note.lastModifiedDate, note.status, true)
+                note.addedDate, note.lastModifiedDate, note.status, false)
 
         // Update note
         viewModelScope.launch {
@@ -181,7 +181,7 @@ class EditViewModel @Inject constructor(
                         title = newTitle,
                         addedDate = date,
                         lastModifiedDate = date,
-                        changed = true)
+                        synced = false)
                 val id = notesRepository.insertNote(copy)
                 this@EditViewModel.note = copy.copy(id = id)
             }
@@ -221,7 +221,7 @@ class EditViewModel @Inject constructor(
             val oldStatus = note.status
             note = note.copy(status = newStatus,
                     lastModifiedDate = Date(),
-                    changed = true)
+                    synced = false)
 
             // Show status change message.
             val statusChange = StatusChange(listOf(oldNote), oldStatus, newStatus)
@@ -339,7 +339,7 @@ class EditViewModel @Inject constructor(
 
     companion object {
         private val BLANK_NOTE = Note(Note.NO_ID, "", NoteType.TEXT, "", "",
-                BlankNoteMetadata, Date(0), Date(0), NoteStatus.ACTIVE, false)
+                BlankNoteMetadata, Date(0), Date(0), NoteStatus.ACTIVE, true)
     }
 
 }

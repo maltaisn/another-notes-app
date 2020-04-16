@@ -34,6 +34,9 @@ class MainViewModel @Inject constructor(
         private val syncManager: SyncManager
 ) : ViewModel() {
 
+    private var signedIn = false
+
+
     init {
         // Job to periodically remove old notes in trash
         viewModelScope.launch {
@@ -41,6 +44,19 @@ class MainViewModel @Inject constructor(
                 notesRepository.deleteOldNotesInTrash()
                 delay(TRASH_AUTO_DELETE_INTERVAL.toLongMilliseconds())
             }
+        }
+
+        loginRepository.addAuthStateListener {
+            if (signedIn && loginRepository.currentUser == null) {
+                viewModelScope.launch {
+                    // User signed out, either manually or by deleting the account.
+                    // All entities in database have their 'synced' property set to true, so if user
+                    // signs in from another account, no sync will happen! So synced must be set
+                    // to false for all entities.
+                    notesRepository.setAllNotSynced()
+                }
+            }
+            signedIn = loginRepository.currentUser != null
         }
     }
 

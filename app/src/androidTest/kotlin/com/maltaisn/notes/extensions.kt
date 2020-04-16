@@ -30,5 +30,5 @@ fun atestNote(
         added: Date = Date(),
         modified: Date = Date(),
         status: NoteStatus = NoteStatus.ACTIVE,
-        changed: Boolean = false
-) = Note(id, uuid, type, title, content, metadata, added, modified, status, changed)
+        synced: Boolean = true
+) = Note(id, uuid, type, title, content, metadata, added, modified, status, synced)
