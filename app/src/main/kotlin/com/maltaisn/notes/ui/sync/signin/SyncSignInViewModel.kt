@@ -56,6 +56,7 @@ class SyncSignInViewModel @Inject constructor(
     private var email: CharSequence = ""
     private var password: CharSequence = ""
 
+
     fun goToPage(page: SyncPage) {
         _changePageEvent.send(page)
     }
@@ -113,21 +114,10 @@ class SyncSignInViewModel @Inject constructor(
                         R.string.sync_sign_in_failed_attempts_message
                     }
                     else -> {
-                        // No internet connection or other error.
-                        R.string.sync_sign_in_failed_unknown_message
+                        // No internet connection or unknown error.
+                        R.string.sync_failed_message
                     }
                 })
-            }
-        }
-    }
-
-    fun resetPassword(email: String) {
-        viewModelScope.launch {
-            try {
-                loginRepository.sendPasswordResetEmail(email)
-                _messageEvent.send(R.string.sync_password_reset_success_message)
-            } catch (e: FirebaseException) {
-                _messageEvent.send(R.string.sync_password_reset_failed_message)
             }
         }
     }

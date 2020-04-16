@@ -29,7 +29,7 @@ import androidx.lifecycle.Observer
 import com.google.android.material.snackbar.Snackbar
 import com.maltaisn.notes.R
 import com.maltaisn.notes.ui.EventObserver
-import com.maltaisn.notes.ui.ViewModelFragment
+import com.maltaisn.notes.ui.common.ViewModelFragment
 import com.maltaisn.notes.ui.sync.SyncFragment
 import com.maltaisn.notes.ui.sync.SyncPage
 

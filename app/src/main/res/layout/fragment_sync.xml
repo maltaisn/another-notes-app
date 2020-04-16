@@ -36,9 +36,10 @@
             android:layout_width="match_parent"
             android:layout_height="?actionBarSize"
             android:contentDescription="@string/content_descrp_back"
+            app:menu="@menu/sync_toolbar"
             app:navigationIcon="@drawable/ic_arrow_left"
-            app:titleTextColor="?colorControlNormal"
             app:title="@string/action_sync"
+            app:titleTextColor="?colorControlNormal"
             />
 
     </com.google.android.material.appbar.AppBarLayout>

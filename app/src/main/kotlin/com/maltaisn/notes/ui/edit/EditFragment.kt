@@ -39,7 +39,7 @@ import com.maltaisn.notes.model.entity.NoteStatus
 import com.maltaisn.notes.model.entity.NoteType
 import com.maltaisn.notes.ui.EventObserver
 import com.maltaisn.notes.ui.SharedViewModel
-import com.maltaisn.notes.ui.ViewModelFragment
+import com.maltaisn.notes.ui.common.ViewModelFragment
 import com.maltaisn.notes.ui.edit.adapter.EditAdapter
 
 

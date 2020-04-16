@@ -18,22 +18,28 @@ package com.maltaisn.notes.ui.sync
 
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentStatePagerAdapter
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.viewpager.widget.ViewPager
 import com.maltaisn.notes.R
 import com.maltaisn.notes.hideKeyboard
-import com.maltaisn.notes.ui.ViewModelFragment
+import com.maltaisn.notes.ui.common.ViewModelFragment
 import com.maltaisn.notes.ui.sync.main.SyncMainFragment
+import com.maltaisn.notes.ui.sync.passwordchange.PasswordChangeDialog
 import com.maltaisn.notes.ui.sync.signin.SyncSignInFragment
 import com.maltaisn.notes.ui.sync.signup.SyncSignUpFragment
 
 
-class SyncFragment : ViewModelFragment() {
+class SyncFragment : ViewModelFragment(), Toolbar.OnMenuItemClickListener {
+
+    private val viewModel: SyncViewModel by viewModels { viewModelFactory }
 
     private lateinit var viewPager: ViewPager
 
@@ -49,6 +55,7 @@ class SyncFragment : ViewModelFragment() {
 
         // Toolbar
         val toolbar: Toolbar = view.findViewById(R.id.toolbar)
+        toolbar.setOnMenuItemClickListener(this)
         toolbar.setNavigationIcon(R.drawable.ic_arrow_left)
         toolbar.setNavigationOnClickListener {
             view.hideKeyboard()
@@ -58,6 +65,24 @@ class SyncFragment : ViewModelFragment() {
         // View pager
         viewPager = view.findViewById(R.id.view_pager_sync)
         viewPager.adapter = SyncPageAdapter(childFragmentManager)
+
+        // Observers
+        viewModel.currentUser.observe(viewLifecycleOwner, Observer { user ->
+            val menu = toolbar.menu
+            val signedIn = user != null
+            menu.findItem(R.id.item_password_change).isVisible = signedIn
+            menu.findItem(R.id.item_account_delete).isVisible = signedIn
+        })
+    }
+
+    override fun onMenuItemClick(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.item_password_change -> PasswordChangeDialog()
+                    .show(childFragmentManager, PASSWORD_CHANGE_DIALOG_TAG)
+            R.id.item_account_delete -> Unit
+            else -> return false
+        }
+        return true
     }
 
     fun goToPage(page: SyncPage) {
@@ -75,6 +100,10 @@ class SyncFragment : ViewModelFragment() {
             SyncPage.SIGN_UP.pos -> SyncSignUpFragment()
             else -> error("Invalid position")
         }
+    }
+
+    companion object {
+        private const val PASSWORD_CHANGE_DIALOG_TAG = "password_change_dialog"
     }
 
 }

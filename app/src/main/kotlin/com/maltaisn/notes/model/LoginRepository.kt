@@ -56,6 +56,16 @@ open class LoginRepository @Inject constructor(
         fbAuth.sendPasswordResetEmail(email).await()
     }
 
+    suspend fun changePassword(currentPassword: String, newPassword: String) {
+        reauthenticateUser(currentPassword)
+        currentUser?.updatePassword(newPassword)
+    }
+
+    suspend fun deleteUser(password: String) {
+        reauthenticateUser(password)
+        currentUser?.delete()?.await()
+    }
+
     suspend fun reloadUser() {
         currentUser?.reload()?.await()
     }
@@ -65,13 +75,15 @@ open class LoginRepository @Inject constructor(
         user.reauthenticate(EmailAuthProvider.getCredential(user.email!!, password)).await()
     }
 
-    suspend fun deleteUser(password: String) {
-        reauthenticateUser(password)
-        currentUser?.delete()?.await()
-    }
-
     fun signOut() {
         fbAuth.signOut()
+    }
+
+    companion object {
+        const val PASSWORD_MIN_LENGTH = 6
+        const val PASSWORD_MAX_LENGTH = 32
+
+        val PASSWORD_RANGE = PASSWORD_MIN_LENGTH..PASSWORD_MAX_LENGTH
     }
 
 }

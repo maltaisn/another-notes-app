@@ -73,7 +73,7 @@ class SyncMainViewModel @Inject constructor(
                 _messageEvent.send(R.string.sync_verification_success_message)
             } catch (e: FirebaseException) {
                 // Network error, too many requests, or other unknown error.
-                _messageEvent.send(R.string.sync_verification_failed_message)
+                _messageEvent.send(R.string.sync_failed_message)
             }
         }
     }

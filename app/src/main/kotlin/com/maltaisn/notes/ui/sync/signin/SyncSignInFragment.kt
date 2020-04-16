@@ -30,13 +30,14 @@ import com.google.android.material.textfield.TextInputLayout
 import com.maltaisn.notes.R
 import com.maltaisn.notes.hideKeyboard
 import com.maltaisn.notes.ui.EventObserver
-import com.maltaisn.notes.ui.ViewModelFragment
+import com.maltaisn.notes.ui.common.ViewModelFragment
 import com.maltaisn.notes.ui.sync.SyncFragment
 import com.maltaisn.notes.ui.sync.SyncPage
+import com.maltaisn.notes.ui.sync.passwordreset.PasswordResetDialog
 import com.maltaisn.notes.ui.sync.signin.SyncSignInViewModel.FieldError
 
 
-class SyncSignInFragment : ViewModelFragment(), PasswordResetDialog.Callback {
+class SyncSignInFragment : ViewModelFragment() {
 
     private val viewModel: SyncSignInViewModel by viewModels { viewModelFactory }
 
@@ -48,13 +49,13 @@ class SyncSignInFragment : ViewModelFragment(), PasswordResetDialog.Callback {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val emailLayout: TextInputLayout = view.findViewById(R.id.edt_layout_sign_in_email)
-        val passwordLayout: TextInputLayout = view.findViewById(R.id.edt_layout_sign_in_password)
-        val emailEdt: EditText = view.findViewById(R.id.edt_sign_in_email)
-        val passwordEdt: EditText = view.findViewById(R.id.edt_sign_in_password)
+        val emailLayout: TextInputLayout = view.findViewById(R.id.edt_layout_email)
+        val passwordLayout: TextInputLayout = view.findViewById(R.id.edt_layout_password)
+        val emailEdt: EditText = view.findViewById(R.id.edt_email)
+        val passwordEdt: EditText = view.findViewById(R.id.edt_password)
         val signUpBtn: Button = view.findViewById(R.id.btn_sign_up)
         val signInBtn: Button = view.findViewById(R.id.btn_sign_in)
-        val forgotPasswordBtn: Button = view.findViewById(R.id.btn_forgot_password)
+        val forgotPasswordBtn: Button = view.findViewById(R.id.btn_password_reset)
 
         signUpBtn.setOnClickListener {
             viewModel.goToPage(SyncPage.SIGN_UP)
@@ -107,10 +108,6 @@ class SyncSignInFragment : ViewModelFragment(), PasswordResetDialog.Callback {
             emailEdt.clearFocus()
             passwordEdt.clearFocus()
         })
-    }
-
-    override fun onPasswordResetButtonClicked(email: String) {
-        viewModel.resetPassword(email)
     }
 
     companion object {

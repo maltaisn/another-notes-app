@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.maltaisn.notes.ui.sync.signup
+package com.maltaisn.notes.ui.sync.passwordchange
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -22,22 +22,17 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.FirebaseException
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
-import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.maltaisn.notes.R
 import com.maltaisn.notes.model.LoginRepository
 import com.maltaisn.notes.ui.Event
 import com.maltaisn.notes.ui.send
-import com.maltaisn.notes.ui.sync.SyncPage
+import com.maltaisn.notes.ui.sync.passwordchange.PasswordChangeViewModel.FieldError.Location
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
-class SyncSignUpViewModel @Inject constructor(
+class PasswordChangeViewModel @Inject constructor(
         private val loginRepository: LoginRepository) : ViewModel() {
-
-    private val _changePageEvent = MutableLiveData<Event<SyncPage>>()
-    val changePageEvent: LiveData<Event<SyncPage>>
-        get() = _changePageEvent
 
     private val _messageEvent = MutableLiveData<Event<Int>>()
     val messageEvent: LiveData<Event<Int>>
@@ -51,32 +46,30 @@ class SyncSignUpViewModel @Inject constructor(
     val passwordConfirmEnabled: LiveData<Boolean>
         get() = _passwordConfirmEnabled
 
-    private val _clearFieldsEvent = MutableLiveData<Event<Unit>>()
-    val clearFieldsEvent: LiveData<Event<Unit>>
-        get() = _clearFieldsEvent
+    private val _dismissEvent = MutableLiveData<Event<Unit>>()
+    val dismissEvent: LiveData<Event<Unit>>
+        get() = _dismissEvent
 
-    private var email = ""
-    private var password = ""
+
+    private var passwordCurrent = ""
+    private var passwordNew = ""
     private var passwordConfirm = ""
 
 
-    fun goToPage(page: SyncPage) {
-        _changePageEvent.send(page)
-    }
-
-    fun setEnteredEmail(email: String) {
-        this.email = email
-        if (fieldError.value === noEmailError && email.isNotBlank()) {
+    fun setEnteredCurrentPassword(password: String) {
+        passwordCurrent = password
+        if (password.isNotEmpty() && (fieldError.value === noCurrentPasswordError
+                || fieldError.value === wrongCurrentPasswordError)) {
             // User entered email, clear error.
             _fieldError.value = null
         }
     }
 
-    fun setEnteredPassword(password: String) {
-        this.password = password
+    fun setEnteredNewPassword(password: String) {
+        passwordNew = password
         if (fieldError.value === passwordLengthError
                 && password.length in LoginRepository.PASSWORD_RANGE
-                || fieldError.value === noPasswordError && password.isNotEmpty()) {
+                || fieldError.value === noNewPasswordError && password.isNotEmpty()) {
             // User entered password or password of valid length, clear error.
             _fieldError.value = null
         }
@@ -90,57 +83,49 @@ class SyncSignUpViewModel @Inject constructor(
         _passwordConfirmEnabled.value = enabled
     }
 
-    fun signUp() {
-        if (email.isBlank()) {
-            // Missing email
-            _fieldError.value = noEmailError
+    fun changePassword() {
+        if (passwordCurrent.isBlank()) {
+            // Missing current password
+            _fieldError.value = noCurrentPasswordError
             return
         }
-        if (password.isEmpty()) {
-            // Missing password
-            _fieldError.value = noPasswordError
+        if (passwordNew.isEmpty()) {
+            // Missing new password
+            _fieldError.value = noNewPasswordError
             return
         }
 
-        if (password.length !in LoginRepository.PASSWORD_RANGE) {
+        if (passwordNew.length !in LoginRepository.PASSWORD_RANGE) {
             // Password has invalid length.
             _fieldError.value = passwordLengthError
             return
         }
 
-        if (password != passwordConfirm && passwordConfirmEnabled.value == true) {
+        if (passwordNew != passwordConfirm && passwordConfirmEnabled.value == true) {
             // Passwords don't match.
-            _fieldError.value = FieldError(FieldError.Location.PASSWORD_CONFIRM,
+            _fieldError.value = FieldError(Location.PASSWORD_CONFIRM,
                     R.string.sync_password_mismatch_error)
             return
         }
 
         viewModelScope.launch {
             try {
-                // Create new account and send verification email.
-                loginRepository.signUp(email.toString(), password.toString())
-                loginRepository.sendVerificationEmail()
+                // Change password
+                loginRepository.changePassword(passwordCurrent, passwordNew)
 
-                _messageEvent.send(R.string.sync_sign_up_success_message)
-                _fieldError.value = null
-                _clearFieldsEvent.send()
-
-                goToPage(SyncPage.MAIN)
+                _messageEvent.send(R.string.sync_password_change_success_message)
+                _dismissEvent.send()
 
             } catch (e: FirebaseException) {
                 when (e) {
                     is FirebaseAuthInvalidCredentialsException -> {
-                        // Invalid email address.
-                        _fieldError.value = FieldError(FieldError.Location.EMAIL,
-                                R.string.sync_email_invalid_error)
-                    }
-                    is FirebaseAuthUserCollisionException -> {
-                        // Email is already in use.
-                        _messageEvent.send(R.string.sync_sign_up_failed_email_used_message)
+                        // Invalid current password
+                        _fieldError.value = wrongCurrentPasswordError
                     }
                     else -> {
-                        // No internet connection, too many requests, or unknown error.
+                        // No internet connection, too many requests, invalid user, or unknown error.
                         _messageEvent.send(R.string.sync_failed_message)
+                        _dismissEvent.send()
                     }
                 }
             }
@@ -149,21 +134,24 @@ class SyncSignUpViewModel @Inject constructor(
 
     class FieldError(val location: Location, val messageId: Int, vararg val args: Any) {
         enum class Location {
-            EMAIL,
-            PASSWORD,
+            PASSWORD_CURRENT,
+            PASSWORD_NEW,
             PASSWORD_CONFIRM
         }
     }
 
     companion object {
-        private val passwordLengthError = FieldError(FieldError.Location.PASSWORD,
+        private val wrongCurrentPasswordError = FieldError(Location.PASSWORD_CURRENT,
+                R.string.sync_password_wrong_error)
+
+        private val noCurrentPasswordError = FieldError(Location.PASSWORD_CURRENT,
+                R.string.sync_field_missing_error)
+
+        private val passwordLengthError = FieldError(Location.PASSWORD_NEW,
                 R.string.sync_password_length_error,
                 LoginRepository.PASSWORD_MIN_LENGTH, LoginRepository.PASSWORD_MAX_LENGTH)
 
-        private val noEmailError = FieldError(FieldError.Location.EMAIL,
-                R.string.sync_field_missing_error)
-
-        private val noPasswordError = FieldError(FieldError.Location.PASSWORD,
+        private val noNewPasswordError = FieldError(Location.PASSWORD_NEW,
                 R.string.sync_field_missing_error)
     }
 

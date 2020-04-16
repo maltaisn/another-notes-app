@@ -18,7 +18,8 @@ package com.maltaisn.notes.di
 
 import android.content.Context
 import com.maltaisn.notes.App
-import com.maltaisn.notes.ui.ViewModelFragment
+import com.maltaisn.notes.ui.common.ViewModelDialog
+import com.maltaisn.notes.ui.common.ViewModelFragment
 import com.maltaisn.notes.ui.main.MainActivity
 import com.maltaisn.notes.ui.settings.SettingsFragment
 import dagger.BindsInstance
@@ -38,6 +39,7 @@ interface AppComponent {
     fun inject(app: App)
     fun inject(activity: MainActivity)
     fun inject(fragment: ViewModelFragment)
+    fun inject(fragment: ViewModelDialog)
     fun inject(fragment: SettingsFragment)
 
     @Component.Factory

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.maltaisn.notes.ui.sync.signin
+package com.maltaisn.notes.ui.sync.passwordreset
 
 import android.annotation.SuppressLint
 import android.app.Dialog
@@ -25,13 +25,21 @@ import android.widget.EditText
 import androidx.appcompat.app.AlertDialog
 import androidx.core.os.bundleOf
 import androidx.core.widget.doAfterTextChanged
-import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.textfield.TextInputLayout
 import com.maltaisn.notes.R
 import com.maltaisn.notes.hideKeyboard
+import com.maltaisn.notes.ui.EventObserver
+import com.maltaisn.notes.ui.common.ViewModelDialog
 
 
-class PasswordResetDialog : DialogFragment() {
+class PasswordResetDialog : ViewModelDialog() {
+
+    private val viewModel: PasswordResetViewModel by viewModels { viewModelFactory }
+
 
     @SuppressLint("InflateParams")
     override fun onCreateDialog(state: Bundle?): Dialog {
@@ -39,7 +47,13 @@ class PasswordResetDialog : DialogFragment() {
 
         val view = LayoutInflater.from(context).inflate(
                 R.layout.dialog_password_reset, null, false)
+
+        val emailLayout: TextInputLayout = view.findViewById(R.id.edt_layout_reset_password)
         val emailEdt: EditText = view.findViewById(R.id.edt_password_reset)
+
+        emailEdt.doAfterTextChanged {
+            viewModel.onEmailEntered(it?.toString() ?: "")
+        }
 
         // Set initial email
         if (state == null) {
@@ -54,30 +68,43 @@ class PasswordResetDialog : DialogFragment() {
                 .setTitle(R.string.sync_password_reset)
                 .setMessage(R.string.sync_password_reset_message)
                 .setView(view)
-                .setPositiveButton(R.string.action_reset) { _, _ ->
-                    view.hideKeyboard()
-                    (parentFragment as? Callback)?.onPasswordResetButtonClicked(emailEdt.text.toString())
-                }
+                .setPositiveButton(R.string.action_password_reset_short, null)
                 .setNegativeButton(R.string.action_cancel, null)
                 .create()
 
         dialog.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE)
+        emailEdt.requestFocus()
 
         dialog.setOnShowListener {
-            // Add listener to disable "Reset" button when email is blank.
             val btn = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
-            btn.isEnabled = false
-            emailEdt.doAfterTextChanged {
-                btn.isEnabled = it?.isNotBlank() ?: false
+            btn.setOnClickListener {
+                view.hideKeyboard()
+                viewModel.resetPassword()
             }
-            emailEdt.requestFocus()
+
+            // Observers
+            viewModel.resetBtnEnabled.observe(this, Observer { enabled ->
+                btn.isEnabled = enabled
+            })
+
+            viewModel.messageEvent.observe(this, EventObserver { messageId ->
+                Snackbar.make(requireParentFragment().requireView(), messageId, Snackbar.LENGTH_SHORT).show()
+            })
+
+            viewModel.emailError.observe(this, Observer { errorId ->
+                if (errorId != null) {
+                    emailLayout.error = getString(errorId)
+                } else {
+                    emailLayout.isErrorEnabled = false
+                }
+            })
+
+            viewModel.dismissEvent.observe(this, EventObserver {
+                dismiss()
+            })
         }
 
         return dialog
-    }
-
-    interface Callback {
-        fun onPasswordResetButtonClicked(email: String)
     }
 
     companion object {

@@ -14,22 +14,27 @@
  * limitations under the License.
  */
 
-package com.maltaisn.notes.ui
+package com.maltaisn.notes.ui.sync
 
-import android.os.Bundle
-import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
-import com.maltaisn.notes.App
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import com.google.firebase.auth.FirebaseUser
+import com.maltaisn.notes.model.LoginRepository
 import javax.inject.Inject
 
 
-abstract class ViewModelFragment : Fragment() {
+class SyncViewModel @Inject constructor(
+        private val loginRepository: LoginRepository) : ViewModel() {
 
-    @Inject lateinit var viewModelFactory: ViewModelProvider.Factory
+    private val _currentUser = MutableLiveData<FirebaseUser?>()
+    val currentUser: LiveData<FirebaseUser?>
+        get() = _currentUser
 
-    override fun onCreate(state: Bundle?) {
-        super.onCreate(state)
-        (requireContext().applicationContext as App).appComponent.inject(this)
+    init {
+        loginRepository.addAuthStateListener {
+            _currentUser.value = loginRepository.currentUser
+        }
     }
 
 }

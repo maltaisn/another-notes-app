@@ -31,8 +31,9 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputLayout
 import com.maltaisn.notes.R
 import com.maltaisn.notes.hideKeyboard
+import com.maltaisn.notes.setCustomEndIconOnClickListener
 import com.maltaisn.notes.ui.EventObserver
-import com.maltaisn.notes.ui.ViewModelFragment
+import com.maltaisn.notes.ui.common.ViewModelFragment
 import com.maltaisn.notes.ui.sync.SyncFragment
 import com.maltaisn.notes.ui.sync.SyncPage
 import com.maltaisn.notes.ui.sync.signup.SyncSignUpViewModel.FieldError
@@ -50,12 +51,12 @@ class SyncSignUpFragment : ViewModelFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val emailLayout: TextInputLayout = view.findViewById(R.id.edt_layout_sign_in_email)
-        val passwordLayout: TextInputLayout = view.findViewById(R.id.edt_layout_sign_in_password)
-        val passwordConfirmLayout: TextInputLayout = view.findViewById(R.id.txv_layout_sign_in_password_confirm)
-        val emailEdt: EditText = view.findViewById(R.id.edt_sign_in_email)
-        val passwordEdt: EditText = view.findViewById(R.id.edt_sign_in_password)
-        val passwordConfirmEdt: EditText = view.findViewById(R.id.txv_sign_in_password_confirm)
+        val emailLayout: TextInputLayout = view.findViewById(R.id.edt_layout_email)
+        val passwordLayout: TextInputLayout = view.findViewById(R.id.edt_layout_password)
+        val passwordConfirmLayout: TextInputLayout = view.findViewById(R.id.edt_layout_password_confirm)
+        val emailEdt: EditText = view.findViewById(R.id.edt_email)
+        val passwordEdt: EditText = view.findViewById(R.id.edt_password)
+        val passwordConfirmEdt: EditText = view.findViewById(R.id.edt_password_confirm)
         val signInBtn: Button = view.findViewById(R.id.btn_sign_in)
         val signUpBtn: Button = view.findViewById(R.id.btn_sign_up)
 
@@ -67,15 +68,9 @@ class SyncSignUpFragment : ViewModelFragment() {
             viewModel.signUp()
         }
 
-        passwordLayout.setEndIconOnClickListener {
-            // Store the current cursor position
-            val oldSelection = passwordEdt.selectionEnd
-            val hidePassword = passwordEdt.transformationMethod !is PasswordTransformationMethod
-            passwordEdt.transformationMethod = PasswordTransformationMethod.getInstance().takeIf { hidePassword }
-            if (oldSelection >= 0) {
-                passwordEdt.setSelection(oldSelection)
-            }
-            viewModel.setPasswordConfirmEnabled(hidePassword)
+        passwordLayout.setCustomEndIconOnClickListener {
+            val passwordHidden = passwordEdt.transformationMethod is PasswordTransformationMethod
+            viewModel.setPasswordConfirmEnabled(passwordHidden)
         }
 
         emailEdt.doAfterTextChanged {

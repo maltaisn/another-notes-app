@@ -26,7 +26,10 @@ import com.maltaisn.notes.ui.home.HomeViewModel
 import com.maltaisn.notes.ui.main.MainViewModel
 import com.maltaisn.notes.ui.search.SearchViewModel
 import com.maltaisn.notes.ui.settings.SettingsViewModel
+import com.maltaisn.notes.ui.sync.SyncViewModel
 import com.maltaisn.notes.ui.sync.main.SyncMainViewModel
+import com.maltaisn.notes.ui.sync.passwordchange.PasswordChangeViewModel
+import com.maltaisn.notes.ui.sync.passwordreset.PasswordResetViewModel
 import com.maltaisn.notes.ui.sync.signin.SyncSignInViewModel
 import com.maltaisn.notes.ui.sync.signup.SyncSignUpViewModel
 import dagger.Binds
@@ -67,6 +70,11 @@ abstract class ViewModelModule {
 
     @Binds
     @IntoMap
+    @ViewModelKey(SyncViewModel::class)
+    abstract fun bindsSyncViewModel(viewModel: SyncViewModel): ViewModel
+
+    @Binds
+    @IntoMap
     @ViewModelKey(SyncMainViewModel::class)
     abstract fun bindsSyncMainViewModel(viewModel: SyncMainViewModel): ViewModel
 
@@ -79,6 +87,16 @@ abstract class ViewModelModule {
     @IntoMap
     @ViewModelKey(SyncSignUpViewModel::class)
     abstract fun bindsSyncSignUpViewModel(viewModel: SyncSignUpViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(PasswordResetViewModel::class)
+    abstract fun bindsPasswordResetViewModel(viewModel: PasswordResetViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(PasswordChangeViewModel::class)
+    abstract fun bindsPasswordChangeViewModel(viewModel: PasswordChangeViewModel): ViewModel
 
     @Binds
     @IntoMap

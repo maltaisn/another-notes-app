@@ -36,7 +36,7 @@
             >
 
             <TextView
-                android:id="@+id/txv_sync_message"
+                android:id="@+id/txv_sign_in"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="24dp"
@@ -50,7 +50,7 @@
                 />
 
             <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/edt_layout_sign_in_email"
+                android:id="@+id/edt_layout_email"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
@@ -58,11 +58,11 @@
                 android:layout_marginTop="24dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/txv_sync_message"
+                app:layout_constraintTop_toBottomOf="@id/txv_sign_in"
                 >
 
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/edt_sign_in_email"
+                    android:id="@+id/edt_email"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/sync_email"
@@ -72,7 +72,7 @@
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/edt_layout_sign_in_password"
+                android:id="@+id/edt_layout_password"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
@@ -81,11 +81,11 @@
                 app:endIconMode="password_toggle"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/edt_layout_sign_in_email"
+                app:layout_constraintTop_toBottomOf="@id/edt_layout_email"
                 >
 
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/edt_sign_in_password"
+                    android:id="@+id/edt_password"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/sync_password"
@@ -105,11 +105,11 @@
                 android:layout_marginStart="16dp"
                 android:minWidth="0dp"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/edt_layout_sign_in_password"
+                app:layout_constraintTop_toBottomOf="@id/edt_layout_password"
                 />
 
             <Button
-                android:id="@+id/btn_forgot_password"
+                android:id="@+id/btn_password_reset"
                 style="@style/Widget.MaterialComponents.Button.TextButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -119,7 +119,7 @@
                 android:layout_marginEnd="16dp"
                 android:minWidth="0dp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/edt_layout_sign_in_password"
+                app:layout_constraintTop_toBottomOf="@id/edt_layout_password"
                 />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
