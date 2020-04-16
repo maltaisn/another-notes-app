@@ -44,14 +44,14 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    fun onResume() {
+    fun onStart() {
         viewModelScope.launch {
             notesRepository.deleteOldNotesInTrash()
             syncManager.syncNotes(delay = PreferenceHelper.MIN_AUTO_SYNC_INTERVAL)
         }
     }
 
-    fun onPause() {
+    fun onStop() {
         viewModelScope.launch {
             syncManager.syncNotes(receive = false)
         }

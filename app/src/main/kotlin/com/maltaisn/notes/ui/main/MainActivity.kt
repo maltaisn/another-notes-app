@@ -65,14 +65,14 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-        viewModel.onResume()
+    override fun onStart() {
+        super.onStart()
+        viewModel.onStart()
     }
 
-    override fun onPause() {
-        super.onPause()
-        viewModel.onPause()
+    override fun onStop() {
+        super.onStop()
+        viewModel.onStop()
     }
 
 }

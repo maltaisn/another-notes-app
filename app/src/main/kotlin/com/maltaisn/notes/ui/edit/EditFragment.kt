@@ -169,8 +169,8 @@ class EditFragment : ViewModelFragment(), Toolbar.OnMenuItemClickListener {
         })
     }
 
-    override fun onPause() {
-        super.onPause()
+    override fun onStop() {
+        super.onStop()
         viewModel.save()
     }
 
