@@ -25,6 +25,7 @@ import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.maltaisn.notes.R
 import com.maltaisn.notes.model.LoginRepository
+import com.maltaisn.notes.model.SyncManager
 import com.maltaisn.notes.ui.Event
 import com.maltaisn.notes.ui.send
 import com.maltaisn.notes.ui.sync.SyncPage
@@ -33,7 +34,8 @@ import javax.inject.Inject
 
 
 class SyncSignUpViewModel @Inject constructor(
-        private val loginRepository: LoginRepository) : ViewModel() {
+        private val loginRepository: LoginRepository,
+        private val syncManager: SyncManager) : ViewModel() {
 
     private val _changePageEvent = MutableLiveData<Event<SyncPage>>()
     val changePageEvent: LiveData<Event<SyncPage>>
@@ -118,7 +120,7 @@ class SyncSignUpViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 // Create new account and send verification email.
-                loginRepository.signUp(email.toString(), password.toString())
+                loginRepository.signUp(email, password)
                 loginRepository.sendVerificationEmail()
 
                 _messageEvent.send(R.string.sync_sign_up_success_message)

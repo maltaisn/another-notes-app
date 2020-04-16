@@ -83,7 +83,7 @@ class NotesRepositoryTest {
         verify(notesDao).deleteByUuid(listOf("0"))
 
         verify(prefsEditor).putLong(PreferenceHelper.LAST_SYNC_TIME, newSyncDate.time)
-        verify(notesDao).resetChangedFlag()
+        verify(notesDao).setChangedFlag()
         verify(deletedNotesDao).clear()
     }
 

@@ -31,6 +31,7 @@ import androidx.viewpager2.widget.ViewPager2
 import com.maltaisn.notes.R
 import com.maltaisn.notes.hideKeyboard
 import com.maltaisn.notes.ui.common.ViewModelFragment
+import com.maltaisn.notes.ui.sync.accountdelete.AccountDeleteDialog
 import com.maltaisn.notes.ui.sync.main.SyncMainFragment
 import com.maltaisn.notes.ui.sync.passwordchange.PasswordChangeDialog
 import com.maltaisn.notes.ui.sync.signin.SyncSignInFragment
@@ -83,7 +84,8 @@ class SyncFragment : ViewModelFragment(), Toolbar.OnMenuItemClickListener {
         when (item.itemId) {
             R.id.item_password_change -> PasswordChangeDialog()
                     .show(childFragmentManager, PASSWORD_CHANGE_DIALOG_TAG)
-            R.id.item_account_delete -> Unit
+            R.id.item_account_delete -> AccountDeleteDialog()
+                    .show(childFragmentManager, ACCOUNT_DELETE_DIALOG_TAG)
             else -> return false
         }
         return true
@@ -107,6 +109,7 @@ class SyncFragment : ViewModelFragment(), Toolbar.OnMenuItemClickListener {
 
     companion object {
         private const val PASSWORD_CHANGE_DIALOG_TAG = "password_change_dialog"
+        private const val ACCOUNT_DELETE_DIALOG_TAG = "account_delete_dialog"
     }
 
 }

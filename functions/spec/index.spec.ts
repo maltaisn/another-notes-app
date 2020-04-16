@@ -22,6 +22,7 @@ import * as config from '../config.json'
 import * as testData from './test-data.json'
 import {Note} from '../src/types'
 import {base64DecodeNote, base64EncodeNote} from '../src/encoding'
+import {UserRecordMetadata} from 'firebase-functions/lib/providers/auth'
 
 chai.use(chaiAsPromised)
 chai.config.truncateThreshold = 0
@@ -228,6 +229,23 @@ describe('cloud functions', () => {
                 expect(note.content).to.be.equal(Buffer.from(testNote.content).toString('base64'))
                 expect(note.metadata).to.be.equal(Buffer.from(testNote.metadata).toString('base64'))
             })
+        })
+    })
+
+    describe('delete user data', () => {
+        it('should delete user data', async () => {
+            await notesDb.child('0').set(0)
+            await deletedNotesDb.child('1').set(1)
+            functions.deleteUserData.run({
+                uid: config.test.userUid,
+                emailVerified: true,
+                disabled: false,
+                metadata: new UserRecordMetadata("", ""),
+                providerData: [],
+                toJSON(): any { return null }
+            }, callableContext)
+            expect((await notesDb.child('0').once('value')).val()).to.be.null
+            expect((await deletedNotesDb.child('1').once('value')).val()).to.be.null
         })
     })
 

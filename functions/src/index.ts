@@ -56,6 +56,11 @@ export const sync = functions.https.onCall(async (data, context) => {
     return cleanObject(TSyncData.encode(remoteSyncData))
 })
 
+export const deleteUserData = functions.auth.user().onDelete(async (user) => {
+    // Delete all user data when user account is deleted.
+    return admin.database().ref(`/users/${user.uid}`).remove()
+})
+
 /**
  * Get all notes modified after last sync, excluding new notes contained in syncData,
  * since client already has those.

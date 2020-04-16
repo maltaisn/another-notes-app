@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.maltaisn.notes.ui.sync.passwordreset
+package com.maltaisn.notes.ui.sync.accountdelete
 
 import android.annotation.SuppressLint
 import android.app.Dialog
@@ -23,7 +23,6 @@ import android.view.LayoutInflater
 import android.view.WindowManager
 import android.widget.EditText
 import androidx.appcompat.app.AlertDialog
-import androidx.core.os.bundleOf
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
@@ -36,9 +35,9 @@ import com.maltaisn.notes.ui.EventObserver
 import com.maltaisn.notes.ui.common.ViewModelDialog
 
 
-class PasswordResetDialog : ViewModelDialog() {
+class AccountDeleteDialog : ViewModelDialog() {
 
-    private val viewModel: PasswordResetViewModel by viewModels { viewModelFactory }
+    private val viewModel: AccountDeleteViewModel by viewModels { viewModelFactory }
 
 
     @SuppressLint("InflateParams")
@@ -46,44 +45,36 @@ class PasswordResetDialog : ViewModelDialog() {
         val context = requireContext()
 
         val view = LayoutInflater.from(context).inflate(
-                R.layout.dialog_password_reset, null, false)
+                R.layout.dialog_account_delete, null, false)
 
-        val emailLayout: TextInputLayout = view.findViewById(R.id.edt_layout_email)
-        val emailEdt: EditText = view.findViewById(R.id.edt_email)
+        val passwordLayout: TextInputLayout = view.findViewById(R.id.edt_layout_password)
+        val passwordEdt: EditText = view.findViewById(R.id.edt_password)
 
-        emailEdt.doAfterTextChanged {
-            viewModel.onEmailEntered(it?.toString() ?: "")
-        }
-
-        // Set initial email
-        if (state == null) {
-            val args = requireArguments()
-            if (args.containsKey(ARG_EMAIL)) {
-                emailEdt.setText(args.getString(ARG_EMAIL))
-            }
+        passwordEdt.doAfterTextChanged {
+            viewModel.onPasswordEntered(it?.toString() ?: "")
         }
 
         // Create dialog
         val dialog = MaterialAlertDialogBuilder(context)
-                .setTitle(R.string.sync_password_reset)
-                .setMessage(R.string.sync_password_reset_message)
+                .setTitle(R.string.sync_account_delete)
+                .setMessage(R.string.sync_account_delete_message)
                 .setView(view)
-                .setPositiveButton(R.string.action_password_reset_short, null)
+                .setPositiveButton(R.string.action_delete, null)
                 .setNegativeButton(R.string.action_cancel, null)
                 .create()
 
         dialog.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE)
-        emailEdt.requestFocus()
+        passwordEdt.requestFocus()
 
         dialog.setOnShowListener {
             val btn = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
             btn.setOnClickListener {
                 view.hideKeyboard()
-                viewModel.resetPassword()
+                viewModel.deleteAccount()
             }
 
             // Observers
-            viewModel.resetBtnEnabled.observe(this, Observer { enabled ->
+            viewModel.deleteBtnEnabled.observe(this, Observer { enabled ->
                 btn.isEnabled = enabled
             })
 
@@ -91,11 +82,11 @@ class PasswordResetDialog : ViewModelDialog() {
                 Snackbar.make(requireParentFragment().requireView(), messageId, Snackbar.LENGTH_SHORT).show()
             })
 
-            viewModel.emailError.observe(this, Observer { errorId ->
+            viewModel.passwordError.observe(this, Observer { errorId ->
                 if (errorId != null) {
-                    emailLayout.error = getString(errorId)
+                    passwordLayout.error = getString(errorId)
                 } else {
-                    emailLayout.isErrorEnabled = false
+                    passwordLayout.isErrorEnabled = false
                 }
             })
 
@@ -105,17 +96,6 @@ class PasswordResetDialog : ViewModelDialog() {
         }
 
         return dialog
-    }
-
-    companion object {
-
-        private const val ARG_EMAIL = "email"
-
-        fun newInstance(initialEmail: String): PasswordResetDialog {
-            val dialog = PasswordResetDialog()
-            dialog.arguments = bundleOf(ARG_EMAIL to initialEmail)
-            return dialog
-        }
     }
 
 }

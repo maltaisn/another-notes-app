@@ -130,6 +130,7 @@
 
     <string name="sync_account_delete">Delete account</string>
     <string name="sync_account_delete_message">Delete your account permanently along with all its data. This action cannot be undone.</string>
+    <string name="sync_account_delete_success_message">Account was deleted successfully.</string>
 
     <!-- Settings -->
     <string name="pref_group_appearance">Appearance</string>

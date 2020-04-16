@@ -151,7 +151,7 @@ class NotesDaoTest {
                 atestNote(id = 1, changed = true),
                 atestNote(id = 2, changed = false)))
 
-        notesDao.resetChangedFlag()
+        notesDao.setChangedFlag(false)
         assertFalse(notesDao.getById(1)!!.changed)
         assertFalse(notesDao.getById(2)!!.changed)
     }

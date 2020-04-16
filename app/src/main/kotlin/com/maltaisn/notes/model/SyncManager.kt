@@ -46,8 +46,8 @@ class SyncManager @Inject constructor(
 
     /**
      * Sync notes if they haven't been synced since a certain [delay].
-     * User must be signed in and connected to a valid network connection (i.e. not metered if
-     * sync only over wifi setting is enabled.)
+     * User must be signed in, has verified their email, and be connected to a valid network
+     * connection (i.e. not metered if sync only over wifi setting is enabled.)
      *
      * @throws IOException If sync fails.
      * @see [NotesRepository.syncNotes].
@@ -55,7 +55,9 @@ class SyncManager @Inject constructor(
     suspend fun syncNotes(delay: Duration = Duration.ZERO,
                           receive: Boolean = true,
                           onError: (IOException) -> Unit = {}) {
-        if (loginRepository.isUserSignedIn && canSyncOverCurrentNetwork) {
+        if (loginRepository.isUserSignedIn &&
+                loginRepository.currentUser?.isEmailVerified == true &&
+                canSyncOverCurrentNetwork) {
             val shouldSync = if (delay.isPositive()) {
                 // Check if last sync time is within required delay.
                 val lastSync = prefs.getLong(PreferenceHelper.LAST_SYNC_TIME, 0)

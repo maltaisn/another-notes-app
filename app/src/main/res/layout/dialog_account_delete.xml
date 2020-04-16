@@ -16,6 +16,7 @@
 
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:paddingTop="8dp"
@@ -23,20 +24,21 @@
     >
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/edt_layout_email"
+        android:id="@+id/edt_layout_password"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingStart="16dp"
         android:paddingEnd="16dp"
+        app:endIconMode="password_toggle"
         >
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/edt_email"
+            android:id="@+id/edt_password"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/sync_email"
-            android:inputType="textEmailAddress"
+            android:hint="@string/sync_password"
+            android:inputType="textPassword"
             />
 
     </com.google.android.material.textfield.TextInputLayout>

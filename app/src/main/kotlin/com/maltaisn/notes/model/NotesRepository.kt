@@ -113,7 +113,7 @@ open class NotesRepository @Inject constructor(
         val remoteData = notesService.syncNotes(localData)
 
         // Sync was successful, update "changed" flag and remove "deleted" notes from database.
-        notesDao.resetChangedFlag()
+        notesDao.setChangedFlag(false)
         deletedNotesDao.clear()
 
         // Update local last sync time

@@ -27,6 +27,7 @@ import com.maltaisn.notes.ui.main.MainViewModel
 import com.maltaisn.notes.ui.search.SearchViewModel
 import com.maltaisn.notes.ui.settings.SettingsViewModel
 import com.maltaisn.notes.ui.sync.SyncViewModel
+import com.maltaisn.notes.ui.sync.accountdelete.AccountDeleteViewModel
 import com.maltaisn.notes.ui.sync.main.SyncMainViewModel
 import com.maltaisn.notes.ui.sync.passwordchange.PasswordChangeViewModel
 import com.maltaisn.notes.ui.sync.passwordreset.PasswordResetViewModel
@@ -97,6 +98,11 @@ abstract class ViewModelModule {
     @IntoMap
     @ViewModelKey(PasswordChangeViewModel::class)
     abstract fun bindsPasswordChangeViewModel(viewModel: PasswordChangeViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(AccountDeleteViewModel::class)
+    abstract fun bindsAccountDeleteViewModel(viewModel: AccountDeleteViewModel): ViewModel
 
     @Binds
     @IntoMap

@@ -53,15 +53,15 @@ class SyncSignInViewModel @Inject constructor(
     val fieldError: LiveData<FieldError?>
         get() = _fieldError
 
-    private var email: CharSequence = ""
-    private var password: CharSequence = ""
+    private var email = ""
+    private var password = ""
 
 
     fun goToPage(page: SyncPage) {
         _changePageEvent.send(page)
     }
 
-    fun setEnteredEmail(email: CharSequence) {
+    fun setEnteredEmail(email: String) {
         this.email = email
         if (fieldError.value === noEmailError && email.isNotBlank()) {
             // User entered email, clear error.
@@ -69,7 +69,7 @@ class SyncSignInViewModel @Inject constructor(
         }
     }
 
-    fun setEnteredPassword(password: CharSequence) {
+    fun setEnteredPassword(password: String) {
         this.password = password
         if (fieldError.value === noPasswordError && password.isNotEmpty()) {
             // User entered password or password of valid length, clear error.
@@ -92,7 +92,7 @@ class SyncSignInViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 // Log in to account
-                loginRepository.signIn(email.toString(), password.toString())
+                loginRepository.signIn(email, password)
 
                 // Sync notes
                 syncManager.syncNotes()
