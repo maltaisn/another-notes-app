@@ -97,8 +97,6 @@ abstract class NoteViewModel(
     fun deleteSelectedNotes() {
         if (selectedNoteStatus == NoteStatus.TRASHED) {
             // Delete forever
-            // TODO ask for confirmation
-
             viewModelScope.launch {
                 notesRepository.deleteNotes(selectedNotes.toList())
                 clearSelection()

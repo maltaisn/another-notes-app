@@ -29,13 +29,14 @@ import com.maltaisn.notes.R
 import com.maltaisn.notes.model.entity.NoteStatus
 import com.maltaisn.notes.ui.EventObserver
 import com.maltaisn.notes.ui.SharedViewModel
+import com.maltaisn.notes.ui.common.ConfirmDialog
 import com.maltaisn.notes.ui.common.ViewModelFragment
 import com.maltaisn.notes.ui.note.adapter.NoteAdapter
 import com.maltaisn.notes.ui.note.adapter.NoteListLayoutMode
 import java.text.NumberFormat
 
 
-abstract class NoteFragment : ViewModelFragment(), ActionMode.Callback {
+abstract class NoteFragment : ViewModelFragment(), ActionMode.Callback, ConfirmDialog.Callback {
 
     private val sharedViewModel: SharedViewModel by activityViewModels { viewModelFactory }
     protected abstract val viewModel: NoteViewModel
@@ -154,7 +155,14 @@ abstract class NoteFragment : ViewModelFragment(), ActionMode.Callback {
             R.id.item_share -> viewModel.shareNote()
             R.id.item_copy -> viewModel.copySelectedNote(
                     getString(R.string.edit_copy_untitled_name), getString(R.string.edit_copy_suffix))
-            R.id.item_delete -> viewModel.deleteSelectedNotes()
+            R.id.item_delete -> {
+                // Ask user for confirmation before deleting selected notes forever.
+                ConfirmDialog.newInstance(
+                        title = R.string.action_delete_selection_forever,
+                        message = R.string.trash_delete_selected_message,
+                        btnPositive = R.string.action_delete
+                ).show(childFragmentManager, DELETE_CONFIRM_DIALOG_TAG)
+            }
             else -> return false
         }
         return true
@@ -172,8 +180,16 @@ abstract class NoteFragment : ViewModelFragment(), ActionMode.Callback {
         viewModel.clearSelection()
     }
 
+    override fun onDialogConfirmed(tag: String?) {
+        if (tag == DELETE_CONFIRM_DIALOG_TAG) {
+            viewModel.deleteSelectedNotes()
+        }
+    }
+
     companion object {
         private val NUMBER_FORMAT = NumberFormat.getInstance()
+
+        private const val DELETE_CONFIRM_DIALOG_TAG = "delete_confirm_dialog"
     }
 
 }

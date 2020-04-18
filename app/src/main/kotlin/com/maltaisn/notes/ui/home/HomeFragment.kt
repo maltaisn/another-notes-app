@@ -37,7 +37,7 @@ import com.maltaisn.notes.ui.note.adapter.NoteListLayoutMode
 
 
 class HomeFragment : NoteFragment(), Toolbar.OnMenuItemClickListener,
-        NavigationView.OnNavigationItemSelectedListener, ConfirmDialog.Callback {
+        NavigationView.OnNavigationItemSelectedListener {
 
     override val viewModel: HomeViewModel by viewModels { viewModelFactory }
 
@@ -170,6 +170,7 @@ class HomeFragment : NoteFragment(), Toolbar.OnMenuItemClickListener,
     }
 
     override fun onDialogConfirmed(tag: String?) {
+        super.onDialogConfirmed(tag)
         if (tag == EMPTY_TRASH_DIALOG_TAG) {
             viewModel.emptyTrash()
         }

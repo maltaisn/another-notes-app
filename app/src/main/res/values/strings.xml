@@ -26,6 +26,7 @@
     <string name="action_copy">Make a copy</string>
     <string name="action_delete">Delete</string>
     <string name="action_delete_forever">Delete forever</string>
+    <string name="action_delete_selection_forever">Delete selection forever</string>
     <string name="action_empty_trash">Empty recycle bin</string>
     <string name="action_empty_trash_short">Empty</string>
     <string name="action_layout_grid">View as grid</string>
@@ -57,6 +58,7 @@
     </plurals>
 
     <string name="trash_reminder_message">Notes in recycle bin are automatically deleted after %d days.</string>
+    <string name="trash_delete_selected_message">Selected notes will be permanently deleted.</string>
     <string name="trash_empty_message">All notes in recycle bin will be permanently deleted.</string>
 
     <string name="search_hint">Search notes</string>
