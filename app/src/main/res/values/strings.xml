@@ -85,6 +85,7 @@
         <item quantity="one">Note unarchived</item>
         <item quantity="other">Notes unarchived</item>
     </plurals>
+    <string name="edit_in_trash_message">Cannot edit note in recycle bin.</string>
 
     <string name="edit_copy_suffix">Copy</string>
     <string name="edit_copy_untitled_name">untitled</string>

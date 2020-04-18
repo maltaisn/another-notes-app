@@ -27,34 +27,57 @@ import androidx.recyclerview.widget.RecyclerView
 import com.maltaisn.notes.R
 import com.maltaisn.notes.ui.edit.BulletTextWatcher
 
+interface EditFocusableViewHolder {
+    fun setFocus(pos: Int)
+}
 
-class EditTitleViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+class EditTitleViewHolder(itemView: View, callback: EditAdapter.Callback) :
+        RecyclerView.ViewHolder(itemView), EditFocusableViewHolder {
 
     private val titleEdt = itemView as EditText
 
+    init {
+        titleEdt.setOnClickListener {
+            callback.onNoteClickedToEdit()
+        }
+    }
+
     fun bind(item: EditTitleItem) {
+        titleEdt.isFocusable = item.editable
+        titleEdt.isFocusableInTouchMode = item.editable
         titleEdt.setText(item.title)
         item.title = titleEdt.text
     }
+
+    override fun setFocus(pos: Int) {
+        titleEdt.requestFocus()
+        titleEdt.setSelection(pos)
+    }
 }
 
-class EditContentViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+class EditContentViewHolder(itemView: View, callback: EditAdapter.Callback) :
+        RecyclerView.ViewHolder(itemView) {
 
     private val contentEdt = itemView as EditText
 
     init {
         contentEdt.addTextChangedListener(BulletTextWatcher())
+        contentEdt.setOnClickListener {
+            callback.onNoteClickedToEdit()
+        }
     }
 
     fun bind(item: EditContentItem) {
         // Change note content to the EditText editable text so view model can change it.
+        contentEdt.isFocusable = item.editable
+        contentEdt.isFocusableInTouchMode = item.editable
         contentEdt.setText(item.content)
         item.content = contentEdt.text
     }
 }
 
 class EditItemViewHolder(itemView: View, callback: EditAdapter.Callback) :
-        RecyclerView.ViewHolder(itemView) {
+        RecyclerView.ViewHolder(itemView), EditFocusableViewHolder {
 
     val dragImv: ImageView = itemView.findViewById(R.id.imv_item_drag)
     private val itemCheck: CheckBox = itemView.findViewById(R.id.chk_item)
@@ -93,6 +116,9 @@ class EditItemViewHolder(itemView: View, callback: EditAdapter.Callback) :
             }
             false
         }
+        itemEdt.setOnClickListener {
+            callback.onNoteClickedToEdit()
+        }
 
         deleteImv.setOnClickListener {
             val pos = adapterPosition
@@ -106,13 +132,16 @@ class EditItemViewHolder(itemView: View, callback: EditAdapter.Callback) :
         this.item = item
 
         // Change item content to the EditText editable text so view model can change it.
+        itemEdt.isFocusable = item.editable
+        itemEdt.isFocusableInTouchMode = item.editable
         itemEdt.setText(item.content)
         item.content = itemEdt.text
 
         itemCheck.isChecked = item.checked
+        itemCheck.isEnabled = item.editable
     }
 
-    fun setFocus(pos: Int) {
+    override fun setFocus(pos: Int) {
         itemEdt.requestFocus()
         itemEdt.setSelection(pos)
     }

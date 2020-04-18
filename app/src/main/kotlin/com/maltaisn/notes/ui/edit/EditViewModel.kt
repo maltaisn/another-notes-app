@@ -21,7 +21,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.maltaisn.notes.R
 import com.maltaisn.notes.model.NotesRepository
 import com.maltaisn.notes.model.entity.*
 import com.maltaisn.notes.ui.Event
@@ -45,10 +44,6 @@ class EditViewModel @Inject constructor(
             _editItems.value = value
         }
 
-    private var titleItem: EditTitleItem? = null
-    private var contentItem: EditContentItem? = null
-    private var itemAddItem: EditItemAddItem? = null
-
     private val _noteType = MutableLiveData<NoteType?>()
     val noteType: LiveData<NoteType?>
         get() = _noteType
@@ -65,8 +60,8 @@ class EditViewModel @Inject constructor(
     val focusEvent: LiveData<Event<FocusChange>>
         get() = _focusEvent
 
-    private val _messageEvent = MutableLiveData<Event<Int>>()
-    val messageEvent: LiveData<Event<Int>>
+    private val _messageEvent = MutableLiveData<Event<EditMessage>>()
+    val messageEvent: LiveData<Event<EditMessage>>
         get() = _messageEvent
 
     private val _statusChangeEvent = MutableLiveData<Event<StatusChange>>()
@@ -80,6 +75,9 @@ class EditViewModel @Inject constructor(
     private val _exitEvent = MutableLiveData<Event<Unit>>()
     val exitEvent: LiveData<Event<Unit>>
         get() = _exitEvent
+
+    private val isNoteInTrash: Boolean
+        get() = note.status == NoteStatus.TRASHED
 
 
     fun start(noteId: Long) {
@@ -105,18 +103,22 @@ class EditViewModel @Inject constructor(
     }
 
     fun save() {
+        if (isNoteInTrash) {
+            // Note can't be edited in trash, no need to save.
+            return
+        }
+
         // Create note
-        val title = titleItem!!.title.toString()
+        val title = (listItems[0] as EditTitleItem).title.toString()
         val content: String
         val metadata: NoteMetadata
         when (note.type) {
             NoteType.TEXT -> {
-                content = contentItem!!.content.toString()
+                content = (listItems[1] as EditContentItem).content.toString()
                 metadata = BlankNoteMetadata
             }
             NoteType.LIST -> {
-                @Suppress("UNCHECKED_CAST")
-                val items = listItems.subList(1, listItems.size - 1) as List<EditItemItem>
+                val items = listItems.filterIsInstance<EditItemItem>()
                 content = items.joinToString("\n") { it.content }
                 metadata = ListNoteMetadata(items.map { it.checked })
             }
@@ -135,7 +137,7 @@ class EditViewModel @Inject constructor(
             // Delete blank note
             viewModelScope.launch {
                 notesRepository.deleteNote(note)
-                _messageEvent.send(R.string.edit_message_blank_note_discarded)
+                _messageEvent.send(EditMessage.BLANK_NOTE_DISCARDED)
                 _exitEvent.send()
             }
         } else {
@@ -158,12 +160,22 @@ class EditViewModel @Inject constructor(
         createListItems()
     }
 
-    fun moveNote() {
+    fun moveNoteAndExit() {
         changeNoteStatusAndExit(if (note.status == NoteStatus.ACTIVE) {
             NoteStatus.ARCHIVED
         } else {
             NoteStatus.ACTIVE
         })
+    }
+
+    fun restoreNoteAndEdit() {
+        note = note.copy(status = NoteStatus.ACTIVE, lastModifiedDate = Date(), synced = false)
+
+        // Recreate list items so that they are editable.
+        createListItems()
+
+        _messageEvent.send(EditMessage.RESTORED_NOTE)
+        _noteStatus.value = note.status
     }
 
     fun copyNote(untitledName: String, copySuffix: String) {
@@ -187,8 +199,9 @@ class EditViewModel @Inject constructor(
             }
 
             // Update title item
-            val title = titleItem?.title as Editable
+            val title = (listItems[0] as EditTitleItem).title as Editable
             title.replace(0, title.length, newTitle)
+            focusItemAt(0, newTitle.length, true)
         }
     }
 
@@ -198,7 +211,7 @@ class EditViewModel @Inject constructor(
     }
 
     fun deleteNote() {
-        if (note.status == NoteStatus.TRASHED) {
+        if (isNoteInTrash) {
             // Delete forever
             // TODO ask for confirmation
             viewModelScope.launch {
@@ -233,32 +246,30 @@ class EditViewModel @Inject constructor(
 
     private fun createListItems() {
         val list = mutableListOf<EditListItem>()
+        val canEdit = !isNoteInTrash
 
         // Title item
-        val title = titleItem ?: EditTitleItem("")
-        title.title = note.title
-        titleItem = title
+        val title = EditTitleItem(note.title, canEdit)
         list += title
 
         when (note.type) {
             NoteType.TEXT -> {
                 // Content item
-                val content = contentItem ?: EditContentItem("")
-                content.content = note.content
-                contentItem = content
+                val content = EditContentItem(note.content, canEdit)
                 list += content
             }
             NoteType.LIST -> {
                 // List items
                 val items = note.listItems
                 for (item in items) {
-                    list += EditItemItem(item.content, item.checked)
+                    list += EditItemItem(item.content, item.checked, canEdit)
                 }
 
                 // Item add item
-                val itemAdd = itemAddItem ?: EditItemAddItem()
-                itemAddItem = itemAdd
-                list += itemAdd
+                if (canEdit) {
+                    val itemAdd = EditItemAddItem()
+                    list += itemAdd
+                }
             }
         }
 
@@ -272,7 +283,7 @@ class EditViewModel @Inject constructor(
             changeListItems { list ->
                 (item.content as Editable).replace(0, item.content.length, lines.first())
                 for (i in 1 until lines.size) {
-                    list.add(pos + i, EditItemItem(lines[i], false))
+                    list.add(pos + i, EditItemItem(lines[i], checked = false, editable = true))
                 }
             }
 
@@ -289,7 +300,7 @@ class EditViewModel @Inject constructor(
             // and delete the current item.
             val prevLength = prevItem.content.length
             (prevItem.content as Editable).append(item.content)
-            deleteNoteItem(pos)
+            changeListItems { it.removeAt(pos) }
 
             // Set focus on merge boundary.
             focusItemAt(pos - 1, prevLength, true)
@@ -297,18 +308,41 @@ class EditViewModel @Inject constructor(
     }
 
     override fun onNoteItemDeleteClicked(pos: Int) {
-        deleteNoteItem(pos)
+        val prevItem = listItems[pos - 1]
+        if (prevItem is EditItemItem) {
+            // Set focus at the end of previous item.
+            focusItemAt(pos - 1, prevItem.content.length, true)
+        } else {
+            val nextItem = listItems[pos + 1]
+            if (nextItem is EditItemItem) {
+                // Set focus at the end of next item.
+                focusItemAt(pos + 1, nextItem.content.length, true)
+            }
+        }
+
+        // Delete item in list.
+        changeListItems { it.removeAt(pos) }
     }
 
     override fun onNoteItemAddClicked() {
         val pos = listItems.size - 1
         changeListItems { list ->
-            list.add(pos, EditItemItem("", false))
+            list.add(pos, EditItemItem("", false, true))
+        }
+        focusItemAt(pos, 0, false)
+    }
+
+    override fun onNoteClickedToEdit() {
+        if (isNoteInTrash) {
+            // Cannot edit note in trash! Show message suggesting user to restore the note.
+            // This is not just for fun. Editing note would change its last modified date
+            // which would mess up the auto-delete interval in trash.
+            _messageEvent.send(EditMessage.CANT_EDIT_IN_TRASH)
         }
     }
 
     override val isNoteDragEnabled: Boolean
-        get() = listItems.size > 3
+        get() = listItems.size > 3 && !isNoteInTrash
 
     override fun onNoteItemSwapped(from: Int, to: Int) {
         Collections.swap(listItems, from, to)
@@ -316,17 +350,6 @@ class EditViewModel @Inject constructor(
 
     private fun focusItemAt(pos: Int, textPos: Int, itemExists: Boolean) {
         _focusEvent.send(FocusChange(pos, textPos, itemExists))
-    }
-
-    private fun deleteNoteItem(pos: Int) {
-        val prevItem = listItems[pos - 1]
-        if (prevItem is EditItemItem) {
-            // Set focus at the end of previous item.
-            focusItemAt(pos - 1, prevItem.content.length, true)
-        }
-
-        // Delete item in list.
-        changeListItems { it.removeAt(pos) }
     }
 
     private inline fun changeListItems(change: (MutableList<EditListItem>) -> Unit) {

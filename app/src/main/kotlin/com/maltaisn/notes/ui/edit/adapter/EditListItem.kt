@@ -21,17 +21,20 @@ sealed class EditListItem {
     abstract val type: Int
 }
 
-data class EditTitleItem(var title: CharSequence) : EditListItem() {
+data class EditTitleItem(var title: CharSequence,
+                         val editable: Boolean) : EditListItem() {
     override val type: Int
         get() = EditAdapter.VIEW_TYPE_TITLE
 }
 
-data class EditContentItem(var content: CharSequence) : EditListItem() {
+data class EditContentItem(var content: CharSequence,
+                           val editable: Boolean) : EditListItem() {
     override val type: Int
         get() = EditAdapter.VIEW_TYPE_CONTENT
 }
 
-data class EditItemItem(var content: CharSequence, var checked: Boolean) : EditListItem() {
+data class EditItemItem(var content: CharSequence,
+                        var checked: Boolean, val editable: Boolean) : EditListItem() {
     override val type: Int
         get() = EditAdapter.VIEW_TYPE_ITEM
 }

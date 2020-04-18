@@ -18,11 +18,9 @@ package com.maltaisn.notes.ui.edit.adapter
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.Canvas
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.ViewGroup
-import androidx.core.view.ViewCompat
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -38,55 +36,11 @@ class EditAdapter(val context: Context, val callback: Callback) :
 
     private var pendingFocusChange: EditViewModel.FocusChange? = null
 
-    private val itemTouchHelper = ItemTouchHelper(object : ItemTouchHelper.Callback() {
-
-        private val dragElevation = context.resources.getDimensionPixelSize(
-                R.dimen.edit_dragged_item_elevation).toFloat()
-
-        override fun isLongPressDragEnabled() = false
-        override fun isItemViewSwipeEnabled() = false
-
-        override fun getMovementFlags(recyclerView: RecyclerView,
-                                      viewHolder: RecyclerView.ViewHolder) =
-                makeFlag(ItemTouchHelper.ACTION_STATE_DRAG,
-                        ItemTouchHelper.UP or ItemTouchHelper.DOWN)
-
-        override fun canDropOver(recyclerView: RecyclerView,
-                                 current: RecyclerView.ViewHolder,
-                                 target: RecyclerView.ViewHolder) = target is EditItemViewHolder
-
-        override fun onChildDraw(c: Canvas, recyclerView: RecyclerView,
-                                 viewHolder: RecyclerView.ViewHolder,
-                                 dX: Float, dY: Float, actionState: Int, isCurrentlyActive: Boolean) {
-            val view = viewHolder.itemView
-            view.translationX = dX
-            view.translationY = dY
-            if (isCurrentlyActive) {
-                ViewCompat.setElevation(view, dragElevation)
-            }
-        }
-
-        override fun clearView(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder) {
-            val view = viewHolder.itemView
-            view.translationX = 0f
-            view.translationY = 0f
-            ViewCompat.setElevation(view, 0f)
-        }
-
-        override fun onMove(recyclerView: RecyclerView,
-                            viewHolder: RecyclerView.ViewHolder,
-                            target: RecyclerView.ViewHolder): Boolean {
-            val from = viewHolder.adapterPosition
-            val to = target.adapterPosition
-
-            // submitList is not used here, since it results in a very unresponsive design.
-            // Adapter and dataset are updated manually.
-            notifyItemMoved(from, to)
-            callback.onNoteItemSwapped(from, to)
-            return true
-        }
-
-        override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) = Unit
+    private val itemTouchHelper = ItemTouchHelper(DragTouchHelperCallback(context) { from, to ->
+        // submitList is not used here, since it results in a very unresponsive design.
+        // Adapter and dataset are updated manually.
+        notifyItemMoved(from, to)
+        callback.onNoteItemSwapped(from, to)
     })
 
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
@@ -103,9 +57,9 @@ class EditAdapter(val context: Context, val callback: Callback) :
         val inflater = LayoutInflater.from(parent.context)
         return when (viewType) {
             VIEW_TYPE_TITLE -> EditTitleViewHolder(inflater.inflate(
-                    R.layout.item_edit_title, parent, false))
+                    R.layout.item_edit_title, parent, false), callback)
             VIEW_TYPE_CONTENT -> EditContentViewHolder(inflater.inflate(
-                    R.layout.item_edit_content, parent, false))
+                    R.layout.item_edit_content, parent, false), callback)
             VIEW_TYPE_ITEM_ADD -> EditItemAddViewHolder(inflater.inflate(
                     R.layout.item_edit_item_add, parent, false), callback)
             VIEW_TYPE_ITEM -> {
@@ -131,12 +85,12 @@ class EditAdapter(val context: Context, val callback: Callback) :
         when (holder) {
             is EditTitleViewHolder -> holder.bind(item as EditTitleItem)
             is EditContentViewHolder -> holder.bind(item as EditContentItem)
-            is EditItemViewHolder -> {
-                holder.bind(item as EditItemItem)
-                if (position == pendingFocusChange?.itemPos) {
-                    holder.setFocus(pendingFocusChange!!.pos)
-                }
-            }
+            is EditItemViewHolder -> holder.bind(item as EditItemItem)
+        }
+        if (holder is EditFocusableViewHolder && position == pendingFocusChange?.itemPos) {
+            // Apply pending focus change event.
+            holder.setFocus(pendingFocusChange!!.pos)
+            pendingFocusChange = null
         }
     }
 
@@ -153,7 +107,7 @@ class EditAdapter(val context: Context, val callback: Callback) :
         }
 
         val viewHolder = rcv.findViewHolderForAdapterPosition(focus.itemPos)
-        if (viewHolder is EditItemViewHolder) {
+        if (viewHolder is EditFocusableViewHolder) {
             viewHolder.setFocus(focus.pos)
         } else {
             // No item view holder for that position.
@@ -166,7 +120,10 @@ class EditAdapter(val context: Context, val callback: Callback) :
         fun onNoteItemChanged(item: EditItemItem, pos: Int, isPaste: Boolean)
         fun onNoteItemBackspacePressed(item: EditItemItem, pos: Int)
         fun onNoteItemDeleteClicked(pos: Int)
+
         fun onNoteItemAddClicked()
+
+        fun onNoteClickedToEdit()
 
         val isNoteDragEnabled: Boolean
         fun onNoteItemSwapped(from: Int, to: Int)

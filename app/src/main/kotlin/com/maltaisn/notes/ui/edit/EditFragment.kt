@@ -31,6 +31,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.SimpleItemAnimator
 import com.google.android.material.snackbar.Snackbar
 import com.maltaisn.notes.R
 import com.maltaisn.notes.hideKeyboard
@@ -96,6 +97,7 @@ class EditFragment : ViewModelFragment(), Toolbar.OnMenuItemClickListener {
         val layoutManager = LinearLayoutManager(context)
         rcv.adapter = adapter
         rcv.layoutManager = layoutManager
+        (rcv.itemAnimator as SimpleItemAnimator).supportsChangeAnimations = false
 
         // Observers
         viewModel.noteStatus.observe(viewLifecycleOwner, Observer { status ->
@@ -147,8 +149,18 @@ class EditFragment : ViewModelFragment(), Toolbar.OnMenuItemClickListener {
             adapter.setItemFocus(focus)
         })
 
-        viewModel.messageEvent.observe(viewLifecycleOwner, EventObserver { messageId ->
-            Snackbar.make(view, messageId, Snackbar.LENGTH_SHORT).show()
+        val restoreNoteSnackbar by lazy {
+            Snackbar.make(requireView(), R.string.edit_in_trash_message, Snackbar.LENGTH_SHORT)
+                    .setAction(R.string.action_restore) { viewModel.restoreNoteAndEdit() }
+        }
+        viewModel.messageEvent.observe(viewLifecycleOwner, EventObserver { message ->
+            when (message) {
+                EditMessage.BLANK_NOTE_DISCARDED -> Snackbar.make(view,
+                        R.string.edit_message_blank_note_discarded, Snackbar.LENGTH_SHORT).show()
+                EditMessage.RESTORED_NOTE -> Snackbar.make(view, resources.getQuantityText(
+                        R.plurals.edit_message_move_restore, 1), Snackbar.LENGTH_SHORT).show()
+                EditMessage.CANT_EDIT_IN_TRASH -> restoreNoteSnackbar.show()
+            }
         })
 
         viewModel.statusChangeEvent.observe(viewLifecycleOwner, EventObserver { statusChange ->
@@ -177,7 +189,7 @@ class EditFragment : ViewModelFragment(), Toolbar.OnMenuItemClickListener {
     override fun onMenuItemClick(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.item_type -> viewModel.toggleNoteType()
-            R.id.item_move -> viewModel.moveNote()
+            R.id.item_move -> viewModel.moveNoteAndExit()
             R.id.item_copy -> viewModel.copyNote(getString(R.string.edit_copy_untitled_name),
                     getString(R.string.edit_copy_suffix))
             R.id.item_delete -> viewModel.deleteNote()
