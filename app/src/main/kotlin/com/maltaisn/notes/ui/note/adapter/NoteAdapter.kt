@@ -79,8 +79,8 @@ class NoteAdapter(val context: Context, val callback: Callback) :
         }
     })
 
-    val highlightBackgroundColor = ContextCompat.getColor(context, R.color.colorHighlight)
-    val highlightForegroundColor = ContextCompat.getColor(context, R.color.colorOnHighlight)
+    val highlightBackgroundColor = ContextCompat.getColor(context, R.color.color_highlight)
+    val highlightForegroundColor = ContextCompat.getColor(context, R.color.color_on_highlight)
 
 
     init {
