@@ -60,12 +60,22 @@ class NotesRepositoryTest {
     }
 
     @Test
+    fun `should delete all notes in database`() = runBlocking {
+        val notes = listOf(testNote(), testNote(), testNote())
+        notesRepo.deleteNotes(notes)
+        verify(notesDao).deleteAll(notes)
+        verify(deletedNotesDao).insertAll(notes.map { note ->
+            DeletedNote(0, note.uuid, false)
+        })
+    }
+
+    @Test
     fun `should sync notes correctly`() = runBlocking {
         // Local changes: 0 was changed, 1 is unchanged, 2 was deleted.
         // Remote changes: 0 was deleted, 1 was updated.
 
         val note0 = testNote(uuid = "0", synced = false)
-        whenever(deletedNotesDao.getAllUuids()) doReturn listOf("2")
+        whenever(deletedNotesDao.getNotSyncedUuids()) doReturn listOf("2")
         whenever(notesDao.getNotSynced()) doReturn listOf(note0)
 
         val newSyncDate = Date()
@@ -83,8 +93,9 @@ class NotesRepositoryTest {
         verify(notesDao).deleteByUuid(listOf("0"))
 
         verify(prefsEditor).putLong(PreferenceHelper.LAST_SYNC_TIME, newSyncDate.time)
+
         verify(notesDao).setSyncedFlag(true)
-        verify(deletedNotesDao).clear()
+        verify(deletedNotesDao).setSyncedFlag(true)
     }
 
     @Test

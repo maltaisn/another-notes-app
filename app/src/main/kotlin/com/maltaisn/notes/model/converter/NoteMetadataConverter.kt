@@ -44,5 +44,4 @@ object NoteMetadataConverter : KSerializer<NoteMetadata> {
 
     override fun deserialize(decoder: Decoder) = toMetadata(decoder.decodeString())
 
-
 }

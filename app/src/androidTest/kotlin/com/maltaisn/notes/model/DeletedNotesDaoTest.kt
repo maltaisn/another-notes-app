@@ -49,13 +49,32 @@ class DeletedNotesDaoTest {
 
     @Test
     fun readWriteTests()  = runBlocking {
-        val event = DeletedNote(0, "0")
+        deletedNotesDao.insert(DeletedNote(0, "0", false))
+        assertEquals(listOf("0"), deletedNotesDao.getNotSyncedUuids())
 
-        deletedNotesDao.insert(event)
-        assertEquals(listOf("0"), deletedNotesDao.getAllUuids())
+        deletedNotesDao.insertAll(listOf(
+                DeletedNote(0, "1", false),
+                DeletedNote(0, "2", false)))
+        assertEquals(listOf("0", "1", "2"), deletedNotesDao.getNotSyncedUuids())
+    }
 
-        deletedNotesDao.clear()
-        assertEquals(emptyList(), deletedNotesDao.getAllUuids())
+    @Test
+    fun getNotSyncedUuidsTest()  = runBlocking {
+        deletedNotesDao.insertAll(listOf(
+                DeletedNote(0, "0", false),
+                DeletedNote(0, "1", true),
+                DeletedNote(0, "2", false)))
+        assertEquals(listOf("0", "2"), deletedNotesDao.getNotSyncedUuids())
+    }
+
+    @Test
+    fun setSyncedFlagTest()  = runBlocking {
+        deletedNotesDao.insertAll(listOf(
+                DeletedNote(0, "0", false),
+                DeletedNote(0, "1", true),
+                DeletedNote(0, "2", false)))
+        deletedNotesDao.setSyncedFlag(true)
+        assertEquals(emptyList(), deletedNotesDao.getNotSyncedUuids())
     }
 
 }

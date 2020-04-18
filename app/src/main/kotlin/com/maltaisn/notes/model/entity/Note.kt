@@ -69,8 +69,8 @@ data class Note(
         val content: String,
 
         /**
-         * Note metadata, not used for search.
-         * Can be `null` if note has no metadata.
+         * Note metadata, not used for search. This field is represented as text encoded
+         * JSON when serialized, so server can easily encode it.
          */
         @ColumnInfo(name = "metadata")
         @SerialName("metadata")

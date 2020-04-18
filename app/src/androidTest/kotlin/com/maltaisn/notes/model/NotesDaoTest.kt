@@ -58,16 +58,34 @@ class NotesDaoTest {
     fun readWriteTests() = runBlocking {
         val note = atestNote(id = 1, uuid = "1", title = "note")
 
+        // Insert
         val id = notesDao.insert(note)
         assertEquals(note, notesDao.getById(id))
 
-        val updatedNote = atestNote(id = 1, uuid = "1", title = "updated note")
-        notesDao.update(updatedNote)
-        assertEquals(updatedNote, notesDao.getById(id))
+        // Update with insert
+        val updatedNote0 = atestNote(id = 1, uuid = "1", title = "updated note 0")
+        notesDao.insert(updatedNote0)
+        assertEquals(updatedNote0, notesDao.getById(1))
 
-        notesDao.delete(updatedNote)
+        // Update directly
+        val updatedNote1 = atestNote(id = 1, uuid = "1", title = "updated note 1")
+        notesDao.update(updatedNote1)
+        assertEquals(updatedNote1, notesDao.getById(id))
+
+        // Delete
+        notesDao.delete(updatedNote1)
         assertNull(notesDao.getById(id))
         assertNull(notesDao.getIdByUuid("1"))
+
+        // Insert all
+        val newNotes = listOf(atestNote(id = 1), atestNote(id = 2))
+        notesDao.insertAll(newNotes)
+
+        // Get all
+        assertEquals(notesDao.getAll(), newNotes)
+
+        // Delete all
+        notesDao.deleteAll(newNotes)
     }
 
     @Test
@@ -80,7 +98,7 @@ class NotesDaoTest {
     }
 
     @Test
-    fun getNotesByStatusTest() = runBlocking {
+    fun getByStatusTest() = runBlocking {
         val time = DateTimeConverter.toDate("2020-01-01T00:00:00.000Z")
         val activeNotes = mutableListOf<Note>()
         var id = 1L
@@ -124,7 +142,7 @@ class NotesDaoTest {
     }
 
     @Test
-    fun getChangedTest() = runBlocking {
+    fun getNotSyncedTest() = runBlocking {
         val note = atestNote(id = 1, synced = false)
         notesDao.insertAll(listOf(note, atestNote(id = 2, synced = true)))
 
@@ -146,7 +164,7 @@ class NotesDaoTest {
     }
 
     @Test
-    fun resetChangedFlagTest() = runBlocking {
+    fun setSyncedFlagTest() = runBlocking {
         notesDao.insertAll(listOf(
                 atestNote(id = 1, synced = false),
                 atestNote(id = 2, synced = true)))

@@ -38,10 +38,7 @@ interface DeletedNotesDao {
     @Query("SELECT uuid FROM deleted_notes WHERE synced == 0")
     suspend fun getNotSyncedUuids(): List<String>
 
-    @Query("UPDATE notes SET synced = :synced")
+    @Query("UPDATE deleted_notes SET synced = :synced")
     suspend fun setSyncedFlag(synced: Boolean)
-
-    @Query("DELETE FROM deleted_notes")
-    suspend fun clear()
 
 }

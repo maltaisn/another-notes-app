@@ -112,9 +112,9 @@ open class NotesRepository @Inject constructor(
         val localData = NotesService.SyncData(Date(lastSyncTime), localChanged, localDeleted)
         val remoteData = notesService.syncNotes(localData)
 
-        // Sync was successful, update "changed" flag and remove "deleted" notes from database.
+        // Sync was successful, update "synced" flags.
         notesDao.setSyncedFlag(true)
-        deletedNotesDao.clear()
+        deletedNotesDao.setSyncedFlag(true)
 
         // Update local last sync time
         lastSyncTime = remoteData.lastSync.time
@@ -133,8 +133,8 @@ open class NotesRepository @Inject constructor(
         }
         notesDao.insertAll(remotedChanged)
 
-        // Mark deleted UUIDs as synced.
-        notesDao.setSyncedFlag(true)
+        // Delete local notes.
+        notesDao.deleteByUuid(remoteData.deletedUuids)
     }
 
     /**
