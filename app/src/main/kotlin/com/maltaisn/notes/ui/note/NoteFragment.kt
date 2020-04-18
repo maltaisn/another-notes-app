@@ -128,6 +128,9 @@ abstract class NoteFragment : ViewModelFragment(), ActionMode.Callback, ConfirmD
             sharedViewModel.onStatusChange(statusChange)
         })
 
+        sharedViewModel.messageEvent.observe(viewLifecycleOwner, EventObserver { messageId ->
+            Snackbar.make(view, messageId, Snackbar.LENGTH_SHORT).show()
+        })
         sharedViewModel.statusChangeEvent.observe(viewLifecycleOwner, EventObserver { statusChange ->
             val messageId = when (statusChange.newStatus) {
                 NoteStatus.ACTIVE -> if (statusChange.oldStatus == NoteStatus.TRASHED) {

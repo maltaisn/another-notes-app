@@ -156,8 +156,7 @@ class EditFragment : ViewModelFragment(), Toolbar.OnMenuItemClickListener, Confi
         }
         viewModel.messageEvent.observe(viewLifecycleOwner, EventObserver { message ->
             when (message) {
-                EditMessage.BLANK_NOTE_DISCARDED -> Snackbar.make(view,
-                        R.string.edit_message_blank_note_discarded, Snackbar.LENGTH_SHORT).show()
+                EditMessage.BLANK_NOTE_DISCARDED -> sharedViewModel.onBlankNoteDiscarded()
                 EditMessage.RESTORED_NOTE -> Snackbar.make(view, resources.getQuantityText(
                         R.plurals.edit_message_move_restore, 1), Snackbar.LENGTH_SHORT).show()
                 EditMessage.CANT_EDIT_IN_TRASH -> restoreNoteSnackbar.show()

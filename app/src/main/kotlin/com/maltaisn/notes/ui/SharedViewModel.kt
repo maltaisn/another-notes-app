@@ -20,6 +20,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.maltaisn.notes.R
 import com.maltaisn.notes.model.NotesRepository
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -30,10 +31,18 @@ class SharedViewModel @Inject constructor(
 
     private var lastStatusChange: StatusChange? = null
 
+    private val _messageEvent = MutableLiveData<Event<Int>>()
+    val messageEvent: LiveData<Event<Int>>
+        get() = _messageEvent
+
     private val _statusChangeEvent = MutableLiveData<Event<StatusChange>>()
     val statusChangeEvent: LiveData<Event<StatusChange>>
         get() = _statusChangeEvent
 
+
+    fun onBlankNoteDiscarded() {
+        _messageEvent.send(R.string.edit_message_blank_note_discarded)
+    }
 
     fun onStatusChange(statusChange: StatusChange) {
         lastStatusChange = statusChange
