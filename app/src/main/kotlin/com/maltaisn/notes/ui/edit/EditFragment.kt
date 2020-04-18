@@ -31,7 +31,6 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.SimpleItemAnimator
 import com.google.android.material.snackbar.Snackbar
 import com.maltaisn.notes.R
 import com.maltaisn.notes.hideKeyboard
@@ -88,6 +87,8 @@ class EditFragment : ViewModelFragment(), Toolbar.OnMenuItemClickListener, Confi
         val typeItem = toolbarMenu.findItem(R.id.item_type)
         val moveItem = toolbarMenu.findItem(R.id.item_move)
         val shareItem = toolbarMenu.findItem(R.id.item_share)
+        val uncheckAllItem = toolbarMenu.findItem(R.id.item_uncheck_all)
+        val deleteCheckedItem = toolbarMenu.findItem(R.id.item_delete_checked)
         val copyItem = toolbarMenu.findItem(R.id.item_copy)
         val deleteItem = toolbarMenu.findItem(R.id.item_delete)
 
@@ -98,7 +99,6 @@ class EditFragment : ViewModelFragment(), Toolbar.OnMenuItemClickListener, Confi
         val layoutManager = LinearLayoutManager(context)
         rcv.adapter = adapter
         rcv.layoutManager = layoutManager
-        (rcv.itemAnimator as SimpleItemAnimator).supportsChangeAnimations = false
 
         // Observers
         viewModel.noteStatus.observe(viewLifecycleOwner, Observer { status ->
@@ -130,6 +130,9 @@ class EditFragment : ViewModelFragment(), Toolbar.OnMenuItemClickListener, Confi
         })
 
         viewModel.noteType.observe(viewLifecycleOwner, Observer { type ->
+            val isList = type == NoteType.LIST
+            uncheckAllItem.isVisible = isList
+            deleteCheckedItem.isVisible = isList
             when (type) {
                 NoteType.TEXT -> {
                     typeItem.setIcon(R.drawable.ic_checkbox)
@@ -184,6 +187,14 @@ class EditFragment : ViewModelFragment(), Toolbar.OnMenuItemClickListener, Confi
             ).show(childFragmentManager, DELETE_CONFIRM_DIALOG_TAG)
         })
 
+        viewModel.showRemoveCheckedConfirmEvent.observe(viewLifecycleOwner, EventObserver {
+            ConfirmDialog.newInstance(
+                    title = R.string.edit_convert_keep_checked,
+                    btnPositive = R.string.action_delete,
+                    btnNegative = R.string.action_keep
+            ).show(childFragmentManager, REMOVE_CHECKED_CONFIRM_DIALOG_TAG)
+        })
+
         viewModel.exitEvent.observe(viewLifecycleOwner, EventObserver {
             findNavController().popBackStack()
         })
@@ -198,23 +209,35 @@ class EditFragment : ViewModelFragment(), Toolbar.OnMenuItemClickListener, Confi
         when (item.itemId) {
             R.id.item_type -> viewModel.toggleNoteType()
             R.id.item_move -> viewModel.moveNoteAndExit()
+            R.id.item_share -> viewModel.shareNote()
+            R.id.item_uncheck_all -> {
+                viewModel.uncheckAllItems()
+            }
+            R.id.item_delete_checked -> viewModel.deleteCheckedItems()
             R.id.item_copy -> viewModel.copyNote(getString(R.string.edit_copy_untitled_name),
                     getString(R.string.edit_copy_suffix))
             R.id.item_delete -> viewModel.deleteNote()
-            R.id.item_share -> viewModel.shareNote()
             else -> return false
         }
         return true
     }
 
     override fun onDialogConfirmed(tag: String?) {
-        if (tag == DELETE_CONFIRM_DIALOG_TAG) {
-            viewModel.deleteNoteForeverAndExit()
+        when (tag) {
+            DELETE_CONFIRM_DIALOG_TAG -> viewModel.deleteNoteForeverAndExit()
+            REMOVE_CHECKED_CONFIRM_DIALOG_TAG -> viewModel.convertToText(false)
+        }
+    }
+
+    override fun onDialogCancelled(tag: String?) {
+        if (tag == REMOVE_CHECKED_CONFIRM_DIALOG_TAG) {
+            viewModel.convertToText(true)
         }
     }
 
     companion object {
         private const val DELETE_CONFIRM_DIALOG_TAG = "delete_confirm_dialog"
+        private const val REMOVE_CHECKED_CONFIRM_DIALOG_TAG = "remove_checked_confirm_dialog"
     }
 
 }

@@ -22,7 +22,7 @@ sealed class EditListItem {
 }
 
 data class EditTitleItem(var title: CharSequence,
-                         val editable: Boolean) : EditListItem() {
+                         var editable: Boolean) : EditListItem() {
     override val type: Int
         get() = EditAdapter.VIEW_TYPE_TITLE
 }

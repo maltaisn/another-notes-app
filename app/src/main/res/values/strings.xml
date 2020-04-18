@@ -25,10 +25,12 @@
     <string name="action_convert_to_text">Convert to text</string>
     <string name="action_copy">Make a copy</string>
     <string name="action_delete">Delete</string>
+    <string name="action_delete_checked">Delete checked items</string>
     <string name="action_delete_forever">Delete forever</string>
     <string name="action_delete_selection_forever">Delete selection forever</string>
     <string name="action_empty_trash">Empty recycle bin</string>
     <string name="action_empty_trash_short">Empty</string>
+    <string name="action_keep">Keep</string>
     <string name="action_layout_grid">View as grid</string>
     <string name="action_layout_list">View as list</string>
     <string name="action_password_change_short">Change</string>
@@ -45,6 +47,7 @@
     <string name="action_sign_up">Sign up</string>
     <string name="action_sync">Sync &amp; backup</string>
     <string name="action_unarchive">Unarchive</string>
+    <string name="action_uncheck_all">Uncheck all items</string>
     <string name="action_undo">Undo</string>
 
     <!-- Home -->
@@ -92,6 +95,8 @@
 
     <string name="edit_copy_suffix">Copy</string>
     <string name="edit_copy_untitled_name">untitled</string>
+
+    <string name="edit_convert_keep_checked">Remove checked items?</string>
 
     <!-- Sync & backup -->
     <string name="sync_message">Backup your notes on the cloud and synchronize them across multiple devices.</string>

@@ -111,6 +111,10 @@ data class Note(
             NoteType.TEXT -> require(metadata is BlankNoteMetadata)
             NoteType.LIST -> require(metadata is ListNoteMetadata)
         }
+
+        require(addedDate.time <= lastModifiedDate.time) {
+            "Note added date must be before or on last modified date."
+        }
     }
 
     /**
@@ -141,56 +145,73 @@ data class Note(
             }
         }
 
-
-    fun convertToType(type: NoteType): Note {
-        if (this.type == type) {
-            return this
-        }
-
-        val lines = content.split('\n')
-
-        val content: String
-        val metadata: NoteMetadata
-        when (type) {
-            NoteType.TEXT -> {
-                // Append a bullet point to each line of content.
-                content = if (lines.all { it.isBlank() }) {
-                    ""
-                } else {
-                    buildString {
-                        for (line in lines) {
+    /**
+     * Returns conversion of this note to a text note if it's not already one.
+     * If all items were blank, resulting list note is empty. Otherwise, each item
+     * because a text line with a bullet point at the start. Checked state is always lost.
+     *
+     * @param keepCheckedItems Whether to keep checked items or delete them.
+     */
+    fun asTextNote(keepCheckedItems: Boolean): Note = when (type) {
+        NoteType.TEXT -> this
+        NoteType.LIST -> {
+            // Append a bullet point to each line of content.
+            val items = listItems
+            val content = if (items.all { it.content.isBlank() }) {
+                ""
+            } else {
+                buildString {
+                    for (item in items) {
+                        if (keepCheckedItems || !item.checked) {
                             append(DEFAULT_BULLET_CHAR)
                             append(' ')
-                            append(line)
+                            append(item.content)
                             append('\n')
                         }
+                    }
+                    if (length > 0) {
                         deleteCharAt(lastIndex)
                     }
                 }
-                metadata = BlankNoteMetadata
             }
-            NoteType.LIST -> {
-                // Convert each list item to a text line.
-                content = if (lines.all { it.isNotEmpty() && it.first() in BULLET_CHARS }) {
-                    // All lines start with a bullet point, remove them.
-                    buildString {
-                        for (line in lines) {
-                            append(line.substring(1).trim())
-                            append('\n')
-                        }
-                        deleteCharAt(lastIndex)
-                    }
-                } else {
-                    this.content
-                }
-                metadata = ListNoteMetadata(List(lines.size) { false })
-            }
+            Note(id, uuid, NoteType.TEXT, title, content, BlankNoteMetadata,
+                    addedDate, lastModifiedDate, status, synced)
         }
-        return Note(id, uuid, type, title, content, metadata, addedDate, lastModifiedDate, status, synced)
     }
 
+    /**
+     * Returns a conversion of this note to a list note if it's not already one.
+     * Each text line becomes an unchecked list item.
+     * If all lines started with a bullet point, the bullet point is removed.
+     */
+    fun asListNote(): Note = when (type) {
+        NoteType.LIST -> this
+        NoteType.TEXT -> {
+            // Convert each list item to a text line.
+            val lines = content.split('\n')
+            val content = if (lines.all { it.isNotEmpty() && it.first() in BULLET_CHARS }) {
+                // All lines start with a bullet point, remove them.
+                buildString {
+                    for (line in lines) {
+                        append(line.substring(1).trim())
+                        append('\n')
+                    }
+                    deleteCharAt(lastIndex)
+                }
+            } else {
+                this.content
+            }
+            val metadata = ListNoteMetadata(List(lines.size) { false })
+            Note(id, uuid, NoteType.LIST, title, content, metadata,
+                    addedDate, lastModifiedDate, status, synced)
+        }
+    }
+
+    /**
+     * Convert this note to text, including both the title and the content.
+     */
     fun asText(): String {
-        val textNote = convertToType(NoteType.TEXT)
+        val textNote = asTextNote(true)
         return buildString {
             if (title.isNotBlank()) {
                 append(textNote.title)
@@ -207,6 +228,11 @@ data class Note(
         const val DEFAULT_BULLET_CHAR = "-"
 
 
+        /**
+         * Get the title of a copy of a note with [currentTitle].
+         * Localized strings [untitledName] and [copySuffix] must be provided.
+         * Returns "- Copy", "- Copy 2", "- Copy 3", etc, and sets a title if current is blank.
+         */
         fun getCopiedNoteTitle(currentTitle: String, untitledName: String, copySuffix: String): String {
             val match = "^(.*) - $copySuffix(?:\\s+([1-9]\\d*))?$".toRegex().find(currentTitle)
             return when {
@@ -220,6 +246,9 @@ data class Note(
             }
         }
 
+        /**
+         * Generate a UUID to be used by a note.
+         */
         fun generateNoteUuid() = UUID.randomUUID().toString().replace("-", "")
     }
 }

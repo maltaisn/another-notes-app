@@ -44,6 +44,8 @@ class EditViewModel @Inject constructor(
             _editItems.value = value
         }
 
+    private var titleItem: EditTitleItem? = null
+
     private val _noteType = MutableLiveData<NoteType?>()
     val noteType: LiveData<NoteType?>
         get() = _noteType
@@ -75,6 +77,10 @@ class EditViewModel @Inject constructor(
     private val _showDeleteConfirmEvent = MutableLiveData<Event<Unit>>()
     val showDeleteConfirmEvent: LiveData<Event<Unit>>
         get() = _showDeleteConfirmEvent
+
+    private val _showRemoveCheckedConfirmEvent = MutableLiveData<Event<Unit>>()
+    val showRemoveCheckedConfirmEvent: LiveData<Event<Unit>>
+        get() = _showRemoveCheckedConfirmEvent
 
     private val _exitEvent = MutableLiveData<Event<Unit>>()
     val exitEvent: LiveData<Event<Unit>>
@@ -113,7 +119,7 @@ class EditViewModel @Inject constructor(
         }
 
         // Create note
-        val title = (listItems[0] as EditTitleItem).title.toString()
+        val title = titleItem!!.title.toString()
         val content: String
         val metadata: NoteMetadata
         when (note.type) {
@@ -153,12 +159,26 @@ class EditViewModel @Inject constructor(
         save()
 
         // Convert note type
-        val newType = when (note.type) {
-            NoteType.TEXT -> NoteType.LIST
-            NoteType.LIST -> NoteType.TEXT
+        note = when (note.type) {
+            NoteType.TEXT -> note.asListNote()
+            NoteType.LIST -> {
+                if ((note.metadata as ListNoteMetadata).checked.any { it }) {
+                    _showRemoveCheckedConfirmEvent.send()
+                    return
+                } else {
+                    note.asTextNote(true)
+                }
+            }
         }
-        note = note.convertToType(newType)
-        _noteType.value = newType
+        _noteType.value = note.type
+
+        // Update list items
+        createListItems()
+    }
+
+    fun convertToText(keepCheckedItems: Boolean) {
+        note = note.asTextNote(keepCheckedItems)
+        _noteType.value = NoteType.TEXT
 
         // Update list items
         createListItems()
@@ -203,7 +223,7 @@ class EditViewModel @Inject constructor(
             }
 
             // Update title item
-            val title = (listItems[0] as EditTitleItem).title as Editable
+            val title = titleItem!!.title as Editable
             title.replace(0, title.length, newTitle)
             focusItemAt(0, newTitle.length, true)
         }
@@ -230,6 +250,27 @@ class EditViewModel @Inject constructor(
             notesRepository.deleteNote(note)
         }
         exit()
+    }
+
+    fun uncheckAllItems() {
+        changeListItems { list ->
+            for ((i, item) in list.withIndex()) {
+                if (item is EditItemItem && item.checked) {
+                    list[i] = item.copy(checked = false)
+                }
+            }
+        }
+    }
+
+    fun deleteCheckedItems() {
+        changeListItems { list ->
+            val iterator = list.iterator()
+            for (item in iterator) {
+                if (item is EditItemItem && item.checked) {
+                    iterator.remove()
+                }
+            }
+        }
     }
 
     private fun changeNoteStatusAndExit(newStatus: NoteStatus) {
@@ -259,7 +300,10 @@ class EditViewModel @Inject constructor(
         val canEdit = !isNoteInTrash
 
         // Title item
-        val title = EditTitleItem(note.title, canEdit)
+        val title = titleItem ?: EditTitleItem("", false)
+        title.title = note.title
+        title.editable = canEdit
+        titleItem = title
         list += title
 
         when (note.type) {

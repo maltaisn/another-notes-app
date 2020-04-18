@@ -46,6 +46,18 @@
         />
 
     <item
+        android:id="@+id/item_uncheck_all"
+        android:title="@string/action_uncheck_all"
+        app:showAsAction="never"
+        />
+
+    <item
+        android:id="@+id/item_delete_checked"
+        android:title="@string/action_delete_checked"
+        app:showAsAction="never"
+        />
+
+    <item
         android:id="@+id/item_copy"
         android:title="@string/action_copy"
         app:showAsAction="never"

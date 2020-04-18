@@ -33,7 +33,9 @@ object DateTimeConverter : KSerializer<Date> {
 
     @TypeConverter
     @JvmStatic
-    fun toDate(str: String): Date = dateFormat.parse(str)!!
+    fun toDate(str: String): Date {
+        return dateFormat.parse(str)!!
+    }
 
     @TypeConverter
     @JvmStatic

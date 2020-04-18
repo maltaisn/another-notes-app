@@ -17,9 +17,9 @@
 package com.maltaisn.notes.model.entity
 
 import com.maltaisn.notes.listNote
+import com.maltaisn.notes.model.converter.DateTimeConverter
 import com.maltaisn.notes.testNote
 import org.junit.Test
-import java.util.*
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
@@ -46,6 +46,13 @@ class NoteTest {
     fun `should fail to get list items on text note`() {
         val note = testNote(type = NoteType.TEXT)
         note.listItems
+    }
+
+    @Test(expected = IllegalArgumentException::class)
+    fun `should fail to create note with added date after last modified`() {
+        testNote(type = NoteType.TEXT,
+                added = DateTimeConverter.toDate("2020-01-01T00:00:00.000Z"),
+                modified = DateTimeConverter.toDate("2019-12-31T23:59:59.999Z"))
     }
 
     @Test
@@ -79,49 +86,75 @@ class NoteTest {
 
     @Test
     fun `should convert text note to list`() {
-        val date = Date()
-        val textNote = testNote(uuid = "0", content = "0\n1", added = date, modified = date)
+        val textNote = testNote(uuid = "0", content = "0\n1")
         val listNote = listNote(listOf(
                 ListNoteItem("0", false),
-                ListNoteItem("1", false)
-        ), uuid = "0", added = date, modified = date)
-        assertEquals(listNote, textNote.convertToType(NoteType.LIST))
+                ListNoteItem("1", false)), uuid = "0")
+        assertEquals(listNote, textNote.asListNote())
     }
 
     @Test
     fun `should convert text note with bullets to list`() {
-        val date = Date()
-        val textNote = testNote(uuid = "0", content = "- 0\n* 1\n+ 2", added = date, modified = date)
+        val textNote = testNote(uuid = "0", content = "- 0\n* 1\n+ 2")
         val listNote = listNote(listOf(
                 ListNoteItem("0", false),
                 ListNoteItem("1", false),
-                ListNoteItem("2", false)
-        ), uuid = "0", added = date, modified = date)
-        assertEquals(listNote, textNote.convertToType(NoteType.LIST))
+                ListNoteItem("2", false)), uuid = "0")
+        assertEquals(listNote, textNote.asListNote())
     }
 
     @Test
     fun `should convert empty list note with bullet to text`() {
-        val date = Date()
         val listNote = listNote(listOf(
                 ListNoteItem("    ", false),
-                ListNoteItem("", true)
-        ), uuid = "0", added = date, modified = date)
-        val textNote = testNote(uuid = "0", content = "", added = date, modified = date)
-        assertEquals(textNote, listNote.convertToType(NoteType.TEXT))
+                ListNoteItem("", true)), uuid = "0")
+        val textNote = testNote(uuid = "0", content = "")
+        assertEquals(textNote, listNote.asTextNote(true))
     }
 
     @Test
     fun `should convert list note to text`() {
-        val date = Date()
         val listNote = listNote(listOf(
                 ListNoteItem("0", false),
-                ListNoteItem("1", false)
-        ), uuid = "0", added = date, modified = date)
-        val textNote = testNote(uuid = "0", content = "- 0\n- 1", added = date, modified = date)
-        assertEquals(textNote, listNote.convertToType(NoteType.TEXT))
+                ListNoteItem("1", false)), uuid = "0")
+        val textNote = testNote(uuid = "0", content = "- 0\n- 1")
+        assertEquals(textNote, listNote.asTextNote(true))
     }
 
+    @Test
+    fun `should convert empty text note to list`() {
+        val textNote = testNote(uuid = "0", content = "")
+        val listNote = listNote(listOf(ListNoteItem("", false)), uuid = "0")
+        assertEquals(listNote, textNote.asListNote())
+    }
+
+    @Test
+    fun `should convert blank list note to text`() {
+        val listNote = listNote(listOf(
+                ListNoteItem("  ", false),
+                ListNoteItem("", false),
+                ListNoteItem("    ", false)), uuid = "0")
+        val textNote = testNote(uuid = "0", content = "")
+        assertEquals(textNote, listNote.asTextNote(true))
+    }
+
+    @Test
+    fun `should convert list note to text removing checked items`() {
+        val listNote = listNote(listOf(
+                ListNoteItem("item 1", true),
+                ListNoteItem("item 2", true),
+                ListNoteItem("item 3", false)), uuid = "0")
+        val textNote = testNote(uuid = "0", content = "- item 3")
+        assertEquals(textNote, listNote.asTextNote(false))
+    }
+
+    @Test
+    fun `should convert list note to text removing checked items (leaving none)`() {
+        val listNote = listNote(listOf(
+                ListNoteItem("item 1", true)), uuid = "0")
+        val textNote = testNote(uuid = "0", content = "")
+        assertEquals(textNote, listNote.asTextNote(false))
+    }
 
     @Test
     fun `should add copy suffix to title`() {

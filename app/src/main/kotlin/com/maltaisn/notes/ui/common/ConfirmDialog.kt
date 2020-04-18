@@ -30,18 +30,26 @@ class ConfirmDialog : DialogFragment() {
     override fun onCreateDialog(state: Bundle?): Dialog {
         val context = requireContext()
         val args = requireArguments()
-        return MaterialAlertDialogBuilder(context)
+        val builder = MaterialAlertDialogBuilder(context)
                 .setTitle(args.getInt(ARG_TITLE))
-                .setMessage(args.getInt(ARG_MESSAGE))
                 .setPositiveButton(args.getInt(ARG_BTN_POSITIVE)) { _, _ ->
                     (parentFragment as? Callback)?.onDialogConfirmed(tag)
                 }
-                .setNegativeButton(args.getInt(ARG_BTN_NEGATIVE), null)
-                .create()
+                .setNegativeButton(args.getInt(ARG_BTN_NEGATIVE)) { _, _ ->
+                    (parentFragment as? Callback)?.onDialogCancelled(tag)
+                }
+
+        val message = args.getInt(ARG_MESSAGE)
+        if (message != 0) {
+            builder.setMessage(message)
+        }
+
+        return builder.create()
     }
 
     interface Callback {
-        fun onDialogConfirmed(tag: String?)
+        fun onDialogConfirmed(tag: String?) = Unit
+        fun onDialogCancelled(tag: String?) = Unit
     }
 
     companion object {
@@ -52,7 +60,7 @@ class ConfirmDialog : DialogFragment() {
         private const val ARG_BTN_NEGATIVE = "btn_negative"
 
         fun newInstance(@StringRes title: Int,
-                        @StringRes message: Int,
+                        @StringRes message: Int = 0,
                         @StringRes btnPositive: Int,
                         @StringRes btnNegative: Int = R.string.action_cancel): ConfirmDialog {
             val dialog = ConfirmDialog()
