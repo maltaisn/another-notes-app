@@ -72,6 +72,10 @@ class EditViewModel @Inject constructor(
     val shareEvent: LiveData<Event<ShareData>>
         get() = _shareEvent
 
+    private val _showDeleteConfirmEvent = MutableLiveData<Event<Unit>>()
+    val showDeleteConfirmEvent: LiveData<Event<Unit>>
+        get() = _showDeleteConfirmEvent
+
     private val _exitEvent = MutableLiveData<Event<Unit>>()
     val exitEvent: LiveData<Event<Unit>>
         get() = _exitEvent
@@ -212,17 +216,20 @@ class EditViewModel @Inject constructor(
 
     fun deleteNote() {
         if (isNoteInTrash) {
-            // Delete forever
-            // TODO ask for confirmation
-            viewModelScope.launch {
-                notesRepository.deleteNote(note)
-            }
-            exit()
+            // Delete forever, ask for confirmation.
+            _showDeleteConfirmEvent.send()
 
         } else {
             // Send to trash
             changeNoteStatusAndExit(NoteStatus.TRASHED)
         }
+    }
+
+    fun deleteNoteForeverAndExit() {
+        viewModelScope.launch {
+            notesRepository.deleteNote(note)
+        }
+        exit()
     }
 
     private fun changeNoteStatusAndExit(newStatus: NoteStatus) {
@@ -235,6 +242,9 @@ class EditViewModel @Inject constructor(
             note = note.copy(status = newStatus,
                     lastModifiedDate = Date(),
                     synced = false)
+            viewModelScope.launch {
+                notesRepository.updateNote(note)
+            }
 
             // Show status change message.
             val statusChange = StatusChange(listOf(oldNote), oldStatus, newStatus)

@@ -58,6 +58,7 @@
     </plurals>
 
     <string name="trash_reminder_message">Notes in recycle bin are automatically deleted after %d days.</string>
+    <string name="trash_delete_message">This note will be permanently deleted.</string>
     <string name="trash_delete_selected_message">Selected notes will be permanently deleted.</string>
     <string name="trash_empty_message">All notes in recycle bin will be permanently deleted.</string>
 

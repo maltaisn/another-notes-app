@@ -40,11 +40,12 @@ import com.maltaisn.notes.model.entity.NoteStatus
 import com.maltaisn.notes.model.entity.NoteType
 import com.maltaisn.notes.ui.EventObserver
 import com.maltaisn.notes.ui.SharedViewModel
+import com.maltaisn.notes.ui.common.ConfirmDialog
 import com.maltaisn.notes.ui.common.ViewModelFragment
 import com.maltaisn.notes.ui.edit.adapter.EditAdapter
 
 
-class EditFragment : ViewModelFragment(), Toolbar.OnMenuItemClickListener {
+class EditFragment : ViewModelFragment(), Toolbar.OnMenuItemClickListener, ConfirmDialog.Callback {
 
     private val viewModel: EditViewModel by viewModels { viewModelFactory }
     private val sharedViewModel: SharedViewModel by activityViewModels { viewModelFactory }
@@ -176,6 +177,14 @@ class EditFragment : ViewModelFragment(), Toolbar.OnMenuItemClickListener {
             startActivity(Intent.createChooser(intent, null))
         })
 
+        viewModel.showDeleteConfirmEvent.observe(viewLifecycleOwner, EventObserver {
+            ConfirmDialog.newInstance(
+                    title = R.string.action_delete_forever,
+                    message = R.string.trash_delete_message,
+                    btnPositive = R.string.action_delete
+            ).show(childFragmentManager, DELETE_CONFIRM_DIALOG_TAG)
+        })
+
         viewModel.exitEvent.observe(viewLifecycleOwner, EventObserver {
             findNavController().popBackStack()
         })
@@ -197,6 +206,16 @@ class EditFragment : ViewModelFragment(), Toolbar.OnMenuItemClickListener {
             else -> return false
         }
         return true
+    }
+
+    override fun onDialogConfirmed(tag: String?) {
+        if (tag == DELETE_CONFIRM_DIALOG_TAG) {
+            viewModel.deleteNoteForeverAndExit()
+        }
+    }
+
+    companion object {
+        private const val DELETE_CONFIRM_DIALOG_TAG = "delete_confirm_dialog"
     }
 
 }
