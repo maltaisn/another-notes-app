@@ -101,7 +101,8 @@ export type Note = t.TypeOf<typeof TNote>
 export const TSyncData = t.type({
     lastSync: TDateString,
     changedNotes: t.union([t.array(TNote), t.undefined]),
-    deletedUuids: t.union([t.array(t.string), t.undefined])
+    deletedUuids: t.union([t.array(t.string), t.undefined]),
+    version: t.number
 })
 export type SyncData = t.TypeOf<typeof TSyncData>
 

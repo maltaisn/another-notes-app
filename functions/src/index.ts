@@ -42,8 +42,7 @@ export const sync = functions.https.onCall(async (data, context) => {
 
     // Decode and validate sync data.
     const syncData = decodeOrElse(TSyncData, data, (e) => {
-        console.error('Invalid sync data', e)
-        throw new HttpsError('invalid-argument', 'Invalid sync data: ')
+        throw new HttpsError('invalid-argument', 'Invalid sync data')
     })
     const syncTime = new Date()
 
@@ -67,61 +66,64 @@ export const deleteUserData = functions.auth.user().onDelete(async (user) => {
  */
 async function syncRemoteChangeEvents(userUid: string, syncData: SyncData,
                                       syncTime: Date): Promise<SyncData> {
-    // Create a set of all locally changed or deleted notes UUID from sync data.
-    // Notes with these UUID aren't sent back to client since client overwrites them.
-    const localChangedUuids = new Set()
-    syncData.changedNotes?.forEach(note => localChangedUuids.add(note.uuid))
-    syncData.deletedUuids?.forEach(uuid => localChangedUuids.add(uuid))
+    if (syncData.version == 1) {
+        // Create a set of all locally changed or deleted notes UUID from sync data.
+        // Notes with these UUID aren't sent back to client since client overwrites them.
+        const localChangedUuids = new Set()
+        syncData.changedNotes?.forEach(note => localChangedUuids.add(note.uuid))
+        syncData.deletedUuids?.forEach(uuid => localChangedUuids.add(uuid))
 
-    const changedNotes: Note[] = []
-    const deletedUuids: string[] = []
-    try {
-        // Date to sync notes from. + 1 is to avoid getting notes from last sync.
-        const startDate = new Date(syncData.lastSync.getTime() + 1).toISOString()
+        const changedNotes: Note[] = []
+        const deletedUuids: string[] = []
+        try {
+            // Date to sync notes from. + 1 is to avoid getting notes from last sync.
+            const startDate = new Date(syncData.lastSync.getTime() + 1).toISOString()
 
-        // Get remote changes
-        const notesSnapshot = await admin.database()
-            .ref(`/users/${userUid}/notes`)
-            .orderByChild('synced')
-            .startAt(startDate)
-            .once('value')
-        notesSnapshot.forEach((childSnapshot) => {
-            const note = decodeOrElse(TNote, childSnapshot.val(), (e) => {
-                console.error('Invalid server note data', e)
-                throw new HttpsError('internal', 'Invalid server note data', e)
+            // Get remote changes
+            const notesSnapshot = await admin.database()
+                .ref(`/users/${userUid}/notes`)
+                .orderByChild('synced')
+                .startAt(startDate)
+                .once('value')
+            notesSnapshot.forEach((childSnapshot) => {
+                const note = decodeOrElse(TNote, childSnapshot.val(), (e) => {
+                    throw new HttpsError('internal', 'Invalid server note data', e)
+                })
+                delete note.synced
+
+                if (!localChangedUuids.has(note.uuid)) {
+                    // Add decoded note to list.
+                    const decoded = base64DecodeNote(note)
+                    changedNotes.push(decoded)
+                }
             })
-            delete note.synced
 
-            if (!localChangedUuids.has(note.uuid)) {
-                // Add decoded note to list.
-                const decoded = base64DecodeNote(note)
-                changedNotes.push(decoded)
-            }
-        })
+            // Get remote deletions
+            const deletedNotesSnapshot = await admin.database()
+                .ref(`/users/${userUid}/deletedNotes`)
+                .orderByValue()
+                .startAt(startDate)
+                .once('value')
+            deletedNotesSnapshot.forEach((childSnapshot) => {
+                const uuid = childSnapshot.key!
+                if (!localChangedUuids.has(uuid)) {
+                    // Add deleted note UUID to list.
+                    deletedUuids.push(uuid)
+                }
+            })
 
-        // Get remote deletions
-        const deletedNotesSnapshot = await admin.database()
-            .ref(`/users/${userUid}/deletedNotes`)
-            .orderByValue()
-            .startAt(startDate)
-            .once('value')
-        deletedNotesSnapshot.forEach((childSnapshot) => {
-            const uuid = childSnapshot.key!
-            if (!localChangedUuids.has(uuid)) {
-                // Add deleted note UUID to list.
-                deletedUuids.push(uuid)
-            }
-        })
+        } catch (e) {
+            throw new HttpsError('internal', 'Could not get notes', e.message)
+        }
 
-    } catch (e) {
-        console.error('Could not get notes', e)
-        throw new HttpsError('internal', 'Could not get notes', e.message)
-    }
-
-    return {
-        lastSync: syncTime,
-        changedNotes: changedNotes,
-        deletedUuids: deletedUuids
+        return {
+            lastSync: syncTime,
+            changedNotes: changedNotes,
+            deletedUuids: deletedUuids,
+            version: 1
+        }
+    } else {
+        throw new HttpsError('invalid-argument', 'Unknown API version')
     }
 }
 
@@ -129,30 +131,33 @@ async function syncRemoteChangeEvents(userUid: string, syncData: SyncData,
  * Update remote notes from a list of local change events contained in syncData.
  */
 async function syncLocalChangeEvents(userUid: string, syncData: SyncData, syncTime: Date) {
-    try {
-        // Add local changes
-        const notesSnapshot = admin.database().ref(`/users/${userUid}/notes`)
-        if (syncData.changedNotes) {
-            for (const note of syncData.changedNotes) {
-                const encoded = base64EncodeNote(note)
-                encoded.synced = syncTime
-                const obj = TNote.encode(encoded)
-                await notesSnapshot.child(note.uuid).set(obj)
+    if (syncData.version == 1) {
+        try {
+            // Add local changes
+            const notesSnapshot = admin.database().ref(`/users/${userUid}/notes`)
+            if (syncData.changedNotes) {
+                for (const note of syncData.changedNotes) {
+                    const encoded = base64EncodeNote(note)
+                    encoded.synced = syncTime
+                    const obj = TNote.encode(encoded)
+                    await notesSnapshot.child(note.uuid).set(obj)
+                }
             }
-        }
 
-        // Add local deletions
-        if (syncData.deletedUuids) {
-            const deletedNotesSnapshot = admin.database().ref(`/users/${userUid}/deletedNotes`)
-            for (const uuid of syncData.deletedUuids) {
-                await notesSnapshot.child(uuid).remove()
-                await deletedNotesSnapshot.child(uuid).set(TDateString.encode(syncTime))
+            // Add local deletions
+            if (syncData.deletedUuids) {
+                const deletedNotesSnapshot = admin.database().ref(`/users/${userUid}/deletedNotes`)
+                for (const uuid of syncData.deletedUuids) {
+                    await notesSnapshot.child(uuid).remove()
+                    await deletedNotesSnapshot.child(uuid).set(TDateString.encode(syncTime))
+                }
             }
-        }
 
-    } catch (e) {
-        console.error('Could not set notes', e)
-        throw new HttpsError('internal', 'Could not set notes', e.message)
+        } catch (e) {
+            throw new HttpsError('internal', 'Could not set notes', e.message)
+        }
+    } else {
+        throw new HttpsError('invalid-argument', 'Unknown API version')
     }
 }
 

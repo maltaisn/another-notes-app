@@ -18,7 +18,6 @@
 
 package com.maltaisn.notes.model
 
-import android.security.keystore.UserNotAuthenticatedException
 import com.google.firebase.FirebaseException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.functions.FirebaseFunctions
@@ -44,15 +43,9 @@ open class NotesService @Inject constructor(
     /**
      * Send local data to sync with server, and return remote data to sync with local.
      *
-     * @throws UserNotAuthenticatedException If user isn't authenticated.
      * @throws IOException If sync fails for an unknown reason.
      */
     open suspend fun syncNotes(localData: SyncData): SyncData {
-        if (fbAuth.currentUser == null) {
-            // Not signed in, no sync
-            throw IOException("User not authenticated")
-        }
-
         // Send local changes to server, and receive remote changes
         val localDataJson = json.toJson(SyncData.serializer(), localData)
         val result = callSyncFunction(jsonElementToStructure(localDataJson))
@@ -77,7 +70,8 @@ open class NotesService @Inject constructor(
     @Serializable
     data class SyncData(val lastSync: Date,
                         val changedNotes: List<Note>,
-                        val deletedUuids: List<String>)
+                        val deletedUuids: List<String>,
+                        val version: Int = API_VERSION)
 
 
     private fun jsonElementToStructure(element: JsonElement?): Any? = when (element) {
@@ -96,6 +90,10 @@ open class NotesService @Inject constructor(
         is String -> JsonLiteral(obj)
         null -> JsonNull
         else -> error("Invalid object")
+    }
+
+    companion object {
+        const val API_VERSION = 1
     }
 
 }
