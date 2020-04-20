@@ -16,6 +16,7 @@
 
 package com.maltaisn.notes.ui.edit.adapter
 
+import android.text.Editable
 import android.view.KeyEvent
 import android.view.View
 import android.widget.CheckBox
@@ -45,8 +46,10 @@ class EditTitleViewHolder(itemView: View, callback: EditAdapter.Callback) :
     fun bind(item: EditTitleItem) {
         titleEdt.isFocusable = item.editable
         titleEdt.isFocusableInTouchMode = item.editable
-        titleEdt.setText(item.title)
-        item.title = titleEdt.text
+
+        // Set text and change to AndroidEditableText so view model can see changes to it.
+        titleEdt.setText(item.title.text)
+        item.title = AndroidEditableText(titleEdt.text)
     }
 
     override fun setFocus(pos: Int) {
@@ -71,8 +74,10 @@ class EditContentViewHolder(itemView: View, callback: EditAdapter.Callback) :
         // Change note content to the EditText editable text so view model can change it.
         contentEdt.isFocusable = item.editable
         contentEdt.isFocusableInTouchMode = item.editable
-        contentEdt.setText(item.content)
-        item.content = contentEdt.text
+
+        // Set text and change to AndroidEditableText so view model can see changes to it.
+        contentEdt.setText(item.content.text)
+        item.content = AndroidEditableText(contentEdt.text)
     }
 }
 
@@ -134,8 +139,10 @@ class EditItemViewHolder(itemView: View, callback: EditAdapter.Callback) :
         // Change item content to the EditText editable text so view model can change it.
         itemEdt.isFocusable = item.editable
         itemEdt.isFocusableInTouchMode = item.editable
-        itemEdt.setText(item.content)
-        item.content = itemEdt.text
+
+        // Set text and change to AndroidEditableText so view model can see changes to it.
+        itemEdt.setText(item.content.text)
+        item.content = AndroidEditableText(itemEdt.text)
 
         itemCheck.isChecked = item.checked
         itemCheck.isEnabled = item.editable
@@ -158,5 +165,16 @@ class EditItemAddViewHolder(itemView: View, callback: EditAdapter.Callback) :
         itemView.setOnClickListener {
             callback.onNoteItemAddClicked()
         }
+    }
+}
+
+private class AndroidEditableText(override val text: Editable) : EditableText {
+
+    override fun append(text: CharSequence) {
+        this.text.append(text)
+    }
+
+    override fun replaceAll(text: CharSequence) {
+        this.text.replace(0, this.text.length, text)
     }
 }

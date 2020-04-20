@@ -48,7 +48,7 @@ class NotesRepositoryTest {
         on { getLong(any(), anyLong()) } doAnswer { it.arguments[1] as Long }
     }
 
-    private val notesRepo = NotesRepository(notesDao, deletedNotesDao,
+    private val notesRepo = DefaultNotesRepository(notesDao, deletedNotesDao,
             notesService, prefs, Json(JsonConfiguration.Stable))
 
     @Test

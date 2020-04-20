@@ -16,7 +16,6 @@
 
 package com.maltaisn.notes.ui.edit
 
-import android.text.Editable
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -28,6 +27,7 @@ import com.maltaisn.notes.ui.ShareData
 import com.maltaisn.notes.ui.StatusChange
 import com.maltaisn.notes.ui.edit.adapter.*
 import com.maltaisn.notes.ui.send
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.launch
 import java.util.*
 import javax.inject.Inject
@@ -37,14 +37,31 @@ class EditViewModel @Inject constructor(
         private val notesRepository: NotesRepository
 ) : ViewModel(), EditAdapter.Callback {
 
-    private var note: Note = BLANK_NOTE
-    private var listItems = mutableListOf<EditListItem>()
+    /**
+     * Note being edited by user. This note data is not always up to date with UI,
+     * so [save] must be called before using it.
+     */
+    private var note = BLANK_NOTE
+
+    /**
+     * Status of the note being edited.
+     */
+    private var status = NoteStatus.ACTIVE
+
+    /**
+     * The currently displayed list items created in [createListItems].
+     */
+    private var listItems = emptyList<EditListItem>()
         set(value) {
             field = value
             _editItems.value = value
         }
 
+    /**
+     * The first item in [listItems] used to display the title, or `null` if not created yet.
+     */
     private var titleItem: EditTitleItem? = null
+
 
     private val _noteType = MutableLiveData<NoteType?>()
     val noteType: LiveData<NoteType?>
@@ -54,8 +71,8 @@ class EditViewModel @Inject constructor(
     val noteStatus: LiveData<NoteStatus?>
         get() = _noteStatus
 
-    private val _editItems = MutableLiveData<MutableList<EditListItem>>()
-    val editItems: LiveData<MutableList<EditListItem>>
+    private val _editItems = MutableLiveData<List<EditListItem>>()
+    val editItems: LiveData<List<EditListItem>>
         get() = _editItems
 
     private val _focusEvent = MutableLiveData<Event<FocusChange>>()
@@ -86,62 +103,63 @@ class EditViewModel @Inject constructor(
     val exitEvent: LiveData<Event<Unit>>
         get() = _exitEvent
 
+
     private val isNoteInTrash: Boolean
-        get() = note.status == NoteStatus.TRASHED
+        get() = status == NoteStatus.TRASHED
 
 
+    /**
+     * Initialize the view model to edit a note with the ID [noteId].
+     * [noteId] can be [Note.NO_ID] to create a new blank note.
+     */
     fun start(noteId: Long) {
-        this.note = BLANK_NOTE
         viewModelScope.launch {
             // Try to get note by ID.
             var note = notesRepository.getById(noteId)
+
             if (note == null) {
                 // Note doesn't exist, create new blank text note.
                 val date = Date()
-                note = BLANK_NOTE.copy(uuid = Note.generateNoteUuid(),
-                        addedDate = date, lastModifiedDate = date, synced = false)
+                note = BLANK_NOTE.copy(
+                        uuid = Note.generateNoteUuid(),
+                        addedDate = date,
+                        lastModifiedDate = date,
+                        synced = false)
                 val id = notesRepository.insertNote(note)
                 note = note.copy(id = id)
             }
             this@EditViewModel.note = note
+            status = note.status
 
             _noteType.value = note.type
-            _noteStatus.value = note.status
+            _noteStatus.value = status
 
             createListItems()
         }
     }
 
+    /**
+     * Create note and save it in database if it was changed.
+     * This updates last modified date and synced flag.
+     */
     fun save() {
-        if (isNoteInTrash) {
-            // Note can't be edited in trash, no need to save.
-            return
-        }
-
-        // Create note
-        val title = titleItem!!.title.toString()
-        val content: String
-        val metadata: NoteMetadata
-        when (note.type) {
-            NoteType.TEXT -> {
-                content = (listItems[1] as EditContentItem).content.toString()
-                metadata = BlankNoteMetadata
-            }
-            NoteType.LIST -> {
-                val items = listItems.filterIsInstance<EditItemItem>()
-                content = items.joinToString("\n") { it.content }
-                metadata = ListNoteMetadata(items.map { it.checked })
-            }
-        }
-        note = Note(note.id, note.uuid, note.type, title, content, metadata,
-                note.addedDate, note.lastModifiedDate, note.status, false)
-
         // Update note
-        viewModelScope.launch {
-            notesRepository.updateNote(note)
+        updateNote()
+
+        viewModelScope.launch(NonCancellable) {
+            // Compare previously saved note from database with new one.
+            val oldNote = notesRepository.getById(note.id)
+            if (oldNote != note) {
+                // Note was changed.
+                note = note.copy(lastModifiedDate = Date(), synced = false)
+                notesRepository.updateNote(note)
+            }
         }
     }
 
+    /**
+     * Send exit event. If note is blank, it's discarded.
+     */
     fun exit() {
         if (note.isBlank) {
             // Delete blank note
@@ -156,7 +174,7 @@ class EditViewModel @Inject constructor(
     }
 
     fun toggleNoteType() {
-        save()
+        updateNote()
 
         // Convert note type
         note = when (note.type) {
@@ -185,7 +203,7 @@ class EditViewModel @Inject constructor(
     }
 
     fun moveNoteAndExit() {
-        changeNoteStatusAndExit(if (note.status == NoteStatus.ACTIVE) {
+        changeNoteStatusAndExit(if (status == NoteStatus.ACTIVE) {
             NoteStatus.ARCHIVED
         } else {
             NoteStatus.ACTIVE
@@ -193,13 +211,14 @@ class EditViewModel @Inject constructor(
     }
 
     fun restoreNoteAndEdit() {
-        note = note.copy(status = NoteStatus.ACTIVE, lastModifiedDate = Date(), synced = false)
+        note = note.copy(status = NoteStatus.ACTIVE)
+        status = note.status
 
         // Recreate list items so that they are editable.
         createListItems()
 
         _messageEvent.send(EditMessage.RESTORED_NOTE)
-        _noteStatus.value = note.status
+        _noteStatus.value = status
     }
 
     fun copyNote(untitledName: String, copySuffix: String) {
@@ -207,6 +226,7 @@ class EditViewModel @Inject constructor(
 
         viewModelScope.launch {
             val newTitle = Note.getCopiedNoteTitle(note.title, untitledName, copySuffix)
+
             if (!note.isBlank) {
                 // If note is blank, don't make a copy, just change the title.
                 // Copied blank note should be discarded anyway.
@@ -223,14 +243,13 @@ class EditViewModel @Inject constructor(
             }
 
             // Update title item
-            val title = titleItem!!.title as Editable
-            title.replace(0, title.length, newTitle)
+            titleItem!!.title.replaceAll(newTitle)
             focusItemAt(0, newTitle.length, true)
         }
     }
 
     fun shareNote() {
-        save()
+        updateNote()
         _shareEvent.send(ShareData(note.title, note.asText()))
     }
 
@@ -274,34 +293,57 @@ class EditViewModel @Inject constructor(
     }
 
     private fun changeNoteStatusAndExit(newStatus: NoteStatus) {
-        save()
+        updateNote()
 
         if (!note.isBlank) {
             // If note is blank, it will be discarded on exit anyway, so don't change it.
             val oldNote = note
-            val oldStatus = note.status
-            note = note.copy(status = newStatus,
-                    lastModifiedDate = Date(),
-                    synced = false)
-            viewModelScope.launch {
-                notesRepository.updateNote(note)
-            }
+            status = newStatus
+            save()
 
             // Show status change message.
-            val statusChange = StatusChange(listOf(oldNote), oldStatus, newStatus)
+            val statusChange = StatusChange(listOf(oldNote), oldNote.status, newStatus)
             _statusChangeEvent.send(statusChange)
         }
 
         exit()
     }
 
+    /**
+     * Update [note] to reflect UI changes, like text changes.
+     * Note is not updated in database and last modified date isn't changed.
+     */
+    private fun updateNote() {
+        // Create note
+        val title = titleItem!!.title.text.toString()
+        val content: String
+        val metadata: NoteMetadata
+        when (note.type) {
+            NoteType.TEXT -> {
+                content = (listItems[1] as EditContentItem).content.text.toString()
+                metadata = BlankNoteMetadata
+            }
+            NoteType.LIST -> {
+                val items = listItems.filterIsInstance<EditItemItem>()
+                content = items.joinToString("\n") { it.content.text }
+                metadata = ListNoteMetadata(items.map { it.checked })
+            }
+        }
+        note = Note(note.id, note.uuid, note.type, title, content, metadata,
+                note.addedDate, note.lastModifiedDate, status, note.synced)
+    }
+
+    /**
+     * Create list items corresponding to the [note] data.
+     * [updateNote] might need to be called first for that data to be up-to-date.
+     */
     private fun createListItems() {
         val list = mutableListOf<EditListItem>()
         val canEdit = !isNoteInTrash
 
         // Title item
-        val title = titleItem ?: EditTitleItem("", false)
-        title.title = note.title
+        val title = titleItem ?: EditTitleItem(DefaultEditableText(), false)
+        title.title = DefaultEditableText(note.title)
         title.editable = canEdit
         titleItem = title
         list += title
@@ -309,19 +351,19 @@ class EditViewModel @Inject constructor(
         when (note.type) {
             NoteType.TEXT -> {
                 // Content item
-                val content = EditContentItem(note.content, canEdit)
+                val content = EditContentItem(DefaultEditableText(note.content), canEdit)
                 list += content
             }
             NoteType.LIST -> {
                 // List items
                 val items = note.listItems
                 for (item in items) {
-                    list += EditItemItem(item.content, item.checked, canEdit)
+                    list += EditItemItem(DefaultEditableText(item.content), item.checked, canEdit)
                 }
 
                 // Item add item
                 if (canEdit) {
-                    val itemAdd = EditItemAddItem()
+                    val itemAdd = EditItemAddItem
                     list += itemAdd
                 }
             }
@@ -331,13 +373,14 @@ class EditViewModel @Inject constructor(
     }
 
     override fun onNoteItemChanged(item: EditItemItem, pos: Int, isPaste: Boolean) {
-        if ('\n' in item.content) {
+        if ('\n' in item.content.text) {
             // User inserted line breaks in list items, split it into multiple items.
-            val lines = item.content.split('\n')
+            val lines = item.content.text.split('\n')
+            item.content.replaceAll(lines.first())
             changeListItems { list ->
-                (item.content as Editable).replace(0, item.content.length, lines.first())
                 for (i in 1 until lines.size) {
-                    list.add(pos + i, EditItemItem(lines[i], checked = false, editable = true))
+                    list.add(pos + i, EditItemItem(DefaultEditableText(lines[i]),
+                            checked = false, editable = true))
                 }
             }
 
@@ -352,8 +395,9 @@ class EditViewModel @Inject constructor(
         if (prevItem is EditItemItem) {
             // Previous item is also a note list item. Merge the two items content,
             // and delete the current item.
-            val prevLength = prevItem.content.length
-            (prevItem.content as Editable).append(item.content)
+            val prevText = prevItem.content
+            val prevLength = prevText.text.length
+            prevText.append(item.content.text)
             changeListItems { it.removeAt(pos) }
 
             // Set focus on merge boundary.
@@ -365,12 +409,12 @@ class EditViewModel @Inject constructor(
         val prevItem = listItems[pos - 1]
         if (prevItem is EditItemItem) {
             // Set focus at the end of previous item.
-            focusItemAt(pos - 1, prevItem.content.length, true)
+            focusItemAt(pos - 1, prevItem.content.text.length, true)
         } else {
             val nextItem = listItems[pos + 1]
             if (nextItem is EditItemItem) {
                 // Set focus at the end of next item.
-                focusItemAt(pos + 1, nextItem.content.length, true)
+                focusItemAt(pos + 1, nextItem.content.text.length, true)
             }
         }
 
@@ -381,7 +425,7 @@ class EditViewModel @Inject constructor(
     override fun onNoteItemAddClicked() {
         val pos = listItems.size - 1
         changeListItems { list ->
-            list.add(pos, EditItemItem("", false, true))
+            list.add(pos, EditItemItem(DefaultEditableText(), checked = false, editable = true))
         }
         focusItemAt(pos, 0, false)
     }
@@ -412,7 +456,34 @@ class EditViewModel @Inject constructor(
         listItems = newList
     }
 
+
     data class FocusChange(val itemPos: Int, val pos: Int, val itemExists: Boolean)
+
+
+    /**
+     * The default class used for editable item text, backed by StringBuilder.
+     * When items are bound by the adapter, this is changed to [AndroidEditableText] instead.
+     * The default implementation is only used temporarily (before item is bound) and for testing.
+     */
+    class DefaultEditableText(text: CharSequence = "") : EditableText {
+        override val text = StringBuilder(text)
+
+        override fun append(text: CharSequence) {
+            this.text.append(text)
+        }
+
+        override fun replaceAll(text: CharSequence) {
+            this.text.replace(0, this.text.length, text.toString())
+        }
+
+        override fun equals(other: Any?) = (other is DefaultEditableText
+                && other.text.toString() == text.toString())
+
+        override fun hashCode() = text.hashCode()
+
+        override fun toString() = text.toString()
+    }
+
 
     companion object {
         private val BLANK_NOTE = Note(Note.NO_ID, "", NoteType.TEXT, "", "",

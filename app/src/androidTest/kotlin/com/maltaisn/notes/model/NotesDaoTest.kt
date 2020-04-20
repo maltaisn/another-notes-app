@@ -20,10 +20,10 @@ import android.content.Context
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.maltaisn.notes.atestNote
 import com.maltaisn.notes.model.converter.DateTimeConverter
 import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.model.entity.NoteStatus
+import com.maltaisn.notes.testNote
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.junit.After
@@ -56,19 +56,19 @@ class NotesDaoTest {
 
     @Test
     fun readWriteTests() = runBlocking {
-        val note = atestNote(id = 1, uuid = "1", title = "note")
+        val note = testNote(id = 1, uuid = "1", title = "note")
 
         // Insert
         val id = notesDao.insert(note)
         assertEquals(note, notesDao.getById(id))
 
         // Update with insert
-        val updatedNote0 = atestNote(id = 1, uuid = "1", title = "updated note 0")
+        val updatedNote0 = testNote(id = 1, uuid = "1", title = "updated note 0")
         notesDao.insert(updatedNote0)
         assertEquals(updatedNote0, notesDao.getById(1))
 
         // Update directly
-        val updatedNote1 = atestNote(id = 1, uuid = "1", title = "updated note 1")
+        val updatedNote1 = testNote(id = 1, uuid = "1", title = "updated note 1")
         notesDao.update(updatedNote1)
         assertEquals(updatedNote1, notesDao.getById(id))
 
@@ -78,7 +78,7 @@ class NotesDaoTest {
         assertNull(notesDao.getIdByUuid("1"))
 
         // Insert all
-        val newNotes = listOf(atestNote(id = 1), atestNote(id = 2))
+        val newNotes = listOf(testNote(id = 1), testNote(id = 2))
         notesDao.insertAll(newNotes)
 
         // Get all
@@ -90,7 +90,7 @@ class NotesDaoTest {
 
     @Test
     fun getIdByUuidTest() = runBlocking {
-        val note = atestNote(id = 1, uuid = "1")
+        val note = testNote(id = 1, uuid = "1")
 
         notesDao.insert(note)
         assertEquals(1, notesDao.getIdByUuid("1"))
@@ -104,7 +104,7 @@ class NotesDaoTest {
         var id = 1L
         repeat(5) {
             for (status in NoteStatus.values()) {
-                val note = atestNote(id = id, status = status, added = time, modified = time)
+                val note = testNote(id = id, status = status, added = time, modified = time)
                 notesDao.insert(note)
                 if (status == NoteStatus.ACTIVE) {
                     activeNotes += note
@@ -131,7 +131,7 @@ class NotesDaoTest {
                 "2020-01-01T00:00:00.000Z",
                 "2020-01-02T00:00:00.000Z")
         val notes = dates.mapIndexed { i, date ->
-            atestNote(id = i + 1L, modified = DateTimeConverter.toDate(date),
+            testNote(id = i + 1L, modified = DateTimeConverter.toDate(date),
                     status = NoteStatus.TRASHED)
         }
         notesDao.insertAll(notes)
@@ -143,8 +143,8 @@ class NotesDaoTest {
 
     @Test
     fun getNotSyncedTest() = runBlocking {
-        val note = atestNote(id = 1, synced = false)
-        notesDao.insertAll(listOf(note, atestNote(id = 2, synced = true)))
+        val note = testNote(id = 1, synced = false)
+        notesDao.insertAll(listOf(note, testNote(id = 2, synced = true)))
 
         assertEquals(listOf(note), notesDao.getNotSynced())
     }
@@ -152,9 +152,9 @@ class NotesDaoTest {
     @Test
     fun deleteByUuidTest() = runBlocking {
         notesDao.insertAll(listOf(
-                atestNote(id = 1, uuid = "0"),
-                atestNote(id = 2, uuid = "1"),
-                atestNote(id = 3, uuid = "2")))
+                testNote(id = 1, uuid = "0"),
+                testNote(id = 2, uuid = "1"),
+                testNote(id = 3, uuid = "2")))
 
         notesDao.deleteByUuid(listOf("0", "2"))
 
@@ -166,8 +166,8 @@ class NotesDaoTest {
     @Test
     fun setSyncedFlagTest() = runBlocking {
         notesDao.insertAll(listOf(
-                atestNote(id = 1, synced = false),
-                atestNote(id = 2, synced = true)))
+                testNote(id = 1, synced = false),
+                testNote(id = 2, synced = true)))
 
         notesDao.setSyncedFlag(true)
         assertTrue(notesDao.getById(1)!!.synced)
@@ -176,16 +176,16 @@ class NotesDaoTest {
 
     @Test
     fun searchNotesTest() = runBlocking {
-        val note0 = atestNote(id = 1, title = "note", content = "content")
+        val note0 = testNote(id = 1, title = "note", content = "content")
         notesDao.insert(note0)
-        notesDao.insert(atestNote(id = 2, title = "title", content = "foo"))
-        notesDao.insert(atestNote(id = 3, title = "my note", content = "bar"))
+        notesDao.insert(testNote(id = 2, title = "title", content = "foo"))
+        notesDao.insert(testNote(id = 3, title = "my note", content = "bar"))
 
         val noteFlow = notesDao.search("content")
         assertEquals(listOf(note0), noteFlow.first())
 
-        val note1 = atestNote(id = 4, title = "note copy", content = "content copy")
-        val note2 = atestNote(id = 5, title = "archived", content = "archived content", status = NoteStatus.ARCHIVED)
+        val note1 = testNote(id = 4, title = "note copy", content = "content copy")
+        val note2 = testNote(id = 5, title = "archived", content = "archived content", status = NoteStatus.ARCHIVED)
         notesDao.insert(note1)
         notesDao.insert(note2)
         assertEquals(listOf(note1, note0, note2), noteFlow.first())
