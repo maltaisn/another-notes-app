@@ -45,7 +45,7 @@
 
     <style name="DividerStyle">
         <item name="android:layout_height">1dp</item>
-        <item name="android:background">?colorOnBackground</item>
+        <item name="android:background">?colorOnSurface</item>
         <item name="android:alpha">0.2</item>
     </style>
 
