@@ -78,10 +78,10 @@ abstract class NoteFragment : ViewModelFragment(), ActionMode.Callback, ConfirmD
         })
 
         viewModel.listLayoutMode.observe(viewLifecycleOwner, Observer { mode ->
-            layoutManager.spanCount = when (mode!!) {
-                NoteListLayoutMode.LIST -> 1
-                NoteListLayoutMode.GRID -> 2
-            }
+            layoutManager.spanCount = resources.getInteger(when (mode!!) {
+                NoteListLayoutMode.LIST -> R.integer.note_list_layout_span_count
+                NoteListLayoutMode.GRID -> R.integer.note_grid_layout_span_count
+            })
             adapter.listLayoutMode = mode
         })
 
