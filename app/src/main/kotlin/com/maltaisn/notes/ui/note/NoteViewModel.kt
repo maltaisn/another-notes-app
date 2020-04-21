@@ -42,6 +42,11 @@ abstract class NoteViewModel(
         set(value) {
             field = value
             _noteItems.value = value
+            _placeholderData.value = if (value.isEmpty()) {
+                updatePlaceholder()
+            } else {
+                null
+            }
         }
 
     protected val selectedNotes = mutableSetOf<Note>()
@@ -71,12 +76,22 @@ abstract class NoteViewModel(
     val currentSelection: LiveData<NoteSelection>
         get() = _currentSelection
 
+    private val _placeholderData = MutableLiveData<PlaceholderData?>(null)
+    val placeholderData: LiveData<PlaceholderData?>
+        get() = _placeholderData
+
 
     init {
         val layoutModeVal = prefs.getInt(PreferenceHelper.LIST_LAYOUT_MODE,
                 NoteListLayoutMode.LIST.value)
         _listLayoutMode.value = NoteListLayoutMode.values().find { it.value == layoutModeVal }
     }
+
+    /**
+     * Called when note list is empty to update the placeholder data.
+     */
+    abstract fun updatePlaceholder(): PlaceholderData
+
 
     fun clearSelection() {
         setAllSelected(false)

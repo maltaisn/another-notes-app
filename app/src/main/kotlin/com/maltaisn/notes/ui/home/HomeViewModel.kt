@@ -30,6 +30,7 @@ import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.model.entity.NoteStatus
 import com.maltaisn.notes.ui.Event
 import com.maltaisn.notes.ui.note.NoteViewModel
+import com.maltaisn.notes.ui.note.PlaceholderData
 import com.maltaisn.notes.ui.note.adapter.MessageItem
 import com.maltaisn.notes.ui.note.adapter.NoteAdapter
 import com.maltaisn.notes.ui.note.adapter.NoteItem
@@ -166,6 +167,13 @@ class HomeViewModel @Inject constructor(
             }
         }
     }
+
+    override fun updatePlaceholder() = when (noteStatus.value!!) {
+        NoteStatus.ACTIVE -> PlaceholderData(R.drawable.ic_list, R.string.note_placeholder_active)
+        NoteStatus.ARCHIVED -> PlaceholderData(R.drawable.ic_archive, R.string.note_placeholder_archived)
+        NoteStatus.TRASHED -> PlaceholderData(R.drawable.ic_delete, R.string.note_placeholder_deleted)
+    }
+
 
     companion object {
         private const val TRASH_REMINDER_ITEM_ID = -1L

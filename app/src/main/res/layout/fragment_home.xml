@@ -25,7 +25,7 @@
     >
 
     <com.google.android.material.appbar.AppBarLayout
-        android:id="@+id/rp_toolbar_layout"
+        android:id="@+id/toolbar_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="0"
@@ -46,27 +46,67 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-        android:id="@+id/layout_swipe_refresh"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"
         >
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rcv_notes"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:paddingTop="5dp"
-            android:paddingBottom="10dp"
-            android:paddingStart="5dp"
-            android:paddingEnd="5dp"
-            android:clipToPadding="false"
-            tools:itemCount="3"
-            tools:listitem="@layout/item_note_text"
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/imv_placeholder"
+            style="@style/PlaceholderImageViewStyle"
+            android:layout_marginTop="64dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:src="@drawable/ic_list"
+            tools:visibility="visible"
             />
 
-    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+        <TextView
+            android:id="@+id/txv_placeholder"
+            style="@style/PlaceholderTextViewStyle"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/imv_placeholder"
+            tools:text="@string/note_placeholder_active"
+            tools:visibility="visible"
+            />
+
+        <androidx.constraintlayout.widget.Group
+            android:id="@+id/group_placeholder"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:constraint_referenced_ids="imv_placeholder,txv_placeholder"
+            />
+
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/layout_swipe_refresh"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            >
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rcv_notes"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingTop="5dp"
+                android:paddingBottom="10dp"
+                android:paddingStart="5dp"
+                android:paddingEnd="5dp"
+                android:clipToPadding="false"
+                tools:itemCount="3"
+                tools:listitem="@layout/item_note_text"
+                tools:visibility="gone"
+                />
+
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab"

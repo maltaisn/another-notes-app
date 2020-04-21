@@ -24,11 +24,10 @@ import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.model.entity.NoteStatus
 import com.maltaisn.notes.ui.note.HighlightHelper
 import com.maltaisn.notes.ui.note.NoteViewModel
+import com.maltaisn.notes.ui.note.PlaceholderData
 import com.maltaisn.notes.ui.note.adapter.HeaderItem
 import com.maltaisn.notes.ui.note.adapter.NoteAdapter
 import com.maltaisn.notes.ui.note.adapter.NoteItem
-import com.maltaisn.notes.ui.note.adapter.NoteListLayoutMode
-import com.maltaisn.notes.ui.settings.PreferenceHelper
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
@@ -44,11 +43,6 @@ class SearchViewModel @Inject constructor(
     private var lastQuery = ""
     private var noteListJob: Job? = null
 
-    init {
-        val layoutModeVal = prefs.getInt(PreferenceHelper.LIST_LAYOUT_MODE,
-                NoteListLayoutMode.LIST.value)
-        _listLayoutMode.value = NoteListLayoutMode.values().find { it.value == layoutModeVal }
-    }
 
     fun searchNotes(query: String) {
         lastQuery = query
@@ -101,5 +95,8 @@ class SearchViewModel @Inject constructor(
             }
         }
     }
+
+    override fun updatePlaceholder() = PlaceholderData(
+            R.drawable.ic_search, R.string.search_empty_placeholder)
 
 }

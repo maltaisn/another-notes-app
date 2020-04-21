@@ -19,7 +19,11 @@ package com.maltaisn.notes.ui.note
 import android.content.Intent
 import android.os.Bundle
 import android.view.*
+import android.widget.ImageView
+import android.widget.TextView
 import androidx.appcompat.widget.Toolbar
+import androidx.constraintlayout.widget.Group
+import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.RecyclerView
@@ -60,6 +64,11 @@ abstract class NoteFragment : ViewModelFragment(), ActionMode.Callback, ConfirmD
         val layoutManager = StaggeredGridLayoutManager(1, StaggeredGridLayoutManager.VERTICAL)
         rcv.adapter = adapter
         rcv.layoutManager = layoutManager
+
+        // Placeholder views
+        val placeholderImv: ImageView = view.findViewById(R.id.imv_placeholder)
+        val placeholderTxv: TextView = view.findViewById(R.id.txv_placeholder)
+        val placeholderGroup: Group = view.findViewById(R.id.group_placeholder)
 
         // Observers
         viewModel.noteItems.observe(viewLifecycleOwner, Observer { items ->
@@ -126,6 +135,14 @@ abstract class NoteFragment : ViewModelFragment(), ActionMode.Callback, ConfirmD
 
         viewModel.statusChangeEvent.observe(viewLifecycleOwner, EventObserver { statusChange ->
             sharedViewModel.onStatusChange(statusChange)
+        })
+
+        viewModel.placeholderData.observe(viewLifecycleOwner, Observer { data ->
+            placeholderGroup.isVisible = data != null
+            if (data != null) {
+                placeholderImv.setImageResource(data.iconId)
+                placeholderTxv.setText(data.messageId)
+            }
         })
 
         sharedViewModel.messageEvent.observe(viewLifecycleOwner, EventObserver { messageId ->

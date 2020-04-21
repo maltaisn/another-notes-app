@@ -55,6 +55,10 @@
     <string name="note_location_archived">Archived</string>
     <string name="note_location_deleted">Deleted</string>
 
+    <string name="note_placeholder_active">You don\'t have any notes.\nClick on the + to add one.</string>
+    <string name="note_placeholder_archived">No archived notes</string>
+    <string name="note_placeholder_deleted">Recycle bin is empty.</string>
+
     <plurals name="note_list_item_info">
         <item quantity="one">+ %d other list item</item>
         <item quantity="other">+ %d other list items</item>
@@ -66,6 +70,7 @@
     <string name="trash_empty_message">All notes in recycle bin will be permanently deleted.</string>
 
     <string name="search_hint">Search notes</string>
+    <string name="search_empty_placeholder">No notes found for your query.</string>
 
     <!-- Edit -->
     <string name="edit_add_title">Create note</string>

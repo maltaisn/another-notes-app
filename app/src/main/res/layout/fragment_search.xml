@@ -14,7 +14,7 @@
   limitations under the License.
   -->
 
-<LinearLayout
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -25,10 +25,13 @@
     >
 
     <com.google.android.material.appbar.AppBarLayout
-        android:id="@+id/rp_toolbar_layout"
-        android:layout_width="match_parent"
+        android:id="@+id/toolbar_layout"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="0"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         >
 
         <com.google.android.material.appbar.MaterialToolbar
@@ -43,6 +46,34 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/imv_placeholder"
+        style="@style/PlaceholderImageViewStyle"
+        android:layout_marginTop="64dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toolbar_layout"
+        tools:src="@drawable/ic_search"
+        tools:visibility="visible"
+        />
+
+    <TextView
+        android:id="@+id/txv_placeholder"
+        style="@style/PlaceholderTextViewStyle"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/imv_placeholder"
+        tools:text="@string/search_empty_placeholder"
+        tools:visibility="visible"
+        />
+
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/group_placeholder"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:constraint_referenced_ids="imv_placeholder,txv_placeholder"
+        />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rcv_notes"
         android:layout_width="match_parent"
@@ -53,8 +84,13 @@
         android:paddingEnd="5dp"
         android:clipToPadding="false"
         android:layout_weight="1"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toolbar_layout"
         tools:itemCount="3"
         tools:listitem="@layout/item_note_text"
+        tools:visibility="gone"
         />
 
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
