@@ -67,6 +67,7 @@
                     android:layout_height="wrap_content"
                     android:hint="@string/sync_email"
                     android:inputType="textEmailAddress"
+                    android:imeOptions="flagNoExtractUi|actionNext"
                     />
 
             </com.google.android.material.textfield.TextInputLayout>
@@ -90,6 +91,7 @@
                     android:layout_height="wrap_content"
                     android:hint="@string/sync_password"
                     android:inputType="textPassword"
+                    android:imeOptions="flagNoExtractUi"
                     />
 
             </com.google.android.material.textfield.TextInputLayout>
@@ -113,6 +115,7 @@
                     android:layout_height="wrap_content"
                     android:hint="@string/sync_password_confirm"
                     android:inputType="textPassword"
+                    android:imeOptions="flagNoExtractUi"
                     />
 
             </com.google.android.material.textfield.TextInputLayout>

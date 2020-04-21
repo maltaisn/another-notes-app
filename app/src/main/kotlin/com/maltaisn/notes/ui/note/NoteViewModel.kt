@@ -80,6 +80,10 @@ abstract class NoteViewModel(
     val placeholderData: LiveData<PlaceholderData?>
         get() = _placeholderData
 
+    private val _showDeletedForeverConfirmEvent = MutableLiveData<Event<Unit>>()
+    val showDeleteConfirmEvent: LiveData<Event<Unit>>
+        get() = _showDeletedForeverConfirmEvent
+
 
     init {
         val layoutModeVal = prefs.getInt(PreferenceHelper.LIST_LAYOUT_MODE,
@@ -109,17 +113,22 @@ abstract class NoteViewModel(
         })
     }
 
-    fun deleteSelectedNotes() {
+    fun deleteSelectedNotesPre() {
         if (selectedNoteStatus == NoteStatus.TRASHED) {
-            // Delete forever
-            viewModelScope.launch {
-                notesRepository.deleteNotes(selectedNotes.toList())
-                clearSelection()
-            }
+            // Ask user for confirmation before deleting selected notes forever.
+            _showDeletedForeverConfirmEvent.send()
 
         } else {
             // Send to trash
             changeSelectedNotesStatus(NoteStatus.TRASHED)
+        }
+    }
+
+    fun deleteSelectedNotes() {
+        // Delete forever
+        viewModelScope.launch {
+            notesRepository.deleteNotes(selectedNotes.toList())
+            clearSelection()
         }
     }
 

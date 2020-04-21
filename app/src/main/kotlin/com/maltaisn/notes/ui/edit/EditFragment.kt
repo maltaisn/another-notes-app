@@ -24,6 +24,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.addCallback
 import androidx.appcompat.widget.Toolbar
+import androidx.core.view.postDelayed
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
@@ -37,6 +38,7 @@ import com.maltaisn.notes.hideKeyboard
 import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.model.entity.NoteStatus
 import com.maltaisn.notes.model.entity.NoteType
+import com.maltaisn.notes.showKeyboard
 import com.maltaisn.notes.ui.EventObserver
 import com.maltaisn.notes.ui.SharedViewModel
 import com.maltaisn.notes.ui.common.ConfirmDialog
@@ -78,6 +80,9 @@ class EditFragment : ViewModelFragment(), Toolbar.OnMenuItemClickListener, Confi
             viewModel.exit()
         }
         toolbar.setTitle(if (args.noteId == Note.NO_ID) {
+            view.postDelayed(200) {
+                view.showKeyboard()
+            }
             R.string.edit_add_title
         } else {
             R.string.edit_change_title

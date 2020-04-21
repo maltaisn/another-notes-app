@@ -14,33 +14,65 @@
   limitations under the License.
   -->
 
-<FrameLayout
+<ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingTop="8dp"
-    android:paddingBottom="8dp"
     >
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/edt_layout_password"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"
-        app:endIconMode="password_toggle"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:orientation="vertical"
         >
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/edt_password"
+        <TextView
+            android:id="@+id/txv_title"
+            style="@style/MaterialAlertDialog.MaterialComponents.Title.Text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/sync_password"
-            android:inputType="textPassword"
+            android:text="@string/sync_account_delete"
+            android:paddingStart="24dp"
+            android:paddingEnd="24dp"
+            android:paddingTop="8dp"
             />
 
-    </com.google.android.material.textfield.TextInputLayout>
+        <TextView
+            android:id="@+id/txv_message"
+            style="@style/MaterialAlertDialog.MaterialComponents.Body.Text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/sync_account_delete_message"
+            android:paddingStart="24dp"
+            android:paddingEnd="24dp"
+            android:paddingTop="8dp"
+            />
 
-</FrameLayout>
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/edt_layout_password"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:paddingTop="16dp"
+            app:endIconMode="password_toggle"
+            >
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edt_password"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/sync_password"
+                android:inputType="textPassword"
+                android:imeOptions="flagNoExtractUi|actionDone"
+                />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+    </LinearLayout>
+
+</ScrollView>

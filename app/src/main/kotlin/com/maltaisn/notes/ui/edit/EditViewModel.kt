@@ -127,6 +127,8 @@ class EditViewModel @Inject constructor(
                         synced = false)
                 val id = notesRepository.insertNote(note)
                 note = note.copy(id = id)
+
+                focusItemAt(1, 0, false)
             }
             this@EditViewModel.note = note
             status = note.status

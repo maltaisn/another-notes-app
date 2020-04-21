@@ -56,8 +56,6 @@ class AccountDeleteDialog : ViewModelDialog() {
 
         // Create dialog
         val dialog = MaterialAlertDialogBuilder(context)
-                .setTitle(R.string.sync_account_delete)
-                .setMessage(R.string.sync_account_delete_message)
                 .setView(view)
                 .setPositiveButton(R.string.action_delete, null)
                 .setNegativeButton(R.string.action_cancel, null)

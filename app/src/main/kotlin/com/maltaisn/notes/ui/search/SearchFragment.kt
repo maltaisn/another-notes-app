@@ -77,7 +77,12 @@ class SearchFragment : NoteFragment() {
                 return false
             }
         })
-        searchView.showKeyboard()
+        searchView.setOnQueryTextFocusChangeListener { editText, hasFocus ->
+            if (hasFocus) {
+                editText.showKeyboard()
+            }
+        }
+        searchView.requestFocus()
 
         // Observers
         viewModel.editItemEvent.observe(viewLifecycleOwner, EventObserver { item ->

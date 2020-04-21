@@ -65,8 +65,6 @@ class PasswordResetDialog : ViewModelDialog() {
 
         // Create dialog
         val dialog = MaterialAlertDialogBuilder(context)
-                .setTitle(R.string.sync_password_reset)
-                .setMessage(R.string.sync_password_reset_message)
                 .setView(view)
                 .setPositiveButton(R.string.action_password_reset_short, null)
                 .setNegativeButton(R.string.action_cancel, null)

@@ -41,6 +41,8 @@ class EditTitleViewHolder(itemView: View, callback: EditAdapter.Callback) :
         titleEdt.setOnClickListener {
             callback.onNoteClickedToEdit()
         }
+        titleEdt.setHorizontallyScrolling(false)
+        titleEdt.maxLines = Integer.MAX_VALUE
     }
 
     fun bind(item: EditTitleItem) {
@@ -59,7 +61,7 @@ class EditTitleViewHolder(itemView: View, callback: EditAdapter.Callback) :
 }
 
 class EditContentViewHolder(itemView: View, callback: EditAdapter.Callback) :
-        RecyclerView.ViewHolder(itemView) {
+        RecyclerView.ViewHolder(itemView), EditFocusableViewHolder {
 
     private val contentEdt = itemView as EditText
 
@@ -78,6 +80,11 @@ class EditContentViewHolder(itemView: View, callback: EditAdapter.Callback) :
         // Set text and change to AndroidEditableText so view model can see changes to it.
         contentEdt.setText(item.content.text)
         item.content = AndroidEditableText(contentEdt.text)
+    }
+
+    override fun setFocus(pos: Int) {
+        contentEdt.requestFocus()
+        contentEdt.setSelection(pos)
     }
 }
 

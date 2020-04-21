@@ -145,6 +145,14 @@ abstract class NoteFragment : ViewModelFragment(), ActionMode.Callback, ConfirmD
             }
         })
 
+        viewModel.showDeleteConfirmEvent.observe(viewLifecycleOwner, EventObserver {
+            ConfirmDialog.newInstance(
+                    title = R.string.action_delete_selection_forever,
+                    message = R.string.trash_delete_selected_message,
+                    btnPositive = R.string.action_delete
+            ).show(childFragmentManager, NoteFragment.DELETE_CONFIRM_DIALOG_TAG)
+        })
+
         sharedViewModel.messageEvent.observe(viewLifecycleOwner, EventObserver { messageId ->
             Snackbar.make(view, messageId, Snackbar.LENGTH_SHORT).show()
         })
@@ -175,14 +183,7 @@ abstract class NoteFragment : ViewModelFragment(), ActionMode.Callback, ConfirmD
             R.id.item_share -> viewModel.shareNote()
             R.id.item_copy -> viewModel.copySelectedNote(
                     getString(R.string.edit_copy_untitled_name), getString(R.string.edit_copy_suffix))
-            R.id.item_delete -> {
-                // Ask user for confirmation before deleting selected notes forever.
-                ConfirmDialog.newInstance(
-                        title = R.string.action_delete_selection_forever,
-                        message = R.string.trash_delete_selected_message,
-                        btnPositive = R.string.action_delete
-                ).show(childFragmentManager, DELETE_CONFIRM_DIALOG_TAG)
-            }
+            R.id.item_delete -> viewModel.deleteSelectedNotesPre()
             else -> return false
         }
         return true
