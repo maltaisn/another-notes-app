@@ -28,6 +28,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.preference.DropDownPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
+import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import com.google.android.material.snackbar.Snackbar
 import com.maltaisn.notes.App
 import com.maltaisn.notes.BuildConfig
@@ -106,18 +107,11 @@ class SettingsFragment : PreferenceFragmentCompat(), ConfirmDialog.Callback {
                 }
 
         requirePreference<Preference>(PreferenceHelper.VIEW_SOURCE)
-                .setOnPreferenceClickListener {
-                    startActivity(Intent(Intent.ACTION_VIEW,
-                            Uri.parse(PreferenceHelper.VIEW_SOURCE_URL)))
-                    true
-                }
+                .intent = Intent(Intent.ACTION_VIEW, Uri.parse(PreferenceHelper.VIEW_SOURCE_URL))
 
         requirePreference<Preference>(PreferenceHelper.VIEW_LICENSES)
-                .setOnPreferenceClickListener {
-                    // TODO
-                    Toast.makeText(requireContext(), "Open source licenses", Toast.LENGTH_SHORT).show()
-                    true
-                }
+                .intent = Intent(requireActivity(), OssLicensesMenuActivity::class.java)
+        OssLicensesMenuActivity.setActivityTitle(getString(R.string.pref_about_view_licenses))
 
         // Set version name as summary text for version preference
         requirePreference<Preference>(PreferenceHelper.VERSION).summary = BuildConfig.VERSION_NAME

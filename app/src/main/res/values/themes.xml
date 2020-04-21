@@ -18,6 +18,11 @@
 
     <style name="AppTheme.DayNight" parent="Base.AppTheme"/>
 
+    <style name="AppTheme.DayNight.DarkActionBar" parent="Base.AppTheme">
+        <item name="windowActionBar">true</item>
+        <item name="windowNoTitle">false</item>
+    </style>
+
     <style name="Base.AppTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar" tools:ignore="NewApi">
         <item name="colorPrimary">@color/color_primary</item>
         <item name="colorPrimaryVariant">@color/color_primary_variant</item>

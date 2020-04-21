@@ -4,11 +4,12 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath "com.android.tools.build:gradle:$androidGradleVersion"
+        classpath "com.android.tools.build:gradle:$androidGradlePluginVersion"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
         classpath "org.jetbrains.kotlin:kotlin-serialization:$kotlinVersion"
         classpath "androidx.navigation:navigation-safe-args-gradle-plugin:$navVersion"
         classpath "com.google.gms:google-services:$googleServicesVersion"
+        classpath "com.google.android.gms:oss-licenses-plugin:$ossLicensesPluginVersion"
     }
 }
 

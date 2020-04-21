@@ -5,6 +5,7 @@ plugins {
     id "com.google.gms.google-services"
     id "org.jetbrains.kotlin.plugin.serialization"
     id "androidx.navigation.safeargs.kotlin"
+    id "com.google.android.gms.oss-licenses-plugin"
 }
 
 android {
@@ -60,6 +61,7 @@ dependencies {
     implementation "androidx.preference:preference:$preferenceVersion"
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:$swipeRefreshVersion"
     implementation "com.google.android.material:material:$materialVersion"
+    implementation "com.google.android.gms:play-services-oss-licenses:$ossLicensesVersion"
 
     // Kotlin
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion"
