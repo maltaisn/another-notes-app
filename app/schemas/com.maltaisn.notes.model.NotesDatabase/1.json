@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "8e34ac54668d96c2e2b215981f678246",
+    "identityHash": "3ff37846f15bb6fa52e15b55c5ac3e56",
     "entities": [
       {
         "tableName": "notes",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `uuid` TEXT NOT NULL, `type` INTEGER NOT NULL, `title` TEXT NOT NULL, `content` TEXT NOT NULL, `metadata` TEXT NOT NULL, `added_date` TEXT NOT NULL, `modified_date` TEXT NOT NULL, `status` INTEGER NOT NULL, `synced` INTEGER NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `uuid` TEXT NOT NULL, `type` INTEGER NOT NULL, `title` TEXT NOT NULL, `content` TEXT NOT NULL, `metadata` TEXT NOT NULL, `added_date` INTEGER NOT NULL, `modified_date` INTEGER NOT NULL, `status` INTEGER NOT NULL, `synced` INTEGER NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
@@ -47,13 +47,13 @@
           {
             "fieldPath": "addedDate",
             "columnName": "added_date",
-            "affinity": "TEXT",
+            "affinity": "INTEGER",
             "notNull": true
           },
           {
             "fieldPath": "lastModifiedDate",
             "columnName": "modified_date",
-            "affinity": "TEXT",
+            "affinity": "INTEGER",
             "notNull": true
           },
           {
@@ -172,7 +172,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '8e34ac54668d96c2e2b215981f678246')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '3ff37846f15bb6fa52e15b55c5ac3e56')"
     ]
   }
 }

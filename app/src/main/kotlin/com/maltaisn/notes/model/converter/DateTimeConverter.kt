@@ -25,25 +25,37 @@ import java.util.*
 @Serializer(forClass = Date::class)
 object DateTimeConverter : KSerializer<Date> {
 
-    private val dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.ROOT)
+    private val threadLocalDateFormat = ThreadLocal<SimpleDateFormat>()
 
-    init {
-        dateFormat.timeZone = TimeZone.getTimeZone("GMT")
-    }
+    val dateFormat: SimpleDateFormat
+        get() {
+            var dateFormat = threadLocalDateFormat.get()
+            if (dateFormat == null) {
+                dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.ROOT)
+                dateFormat.timeZone = TimeZone.getTimeZone("GMT")
+                threadLocalDateFormat.set(dateFormat)
+            }
+            return dateFormat
+        }
+
 
     @TypeConverter
     @JvmStatic
-    fun toDate(str: String): Date {
-        return dateFormat.parse(str)!!
-    }
+    fun toDate(date: Long) = Date(date)
 
     @TypeConverter
     @JvmStatic
-    fun toString(date: Date): String = dateFormat.format(date)
+    fun toLong(date: Date) = date.time
+
+    fun toDate(str: String) = dateFormat.parse(str)!!
 
 
     override val descriptor = PrimitiveDescriptor("Date", PrimitiveKind.STRING)
-    override fun serialize(encoder: Encoder, value: Date) = encoder.encodeString(toString(value))
+
+    override fun serialize(encoder: Encoder, value: Date) =
+            encoder.encodeString(dateFormat.format(value))
+
     override fun deserialize(decoder: Decoder) = toDate(decoder.decodeString())
+
 
 }

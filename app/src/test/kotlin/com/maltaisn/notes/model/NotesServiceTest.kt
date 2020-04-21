@@ -25,20 +25,11 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
 import org.junit.Test
-import java.io.IOException
 import java.util.*
 import kotlin.test.assertEquals
 
 
 class NotesServiceTest {
-
-    @Test(expected = IOException::class)
-    fun `should fail unauthenticated`() {
-        val service = NotesService(mock(), mock(), Json(JsonConfiguration.Stable))
-        runBlocking {
-            service.syncNotes(SyncData(Date(), emptyList(), emptyList()))
-        }
-    }
 
     @Test
     fun `should encode and decode sync data structures`() = runBlocking {
