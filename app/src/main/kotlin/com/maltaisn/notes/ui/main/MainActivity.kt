@@ -16,6 +16,7 @@
 
 package com.maltaisn.notes.ui.main
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -25,7 +26,9 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import com.maltaisn.notes.App
+import com.maltaisn.notes.NavGraphDirections
 import com.maltaisn.notes.R
+import com.maltaisn.notes.ui.EventObserver
 import javax.inject.Inject
 
 
@@ -55,6 +58,20 @@ class MainActivity : AppCompatActivity() {
                 DrawerLayout.LOCK_MODE_LOCKED_CLOSED
             }, GravityCompat.START)
         }
+
+        // Check if activity was opened with a send intent
+        val intent = intent
+        if (intent?.action == Intent.ACTION_SEND && intent.type == "text/plain") {
+            val title = intent.getStringExtra(Intent.EXTRA_TITLE)
+                    ?: intent.getStringExtra(Intent.EXTRA_SUBJECT)
+            val content = intent.getStringExtra(Intent.EXTRA_TEXT) ?: ""
+            viewModel.addIntentNote(title, content)
+        }
+
+        // Observers
+        viewModel.editItemEvent.observe(this, EventObserver { noteId ->
+            navController.navigate(NavGraphDirections.actionEditNote(noteId))
+        })
     }
 
     override fun onBackPressed() {

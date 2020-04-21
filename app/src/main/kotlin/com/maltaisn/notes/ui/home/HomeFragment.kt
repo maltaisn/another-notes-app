@@ -28,6 +28,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
+import com.maltaisn.notes.NavGraphDirections
 import com.maltaisn.notes.R
 import com.maltaisn.notes.model.entity.NoteStatus
 import com.maltaisn.notes.ui.EventObserver
@@ -76,7 +77,7 @@ class HomeFragment : NoteFragment(), Toolbar.OnMenuItemClickListener,
         // Floating action button
         val fab: FloatingActionButton = view.findViewById(R.id.fab)
         fab.setOnClickListener {
-            navController.navigate(HomeFragmentDirections.actionHomeToEdit())
+            navController.navigate(NavGraphDirections.actionEditNote())
         }
 
         // Observers
@@ -119,10 +120,6 @@ class HomeFragment : NoteFragment(), Toolbar.OnMenuItemClickListener,
                 NoteListLayoutMode.LIST -> R.drawable.ic_view_grid
                 NoteListLayoutMode.GRID -> R.drawable.ic_view_list
             })
-        })
-
-        viewModel.editItemEvent.observe(viewLifecycleOwner, EventObserver { item ->
-            navController.navigate(HomeFragmentDirections.actionHomeToEdit(item.note.id))
         })
 
         viewModel.showEmptyTrashDialogEvent.observe(viewLifecycleOwner, EventObserver {

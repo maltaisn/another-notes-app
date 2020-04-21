@@ -28,10 +28,6 @@
         tools:layout="@layout/fragment_home"
         >
         <action
-            android:id="@+id/action_home_to_edit"
-            app:destination="@id/fragment_edit"
-            />
-        <action
             android:id="@+id/action_home_to_search"
             app:destination="@id/fragment_search"
             />
@@ -49,12 +45,7 @@
         android:id="@+id/fragment_search"
         android:name="com.maltaisn.notes.ui.search.SearchFragment"
         tools:layout="@layout/fragment_search"
-        >
-        <action
-            android:id="@+id/action_search_to_edit"
-            app:destination="@id/fragment_edit"
-            />
-    </fragment>
+        />
 
     <fragment
         android:id="@+id/fragment_edit"
@@ -78,6 +69,11 @@
         android:id="@+id/fragment_settings"
         android:name="com.maltaisn.notes.ui.settings.SettingsFragment"
         tools:layout="@layout/fragment_settings"
+        />
+
+    <action
+        android:id="@+id/action_edit_note"
+        app:destination="@id/fragment_edit"
         />
 
 </navigation>

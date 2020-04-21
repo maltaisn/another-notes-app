@@ -26,9 +26,11 @@ import androidx.constraintlayout.widget.Group
 import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.google.android.material.snackbar.Snackbar
+import com.maltaisn.notes.NavGraphDirections
 import com.maltaisn.notes.R
 import com.maltaisn.notes.model.entity.NoteStatus
 import com.maltaisn.notes.ui.EventObserver
@@ -81,6 +83,10 @@ abstract class NoteFragment : ViewModelFragment(), ActionMode.Callback, ConfirmD
                 NoteListLayoutMode.GRID -> 2
             }
             adapter.listLayoutMode = mode
+        })
+
+        viewModel.editItemEvent.observe(viewLifecycleOwner, EventObserver { noteId ->
+            findNavController().navigate(NavGraphDirections.actionEditNote(noteId))
         })
 
         viewModel.currentSelection.observe(viewLifecycleOwner, Observer { selection ->

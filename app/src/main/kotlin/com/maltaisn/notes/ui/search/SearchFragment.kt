@@ -30,7 +30,6 @@ import com.maltaisn.notes.App
 import com.maltaisn.notes.R
 import com.maltaisn.notes.hideKeyboard
 import com.maltaisn.notes.showKeyboard
-import com.maltaisn.notes.ui.EventObserver
 import com.maltaisn.notes.ui.note.NoteFragment
 
 
@@ -83,11 +82,6 @@ class SearchFragment : NoteFragment() {
             }
         }
         searchView.requestFocus()
-
-        // Observers
-        viewModel.editItemEvent.observe(viewLifecycleOwner, EventObserver { item ->
-            navController.navigate(SearchFragmentDirections.actionSearchToEdit(item.note.id))
-        })
     }
 
 }

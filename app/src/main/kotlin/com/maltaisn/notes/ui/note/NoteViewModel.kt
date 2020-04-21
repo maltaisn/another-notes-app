@@ -60,8 +60,8 @@ abstract class NoteViewModel(
     val listLayoutMode: LiveData<NoteListLayoutMode>
         get() = _listLayoutMode
 
-    private val _editItemEvent = MutableLiveData<Event<NoteItem>>()
-    val editItemEvent: LiveData<Event<NoteItem>>
+    private val _editItemEvent = MutableLiveData<Event<Long>>()
+    val editItemEvent: LiveData<Event<Long>>
         get() = _editItemEvent
 
     private val _shareEvent = MutableLiveData<Event<ShareData>>()
@@ -220,7 +220,7 @@ abstract class NoteViewModel(
     override fun onNoteItemClicked(item: NoteItem, pos: Int) {
         if (selectedNotes.isEmpty()) {
             // Edit item
-            _editItemEvent.send(item)
+            _editItemEvent.send(item.note.id)
         } else {
             // Toggle item selection
             toggleItemChecked(item, pos)

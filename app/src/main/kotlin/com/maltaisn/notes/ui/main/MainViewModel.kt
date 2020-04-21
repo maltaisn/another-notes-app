@@ -16,14 +16,23 @@
 
 package com.maltaisn.notes.ui.main
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.maltaisn.notes.model.LoginRepository
 import com.maltaisn.notes.model.NotesRepository
 import com.maltaisn.notes.model.SyncManager
+import com.maltaisn.notes.model.entity.BlankNoteMetadata
+import com.maltaisn.notes.model.entity.Note
+import com.maltaisn.notes.model.entity.NoteStatus
+import com.maltaisn.notes.model.entity.NoteType
+import com.maltaisn.notes.ui.Event
+import com.maltaisn.notes.ui.send
 import com.maltaisn.notes.ui.settings.PreferenceHelper
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.util.*
 import javax.inject.Inject
 import kotlin.time.hours
 
@@ -35,6 +44,10 @@ class MainViewModel @Inject constructor(
 ) : ViewModel() {
 
     private var signedIn = false
+
+    private val _editNoteEvent = MutableLiveData<Event<Long>>()
+    val editItemEvent: LiveData<Event<Long>>
+        get() = _editNoteEvent
 
 
     init {
@@ -70,6 +83,17 @@ class MainViewModel @Inject constructor(
     fun onStop() {
         viewModelScope.launch {
             syncManager.syncNotes(receive = false)
+        }
+    }
+
+    fun addIntentNote(title: String, content: String) {
+        // Add note to database, then edit it.
+        viewModelScope.launch {
+            val date = Date()
+            val note = Note(Note.NO_ID, Note.generateNoteUuid(), NoteType.TEXT,
+                    title, content, BlankNoteMetadata, date, date, NoteStatus.ACTIVE, false)
+            val id = notesRepository.insertNote(note)
+            _editNoteEvent.send(id)
         }
     }
 
