@@ -47,6 +47,8 @@ class MainActivity : AppCompatActivity() {
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        setTheme(R.style.AppTheme_DayNight)
+
         super.onCreate(savedInstanceState)
         (applicationContext as App).appComponent.inject(this)
 

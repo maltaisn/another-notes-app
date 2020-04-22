@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   Copyright 2020 Nicolas Maltais
 
   Licensed under the Apache License, Version 2.0 (the "License");
@@ -37,11 +36,11 @@
     <style name="PlaceholderImageViewStyle">
         <item name="android:layout_width">144dp</item>
         <item name="android:layout_height">144dp</item>
-        <item name="android:alpha">0.4</item>
+        <item name="android:padding">20dp</item>
         <item name="android:background">@drawable/shape_circle</item>
         <item name="android:backgroundTint">@color/color_bg_placeholder</item>
-        <item name="android:padding">20dp</item>
-        <item name="android:tint">?colorOnBackground</item>
+        <item name="tint">@color/material_on_surface_emphasis_medium</item>
+        <item name="tintMode">src_in</item>
     </style>
 
     <style name="PlaceholderTextViewStyle">
