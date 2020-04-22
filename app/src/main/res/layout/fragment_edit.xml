@@ -36,7 +36,7 @@
             style="?toolbarStyle"
             android:layout_width="match_parent"
             android:layout_height="?actionBarSize"
-            app:menu="@menu/edit_toolbar"
+            app:menu="@menu/toolbar_edit"
             app:titleTextColor="?colorControlNormal"
             tools:title="@string/edit_add_title"
             />
@@ -44,7 +44,7 @@
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rcv_edit"
+        android:id="@+id/recycler_view"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"

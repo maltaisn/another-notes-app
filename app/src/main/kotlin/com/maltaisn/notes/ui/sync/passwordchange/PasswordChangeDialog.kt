@@ -22,7 +22,6 @@ import android.os.Bundle
 import android.text.method.PasswordTransformationMethod
 import android.view.LayoutInflater
 import android.view.WindowManager
-import android.widget.EditText
 import androidx.appcompat.app.AlertDialog
 import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
@@ -30,8 +29,8 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
-import com.google.android.material.textfield.TextInputLayout
 import com.maltaisn.notes.R
+import com.maltaisn.notes.databinding.DialogPasswordChangeBinding
 import com.maltaisn.notes.hideKeyboard
 import com.maltaisn.notes.setCustomEndIconOnClickListener
 import com.maltaisn.notes.ui.EventObserver
@@ -47,45 +46,42 @@ class PasswordChangeDialog : ViewModelDialog() {
     override fun onCreateDialog(state: Bundle?): Dialog {
         val context = requireContext()
 
-        val view = LayoutInflater.from(context).inflate(
-                R.layout.dialog_password_change, null, false)
+        val binding = DialogPasswordChangeBinding.inflate(
+                LayoutInflater.from(context), null, false)
 
-        val passwordCurrLayout: TextInputLayout = view.findViewById(R.id.edt_layout_password_current)
-        val passwordCurrEdt: EditText = view.findViewById(R.id.edt_password_current)
-        val passwordNewLayout: TextInputLayout = view.findViewById(R.id.edt_layout_password_new)
-        val passwordNewEdt: EditText = view.findViewById(R.id.edt_password_new)
-        val passwordConfirmLayout: TextInputLayout = view.findViewById(R.id.edt_layout_password_confirm)
-        val passwordConfirmEdt: EditText = view.findViewById(R.id.edt_password_confirm)
+        val currLayout = binding.passwordCurrentEdtLayout
+        val newLayout = binding.passwordNewEdtLayout
+        val confirmLayout = binding.passwordConfirmEdtLayout
 
-        passwordNewLayout.setCustomEndIconOnClickListener {
-            val passwordHidden = passwordNewEdt.transformationMethod is PasswordTransformationMethod
+        newLayout.setCustomEndIconOnClickListener {
+            val passwordHidden = binding.passwordNewEdt.transformationMethod is PasswordTransformationMethod
             viewModel.setPasswordConfirmEnabled(passwordHidden)
         }
 
-        passwordCurrEdt.doAfterTextChanged {
+        binding.passwordCurrentEdt.doAfterTextChanged {
             viewModel.setEnteredCurrentPassword(it?.toString() ?: "")
         }
-        passwordNewEdt.doAfterTextChanged {
+        binding.passwordNewEdt.doAfterTextChanged {
             viewModel.setEnteredNewPassword(it?.toString() ?: "")
         }
-        passwordConfirmEdt.doAfterTextChanged {
+        binding.passwordConfirmEdt.doAfterTextChanged {
             viewModel.setEnteredPasswordConfirm(it?.toString() ?: "")
         }
 
         // Create dialog
         val dialog = MaterialAlertDialogBuilder(context)
-                .setView(view)
+                .setView(binding.root)
                 .setPositiveButton(R.string.action_password_change_short, null)
                 .setNegativeButton(R.string.action_cancel, null)
                 .create()
 
         dialog.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE)
-        passwordCurrEdt.requestFocus()
+        binding.passwordCurrentEdt.requestFocus()
 
         dialog.setOnShowListener {
             val btn = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
             btn.setOnClickListener {
-                view.hideKeyboard()
+                binding.root.hideKeyboard()
                 viewModel.changePassword()
             }
 
@@ -95,12 +91,12 @@ class PasswordChangeDialog : ViewModelDialog() {
             })
 
             viewModel.fieldError.observe(this, Observer { error ->
-                val txvLayouts = listOf(passwordCurrLayout, passwordNewLayout, passwordConfirmLayout)
+                val txvLayouts = listOf(currLayout, newLayout, confirmLayout)
                 val errorLayout = when (error?.location) {
                     null -> null
-                    FieldError.Location.PASSWORD_CURRENT -> passwordCurrLayout
-                    FieldError.Location.PASSWORD_NEW -> passwordNewLayout
-                    FieldError.Location.PASSWORD_CONFIRM -> passwordConfirmLayout
+                    FieldError.Location.PASSWORD_CURRENT -> binding.passwordCurrentEdtLayout
+                    FieldError.Location.PASSWORD_NEW -> binding.passwordNewEdtLayout
+                    FieldError.Location.PASSWORD_CONFIRM -> binding.passwordConfirmEdtLayout
                 }
                 for (layout in txvLayouts) {
                     if (layout === errorLayout) {
@@ -113,9 +109,9 @@ class PasswordChangeDialog : ViewModelDialog() {
             })
 
             viewModel.passwordConfirmEnabled.observe(this, Observer { enabled ->
-                passwordConfirmLayout.isVisible = enabled
+                confirmLayout.isVisible = enabled
                 if (!enabled) {
-                    passwordConfirmEdt.text = null
+                    binding.passwordConfirmEdt.text = null
                 }
             })
 

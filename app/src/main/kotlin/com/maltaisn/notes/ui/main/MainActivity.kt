@@ -25,9 +25,11 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
+import com.google.android.material.navigation.NavigationView
 import com.maltaisn.notes.App
 import com.maltaisn.notes.NavGraphDirections
 import com.maltaisn.notes.R
+import com.maltaisn.notes.databinding.ActivityMainBinding
 import com.maltaisn.notes.ui.EventObserver
 import javax.inject.Inject
 
@@ -37,20 +39,24 @@ class MainActivity : AppCompatActivity() {
     @Inject lateinit var viewModelFactory: ViewModelProvider.Factory
     private val viewModel: MainViewModel by viewModels { viewModelFactory }
 
-    private lateinit var drawerLayout: DrawerLayout
+    lateinit var drawerLayout: DrawerLayout
+    lateinit var navigationView: NavigationView
     private lateinit var navController: NavController
+
+    private lateinit var binding: ActivityMainBinding
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         (applicationContext as App).appComponent.inject(this)
 
-        setContentView(R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        // Setup drawer layout
-        drawerLayout = findViewById(R.id.drawer_layout)
+        drawerLayout = binding.drawerLayout
+        navigationView = binding.navigationView
 
-        navController = findNavController(R.id.fragment_nav_host)
+        navController = findNavController(R.id.nav_host_fragment)
         navController.addOnDestinationChangedListener { _, ds, _ ->
             drawerLayout.setDrawerLockMode(if (ds.id == R.id.fragment_home) {
                 DrawerLayout.LOCK_MODE_UNLOCKED

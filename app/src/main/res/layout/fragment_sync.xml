@@ -36,7 +36,7 @@
             android:layout_width="match_parent"
             android:layout_height="?actionBarSize"
             android:contentDescription="@string/content_descrp_back"
-            app:menu="@menu/sync_toolbar"
+            app:menu="@menu/toolbar_sync"
             app:navigationIcon="@drawable/ic_arrow_left"
             app:title="@string/action_sync"
             app:titleTextColor="?colorControlNormal"
@@ -45,7 +45,7 @@
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.viewpager2.widget.ViewPager2
-        android:id="@+id/view_pager_sync"
+        android:id="@+id/view_pager"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"

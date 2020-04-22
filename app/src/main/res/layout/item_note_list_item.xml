@@ -23,7 +23,7 @@
     >
 
     <ImageView
-        android:id="@+id/imv_item_checkbox"
+        android:id="@+id/checkbox_imv"
         android:layout_width="16dp"
         android:layout_height="16dp"
         android:textAppearance="?textAppearanceSubtitle1"
@@ -39,7 +39,7 @@
         />
 
     <TextView
-        android:id="@+id/txv_item_content"
+        android:id="@+id/content_txv"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:textAppearance="?textAppearanceBody2"

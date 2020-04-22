@@ -23,7 +23,6 @@
     >
 
     <ScrollView
-        android:id="@+id/scv_sync_sign_in"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
@@ -36,7 +35,7 @@
             >
 
             <TextView
-                android:id="@+id/txv_sign_in"
+                android:id="@+id/sign_in_txv"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="24dp"
@@ -50,7 +49,7 @@
                 />
 
             <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/edt_layout_email"
+                android:id="@+id/email_edt_layout"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
@@ -58,11 +57,11 @@
                 android:layout_marginTop="24dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/txv_sign_in"
+                app:layout_constraintTop_toBottomOf="@id/sign_in_txv"
                 >
 
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/edt_email"
+                    android:id="@+id/email_edt"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/sync_email"
@@ -73,7 +72,7 @@
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/edt_layout_password"
+                android:id="@+id/password_edt_layout"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
@@ -82,11 +81,11 @@
                 app:endIconMode="password_toggle"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/edt_layout_email"
+                app:layout_constraintTop_toBottomOf="@id/email_edt_layout"
                 >
 
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/edt_password"
+                    android:id="@+id/password_edt"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/sync_password"
@@ -97,7 +96,7 @@
             </com.google.android.material.textfield.TextInputLayout>
 
             <Button
-                android:id="@+id/btn_sign_up"
+                android:id="@+id/sign_up_btn"
                 style="@style/Widget.MaterialComponents.Button.TextButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -107,11 +106,11 @@
                 android:layout_marginStart="16dp"
                 android:minWidth="0dp"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/edt_layout_password"
+                app:layout_constraintTop_toBottomOf="@id/password_edt_layout"
                 />
 
             <Button
-                android:id="@+id/btn_password_reset"
+                android:id="@+id/password_reset_btn"
                 style="@style/Widget.MaterialComponents.Button.TextButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -121,7 +120,7 @@
                 android:layout_marginEnd="16dp"
                 android:minWidth="0dp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/edt_layout_password"
+                app:layout_constraintTop_toBottomOf="@id/password_edt_layout"
                 />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
@@ -129,7 +128,7 @@
     </ScrollView>
 
     <Button
-        android:id="@+id/btn_sign_in"
+        android:id="@+id/sign_in_btn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="0"

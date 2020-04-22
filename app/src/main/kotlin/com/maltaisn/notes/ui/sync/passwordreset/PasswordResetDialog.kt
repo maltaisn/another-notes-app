@@ -21,7 +21,6 @@ import android.app.Dialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.WindowManager
-import android.widget.EditText
 import androidx.appcompat.app.AlertDialog
 import androidx.core.os.bundleOf
 import androidx.core.widget.doAfterTextChanged
@@ -29,8 +28,8 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
-import com.google.android.material.textfield.TextInputLayout
 import com.maltaisn.notes.R
+import com.maltaisn.notes.databinding.DialogPasswordResetBinding
 import com.maltaisn.notes.hideKeyboard
 import com.maltaisn.notes.ui.EventObserver
 import com.maltaisn.notes.ui.common.ViewModelDialog
@@ -45,11 +44,11 @@ class PasswordResetDialog : ViewModelDialog() {
     override fun onCreateDialog(state: Bundle?): Dialog {
         val context = requireContext()
 
-        val view = LayoutInflater.from(context).inflate(
-                R.layout.dialog_password_reset, null, false)
+        val binding = DialogPasswordResetBinding.inflate(
+                LayoutInflater.from(context), null, false)
 
-        val emailLayout: TextInputLayout = view.findViewById(R.id.edt_layout_email)
-        val emailEdt: EditText = view.findViewById(R.id.edt_email)
+        val emailEdt = binding.emailEdt
+        val emailLayout = binding.emailEdtLayout
 
         emailEdt.doAfterTextChanged {
             viewModel.onEmailEntered(it?.toString() ?: "")
@@ -65,7 +64,7 @@ class PasswordResetDialog : ViewModelDialog() {
 
         // Create dialog
         val dialog = MaterialAlertDialogBuilder(context)
-                .setView(view)
+                .setView(binding.root)
                 .setPositiveButton(R.string.action_password_reset_short, null)
                 .setNegativeButton(R.string.action_cancel, null)
                 .create()
@@ -76,7 +75,7 @@ class PasswordResetDialog : ViewModelDialog() {
         dialog.setOnShowListener {
             val btn = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
             btn.setOnClickListener {
-                view.hideKeyboard()
+                emailEdt.hideKeyboard()
                 viewModel.resetPassword()
             }
 

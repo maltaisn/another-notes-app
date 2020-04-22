@@ -18,24 +18,23 @@ package com.maltaisn.notes.ui.edit.adapter
 
 import android.text.Editable
 import android.view.KeyEvent
-import android.view.View
-import android.widget.CheckBox
-import android.widget.EditText
-import android.widget.ImageView
 import androidx.core.view.isInvisible
 import androidx.core.widget.doOnTextChanged
 import androidx.recyclerview.widget.RecyclerView
-import com.maltaisn.notes.R
+import com.maltaisn.notes.databinding.ItemEditContentBinding
+import com.maltaisn.notes.databinding.ItemEditItemAddBinding
+import com.maltaisn.notes.databinding.ItemEditItemBinding
+import com.maltaisn.notes.databinding.ItemEditTitleBinding
 import com.maltaisn.notes.ui.edit.BulletTextWatcher
 
 interface EditFocusableViewHolder {
     fun setFocus(pos: Int)
 }
 
-class EditTitleViewHolder(itemView: View, callback: EditAdapter.Callback) :
-        RecyclerView.ViewHolder(itemView), EditFocusableViewHolder {
+class EditTitleViewHolder(binding: ItemEditTitleBinding, callback: EditAdapter.Callback) :
+        RecyclerView.ViewHolder(binding.root), EditFocusableViewHolder {
 
-    private val titleEdt = itemView as EditText
+    private val titleEdt = binding.titleEdt
 
     init {
         titleEdt.setOnClickListener {
@@ -60,10 +59,10 @@ class EditTitleViewHolder(itemView: View, callback: EditAdapter.Callback) :
     }
 }
 
-class EditContentViewHolder(itemView: View, callback: EditAdapter.Callback) :
-        RecyclerView.ViewHolder(itemView), EditFocusableViewHolder {
+class EditContentViewHolder(binding: ItemEditContentBinding, callback: EditAdapter.Callback) :
+        RecyclerView.ViewHolder(binding.root), EditFocusableViewHolder {
 
-    private val contentEdt = itemView as EditText
+    private val contentEdt = binding.contentEdt
 
     init {
         contentEdt.addTextChangedListener(BulletTextWatcher())
@@ -88,13 +87,12 @@ class EditContentViewHolder(itemView: View, callback: EditAdapter.Callback) :
     }
 }
 
-class EditItemViewHolder(itemView: View, callback: EditAdapter.Callback) :
-        RecyclerView.ViewHolder(itemView), EditFocusableViewHolder {
+class EditItemViewHolder(val binding: ItemEditItemBinding, callback: EditAdapter.Callback) :
+        RecyclerView.ViewHolder(binding.root), EditFocusableViewHolder {
 
-    val dragImv: ImageView = itemView.findViewById(R.id.imv_item_drag)
-    private val itemCheck: CheckBox = itemView.findViewById(R.id.chk_item)
-    private val itemEdt: EditText = itemView.findViewById(R.id.edt_item)
-    private val deleteImv: ImageView = itemView.findViewById(R.id.imv_item_delete)
+    private val itemCheck = binding.itemChk
+    private val itemEdt = binding.contentEdt
+    private val deleteImv = binding.deleteImv
 
     private lateinit var item: EditItemItem
 
@@ -165,8 +163,8 @@ class EditItemViewHolder(itemView: View, callback: EditAdapter.Callback) :
     }
 }
 
-class EditItemAddViewHolder(itemView: View, callback: EditAdapter.Callback) :
-        RecyclerView.ViewHolder(itemView) {
+class EditItemAddViewHolder(binding: ItemEditItemAddBinding, callback: EditAdapter.Callback) :
+        RecyclerView.ViewHolder(binding.root) {
 
     init {
         itemView.setOnClickListener {

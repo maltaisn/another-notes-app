@@ -17,14 +17,13 @@
 package com.maltaisn.notes.ui.note.adapter
 
 import android.view.View
-import android.widget.ImageView
-import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.google.android.material.card.MaterialCardView
 import com.maltaisn.notes.R
+import com.maltaisn.notes.databinding.*
 import com.maltaisn.notes.model.entity.ListNoteItem
 import com.maltaisn.notes.model.entity.NoteType
 import com.maltaisn.notes.ui.note.HighlightHelper
@@ -34,8 +33,8 @@ import kotlin.math.min
 abstract class NoteViewHolder(itemView: View) :
         RecyclerView.ViewHolder(itemView) {
 
-    private val cardView = itemView as MaterialCardView
-    private val titleTxv: TextView = itemView.findViewById(R.id.txv_title)
+    protected abstract val cardView: MaterialCardView
+    protected abstract val titleTxv: TextView
 
     open fun bind(adapter: NoteAdapter, item: NoteItem) {
         titleTxv.text = HighlightHelper.getHighlightedText(item.note.title, item.titleHighlights,
@@ -51,27 +50,30 @@ abstract class NoteViewHolder(itemView: View) :
             true
         }
     }
-
 }
 
-class TextNoteViewHolder(itemView: View) : NoteViewHolder(itemView) {
+class TextNoteViewHolder(private val binding: ItemNoteTextBinding) :
+        NoteViewHolder(binding.root) {
 
-    private val contentTxv: TextView = itemView.findViewById(R.id.txv_content)
+    override val cardView = binding.cardView
+    override val titleTxv = binding.titleTxv
 
     override fun bind(adapter: NoteAdapter, item: NoteItem) {
         super.bind(adapter, item)
         require(item.note.type == NoteType.TEXT)
 
-        contentTxv.text = HighlightHelper.getHighlightedText(item.note.content, item.contentHighlights,
+        val txv = binding.contentTxv
+        txv.text = HighlightHelper.getHighlightedText(item.note.content, item.contentHighlights,
                 adapter.highlightBackgroundColor, adapter.highlightForegroundColor)
-        contentTxv.maxLines = adapter.listLayoutMode.maxTextLines
+        txv.maxLines = adapter.listLayoutMode.maxTextLines
     }
 }
 
-class ListNoteViewHolder(itemView: View) : NoteViewHolder(itemView) {
+class ListNoteViewHolder(private val binding: ItemNoteListBinding) :
+        NoteViewHolder(binding.root) {
 
-    private val itemLayout: LinearLayout = itemView.findViewById(R.id.layout_list_items)
-    private val infoTxv: TextView = itemView.findViewById(R.id.txv_info)
+    override val cardView = binding.cardView
+    override val titleTxv = binding.titleTxv
 
     private val itemViewHolders = mutableListOf<ListNoteItemViewHolder>()
 
@@ -92,10 +94,11 @@ class ListNoteViewHolder(itemView: View) : NoteViewHolder(itemView) {
             val viewHolder = adapter.obtainListNoteItemViewHolder()
             itemViewHolders += viewHolder
             viewHolder.bind(adapter, noteItem, itemHighlights[i])
-            itemLayout.addView(viewHolder.itemView, i + 1)
+            binding.itemsLayout.addView(viewHolder.binding.root, i + 1)
         }
 
         // Show a label indicating the number of items not shown.
+        val infoTxv = binding.infoTxv
         val overflowCount = noteItems.size - maxItems
         infoTxv.isVisible = overflowCount > 0
         if (overflowCount > 0) {
@@ -110,22 +113,21 @@ class ListNoteViewHolder(itemView: View) : NoteViewHolder(itemView) {
         }
 
         // Free view holders used by the item.
+        val itemsLayout = binding.itemsLayout
         val viewHolders = itemViewHolders.toList()
-        itemLayout.removeViews(1, itemLayout.childCount - 2)
+        binding.itemsLayout.removeViews(1, itemsLayout.childCount - 2)
         itemViewHolders.clear()
 
         return viewHolders
     }
 }
 
-class MessageViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-
-    private val messageTxv: TextView = itemView.findViewById(R.id.txv_message)
-    private val closeBtn: ImageView = itemView.findViewById(R.id.imv_message_close)
+class MessageViewHolder(private val binding: ItemMessageBinding) :
+        RecyclerView.ViewHolder(binding.root) {
 
     fun bind(item: MessageItem, adapter: NoteAdapter) {
-        messageTxv.text = messageTxv.context.getString(item.message, *item.args)
-        closeBtn.setOnClickListener {
+        binding.messageTxv.text = adapter.context.getString(item.message, *item.args)
+        binding.closeImv.setOnClickListener {
             adapter.callback.onMessageItemDismissed(item, adapterPosition)
             adapter.notifyItemRemoved(adapterPosition)
         }
@@ -134,26 +136,22 @@ class MessageViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     }
 }
 
-class HeaderViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-
-    private val titleTxv = itemView as TextView
+class HeaderViewHolder(private val binding: ItemHeaderBinding) :
+        RecyclerView.ViewHolder(binding.root) {
 
     fun bind(item: HeaderItem) {
-        titleTxv.setText(item.title)
+        binding.titleTxv.setText(item.title)
         (itemView.layoutParams as StaggeredGridLayoutManager.LayoutParams).isFullSpan = true
     }
 }
 
-class ListNoteItemViewHolder(val itemView: View) {
-
-    private val checkImv: ImageView = itemView.findViewById(R.id.imv_item_checkbox)
-    private val contentTxv: TextView = itemView.findViewById(R.id.txv_item_content)
+class ListNoteItemViewHolder(val binding: ItemNoteListItemBinding) {
 
     fun bind(adapter: NoteAdapter, item: ListNoteItem, highlights: List<IntRange>) {
-        contentTxv.text = HighlightHelper.getHighlightedText(item.content, highlights,
+        binding.contentTxv.text = HighlightHelper.getHighlightedText(item.content, highlights,
                 adapter.highlightBackgroundColor, adapter.highlightForegroundColor)
 
-        checkImv.setImageResource(if (item.checked) {
+        binding.checkboxImv.setImageResource(if (item.checked) {
             R.drawable.ic_checkbox_on
         } else {
             R.drawable.ic_checkbox_off

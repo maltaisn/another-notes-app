@@ -31,9 +31,9 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import com.maltaisn.notes.R
+import com.maltaisn.notes.databinding.FragmentEditBinding
 import com.maltaisn.notes.hideKeyboard
 import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.model.entity.NoteStatus
@@ -53,12 +53,15 @@ class EditFragment : ViewModelFragment(), Toolbar.OnMenuItemClickListener, Confi
 
     private val args: EditFragmentArgs by navArgs()
 
-    private lateinit var toolbar: Toolbar
+    private var _binding: FragmentEditBinding? = null
+    private val binding get() = _binding!!
 
 
     override fun onCreateView(inflater: LayoutInflater,
-                              container: ViewGroup?, state: Bundle?): View =
-            inflater.inflate(R.layout.fragment_edit, container, false)
+                              container: ViewGroup?, state: Bundle?): View {
+        _binding = FragmentEditBinding.inflate(inflater, container, false)
+        return binding.root
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val context = requireContext()
@@ -71,7 +74,7 @@ class EditFragment : ViewModelFragment(), Toolbar.OnMenuItemClickListener, Confi
         viewModel.start(args.noteId)
 
         // Toolbar
-        toolbar = view.findViewById(R.id.toolbar)
+        val toolbar = binding.toolbar
         toolbar.setOnMenuItemClickListener(this)
         toolbar.setNavigationIcon(R.drawable.ic_arrow_left)
         toolbar.setNavigationOnClickListener {
@@ -98,7 +101,7 @@ class EditFragment : ViewModelFragment(), Toolbar.OnMenuItemClickListener, Confi
         val deleteItem = toolbarMenu.findItem(R.id.item_delete)
 
         // Recycler view
-        val rcv: RecyclerView = view.findViewById(R.id.rcv_edit)
+        val rcv = binding.recyclerView
         rcv.setHasFixedSize(true)
         val adapter = EditAdapter(context, viewModel)
         val layoutManager = LinearLayoutManager(context)
@@ -203,6 +206,11 @@ class EditFragment : ViewModelFragment(), Toolbar.OnMenuItemClickListener, Confi
         viewModel.exitEvent.observe(viewLifecycleOwner, EventObserver {
             findNavController().popBackStack()
         })
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     override fun onStop() {

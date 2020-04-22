@@ -21,7 +21,6 @@ import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
-import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
@@ -33,6 +32,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.maltaisn.notes.App
 import com.maltaisn.notes.BuildConfig
 import com.maltaisn.notes.R
+import com.maltaisn.notes.databinding.FragmentSettingsBinding
 import com.maltaisn.notes.ui.EventObserver
 import com.maltaisn.notes.ui.common.ConfirmDialog
 import javax.inject.Inject
@@ -52,9 +52,10 @@ class SettingsFragment : PreferenceFragmentCompat(), ConfirmDialog.Callback {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        val binding = FragmentSettingsBinding.bind(view)
+
         // Toolbar
-        val toolbar: Toolbar = view.findViewById(R.id.toolbar)
-        toolbar.setNavigationOnClickListener {
+        binding.toolbar.setNavigationOnClickListener {
             findNavController().popBackStack()
         }
 

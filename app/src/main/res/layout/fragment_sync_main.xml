@@ -30,7 +30,7 @@
         >
 
         <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/imv_sync"
+            android:id="@+id/sync_imv"
             style="@style/PlaceholderImageViewStyle"
             android:layout_marginTop="32dp"
             android:src="@drawable/ic_sync"
@@ -40,7 +40,7 @@
             />
 
         <TextView
-            android:id="@+id/txv_sync"
+            android:id="@+id/sync_txv"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="64dp"
@@ -51,11 +51,11 @@
             android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/imv_sync"
+            app:layout_constraintTop_toBottomOf="@id/sync_imv"
             />
 
         <View
-            android:id="@+id/div_sync"
+            android:id="@+id/sync_div"
             style="@style/DividerStyle"
             android:layout_width="0dp"
             android:layout_marginTop="24dp"
@@ -63,11 +63,11 @@
             android:layout_marginEnd="32dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/txv_sync"
+            app:layout_constraintTop_toBottomOf="@id/sync_txv"
             />
 
         <Button
-            android:id="@+id/btn_sign_in"
+            android:id="@+id/sign_in_btn"
             style="@style/Widget.MaterialComponents.Button.TextButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -75,31 +75,31 @@
             android:layout_marginTop="24dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/div_sync"
+            app:layout_constraintTop_toBottomOf="@id/sync_div"
             />
 
         <Button
-            android:id="@+id/btn_sign_up"
+            android:id="@+id/sign_up_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/action_sign_up"
             android:layout_marginTop="8dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/btn_sign_in"
+            app:layout_constraintTop_toBottomOf="@id/sign_in_btn"
             />
 
         <androidx.constraintlayout.widget.Group
-            android:id="@+id/group_signed_out"
+            android:id="@+id/signed_out_group"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            app:constraint_referenced_ids="btn_sign_in,btn_sign_up"
+            app:constraint_referenced_ids="sign_in_btn,sign_up_btn"
             android:visibility="gone"
             tools:visibility="gone"
             />
 
         <TextView
-            android:id="@+id/txv_sync_signed_in_label"
+            android:id="@+id/signed_in_label_txv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/sync_signed_in_message"
@@ -107,11 +107,11 @@
             android:layout_marginTop="24dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/div_sync"
+            app:layout_constraintTop_toBottomOf="@id/sync_div"
             />
 
         <TextView
-            android:id="@+id/txv_sync_signed_in_email"
+            android:id="@+id/signed_in_email_txv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textStyle="bold"
@@ -119,12 +119,12 @@
             android:layout_marginTop="4dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/txv_sync_signed_in_label"
+            app:layout_constraintTop_toBottomOf="@id/signed_in_label_txv"
             tools:text="email@example.com"
             />
 
         <Button
-            android:id="@+id/btn_sign_out"
+            android:id="@+id/sign_out_btn"
             style="@style/Widget.MaterialComponents.Button.TextButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -132,11 +132,11 @@
             android:layout_marginTop="8dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/txv_sync_signed_in_email"
+            app:layout_constraintTop_toBottomOf="@id/signed_in_email_txv"
             />
 
         <View
-            android:id="@+id/div_verification"
+            android:id="@+id/verification_div"
             style="@style/DividerStyle"
             android:layout_width="0dp"
             android:layout_marginTop="8dp"
@@ -144,11 +144,11 @@
             android:layout_marginEnd="32dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/btn_sign_out"
+            app:layout_constraintTop_toBottomOf="@id/sign_out_btn"
             />
 
         <TextView
-            android:id="@+id/txv_sync_signed_in_verification"
+            android:id="@+id/signed_in_verification_txv"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="@string/sync_signed_in_not_verified"
@@ -160,11 +160,11 @@
             android:layout_marginEnd="64dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/div_verification"
+            app:layout_constraintTop_toBottomOf="@id/verification_div"
             />
 
         <Button
-            android:id="@+id/btn_resend_verification"
+            android:id="@+id/resend_verification_btn"
             style="@style/Widget.MaterialComponents.Button.TextButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -172,23 +172,23 @@
             android:text="@string/action_resend_verification"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/txv_sync_signed_in_verification"
+            app:layout_constraintTop_toBottomOf="@id/signed_in_verification_txv"
             />
 
         <androidx.constraintlayout.widget.Group
-            android:id="@+id/group_verification"
+            android:id="@+id/verification_group"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            app:constraint_referenced_ids="div_verification,txv_sync_signed_in_verification,btn_resend_verification"
+            app:constraint_referenced_ids="verification_div,signed_in_verification_txv,resend_verification_btn"
             android:visibility="gone"
             tools:visibility="visible"
             />
 
         <androidx.constraintlayout.widget.Group
-            android:id="@+id/group_signed_in"
+            android:id="@+id/signed_in_group"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            app:constraint_referenced_ids="txv_sync_signed_in_label,txv_sync_signed_in_email,btn_sign_out"
+            app:constraint_referenced_ids="signed_in_label_txv,signed_in_email_txv,sign_out_btn"
             android:visibility="gone"
             tools:visibility="visible"
             />

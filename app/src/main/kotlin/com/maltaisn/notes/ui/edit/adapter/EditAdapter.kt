@@ -24,7 +24,10 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.maltaisn.notes.R
+import com.maltaisn.notes.databinding.ItemEditContentBinding
+import com.maltaisn.notes.databinding.ItemEditItemAddBinding
+import com.maltaisn.notes.databinding.ItemEditItemBinding
+import com.maltaisn.notes.databinding.ItemEditTitleBinding
 import com.maltaisn.notes.hideKeyboard
 import com.maltaisn.notes.ui.edit.EditViewModel
 
@@ -56,16 +59,16 @@ class EditAdapter(val context: Context, val callback: Callback) :
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         return when (viewType) {
-            VIEW_TYPE_TITLE -> EditTitleViewHolder(inflater.inflate(
-                    R.layout.item_edit_title, parent, false), callback)
-            VIEW_TYPE_CONTENT -> EditContentViewHolder(inflater.inflate(
-                    R.layout.item_edit_content, parent, false), callback)
-            VIEW_TYPE_ITEM_ADD -> EditItemAddViewHolder(inflater.inflate(
-                    R.layout.item_edit_item_add, parent, false), callback)
+            VIEW_TYPE_TITLE -> EditTitleViewHolder(ItemEditTitleBinding.inflate(
+                    inflater, parent, false), callback)
+            VIEW_TYPE_CONTENT -> EditContentViewHolder(ItemEditContentBinding.inflate(
+                    inflater, parent, false), callback)
+            VIEW_TYPE_ITEM_ADD -> EditItemAddViewHolder(ItemEditItemAddBinding.inflate(
+                    inflater, parent, false), callback)
             VIEW_TYPE_ITEM -> {
-                val viewHolder = EditItemViewHolder(inflater.inflate(
-                        R.layout.item_edit_item, parent, false), callback)
-                viewHolder.dragImv.setOnTouchListener { view, event ->
+                val viewHolder = EditItemViewHolder(ItemEditItemBinding.inflate(
+                        inflater, parent, false), callback)
+                viewHolder.binding.dragImv.setOnTouchListener { view, event ->
                     if (event.action == MotionEvent.ACTION_DOWN && callback.isNoteDragEnabled) {
                         // Drag handle was touched. Hide keyboard and start dragging.
                         viewHolder.clearFocus()

@@ -17,13 +17,14 @@
 <com.google.android.material.card.MaterialCardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/card_view"
     style="@style/NoteListItemCardStyle"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     >
 
     <LinearLayout
-        android:id="@+id/layout_list_items"
+        android:id="@+id/items_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
@@ -31,7 +32,7 @@
         >
 
         <TextView
-            android:id="@+id/txv_title"
+            android:id="@+id/title_txv"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textAppearance="?textAppearanceSubtitle1"
@@ -57,7 +58,7 @@
         -->
 
         <TextView
-            android:id="@+id/txv_info"
+            android:id="@+id/info_txv"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textAppearance="?textAppearanceCaption"

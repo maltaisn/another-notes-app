@@ -19,19 +19,15 @@ package com.maltaisn.notes.ui.note
 import android.content.Intent
 import android.os.Bundle
 import android.view.*
-import android.widget.ImageView
-import android.widget.TextView
-import androidx.appcompat.widget.Toolbar
-import androidx.constraintlayout.widget.Group
 import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.google.android.material.snackbar.Snackbar
 import com.maltaisn.notes.NavGraphDirections
 import com.maltaisn.notes.R
+import com.maltaisn.notes.databinding.FragmentNoteBinding
 import com.maltaisn.notes.model.entity.NoteStatus
 import com.maltaisn.notes.ui.EventObserver
 import com.maltaisn.notes.ui.SharedViewModel
@@ -47,30 +43,28 @@ abstract class NoteFragment : ViewModelFragment(), ActionMode.Callback, ConfirmD
     private val sharedViewModel: SharedViewModel by activityViewModels { viewModelFactory }
     protected abstract val viewModel: NoteViewModel
 
+    private var _binding: FragmentNoteBinding? = null
+    protected val binding get() = _binding!!
+
     protected var actionMode: ActionMode? = null
 
 
-    abstract override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                                       savedInstanceState: Bundle?): View
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
+                              savedInstanceState: Bundle?): View {
+        _binding = FragmentNoteBinding.inflate(inflater, container, false)
+        return binding.root
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val context = requireContext()
 
-        // Setup toolbar with drawer
-        val toolbar: Toolbar = view.findViewById(R.id.toolbar)
-
         // Recycler view
-        val rcv: RecyclerView = view.findViewById(R.id.rcv_notes)
+        val rcv = binding.recyclerView
         rcv.setHasFixedSize(true)
         val adapter = NoteAdapter(context, viewModel)
         val layoutManager = StaggeredGridLayoutManager(1, StaggeredGridLayoutManager.VERTICAL)
         rcv.adapter = adapter
         rcv.layoutManager = layoutManager
-
-        // Placeholder views
-        val placeholderImv: ImageView = view.findViewById(R.id.imv_placeholder)
-        val placeholderTxv: TextView = view.findViewById(R.id.txv_placeholder)
-        val placeholderGroup: Group = view.findViewById(R.id.group_placeholder)
 
         // Observers
         viewModel.noteItems.observe(viewLifecycleOwner, Observer { items ->
@@ -91,7 +85,7 @@ abstract class NoteFragment : ViewModelFragment(), ActionMode.Callback, ConfirmD
 
         viewModel.currentSelection.observe(viewLifecycleOwner, Observer { selection ->
             if (selection.count != 0 && actionMode == null) {
-                actionMode = toolbar.startActionMode(this)
+                actionMode = binding.toolbar.startActionMode(this)
 
             } else if (selection.count == 0 && actionMode != null) {
                 actionMode?.finish()
@@ -144,10 +138,10 @@ abstract class NoteFragment : ViewModelFragment(), ActionMode.Callback, ConfirmD
         })
 
         viewModel.placeholderData.observe(viewLifecycleOwner, Observer { data ->
-            placeholderGroup.isVisible = data != null
+            binding.placeholderGroup.isVisible = data != null
             if (data != null) {
-                placeholderImv.setImageResource(data.iconId)
-                placeholderTxv.setText(data.messageId)
+                binding.placeholderImv.setImageResource(data.iconId)
+                binding.placeholderTxv.setText(data.messageId)
             }
         })
 
@@ -182,6 +176,11 @@ abstract class NoteFragment : ViewModelFragment(), ActionMode.Callback, ConfirmD
         })
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
     override fun onActionItemClicked(mode: ActionMode, item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.item_move -> viewModel.moveSelectedNotes()
@@ -196,7 +195,7 @@ abstract class NoteFragment : ViewModelFragment(), ActionMode.Callback, ConfirmD
     }
 
     override fun onCreateActionMode(mode: ActionMode, menu: Menu): Boolean {
-        mode.menuInflater.inflate(R.menu.selection_cab, menu)
+        mode.menuInflater.inflate(R.menu.cab_selection, menu)
         return true
     }
 

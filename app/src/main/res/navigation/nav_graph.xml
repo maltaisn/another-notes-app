@@ -25,7 +25,7 @@
     <fragment
         android:id="@+id/fragment_home"
         android:name="com.maltaisn.notes.ui.home.HomeFragment"
-        tools:layout="@layout/fragment_home"
+        tools:layout="@layout/fragment_note"
         >
         <action
             android:id="@+id/action_home_to_search"
@@ -44,7 +44,7 @@
     <fragment
         android:id="@+id/fragment_search"
         android:name="com.maltaisn.notes.ui.search.SearchFragment"
-        tools:layout="@layout/fragment_search"
+        tools:layout="@layout/fragment_note"
         />
 
     <fragment

@@ -22,7 +22,7 @@
     >
 
     <TextView
-        android:id="@+id/txv_drawer_title"
+        android:id="@+id/drawer_title_txv"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textAppearance="?textAppearanceHeadline5"
@@ -33,7 +33,7 @@
         />
 
     <View
-        android:id="@+id/div_drawer"
+        android:id="@+id/drawer_div"
         android:layout_width="match_parent"
         style="@style/DividerStyle"
         android:layout_marginTop="16dp"

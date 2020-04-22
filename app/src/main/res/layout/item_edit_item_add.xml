@@ -28,18 +28,19 @@
     >
 
     <ImageView
-        android:id="@+id/imv_item_add"
+        android:id="@+id/add_imv"
         android:layout_width="24dp"
         android:layout_height="24dp"
         android:layout_weight="0"
         android:src="@drawable/ic_plus"
         android:layout_gravity="top"
         android:layout_marginTop="4dp"
-        tools:ignore="ContentDescription"
         android:layout_marginEnd="4dp"
+        tools:ignore="ContentDescription"
         />
 
     <TextView
+        android:id="@+id/list_item_txv"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"

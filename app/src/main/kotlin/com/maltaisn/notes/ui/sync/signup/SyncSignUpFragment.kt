@@ -21,15 +21,12 @@ import android.text.method.PasswordTransformationMethod
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.EditText
 import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import com.google.android.material.snackbar.Snackbar
-import com.google.android.material.textfield.TextInputLayout
-import com.maltaisn.notes.R
+import com.maltaisn.notes.databinding.FragmentSyncSignUpBinding
 import com.maltaisn.notes.hideKeyboard
 import com.maltaisn.notes.setCustomEndIconOnClickListener
 import com.maltaisn.notes.ui.EventObserver
@@ -43,27 +40,31 @@ class SyncSignUpFragment : ViewModelFragment() {
 
     private val viewModel: SyncSignUpViewModel by viewModels { viewModelFactory }
 
+    private var _binding: FragmentSyncSignUpBinding? = null
+    private val binding get() = _binding!!
+
 
     override fun onCreateView(inflater: LayoutInflater,
-                              container: ViewGroup?, savedInstanceState: Bundle?): View =
-            inflater.inflate(R.layout.fragment_sync_sign_up, container, false)
+                              container: ViewGroup?, savedInstanceState: Bundle?): View {
+        _binding = FragmentSyncSignUpBinding.inflate(inflater, container, false)
+        return binding.root
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val emailLayout: TextInputLayout = view.findViewById(R.id.edt_layout_email)
-        val passwordLayout: TextInputLayout = view.findViewById(R.id.edt_layout_password)
-        val passwordConfirmLayout: TextInputLayout = view.findViewById(R.id.edt_layout_password_confirm)
-        val emailEdt: EditText = view.findViewById(R.id.edt_email)
-        val passwordEdt: EditText = view.findViewById(R.id.edt_password)
-        val passwordConfirmEdt: EditText = view.findViewById(R.id.edt_password_confirm)
-        val signInBtn: Button = view.findViewById(R.id.btn_sign_in)
-        val signUpBtn: Button = view.findViewById(R.id.btn_sign_up)
+        val emailLayout = binding.emailEdtLayout
+        val passwordLayout = binding.passwordEdtLayout
+        val passwordConfirmLayout = binding.passwordConfirmEdtLayout
+        val emailEdt = binding.emailEdt
+        val passwordEdt = binding.passwordEdt
+        val passwordConfirmEdt = binding.passwordConfirmEdt
 
-        signInBtn.setOnClickListener {
+
+        binding.signInBtn.setOnClickListener {
             viewModel.goToPage(SyncPage.SIGN_IN)
         }
-        signUpBtn.setOnClickListener {
+        binding.signUpBtn.setOnClickListener {
             view.hideKeyboard()
             viewModel.signUp()
         }
@@ -125,6 +126,11 @@ class SyncSignUpFragment : ViewModelFragment() {
             passwordEdt.clearFocus()
             passwordConfirmEdt.clearFocus()
         })
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
 }

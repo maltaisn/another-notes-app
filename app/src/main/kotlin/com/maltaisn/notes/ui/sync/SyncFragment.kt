@@ -27,8 +27,8 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.adapter.FragmentStateAdapter
-import androidx.viewpager2.widget.ViewPager2
 import com.maltaisn.notes.R
+import com.maltaisn.notes.databinding.FragmentSyncBinding
 import com.maltaisn.notes.hideKeyboard
 import com.maltaisn.notes.ui.common.ViewModelFragment
 import com.maltaisn.notes.ui.sync.accountdelete.AccountDeleteDialog
@@ -42,12 +42,15 @@ class SyncFragment : ViewModelFragment(), Toolbar.OnMenuItemClickListener {
 
     private val viewModel: SyncViewModel by viewModels { viewModelFactory }
 
-    private lateinit var viewPager: ViewPager2
+    private var _binding: FragmentSyncBinding? = null
+    private val binding get() = _binding!!
 
 
     override fun onCreateView(inflater: LayoutInflater,
-                              container: ViewGroup?, savedInstanceState: Bundle?): View =
-            inflater.inflate(R.layout.fragment_sync, container, false)
+                              container: ViewGroup?, savedInstanceState: Bundle?): View {
+        _binding = FragmentSyncBinding.inflate(inflater, container, false)
+        return binding.root
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -55,7 +58,7 @@ class SyncFragment : ViewModelFragment(), Toolbar.OnMenuItemClickListener {
         val navController = findNavController()
 
         // Toolbar
-        val toolbar: Toolbar = view.findViewById(R.id.toolbar)
+        val toolbar = binding.toolbar
         toolbar.setOnMenuItemClickListener(this)
         toolbar.setNavigationIcon(R.drawable.ic_arrow_left)
         toolbar.setNavigationOnClickListener {
@@ -64,7 +67,7 @@ class SyncFragment : ViewModelFragment(), Toolbar.OnMenuItemClickListener {
         }
 
         // View pager
-        viewPager = view.findViewById(R.id.view_pager_sync)
+        val viewPager = binding.viewPager
         viewPager.adapter = SyncPageAdapter(this)
         viewPager.offscreenPageLimit = 1
 
@@ -80,6 +83,11 @@ class SyncFragment : ViewModelFragment(), Toolbar.OnMenuItemClickListener {
         })
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
     override fun onMenuItemClick(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.item_password_change -> PasswordChangeDialog()
@@ -92,7 +100,7 @@ class SyncFragment : ViewModelFragment(), Toolbar.OnMenuItemClickListener {
     }
 
     fun goToPage(page: SyncPage) {
-        viewPager.currentItem = page.pos
+        binding.viewPager.currentItem = page.pos
     }
 
     private class SyncPageAdapter(fragment: Fragment) : FragmentStateAdapter(fragment) {

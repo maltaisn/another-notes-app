@@ -17,6 +17,7 @@
 <com.google.android.material.card.MaterialCardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/card_view"
     style="@style/NoteListItemCardStyle"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -30,7 +31,7 @@
         >
 
         <TextView
-            android:id="@+id/txv_title"
+            android:id="@+id/title_txv"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textAppearance="?textAppearanceSubtitle1"
@@ -41,7 +42,7 @@
             />
 
         <TextView
-            android:id="@+id/txv_content"
+            android:id="@+id/content_txv"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textAppearance="?textAppearanceBody2"

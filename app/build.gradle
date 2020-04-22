@@ -25,6 +25,9 @@ android {
             }
         }
     }
+    viewBinding {
+        enabled = true
+    }
     sourceSets {
         def sharedTestDir = "src/sharedTest/kotlin"
         main.java.srcDirs += "src/main/kotlin"

@@ -37,10 +37,9 @@
             style="?toolbarStyle"
             android:layout_width="match_parent"
             android:layout_height="?actionBarSize"
-            app:menu="@menu/main_toolbar"
-            app:navigationContentDescription="@string/content_descrp_open_drawer"
-            app:navigationIcon="@drawable/ic_menu"
             app:titleTextColor="?colorControlNormal"
+            tools:menu="@menu/toolbar_home"
+            tools:navigationIcon="@drawable/ic_menu"
             tools:title="@string/app_name"
             />
 
@@ -53,7 +52,7 @@
         >
 
         <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/imv_placeholder"
+            android:id="@+id/placeholder_imv"
             style="@style/PlaceholderImageViewStyle"
             android:layout_marginTop="64dp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -64,24 +63,24 @@
             />
 
         <TextView
-            android:id="@+id/txv_placeholder"
+            android:id="@+id/placeholder_txv"
             style="@style/PlaceholderTextViewStyle"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/imv_placeholder"
+            app:layout_constraintTop_toBottomOf="@id/placeholder_imv"
             tools:text="@string/note_placeholder_active"
             tools:visibility="visible"
             />
 
         <androidx.constraintlayout.widget.Group
-            android:id="@+id/group_placeholder"
+            android:id="@+id/placeholder_group"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            app:constraint_referenced_ids="imv_placeholder,txv_placeholder"
+            app:constraint_referenced_ids="placeholder_imv,placeholder_txv"
             />
 
         <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-            android:id="@+id/layout_swipe_refresh"
+            android:id="@+id/swipe_refresh_layout"
             android:layout_width="0dp"
             android:layout_height="0dp"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -91,7 +90,7 @@
             >
 
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rcv_notes"
+                android:id="@+id/recycler_view"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:paddingTop="5dp"

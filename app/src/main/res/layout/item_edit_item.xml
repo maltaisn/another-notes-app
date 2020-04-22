@@ -28,7 +28,7 @@
     >
 
     <ImageView
-        android:id="@+id/imv_item_drag"
+        android:id="@+id/drag_imv"
         android:layout_width="24dp"
         android:layout_height="24dp"
         android:layout_weight="0"
@@ -40,7 +40,7 @@
         />
 
     <com.google.android.material.checkbox.MaterialCheckBox
-        android:id="@+id/chk_item"
+        android:id="@+id/item_chk"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_weight="0"
@@ -50,7 +50,7 @@
         />
 
     <EditText
-        android:id="@+id/edt_item"
+        android:id="@+id/content_edt"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
@@ -67,7 +67,7 @@
         />
 
     <ImageView
-        android:id="@+id/imv_item_delete"
+        android:id="@+id/delete_imv"
         android:layout_width="32dp"
         android:layout_height="32dp"
         android:layout_weight="0"

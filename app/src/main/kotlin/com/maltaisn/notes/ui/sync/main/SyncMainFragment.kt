@@ -20,14 +20,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.TextView
-import androidx.constraintlayout.widget.Group
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import com.google.android.material.snackbar.Snackbar
-import com.maltaisn.notes.R
+import com.maltaisn.notes.databinding.FragmentSyncMainBinding
 import com.maltaisn.notes.ui.EventObserver
 import com.maltaisn.notes.ui.common.ViewModelFragment
 import com.maltaisn.notes.ui.sync.SyncFragment
@@ -38,37 +35,32 @@ class SyncMainFragment : ViewModelFragment() {
 
     private val viewModel: SyncMainViewModel by viewModels { viewModelFactory }
 
+    private var _binding: FragmentSyncMainBinding? = null
+    private val binding get() = _binding!!
+
 
     override fun onCreateView(inflater: LayoutInflater,
-                              container: ViewGroup?, savedInstanceState: Bundle?): View =
-            inflater.inflate(R.layout.fragment_sync_main, container, false)
+                              container: ViewGroup?, savedInstanceState: Bundle?): View {
+        _binding = FragmentSyncMainBinding.inflate(inflater, container, false)
+        return binding.root
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         // Signed out views
-        val signedOutGroup: Group = view.findViewById(R.id.group_signed_out)
-        val signInBtn: Button = view.findViewById(R.id.btn_sign_in)
-        val signUpBtn: Button = view.findViewById(R.id.btn_sign_up)
-
-        signInBtn.setOnClickListener {
+        binding.signInBtn.setOnClickListener {
             viewModel.goToPage(SyncPage.SIGN_IN)
         }
-        signUpBtn.setOnClickListener {
+        binding.signUpBtn.setOnClickListener {
             viewModel.goToPage(SyncPage.SIGN_UP)
         }
 
         // Signed in views
-        val signedInGroup: Group = view.findViewById(R.id.group_signed_in)
-        val userTxv: TextView = view.findViewById(R.id.txv_sync_signed_in_email)
-        val signOutBtn: Button = view.findViewById(R.id.btn_sign_out)
-        val verificationGroup: Group = view.findViewById(R.id.group_verification)
-        val resendVerificationBtn: Button = view.findViewById(R.id.btn_resend_verification)
-
-        signOutBtn.setOnClickListener {
+        binding.signOutBtn.setOnClickListener {
             viewModel.signOut()
         }
-        resendVerificationBtn.setOnClickListener {
+        binding.resendVerificationBtn.setOnClickListener {
             viewModel.resendVerification()
         }
 
@@ -82,13 +74,18 @@ class SyncMainFragment : ViewModelFragment() {
         })
 
         viewModel.currentUser.observe(viewLifecycleOwner, Observer { user ->
-            signedInGroup.isVisible = user != null
-            signedOutGroup.isVisible = user == null
-            verificationGroup.isVisible = user != null && !user.isEmailVerified
+            binding.signedInGroup.isVisible = user != null
+            binding.signedOutGroup.isVisible = user == null
+            binding.verificationGroup.isVisible = user != null && !user.isEmailVerified
             if (user != null) {
-                userTxv.text = user.email!!
+                binding.signedInEmailTxv.text = user.email!!
             }
         })
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     override fun onResume() {

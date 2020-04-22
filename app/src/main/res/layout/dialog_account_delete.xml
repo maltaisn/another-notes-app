@@ -30,7 +30,7 @@
         >
 
         <TextView
-            android:id="@+id/txv_title"
+            android:id="@+id/title_txv"
             style="@style/MaterialAlertDialog.MaterialComponents.Title.Text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -41,7 +41,7 @@
             />
 
         <TextView
-            android:id="@+id/txv_message"
+            android:id="@+id/message_txv"
             style="@style/MaterialAlertDialog.MaterialComponents.Body.Text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -52,7 +52,7 @@
             />
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/edt_layout_password"
+            android:id="@+id/password_edt_layout"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -63,7 +63,7 @@
             >
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/edt_password"
+                android:id="@+id/password_edt"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/sync_password"

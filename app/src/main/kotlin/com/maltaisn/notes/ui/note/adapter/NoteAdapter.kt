@@ -26,6 +26,7 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.maltaisn.notes.R
+import com.maltaisn.notes.databinding.*
 import java.util.*
 import kotlin.math.absoluteValue
 
@@ -95,14 +96,10 @@ class NoteAdapter(val context: Context, val callback: Callback) :
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         return when (viewType) {
-            VIEW_TYPE_MESSAGE -> MessageViewHolder(inflater.inflate(
-                    R.layout.item_message, parent, false))
-            VIEW_TYPE_HEADER -> HeaderViewHolder(inflater.inflate(
-                    R.layout.item_header, parent, false))
-            VIEW_TYPE_TEXT_NOTE -> TextNoteViewHolder(inflater.inflate(
-                    R.layout.item_note_text, parent, false))
-            VIEW_TYPE_LIST_NOTE -> ListNoteViewHolder(inflater.inflate(
-                    R.layout.item_note_list, parent, false))
+            VIEW_TYPE_MESSAGE -> MessageViewHolder(ItemMessageBinding.inflate(inflater, parent, false))
+            VIEW_TYPE_HEADER -> HeaderViewHolder(ItemHeaderBinding.inflate(inflater, parent, false))
+            VIEW_TYPE_TEXT_NOTE -> TextNoteViewHolder(ItemNoteTextBinding.inflate(inflater, parent, false))
+            VIEW_TYPE_LIST_NOTE -> ListNoteViewHolder(ItemNoteListBinding.inflate(inflater, parent, false))
             else -> error("Unknown view type")
         }
     }
@@ -142,9 +139,8 @@ class NoteAdapter(val context: Context, val callback: Callback) :
             if (listNoteItemsPool.isNotEmpty()) {
                 listNoteItemsPool.pop()
             } else {
-                val inflater = LayoutInflater.from(context)
-                ListNoteItemViewHolder(inflater.inflate(
-                        R.layout.item_note_list_item, null, false))
+                ListNoteItemViewHolder(ItemNoteListItemBinding.inflate(
+                        LayoutInflater.from(context), null, false))
             }
 
     interface Callback {

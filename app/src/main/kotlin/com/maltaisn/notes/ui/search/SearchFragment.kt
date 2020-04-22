@@ -17,14 +17,11 @@
 package com.maltaisn.notes.ui.search
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.appcompat.widget.SearchView
-import androidx.appcompat.widget.Toolbar
+import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
 import com.maltaisn.notes.App
 import com.maltaisn.notes.R
@@ -37,14 +34,11 @@ class SearchFragment : NoteFragment() {
 
     override val viewModel: SearchViewModel by viewModels { viewModelFactory }
 
+
     override fun onCreate(state: Bundle?) {
         super.onCreate(state)
         (requireContext().applicationContext as App).appComponent.inject(this)
     }
-
-    override fun onCreateView(inflater: LayoutInflater,
-                              container: ViewGroup?, savedInstanceState: Bundle?): View =
-            inflater.inflate(R.layout.fragment_search, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -52,15 +46,19 @@ class SearchFragment : NoteFragment() {
         val navController = findNavController()
         
         // Toolbar
-        val toolbar: Toolbar = view.findViewById(R.id.toolbar)
+        val toolbar = binding.toolbar
+        toolbar.inflateMenu(R.menu.toolbar_search)
         toolbar.setNavigationIcon(R.drawable.ic_arrow_left)
+        toolbar.setNavigationContentDescription(R.string.content_descrp_back)
         toolbar.setNavigationOnClickListener {
             view.hideKeyboard()
             navController.popBackStack()
         }
 
+        binding.fab.isVisible = false
+
         // Recycler view
-        val rcv: RecyclerView = view.findViewById(R.id.rcv_notes)
+        val rcv = binding.recyclerView
         (rcv.itemAnimator as SimpleItemAnimator).supportsChangeAnimations = false
 
         // Search view

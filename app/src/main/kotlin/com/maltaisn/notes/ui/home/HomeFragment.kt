@@ -17,15 +17,15 @@
 package com.maltaisn.notes.ui.home
 
 import android.os.Bundle
-import android.view.*
+import android.view.ActionMode
+import android.view.MenuItem
+import android.view.View
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
 import com.maltaisn.notes.NavGraphDirections
@@ -33,6 +33,7 @@ import com.maltaisn.notes.R
 import com.maltaisn.notes.model.entity.NoteStatus
 import com.maltaisn.notes.ui.EventObserver
 import com.maltaisn.notes.ui.common.ConfirmDialog
+import com.maltaisn.notes.ui.main.MainActivity
 import com.maltaisn.notes.ui.note.NoteFragment
 import com.maltaisn.notes.ui.note.adapter.NoteListLayoutMode
 
@@ -46,36 +47,34 @@ class HomeFragment : NoteFragment(), Toolbar.OnMenuItemClickListener,
     private lateinit var navView: NavigationView
 
 
-    override fun onCreateView(inflater: LayoutInflater,
-                              container: ViewGroup?, savedInstanceState: Bundle?): View =
-            inflater.inflate(R.layout.fragment_home, container, false)
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         val navController = findNavController()
 
         // Drawer
-        val activity = requireActivity()
-        drawerLayout = activity.findViewById(R.id.drawer_layout)
-        navView = activity.findViewById(R.id.drawer_nav_view)
+        val activity = requireActivity() as MainActivity
+        drawerLayout = activity.drawerLayout
+        navView = activity.navigationView
         navView.setNavigationItemSelectedListener(this)
 
         // Toolbar
-        val toolbar: Toolbar = view.findViewById(R.id.toolbar)
+        val toolbar = binding.toolbar
+        toolbar.inflateMenu(R.menu.toolbar_home)
+        toolbar.setOnMenuItemClickListener(this)
+        toolbar.setNavigationIcon(R.drawable.ic_menu)
+        toolbar.setNavigationContentDescription(R.string.content_descrp_open_drawer)
         toolbar.setNavigationOnClickListener {
             drawerLayout.openDrawer(GravityCompat.START)
         }
-        toolbar.setOnMenuItemClickListener(this)
 
         // Swipe refresh
-        val swipeRefresh: SwipeRefreshLayout = view.findViewById(R.id.layout_swipe_refresh)
-        swipeRefresh.setOnRefreshListener {
+        binding.swipeRefreshLayout.setOnRefreshListener {
             viewModel.syncNotes()
         }
 
         // Floating action button
-        val fab: FloatingActionButton = view.findViewById(R.id.fab)
+        val fab = binding.fab
         fab.setOnClickListener {
             navController.navigate(NavGraphDirections.actionEditNote())
         }
@@ -111,7 +110,7 @@ class HomeFragment : NoteFragment(), Toolbar.OnMenuItemClickListener,
         })
 
         viewModel.stopRefreshEvent.observe(viewLifecycleOwner, EventObserver {
-            swipeRefresh.isRefreshing = false
+            binding.swipeRefreshLayout.isRefreshing = false
         })
 
         viewModel.listLayoutMode.observe(viewLifecycleOwner, Observer { mode ->
