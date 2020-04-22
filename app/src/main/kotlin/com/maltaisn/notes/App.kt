@@ -17,11 +17,10 @@
 package com.maltaisn.notes
 
 import android.app.Application
-import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.preference.PreferenceManager
 import com.maltaisn.notes.di.DaggerAppComponent
-import com.maltaisn.notes.ui.settings.PreferenceHelper
+import com.maltaisn.notes.model.PrefsManager
+import com.maltaisn.notes.ui.AppTheme
 import javax.inject.Inject
 
 
@@ -31,7 +30,7 @@ class App : Application() {
         DaggerAppComponent.factory().create(applicationContext)
     }
 
-    @Inject lateinit var prefs: SharedPreferences
+    @Inject lateinit var prefs: PrefsManager
 
 
     override fun onCreate() {
@@ -40,16 +39,15 @@ class App : Application() {
         appComponent.inject(this)
 
         // Set default preference values
-        PreferenceManager.setDefaultValues(this, R.xml.prefs, false)
-        changeTheme(prefs.getString(PreferenceHelper.THEME, PreferenceHelper.THEME_SYSTEM)!!)
+        prefs.setDefaults(this)
+        updateTheme(prefs.theme)
     }
 
-    fun changeTheme(theme: String) {
+    fun updateTheme(theme: AppTheme) {
         AppCompatDelegate.setDefaultNightMode(when (theme) {
-            PreferenceHelper.THEME_LIGHT -> AppCompatDelegate.MODE_NIGHT_NO
-            PreferenceHelper.THEME_DARK -> AppCompatDelegate.MODE_NIGHT_YES
-            PreferenceHelper.THEME_SYSTEM -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
-            else -> error("Unknown theme")
+            AppTheme.LIGHT -> AppCompatDelegate.MODE_NIGHT_NO
+            AppTheme.DARK -> AppCompatDelegate.MODE_NIGHT_YES
+            AppTheme.SYSTEM -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
         })
     }
 

@@ -18,7 +18,6 @@ package com.maltaisn.notes.model
 
 import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.model.entity.NoteStatus
-import com.maltaisn.notes.ui.settings.PreferenceHelper
 import kotlinx.coroutines.flow.flow
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
@@ -108,7 +107,7 @@ class MockNotesRepository : NotesRepository {
         notes.entries.removeIf { (_, note) ->
             note.status == NoteStatus.TRASHED &&
                     (System.currentTimeMillis() - note.lastModifiedDate.time) >
-                    PreferenceHelper.TRASH_AUTO_DELETE_DELAY.toLongMilliseconds()
+                    PrefsManager.TRASH_AUTO_DELETE_DELAY.toLongMilliseconds()
         }
     }
 

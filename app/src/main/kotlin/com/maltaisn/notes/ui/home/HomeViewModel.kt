@@ -16,15 +16,14 @@
 
 package com.maltaisn.notes.ui.home
 
-import android.content.SharedPreferences
 import android.util.Log
-import androidx.core.content.edit
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.maltaisn.notes.DebugUtils
 import com.maltaisn.notes.R
 import com.maltaisn.notes.model.NotesRepository
+import com.maltaisn.notes.model.PrefsManager
 import com.maltaisn.notes.model.SyncManager
 import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.model.entity.NoteStatus
@@ -36,7 +35,6 @@ import com.maltaisn.notes.ui.note.adapter.NoteAdapter
 import com.maltaisn.notes.ui.note.adapter.NoteItem
 import com.maltaisn.notes.ui.note.adapter.NoteListLayoutMode
 import com.maltaisn.notes.ui.send
-import com.maltaisn.notes.ui.settings.PreferenceHelper
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
@@ -45,7 +43,7 @@ import javax.inject.Inject
 
 class HomeViewModel @Inject constructor(
         notesRepository: NotesRepository,
-        prefs: SharedPreferences,
+        prefs: PrefsManager,
         val syncManager: SyncManager
 ) : NoteViewModel(notesRepository, prefs), NoteAdapter.Callback {
 
@@ -92,7 +90,7 @@ class HomeViewModel @Inject constructor(
             NoteListLayoutMode.GRID -> NoteListLayoutMode.LIST
         }
         _listLayoutMode.value = mode
-        prefs.edit { putInt(PreferenceHelper.LIST_LAYOUT_MODE, mode.value) }
+        prefs.listLayoutMode = mode
     }
 
     fun emptyTrashPre() {
@@ -109,7 +107,7 @@ class HomeViewModel @Inject constructor(
 
     fun syncNotes() {
         viewModelScope.launch {
-            syncManager.syncNotes(delay = PreferenceHelper.MIN_MANUAL_SYNC_INTERVAL) { e ->
+            syncManager.syncNotes(delay = PrefsManager.MIN_MANUAL_SYNC_INTERVAL) { e ->
                 // Sync failed for unknown reason.
                 Log.e(TAG, "Couldn't sync notes", e)
                 _messageEvent.send(R.string.sync_failed_message)
@@ -131,8 +129,7 @@ class HomeViewModel @Inject constructor(
         get() = noteStatus.value
 
     override fun onMessageItemDismissed(item: MessageItem, pos: Int) {
-        // Update last remind time when user dismisses message.
-        prefs.edit { putLong(PreferenceHelper.LAST_TRASH_REMIND_TIME, System.currentTimeMillis()) }
+        prefs.lastTrashReminderTime = System.currentTimeMillis()
 
         // Remove message item in list
         changeListItems { it.removeAt(pos) }
@@ -151,12 +148,11 @@ class HomeViewModel @Inject constructor(
         listItems = buildList {
             if (status == NoteStatus.TRASHED && notes.isNotEmpty()) {
                 // If needed, add reminder that notes get auto-deleted when in trash.
-                val lastReminder = prefs.getLong(PreferenceHelper.LAST_TRASH_REMIND_TIME, 0)
-                if (System.currentTimeMillis() - lastReminder >
-                        PreferenceHelper.TRASH_REMINDER_DELAY.toLongMilliseconds()) {
+                if (System.currentTimeMillis() - prefs.lastTrashReminderTime >
+                        PrefsManager.TRASH_REMINDER_DELAY.toLongMilliseconds()) {
                     this += MessageItem(TRASH_REMINDER_ITEM_ID,
                             R.string.trash_reminder_message,
-                            PreferenceHelper.TRASH_AUTO_DELETE_DELAY.inDays.toInt())
+                            PrefsManager.TRASH_AUTO_DELETE_DELAY.inDays.toInt())
                 }
             }
 

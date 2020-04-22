@@ -22,6 +22,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.maltaisn.notes.model.LoginRepository
 import com.maltaisn.notes.model.NotesRepository
+import com.maltaisn.notes.model.PrefsManager
 import com.maltaisn.notes.model.SyncManager
 import com.maltaisn.notes.model.entity.BlankNoteMetadata
 import com.maltaisn.notes.model.entity.Note
@@ -29,7 +30,6 @@ import com.maltaisn.notes.model.entity.NoteStatus
 import com.maltaisn.notes.model.entity.NoteType
 import com.maltaisn.notes.ui.Event
 import com.maltaisn.notes.ui.send
-import com.maltaisn.notes.ui.settings.PreferenceHelper
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.*
@@ -76,7 +76,7 @@ class MainViewModel @Inject constructor(
     fun onStart() {
         viewModelScope.launch {
             notesRepository.deleteOldNotesInTrash()
-            syncManager.syncNotes(delay = PreferenceHelper.MIN_AUTO_SYNC_INTERVAL)
+            syncManager.syncNotes(delay = PrefsManager.MIN_AUTO_SYNC_INTERVAL)
         }
     }
 

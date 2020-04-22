@@ -69,7 +69,7 @@ class MainActivity : AppCompatActivity() {
         val intent = intent
         if (intent?.action == Intent.ACTION_SEND && intent.type == "text/plain") {
             val title = intent.getStringExtra(Intent.EXTRA_TITLE)
-                    ?: intent.getStringExtra(Intent.EXTRA_SUBJECT)
+                    ?: intent.getStringExtra(Intent.EXTRA_SUBJECT) ?: ""
             val content = intent.getStringExtra(Intent.EXTRA_TEXT) ?: ""
             viewModel.addIntentNote(title, content)
         }

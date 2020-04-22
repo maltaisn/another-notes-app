@@ -16,12 +16,9 @@
 
 package com.maltaisn.notes.model
 
-import android.content.SharedPreferences
-import androidx.core.content.edit
 import com.maltaisn.notes.model.entity.DeletedNote
 import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.model.entity.NoteStatus
-import com.maltaisn.notes.ui.settings.PreferenceHelper
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
@@ -38,15 +35,8 @@ open class DefaultNotesRepository @Inject constructor(
         private val notesDao: NotesDao,
         private val deletedNotesDao: DeletedNotesDao,
         private val notesService: NotesService,
-        private val prefs: SharedPreferences,
-        private val json: Json): NotesRepository {
-
-    private var lastSyncTime: Long
-        get() = prefs.getLong(PreferenceHelper.LAST_SYNC_TIME, 0)
-        set(value) {
-            prefs.edit { putLong(PreferenceHelper.LAST_SYNC_TIME, value) }
-        }
-
+        private val prefs: PrefsManager,
+        private val json: Json) : NotesRepository {
 
     override suspend fun insertNote(note: Note): Long = withContext(NonCancellable) {
         notesDao.insert(note)
@@ -81,7 +71,7 @@ open class DefaultNotesRepository @Inject constructor(
     }
 
     override suspend fun deleteOldNotesInTrash() {
-        val delay = PreferenceHelper.TRASH_AUTO_DELETE_DELAY.toLongMilliseconds()
+        val delay = PrefsManager.TRASH_AUTO_DELETE_DELAY.toLongMilliseconds()
         val minDate = Date(System.currentTimeMillis() - delay)
         deleteNotes(notesDao.getByStatusAndDate(NoteStatus.TRASHED, minDate))
     }
@@ -108,7 +98,7 @@ open class DefaultNotesRepository @Inject constructor(
         }
 
         // Send local changes to server, and receive remote changes
-        val localData = NotesService.SyncData(Date(lastSyncTime), localChanged, localDeleted)
+        val localData = NotesService.SyncData(Date(prefs.lastSyncTime), localChanged, localDeleted)
         val remoteData = notesService.syncNotes(localData)
 
         // Sync was successful, update "synced" flags.
@@ -116,7 +106,7 @@ open class DefaultNotesRepository @Inject constructor(
         deletedNotesDao.setSyncedFlag(true)
 
         // Update local last sync time
-        lastSyncTime = remoteData.lastSync.time
+        prefs.lastSyncTime = remoteData.lastSync.time
 
         // Update local notes.
         // Server doesn't return the 'synced' property, but it defaults to true.

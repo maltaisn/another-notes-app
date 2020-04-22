@@ -16,20 +16,17 @@
 
 package com.maltaisn.notes.model
 
-import android.content.SharedPreferences
 import com.maltaisn.notes.model.converter.DateTimeConverter
 import com.maltaisn.notes.model.entity.BlankNoteMetadata
 import com.maltaisn.notes.model.entity.DeletedNote
 import com.maltaisn.notes.model.entity.NoteStatus
 import com.maltaisn.notes.model.entity.NoteType
 import com.maltaisn.notes.testNote
-import com.maltaisn.notes.ui.settings.PreferenceHelper
 import com.nhaarman.mockitokotlin2.*
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
 import org.junit.Test
-import org.mockito.ArgumentMatchers.anyLong
 import java.util.*
 import kotlin.test.assertEquals
 
@@ -40,12 +37,8 @@ class NotesRepositoryTest {
     private val deletedNotesDao: DeletedNotesDao = mock()
     private val notesService: NotesService = mock()
 
-    private val prefsEditor: SharedPreferences.Editor = mock() {
-        on { putLong(any(), anyLong()) } doReturn this.mock
-    }
-    private val prefs: SharedPreferences = mock {
-        on { edit() } doReturn prefsEditor
-        on { getLong(any(), anyLong()) } doAnswer { it.arguments[1] as Long }
+    private val prefs: PrefsManager = mock {
+        on { lastSyncTime } doReturn 0
     }
 
     private val notesRepo = DefaultNotesRepository(notesDao, deletedNotesDao,
@@ -92,7 +85,7 @@ class NotesRepositoryTest {
         verify(notesDao).insertAll(listOf(newNote1))
         verify(notesDao).deleteByUuid(listOf("0"))
 
-        verify(prefsEditor).putLong(PreferenceHelper.LAST_SYNC_TIME, newSyncDate.time)
+        verify(prefs).lastSyncTime = newSyncDate.time
 
         verify(notesDao).setSyncedFlag(true)
         verify(deletedNotesDao).setSyncedFlag(true)
@@ -108,8 +101,8 @@ class NotesRepositoryTest {
         val data = notesRepo.getJsonData()
 
         assertEquals("""{"0":{"uuid":"0","type":0,"title":"note","content":"content",""" +
-            """"metadata":"{\"type\":\"blank\"}","added":"2020-01-01T00:00:00.000Z",""" +
-            """"modified":"2020-01-01T00:00:00.000Z","status":0}}""", data)
+                """"metadata":"{\"type\":\"blank\"}","added":"2020-01-01T00:00:00.000Z",""" +
+                """"modified":"2020-01-01T00:00:00.000Z","status":0}}""", data)
     }
 
 }

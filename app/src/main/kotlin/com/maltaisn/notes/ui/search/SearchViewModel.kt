@@ -16,10 +16,10 @@
 
 package com.maltaisn.notes.ui.search
 
-import android.content.SharedPreferences
 import androidx.lifecycle.viewModelScope
 import com.maltaisn.notes.R
 import com.maltaisn.notes.model.NotesRepository
+import com.maltaisn.notes.model.PrefsManager
 import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.model.entity.NoteStatus
 import com.maltaisn.notes.ui.note.HighlightHelper
@@ -37,7 +37,7 @@ import javax.inject.Inject
 
 class SearchViewModel @Inject constructor(
         notesRepository: NotesRepository,
-        prefs: SharedPreferences
+        prefs: PrefsManager
 ) : NoteViewModel(notesRepository, prefs), NoteAdapter.Callback {
 
     private var lastQuery = ""

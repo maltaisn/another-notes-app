@@ -33,6 +33,8 @@ import com.maltaisn.notes.App
 import com.maltaisn.notes.BuildConfig
 import com.maltaisn.notes.R
 import com.maltaisn.notes.databinding.FragmentSettingsBinding
+import com.maltaisn.notes.model.PrefsManager
+import com.maltaisn.notes.ui.AppTheme
 import com.maltaisn.notes.ui.EventObserver
 import com.maltaisn.notes.ui.common.ConfirmDialog
 import javax.inject.Inject
@@ -78,19 +80,20 @@ class SettingsFragment : PreferenceFragmentCompat(), ConfirmDialog.Callback {
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.prefs, rootKey)
 
-        requirePreference<DropDownPreference>(PreferenceHelper.THEME)
+        requirePreference<DropDownPreference>(PrefsManager.THEME)
                 .setOnPreferenceChangeListener { _, theme ->
-                    (requireContext().applicationContext as App).changeTheme(theme as String)
+                    (requireContext().applicationContext as App)
+                            .updateTheme(AppTheme.values().find { it == theme }!!)
                     true
                 }
 
-        requirePreference<Preference>(PreferenceHelper.EXPORT_DATA)
+        requirePreference<Preference>(PrefsManager.EXPORT_DATA)
                 .setOnPreferenceClickListener {
                     viewModel.exportData()
                     true
                 }
 
-        requirePreference<Preference>(PreferenceHelper.CLEAR_DATA)
+        requirePreference<Preference>(PrefsManager.CLEAR_DATA)
                 .setOnPreferenceClickListener {
                     ConfirmDialog.newInstance(
                             title = R.string.pref_data_clear,
@@ -100,22 +103,22 @@ class SettingsFragment : PreferenceFragmentCompat(), ConfirmDialog.Callback {
                     true
                 }
 
-        requirePreference<Preference>(PreferenceHelper.PRIVACY_POLICY)
+        requirePreference<Preference>(PrefsManager.PRIVACY_POLICY)
                 .setOnPreferenceClickListener {
                     // TODO
                     Toast.makeText(requireContext(), "Privacy policy", Toast.LENGTH_SHORT).show()
                     true
                 }
 
-        requirePreference<Preference>(PreferenceHelper.VIEW_SOURCE)
-                .intent = Intent(Intent.ACTION_VIEW, Uri.parse(PreferenceHelper.VIEW_SOURCE_URL))
+        requirePreference<Preference>(PrefsManager.VIEW_SOURCE)
+                .intent = Intent(Intent.ACTION_VIEW, Uri.parse(PrefsManager.VIEW_SOURCE_URL))
 
-        requirePreference<Preference>(PreferenceHelper.VIEW_LICENSES)
+        requirePreference<Preference>(PrefsManager.VIEW_LICENSES)
                 .intent = Intent(requireActivity(), OssLicensesMenuActivity::class.java)
         OssLicensesMenuActivity.setActivityTitle(getString(R.string.pref_about_view_licenses))
 
         // Set version name as summary text for version preference
-        requirePreference<Preference>(PreferenceHelper.VERSION).summary = BuildConfig.VERSION_NAME
+        requirePreference<Preference>(PrefsManager.VERSION).summary = BuildConfig.VERSION_NAME
     }
 
     private fun <T : Preference> requirePreference(key: CharSequence) =

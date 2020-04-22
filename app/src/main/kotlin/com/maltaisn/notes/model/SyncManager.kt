@@ -17,9 +17,7 @@
 package com.maltaisn.notes.model
 
 import android.content.Context
-import android.content.SharedPreferences
 import android.net.ConnectivityManager
-import com.maltaisn.notes.ui.settings.PreferenceHelper
 import java.io.IOException
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -31,12 +29,11 @@ class SyncManager @Inject constructor(
         private val context: Context,
         private val notesRepository: NotesRepository,
         private val loginRepository: LoginRepository,
-        private val prefs: SharedPreferences) {
+        private val prefs: PrefsManager) {
 
     private val canSyncOverCurrentNetwork: Boolean
         get() {
-            val wifiNeeded = prefs.getBoolean(PreferenceHelper.SYNC_OVER_WIFI, false)
-            return if (wifiNeeded) {
+            return if (prefs.shouldSyncOverWifi) {
                 val manager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager;
                 !manager.isActiveNetworkMetered
             } else {
@@ -60,8 +57,7 @@ class SyncManager @Inject constructor(
                 canSyncOverCurrentNetwork) {
             val shouldSync = if (delay.isPositive()) {
                 // Check if last sync time is within required delay.
-                val lastSync = prefs.getLong(PreferenceHelper.LAST_SYNC_TIME, 0)
-                val nextSyncTime = lastSync + delay.toLongMilliseconds()
+                val nextSyncTime = prefs.lastSyncTime + delay.toLongMilliseconds()
                 System.currentTimeMillis() >= nextSyncTime
 
             } else {

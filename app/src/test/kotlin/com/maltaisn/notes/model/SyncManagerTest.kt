@@ -16,8 +16,6 @@
 
 package com.maltaisn.notes.model
 
-import android.content.SharedPreferences
-import com.maltaisn.notes.ui.settings.PreferenceHelper
 import com.nhaarman.mockitokotlin2.*
 import kotlinx.coroutines.runBlocking
 import org.junit.Test
@@ -30,20 +28,20 @@ class SyncManagerTest {
 
     private val loginRepo: LoginRepository = mock()
     private val notesRepo: NotesRepository = mock()
-    private val prefs: SharedPreferences = mock()
+    private val prefs: PrefsManager = mock()
 
     private val syncManager = SyncManager(mock(), notesRepo, loginRepo, prefs)
 
     init {
         whenever(loginRepo.isUserSignedIn) doReturn true
         whenever(loginRepo.isUserEmailVerified) doReturn true
-        whenever(prefs.getBoolean(eq(PreferenceHelper.SYNC_OVER_WIFI), any())) doReturn false
+        whenever(prefs.shouldSyncOverWifi) doReturn false
     }
 
     @Test
     fun `should not sync notes if not signed in`() = runBlocking {
         whenever(loginRepo.isUserSignedIn) doReturn false
-        whenever(prefs.getLong(eq(PreferenceHelper.LAST_SYNC_TIME), any())) doReturn System.currentTimeMillis()
+        whenever(prefs.lastSyncTime) doReturn System.currentTimeMillis()
         syncManager.syncNotes()
         verify(notesRepo, never()).syncNotes(true)
     }
@@ -51,29 +49,28 @@ class SyncManagerTest {
     @Test
     fun `should not sync notes if email not verified`() = runBlocking {
         whenever(loginRepo.isUserEmailVerified) doReturn false
-        whenever(prefs.getLong(eq(PreferenceHelper.LAST_SYNC_TIME), any())) doReturn System.currentTimeMillis()
+        whenever(prefs.lastSyncTime) doReturn System.currentTimeMillis()
         syncManager.syncNotes()
         verify(notesRepo, never()).syncNotes(true)
     }
 
     @Test
     fun `should not sync notes if delay not elapsed`() = runBlocking {
-        whenever(prefs.getLong(eq(PreferenceHelper.LAST_SYNC_TIME), any())) doReturn System.currentTimeMillis()
+        whenever(prefs.lastSyncTime) doReturn System.currentTimeMillis()
         syncManager.syncNotes(delay = 1.hours)
         verify(notesRepo, never()).syncNotes(true)
     }
 
     @Test
     fun `should sync notes after delay elapsed`() = runBlocking {
-        whenever(prefs.getLong(eq(PreferenceHelper.LAST_SYNC_TIME), any())) doReturn
-                (System.currentTimeMillis() - 7.hours.toLongMilliseconds())
+        whenever(prefs.lastSyncTime) doReturn (System.currentTimeMillis() - 7.hours.toLongMilliseconds())
         syncManager.syncNotes(delay = 1.hours)
         verify(notesRepo).syncNotes(true)
     }
 
     @Test
     fun `should sync notes if no delay`() = runBlocking {
-        whenever(prefs.getLong(eq(PreferenceHelper.LAST_SYNC_TIME), any())) doReturn System.currentTimeMillis()
+        whenever(prefs.lastSyncTime) doReturn System.currentTimeMillis()
         syncManager.syncNotes()
         verify(notesRepo).syncNotes(true)
     }
