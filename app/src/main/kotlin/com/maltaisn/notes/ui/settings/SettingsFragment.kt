@@ -81,7 +81,7 @@ class SettingsFragment : PreferenceFragmentCompat(), ConfirmDialog.Callback {
         requirePreference<DropDownPreference>(PrefsManager.THEME)
                 .setOnPreferenceChangeListener { _, theme ->
                     (requireContext().applicationContext as App)
-                            .updateTheme(AppTheme.values().find { it == theme }!!)
+                            .updateTheme(AppTheme.values().find { it.value == theme }!!)
                     true
                 }
 
