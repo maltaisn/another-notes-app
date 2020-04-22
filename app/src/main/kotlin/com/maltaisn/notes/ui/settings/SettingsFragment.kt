@@ -17,10 +17,8 @@
 package com.maltaisn.notes.ui.settings
 
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.view.View
-import android.widget.Toast
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
@@ -102,16 +100,6 @@ class SettingsFragment : PreferenceFragmentCompat(), ConfirmDialog.Callback {
                     ).show(childFragmentManager, CLEAR_DATA_DIALOG_TAG)
                     true
                 }
-
-        requirePreference<Preference>(PrefsManager.PRIVACY_POLICY)
-                .setOnPreferenceClickListener {
-                    // TODO
-                    Toast.makeText(requireContext(), "Privacy policy", Toast.LENGTH_SHORT).show()
-                    true
-                }
-
-        requirePreference<Preference>(PrefsManager.VIEW_SOURCE)
-                .intent = Intent(Intent.ACTION_VIEW, Uri.parse(PrefsManager.VIEW_SOURCE_URL))
 
         requirePreference<Preference>(PrefsManager.VIEW_LICENSES)
                 .intent = Intent(requireActivity(), OssLicensesMenuActivity::class.java)

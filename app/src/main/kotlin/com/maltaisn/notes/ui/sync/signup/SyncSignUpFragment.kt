@@ -17,15 +17,18 @@
 package com.maltaisn.notes.ui.sync.signup
 
 import android.os.Bundle
+import android.text.method.LinkMovementMethod
 import android.text.method.PasswordTransformationMethod
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.text.HtmlCompat
 import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import com.google.android.material.snackbar.Snackbar
+import com.maltaisn.notes.R
 import com.maltaisn.notes.databinding.FragmentSyncSignUpBinding
 import com.maltaisn.notes.hideKeyboard
 import com.maltaisn.notes.setCustomEndIconOnClickListener
@@ -59,7 +62,7 @@ class SyncSignUpFragment : ViewModelFragment() {
         val emailEdt = binding.emailEdt
         val passwordEdt = binding.passwordEdt
         val passwordConfirmEdt = binding.passwordConfirmEdt
-
+        val conditionsTxv = binding.conditionsTxv
 
         binding.signInBtn.setOnClickListener {
             viewModel.goToPage(SyncPage.SIGN_IN)
@@ -83,6 +86,11 @@ class SyncSignUpFragment : ViewModelFragment() {
         passwordConfirmEdt.doAfterTextChanged {
             viewModel.setEnteredPasswordConfirm(it?.toString() ?: "")
         }
+
+        conditionsTxv.text = HtmlCompat.fromHtml(getString(R.string.sync_sign_up_conditions,
+                """<a href="${getString(R.string.terms_conditions_url)}">${getString(R.string.terms_conditions)}</a>""",
+                """<a href="${getString(R.string.privacy_policy_url)}">${getString(R.string.privacy_policy)}</a>"""), 0)
+        conditionsTxv.movementMethod = LinkMovementMethod.getInstance()
 
         // Observers
         viewModel.changePageEvent.observe(viewLifecycleOwner, EventObserver { page ->

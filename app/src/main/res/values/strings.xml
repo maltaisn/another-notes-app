@@ -128,6 +128,7 @@
     <string name="sync_sign_out_success_message">Signed out successfully.</string>
 
     <string name="sync_sign_up">Create an account</string>
+    <string name="sync_sign_up_conditions">By creating an account, you agree to the %1$s and %2$s.</string>
     <string name="sync_sign_up_failed_email_used_message">An account was already registered with this email.</string>
     <string name="sync_sign_up_success_message">Account successfully created. An email has been sent to verify your account.</string>
 
@@ -166,10 +167,12 @@
     <string name="pref_data_clear_success_message">All data was cleared successfully.</string>
 
     <string name="pref_group_about">About</string>
-    <string name="pref_about_privacy_policy">Privacy policy</string>
     <string name="pref_about_view_source">View on Github</string>
     <string name="pref_about_view_licenses">Open source licenses</string>
     <string name="pref_about_version">Version</string>
+
+    <string name="terms_conditions">Terms &amp; conditions</string>
+    <string name="privacy_policy">Privacy policy</string>
 
     <!-- Content description -->
     <string name="content_descrp_open_drawer">Open drawer</string>

@@ -69,8 +69,6 @@ open class PrefsManager @Inject constructor(private val prefs: SharedPreferences
         const val SYNC_OVER_WIFI = "sync_over_wifi"
         const val EXPORT_DATA = "export_data"
         const val CLEAR_DATA = "clear_data"
-        const val PRIVACY_POLICY = "privacy_policy"
-        const val VIEW_SOURCE = "view_source"
         const val VIEW_LICENSES = "view_licenses"
         const val VERSION = "version"
 
@@ -80,8 +78,6 @@ open class PrefsManager @Inject constructor(private val prefs: SharedPreferences
         private const val LAST_TRASH_REMIND_TIME = "last_deleted_remind_time"
 
         // Values
-        const val VIEW_SOURCE_URL = "http://example.com/"
-
         val MIN_AUTO_SYNC_INTERVAL = 10.minutes
         val MIN_MANUAL_SYNC_INTERVAL = 15.seconds
 
