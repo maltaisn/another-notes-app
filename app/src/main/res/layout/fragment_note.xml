@@ -40,7 +40,7 @@
             app:titleTextColor="?colorControlNormal"
             tools:menu="@menu/toolbar_home"
             tools:navigationIcon="@drawable/ic_menu"
-            tools:title="@string/app_name"
+            tools:title="@string/note_location_active"
             />
 
     </com.google.android.material.appbar.AppBarLayout>
