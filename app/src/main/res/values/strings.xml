@@ -164,7 +164,8 @@
     <string name="pref_data_export_summary">Export notes data as JSON</string>
     <string name="pref_data_export_title">Exported notes data</string>
     <string name="pref_data_clear">Clear all data</string>
-    <string name="pref_data_clear_confirm_message">All notes data will be cleared permanently! This may not fully affect other devices if sync is not up to date.</string>
+    <string name="pref_data_clear_confirm_message">All notes data will be cleared permanently! This cannot be undone.</string>
+    <string name="pref_data_clear_confirm_message_sync">All notes data will be cleared permanently! This cannot be undone. Clearing data may not fully affect other devices until synchronization has been performed.</string>
     <string name="pref_data_clear_success_message">All data was cleared successfully.</string>
 
     <string name="pref_group_about">About</string>

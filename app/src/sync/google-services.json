@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "550032261253",
+    "firebase_url": "https://notes-ffde4.firebaseio.com",
+    "project_id": "notes-ffde4",
+    "storage_bucket": "notes-ffde4.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:550032261253:android:5b5570ae6b5fba106ae9ec",
+        "android_client_info": {
+          "package_name": "com.maltaisn.notes.sync"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "550032261253-vsd0nf76sfmbdo9tnhd9pon50b1jmi64.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDrEZothbr_oyDmQUysuxzWASOS9dbuMvM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "550032261253-vsd0nf76sfmbdo9tnhd9pon50b1jmi64.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

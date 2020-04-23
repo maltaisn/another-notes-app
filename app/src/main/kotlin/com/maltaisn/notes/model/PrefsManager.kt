@@ -23,13 +23,10 @@ import androidx.preference.PreferenceManager
 import com.maltaisn.notes.R
 import com.maltaisn.notes.ui.AppTheme
 import com.maltaisn.notes.ui.note.adapter.NoteListLayoutMode
-import javax.inject.Inject
 import kotlin.time.days
-import kotlin.time.minutes
-import kotlin.time.seconds
 
 
-open class PrefsManager @Inject constructor(private val prefs: SharedPreferences) {
+open class PrefsManager(protected val prefs: SharedPreferences) {
 
     val theme: AppTheme
         get() {
@@ -50,13 +47,6 @@ open class PrefsManager @Inject constructor(private val prefs: SharedPreferences
         get() = prefs.getLong(LAST_TRASH_REMIND_TIME, 0)
         set(value) = prefs.edit { putLong(LAST_TRASH_REMIND_TIME, value) }
 
-    open val shouldSyncOverWifi: Boolean
-        get() = prefs.getBoolean(SYNC_OVER_WIFI, false)
-
-    open var lastSyncTime: Long
-        get() = prefs.getLong(LAST_SYNC_TIME, 0)
-        set(value) = prefs.edit { putLong(LAST_SYNC_TIME, value) }
-
 
     fun setDefaults(context: Context) {
         PreferenceManager.setDefaultValues(context, R.xml.prefs, false)
@@ -66,21 +56,18 @@ open class PrefsManager @Inject constructor(private val prefs: SharedPreferences
     companion object {
         // Settings keys
         const val THEME = "theme"
-        const val SYNC_OVER_WIFI = "sync_over_wifi"
         const val EXPORT_DATA = "export_data"
         const val CLEAR_DATA = "clear_data"
         const val VIEW_LICENSES = "view_licenses"
         const val VERSION = "version"
 
+        const val GROUP_SYNC = "group_sync"
+
         // Other keys
-        private const val LAST_SYNC_TIME = "last_sync_time"
         private const val LIST_LAYOUT_MODE = "is_in_list_layout"
         private const val LAST_TRASH_REMIND_TIME = "last_deleted_remind_time"
 
         // Values
-        val MIN_AUTO_SYNC_INTERVAL = 10.minutes
-        val MIN_MANUAL_SYNC_INTERVAL = 15.seconds
-
         val TRASH_AUTO_DELETE_DELAY = 7.days
         val TRASH_REMINDER_DELAY = 60.days
     }

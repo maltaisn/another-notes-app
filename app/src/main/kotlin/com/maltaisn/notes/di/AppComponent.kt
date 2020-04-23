@@ -28,12 +28,7 @@ import javax.inject.Singleton
 
 
 @Singleton
-@Component(modules = [
-    AppModule::class,
-    ViewModelModule::class,
-    DatabaseModule::class,
-    FirebaseModule::class
-])
+@Component(modules = [AppModule::class])
 interface AppComponent {
 
     fun inject(app: App)

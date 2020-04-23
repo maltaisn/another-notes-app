@@ -34,7 +34,10 @@
 
     </PreferenceCategory>
 
-    <PreferenceCategory app:title="@string/pref_group_sync">
+    <PreferenceCategory
+        app:key="group_sync"
+        app:title="@string/pref_group_sync"
+        >
 
         <SwitchPreferenceCompat
             app:defaultValue="false"

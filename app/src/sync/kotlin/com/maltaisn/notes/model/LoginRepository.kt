@@ -20,6 +20,8 @@ package com.maltaisn.notes.model
 import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import kotlinx.coroutines.channels.ConflatedBroadcastChannel
+import kotlinx.coroutines.channels.sendBlocking
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -38,9 +40,15 @@ open class LoginRepository @Inject constructor(
     open val isUserEmailVerified: Boolean
         get() = currentUser?.isEmailVerified == true
 
-    fun addAuthStateListener(onAuth: () -> Unit) {
-        fbAuth.addAuthStateListener { onAuth() }
+    val authStateChannel = ConflatedBroadcastChannel<Unit>()
+
+
+    init {
+        fbAuth.addAuthStateListener {
+            authStateChannel.sendBlocking(Unit)
+        }
     }
+
 
     suspend fun signIn(email: String, password: String) {
         fbAuth.signInWithEmailAndPassword(email, password).await()
@@ -70,9 +78,10 @@ open class LoginRepository @Inject constructor(
 
     suspend fun reloadUser() {
         currentUser?.reload()?.await()
+        authStateChannel.send(Unit)
     }
 
-    suspend fun reauthenticateUser(password: String) {
+    private suspend fun reauthenticateUser(password: String) {
         val user = currentUser ?: return
         user.reauthenticate(EmailAuthProvider.getCredential(user.email!!, password)).await()
     }

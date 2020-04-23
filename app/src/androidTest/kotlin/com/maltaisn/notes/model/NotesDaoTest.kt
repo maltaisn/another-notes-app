@@ -130,8 +130,9 @@ class NotesDaoTest {
                 "2019-12-31T23:59:59.999Z",
                 "2020-01-01T00:00:00.000Z",
                 "2020-01-02T00:00:00.000Z")
-        val notes = dates.mapIndexed { i, date ->
-            testNote(id = i + 1L, modified = DateTimeConverter.toDate(date),
+        val notes = dates.mapIndexed { i, dateStr ->
+            val date = DateTimeConverter.toDate(dateStr)
+            testNote(id = i + 1L, added = date, modified = date,
                     status = NoteStatus.TRASHED)
         }
         notesDao.insertAll(notes)

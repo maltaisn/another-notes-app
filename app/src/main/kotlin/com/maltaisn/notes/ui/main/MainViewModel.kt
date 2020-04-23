@@ -20,10 +20,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.maltaisn.notes.model.LoginRepository
 import com.maltaisn.notes.model.NotesRepository
-import com.maltaisn.notes.model.PrefsManager
-import com.maltaisn.notes.model.SyncManager
 import com.maltaisn.notes.model.entity.BlankNoteMetadata
 import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.model.entity.NoteStatus
@@ -39,11 +36,8 @@ import kotlin.time.hours
 
 class MainViewModel @Inject constructor(
         private val notesRepository: NotesRepository,
-        private val loginRepository: LoginRepository,
-        private val syncManager: SyncManager
+        private val lifecycleBehavior: LifecycleBehavior
 ) : ViewModel() {
-
-    private var signedIn = false
 
     private val _editNoteEvent = MutableLiveData<Event<Long>>()
     val editItemEvent: LiveData<Event<Long>>
@@ -51,38 +45,27 @@ class MainViewModel @Inject constructor(
 
 
     init {
-        // Job to periodically remove old notes in trash
         viewModelScope.launch {
+            lifecycleBehavior.start()
+
+            // Periodically remove old notes in trash
             while (true) {
                 notesRepository.deleteOldNotesInTrash()
                 delay(TRASH_AUTO_DELETE_INTERVAL.toLongMilliseconds())
             }
-        }
-
-        loginRepository.addAuthStateListener {
-            if (signedIn && loginRepository.currentUser == null) {
-                viewModelScope.launch {
-                    // User signed out, either manually or by deleting the account.
-                    // All entities in database have their 'synced' property set to true, so if user
-                    // signs in from another account, no sync will happen! So synced must be set
-                    // to false for all entities.
-                    notesRepository.setAllNotSynced()
-                }
-            }
-            signedIn = loginRepository.currentUser != null
         }
     }
 
     fun onStart() {
         viewModelScope.launch {
             notesRepository.deleteOldNotesInTrash()
-            syncManager.syncNotes(delay = PrefsManager.MIN_AUTO_SYNC_INTERVAL)
+            lifecycleBehavior.onStart()
         }
     }
 
     fun onStop() {
         viewModelScope.launch {
-            syncManager.syncNotes(receive = false)
+            lifecycleBehavior.onStop()
         }
     }
 

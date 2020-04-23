@@ -25,6 +25,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.preference.DropDownPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
+import androidx.preference.PreferenceGroup
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import com.google.android.material.snackbar.Snackbar
 import com.maltaisn.notes.App
@@ -78,6 +79,10 @@ class SettingsFragment : PreferenceFragmentCompat(), ConfirmDialog.Callback {
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.prefs, rootKey)
 
+        val isSyncFlavor = BuildConfig.FLAVOR == BuildConfig.FLAVOR_SYNC
+
+        requirePreference<PreferenceGroup>(PrefsManager.GROUP_SYNC).isVisible =isSyncFlavor
+
         requirePreference<DropDownPreference>(PrefsManager.THEME)
                 .setOnPreferenceChangeListener { _, theme ->
                     (requireContext().applicationContext as App)
@@ -95,7 +100,11 @@ class SettingsFragment : PreferenceFragmentCompat(), ConfirmDialog.Callback {
                 .setOnPreferenceClickListener {
                     ConfirmDialog.newInstance(
                             title = R.string.pref_data_clear,
-                            message = R.string.pref_data_clear_confirm_message,
+                            message = if (isSyncFlavor) {
+                                R.string.pref_data_clear_confirm_message_sync
+                            } else {
+                                R.string.pref_data_clear_confirm_message
+                            },
                             btnPositive = R.string.action_clear
                     ).show(childFragmentManager, CLEAR_DATA_DIALOG_TAG)
                     true

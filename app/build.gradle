@@ -2,15 +2,16 @@ plugins {
     id "com.android.application"
     id "kotlin-android"
     id "org.jetbrains.kotlin.kapt"
-    id "com.google.gms.google-services"
     id "org.jetbrains.kotlin.plugin.serialization"
     id "androidx.navigation.safeargs.kotlin"
+    id "com.google.gms.google-services"
     id "com.google.android.gms.oss-licenses-plugin"
 }
 
 android {
     compileSdkVersion 29
     buildToolsVersion "29.0.2"
+
     defaultConfig {
         applicationId "com.maltaisn.notes"
         minSdkVersion 21
@@ -24,16 +25,82 @@ android {
                 arg("room.schemaLocation", "$projectDir/schemas")
             }
         }
+
+        // Flavor name constants determining the current flavor and toggling
+        // things that couldn't be extracted to another source set.
+        buildConfigField "String", "FLAVOR_SYNC", '"sync"'
+        buildConfigField "String", "FLAVOR_NO_SYNC", '"noSync"'
     }
+
     viewBinding {
         enabled = true
     }
+
     sourceSets {
-        def sharedTestDir = "src/sharedTest/kotlin"
+        // This just add "kotlin" folder to source sets since the default is "java".
         main.java.srcDirs += "src/main/kotlin"
-        test.java.srcDirs += ["src/test/kotlin", sharedTestDir]
-        androidTest.java.srcDirs += ["src/androidTest/kotlin", sharedTestDir]
+
+        debug.java.srcDirs += "src/debug/kotlin"
+        release.java.srcDirs += "src/release/kotlin"
+
+        sync.java.srcDirs += "src/sync/kotlin"
+        noSync.java.srcDirs += "src/noSync/kotlin"
+
+        // All test source sets have a shared source set.
+        def sharedTestDir = "src/sharedTest/kotlin"
+        test.java.srcDirs += [sharedTestDir, "src/test/kotlin"]
+        androidTest.java.srcDirs += [sharedTestDir, "src/androidTest/kotlin"]
+        testSync.java.srcDirs += [sharedTestDir, "src/testSync/kotlin"]
     }
+
+    signingConfigs {
+        release {
+            storeFile file(releaseKeyStoreFile)
+            storePassword releaseKeyStorePassword
+            keyAlias releaseKeyStoreKey
+            keyPassword releaseKeyStoreKeyPassword
+        }
+    }
+
+    buildTypes {
+        debug {
+
+        }
+        release {
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+            signingConfig signingConfigs.release
+        }
+    }
+
+    // Sync flavor dimension. This is used to provide a version without sync functionality
+    // for F-Droid, because Firebase is not open source so it wouldn't allowed.
+    flavorDimensions "sync"
+
+    productFlavors {
+        sync {
+            dimension "sync"
+            applicationIdSuffix ".sync"
+            versionNameSuffix "-s"
+        }
+        noSync {
+            dimension "sync"
+            applicationIdSuffix ".nosync"
+            versionNameSuffix "-ns"
+        }
+    }
+
+    applicationVariants.all { variant ->
+        // Disable google services task in no sync flavor, because it will try to find
+        // an inexistant google-services.json file and build will fail.
+        if (variant.name == "noSyncDebug") {
+            project.tasks.getByName("processNoSyncDebugGoogleServices").enabled = false
+        } else if (variant.name == "noSyncRelease") {
+            project.tasks.getByName("processNoSyncReleaseGoogleServices").enabled = false
+        }
+    }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
@@ -43,15 +110,9 @@ android {
         freeCompilerArgs += [
                 "-Xopt-in=kotlin.ExperimentalStdlibApi",
                 "-Xopt-in=kotlin.time.ExperimentalTime",
-                "-Xopt-in=kotlinx.coroutines.ExperimentalCoroutinesApi"
+                "-Xopt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
+                "-Xopt-in=kotlinx.coroutines.FlowPreview"
         ]
-    }
-    buildTypes {
-        release {
-            minifyEnabled true
-            shrinkResources true
-            proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
-        }
     }
 }
 
@@ -75,11 +136,6 @@ dependencies {
     // Dagger
     implementation "com.google.dagger:dagger:$daggerVersion"
     kapt "com.google.dagger:dagger-compiler:$daggerVersion"
-    
-    // Firebase
-    implementation "com.google.firebase:firebase-auth:$firebaseAuthVersion"
-    implementation "com.google.firebase:firebase-functions-ktx:$firebaseFunctionsVersion"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-play-services:$coroutinesVersion"
 
     // Architecture components
     kapt "androidx.room:room-compiler:$roomVersion"
@@ -95,6 +151,14 @@ dependencies {
     implementation "androidx.navigation:navigation-ui-ktx:$navVersion"
     implementation "androidx.navigation:navigation-fragment:$navVersion"
     implementation "androidx.navigation:navigation-fragment-ktx:$navVersion"
+
+    // Firebase
+    syncImplementation "com.google.firebase:firebase-auth:$firebaseAuthVersion"
+    syncImplementation "com.google.firebase:firebase-functions-ktx:$firebaseFunctionsVersion"
+    syncImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-play-services:$coroutinesVersion"
+
+    // Debug
+    debugImplementation "com.squareup.leakcanary:leakcanary-android:$leakCanaryVersion"
 
     // Dependencies for local unit tests
     testImplementation "org.jetbrains.kotlin:kotlin-test:$kotlinVersion"

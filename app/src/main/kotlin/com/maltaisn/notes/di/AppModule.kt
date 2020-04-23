@@ -28,7 +28,12 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
 
 
-@Module
+@Module(includes = [
+    DatabaseModule::class,
+    ViewModelModule::class,
+    BuildTypeModule::class,
+    SyncFlavorModule::class
+])
 abstract class AppModule {
 
     @Binds

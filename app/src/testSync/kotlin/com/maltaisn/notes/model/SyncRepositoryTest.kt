@@ -16,51 +16,24 @@
 
 package com.maltaisn.notes.model
 
-import com.maltaisn.notes.model.converter.DateTimeConverter
-import com.maltaisn.notes.model.entity.BlankNoteMetadata
-import com.maltaisn.notes.model.entity.DeletedNote
-import com.maltaisn.notes.model.entity.NoteStatus
-import com.maltaisn.notes.model.entity.NoteType
 import com.maltaisn.notes.testNote
 import com.nhaarman.mockitokotlin2.*
 import kotlinx.coroutines.runBlocking
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonConfiguration
 import org.junit.Test
 import java.util.*
-import kotlin.test.assertEquals
 
 
-class NotesRepositoryTest {
+class SyncRepositoryTest {
 
     private val notesDao: NotesDao = mock()
     private val deletedNotesDao: DeletedNotesDao = mock()
     private val notesService: NotesService = mock()
 
-    private val prefs: PrefsManager = mock {
+    private val prefs: SyncPrefsManager = mock {
         on { lastSyncTime } doReturn 0
     }
 
-    private val notesRepo = DefaultNotesRepository(notesDao, deletedNotesDao,
-            notesService, prefs, Json(JsonConfiguration.Stable))
-
-    @Test
-    fun `should delete note in database`() = runBlocking {
-        val note = testNote()
-        notesRepo.deleteNote(note)
-        verify(notesDao).delete(note)
-        verify(deletedNotesDao).insert(DeletedNote(0, note.uuid, false))
-    }
-
-    @Test
-    fun `should delete all notes in database`() = runBlocking {
-        val notes = listOf(testNote(), testNote(), testNote())
-        notesRepo.deleteNotes(notes)
-        verify(notesDao).deleteAll(notes)
-        verify(deletedNotesDao).insertAll(notes.map { note ->
-            DeletedNote(0, note.uuid, false)
-        })
-    }
+    private val syncRepo = SyncRepository(notesDao, deletedNotesDao, notesService, prefs)
 
     @Test
     fun `should sync notes correctly`() = runBlocking {
@@ -76,7 +49,7 @@ class NotesRepositoryTest {
         whenever(notesService.syncNotes(any())) doReturn NotesService.SyncData(
                 newSyncDate, listOf(newNote1), listOf("0"))
 
-        notesRepo.syncNotes(true)
+        syncRepo.syncNotes(true)
 
         verify(notesService).syncNotes(NotesService.SyncData(
                 Date(0), listOf(note0), listOf("2")))
@@ -89,20 +62,6 @@ class NotesRepositoryTest {
 
         verify(notesDao).setSyncedFlag(true)
         verify(deletedNotesDao).setSyncedFlag(true)
-    }
-
-    @Test
-    fun `should return all notes data in json`() = runBlocking {
-        val date = DateTimeConverter.toDate("2020-01-01T00:00:00.000Z")
-        whenever(notesDao.getAll()) doReturn listOf(
-                testNote(1, "0", NoteType.TEXT, "note",
-                        "content", BlankNoteMetadata, date, date, NoteStatus.ACTIVE))
-
-        val data = notesRepo.getJsonData()
-
-        assertEquals("""{"0":{"uuid":"0","type":0,"title":"note","content":"content",""" +
-                """"metadata":"{\"type\":\"blank\"}","added":"2020-01-01T00:00:00.000Z",""" +
-                """"modified":"2020-01-01T00:00:00.000Z","status":0}}""", data)
     }
 
 }

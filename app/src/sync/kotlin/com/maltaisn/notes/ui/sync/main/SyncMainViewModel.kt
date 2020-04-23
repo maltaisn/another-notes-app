@@ -16,18 +16,16 @@
 
 package com.maltaisn.notes.ui.sync.main
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.google.firebase.FirebaseException
-import com.google.firebase.auth.FirebaseUser
 import com.maltaisn.notes.R
 import com.maltaisn.notes.model.LoginRepository
 import com.maltaisn.notes.ui.Event
 import com.maltaisn.notes.ui.send
 import com.maltaisn.notes.ui.sync.SyncPage
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -40,20 +38,16 @@ class SyncMainViewModel @Inject constructor(
     val changePageEvent: LiveData<Event<SyncPage>>
         get() = _changePageEvent
 
-    private val _currentUser = MutableLiveData<FirebaseUser?>()
-    val currentUser: LiveData<FirebaseUser?>
-        get() = _currentUser
-
     private val _messageEvent = MutableLiveData<Event<Int>>()
     val messageEvent: LiveData<Event<Int>>
         get() = _messageEvent
 
-
-    init {
-        loginRepository.addAuthStateListener {
-            _currentUser.value = loginRepository.currentUser
+    val currentUser = liveData {
+        loginRepository.authStateChannel.asFlow().collect {
+            emit(loginRepository.currentUser)
         }
     }
+
 
     fun goToPage(page: SyncPage) {
         _changePageEvent.send(page)
@@ -82,7 +76,6 @@ class SyncMainViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 loginRepository.reloadUser()
-                _currentUser.value = loginRepository.currentUser
             } catch (e: FirebaseException) {
                 // Network error, too many requests, or other unknown error.
             }

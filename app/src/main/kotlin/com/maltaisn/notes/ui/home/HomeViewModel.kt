@@ -16,15 +16,13 @@
 
 package com.maltaisn.notes.ui.home
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
-import com.maltaisn.notes.DebugUtils
 import com.maltaisn.notes.R
 import com.maltaisn.notes.model.NotesRepository
 import com.maltaisn.notes.model.PrefsManager
-import com.maltaisn.notes.model.SyncManager
 import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.model.entity.NoteStatus
 import com.maltaisn.notes.ui.Event
@@ -36,6 +34,7 @@ import com.maltaisn.notes.ui.note.adapter.NoteItem
 import com.maltaisn.notes.ui.note.adapter.NoteListLayoutMode
 import com.maltaisn.notes.ui.send
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -44,7 +43,8 @@ import javax.inject.Inject
 class HomeViewModel @Inject constructor(
         notesRepository: NotesRepository,
         prefs: PrefsManager,
-        val syncManager: SyncManager
+        private val refreshBehavior: NoteRefreshBehavior,
+        private val buildTypeBehavior: BuildTypeBehavior
 ) : NoteViewModel(notesRepository, prefs), NoteAdapter.Callback {
 
     private var noteListJob: Job? = null
@@ -57,6 +57,9 @@ class HomeViewModel @Inject constructor(
     val messageEvent: LiveData<Event<Int>>
         get() = _messageEvent
 
+    val canRefresh = refreshBehavior.canRefreshChannel
+            .asFlow().asLiveData(viewModelScope.coroutineContext)
+
     private val _stopRefreshEvent = MutableLiveData<Event<Unit>>()
     val stopRefreshEvent: LiveData<Event<Unit>>
         get() = _stopRefreshEvent
@@ -68,6 +71,10 @@ class HomeViewModel @Inject constructor(
 
     init {
         setNoteStatus(NoteStatus.ACTIVE)
+
+        viewModelScope.launch {
+            refreshBehavior.start()
+        }
     }
 
     fun setNoteStatus(status: NoteStatus) {
@@ -105,23 +112,19 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    fun syncNotes() {
+    fun refreshNotes() {
         viewModelScope.launch {
-            syncManager.syncNotes(delay = PrefsManager.MIN_MANUAL_SYNC_INTERVAL) { e ->
-                // Sync failed for unknown reason.
-                Log.e(TAG, "Couldn't sync notes", e)
-                _messageEvent.send(R.string.sync_failed_message)
+            val message = refreshBehavior.refreshNotes()
+            if (message != null) {
+                _messageEvent.send(message)
             }
             _stopRefreshEvent.send()
         }
     }
 
-    fun addDebugNotes() {
+    fun doExtraAction() {
         viewModelScope.launch {
-            val status = _noteStatus.value!!
-            repeat(3) {
-                notesRepository.insertNote(DebugUtils.getRandomNote(status))
-            }
+            buildTypeBehavior.doExtraAction(this@HomeViewModel)
         }
     }
 

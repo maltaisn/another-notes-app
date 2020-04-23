@@ -43,8 +43,8 @@
         />
 
     <item
-        android:id="@+id/item_add_debug_notes"
-        android:title="Add debug notes"
+        android:id="@+id/item_extra_action"
+        android:title="@string/action_extra"
         app:showAsAction="never"
         />
 

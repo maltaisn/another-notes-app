@@ -38,9 +38,6 @@ interface NotesRepository {
     suspend fun emptyTrash()
     suspend fun deleteOldNotesInTrash()
 
-    suspend fun syncNotes(receive: Boolean)
-    suspend fun setAllNotSynced()
-
     suspend fun getJsonData(): String
     suspend fun clearAllData()
 

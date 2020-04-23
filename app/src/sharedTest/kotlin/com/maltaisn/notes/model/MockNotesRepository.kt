@@ -111,14 +111,6 @@ class MockNotesRepository : NotesRepository {
         }
     }
 
-    override suspend fun syncNotes(receive: Boolean) {
-        setAllSynced(true)
-    }
-
-    override suspend fun setAllNotSynced() {
-        setAllSynced(false)
-    }
-
     override suspend fun getJsonData(): String {
         val notesJson = JsonObject(notes.values.associate { note ->
             note.uuid to json.toJson(Note.serializer(), note)
@@ -131,11 +123,4 @@ class MockNotesRepository : NotesRepository {
         lastId = 0
     }
 
-    private fun setAllSynced(synced: Boolean) {
-        for ((id, note) in notes) {
-            if (note.synced != synced) {
-                notes[id] = note.copy(synced = synced)
-            }
-        }
-    }
 }

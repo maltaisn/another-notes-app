@@ -27,9 +27,9 @@ import kotlin.time.Duration
 @Singleton
 class SyncManager @Inject constructor(
         private val context: Context,
-        private val notesRepository: NotesRepository,
+        private val syncRepository: SyncRepository,
         private val loginRepository: LoginRepository,
-        private val prefs: PrefsManager) {
+        private val prefs: SyncPrefsManager) {
 
     private val canSyncOverCurrentNetwork: Boolean
         get() {
@@ -66,7 +66,7 @@ class SyncManager @Inject constructor(
             }
             if (shouldSync) {
                 try {
-                    notesRepository.syncNotes(receive)
+                    syncRepository.syncNotes(receive)
                 } catch (e: IOException) {
                     // Sync failed for unknown reason.
                     onError(e)

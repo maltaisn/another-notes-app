@@ -27,10 +27,10 @@ import kotlin.time.hours
 class SyncManagerTest {
 
     private val loginRepo: LoginRepository = mock()
-    private val notesRepo: NotesRepository = mock()
-    private val prefs: PrefsManager = mock()
+    private val syncRepo: SyncRepository = mock()
+    private val prefs: SyncPrefsManager = mock()
 
-    private val syncManager = SyncManager(mock(), notesRepo, loginRepo, prefs)
+    private val syncManager = SyncManager(mock(), syncRepo, loginRepo, prefs)
 
     init {
         whenever(loginRepo.isUserSignedIn) doReturn true
@@ -43,7 +43,7 @@ class SyncManagerTest {
         whenever(loginRepo.isUserSignedIn) doReturn false
         whenever(prefs.lastSyncTime) doReturn System.currentTimeMillis()
         syncManager.syncNotes()
-        verify(notesRepo, never()).syncNotes(true)
+        verify(syncRepo, never()).syncNotes(true)
     }
 
     @Test
@@ -51,34 +51,34 @@ class SyncManagerTest {
         whenever(loginRepo.isUserEmailVerified) doReturn false
         whenever(prefs.lastSyncTime) doReturn System.currentTimeMillis()
         syncManager.syncNotes()
-        verify(notesRepo, never()).syncNotes(true)
+        verify(syncRepo, never()).syncNotes(true)
     }
 
     @Test
     fun `should not sync notes if delay not elapsed`() = runBlocking {
         whenever(prefs.lastSyncTime) doReturn System.currentTimeMillis()
         syncManager.syncNotes(delay = 1.hours)
-        verify(notesRepo, never()).syncNotes(true)
+        verify(syncRepo, never()).syncNotes(true)
     }
 
     @Test
     fun `should sync notes after delay elapsed`() = runBlocking {
         whenever(prefs.lastSyncTime) doReturn (System.currentTimeMillis() - 7.hours.toLongMilliseconds())
         syncManager.syncNotes(delay = 1.hours)
-        verify(notesRepo).syncNotes(true)
+        verify(syncRepo).syncNotes(true)
     }
 
     @Test
     fun `should sync notes if no delay`() = runBlocking {
         whenever(prefs.lastSyncTime) doReturn System.currentTimeMillis()
         syncManager.syncNotes()
-        verify(notesRepo).syncNotes(true)
+        verify(syncRepo).syncNotes(true)
     }
 
     @Test
     fun `should call onError on sync error`() = runBlocking {
         val e = IOException("Sync failed")
-        whenever(notesRepo.syncNotes(any())) doAnswer { throw e }
+        whenever(syncRepo.syncNotes(any())) doAnswer { throw e }
 
         var error: Exception? = null
         syncManager.syncNotes {

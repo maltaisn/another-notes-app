@@ -22,12 +22,14 @@ import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
+import androidx.core.view.iterator
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
+import com.maltaisn.notes.BuildConfig
 import com.maltaisn.notes.NavGraphDirections
 import com.maltaisn.notes.R
 import com.maltaisn.notes.model.entity.NoteStatus
@@ -68,9 +70,21 @@ class HomeFragment : NoteFragment(), Toolbar.OnMenuItemClickListener,
             drawerLayout.openDrawer(GravityCompat.START)
         }
 
+        // Hide or show build type and flavor specific items
+        toolbar.menu.findItem(R.id.item_extra_action).isVisible = BuildConfig.DEBUG
+
+        if (BuildConfig.FLAVOR == BuildConfig.FLAVOR_NO_SYNC) {
+            for (item in navView.menu) {
+                if (item.groupId == R.id.group_sync) {
+                    item.isVisible = false
+                }
+            }
+        }
+
         // Swipe refresh
-        binding.swipeRefreshLayout.setOnRefreshListener {
-            viewModel.syncNotes()
+        val refreshLayout = binding.swipeRefreshLayout
+        refreshLayout.setOnRefreshListener {
+            viewModel.refreshNotes()
         }
 
         // Floating action button
@@ -109,8 +123,12 @@ class HomeFragment : NoteFragment(), Toolbar.OnMenuItemClickListener,
             Snackbar.make(view, messageId, Snackbar.LENGTH_SHORT).show()
         })
 
+        viewModel.canRefresh.observe(viewLifecycleOwner, Observer {
+            refreshLayout.isEnabled = it
+        })
+
         viewModel.stopRefreshEvent.observe(viewLifecycleOwner, EventObserver {
-            binding.swipeRefreshLayout.isRefreshing = false
+            refreshLayout.isRefreshing = false
         })
 
         viewModel.listLayoutMode.observe(viewLifecycleOwner, Observer { mode ->
@@ -140,7 +158,7 @@ class HomeFragment : NoteFragment(), Toolbar.OnMenuItemClickListener,
             R.id.item_search -> findNavController().navigate(R.id.action_home_to_search)
             R.id.item_layout -> viewModel.toggleListLayoutMode()
             R.id.item_empty_trash -> viewModel.emptyTrashPre()
-            R.id.item_add_debug_notes -> viewModel.addDebugNotes()
+            R.id.item_extra_action -> viewModel.doExtraAction()
             else -> return false
         }
         return true

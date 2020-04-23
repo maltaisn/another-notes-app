@@ -16,24 +16,20 @@
 
 package com.maltaisn.notes.ui.sync
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.google.firebase.auth.FirebaseUser
+import androidx.lifecycle.liveData
 import com.maltaisn.notes.model.LoginRepository
+import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.collect
 import javax.inject.Inject
 
 
 class SyncViewModel @Inject constructor(
         private val loginRepository: LoginRepository) : ViewModel() {
 
-    private val _currentUser = MutableLiveData<FirebaseUser?>()
-    val currentUser: LiveData<FirebaseUser?>
-        get() = _currentUser
-
-    init {
-        loginRepository.addAuthStateListener {
-            _currentUser.value = loginRepository.currentUser
+    val currentUser = liveData {
+        loginRepository.authStateChannel.asFlow().collect {
+            emit(loginRepository.currentUser)
         }
     }
 
