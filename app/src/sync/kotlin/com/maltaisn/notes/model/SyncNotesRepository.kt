@@ -16,6 +16,7 @@
 
 package com.maltaisn.notes.model
 
+import kotlinx.serialization.json.Json
 import java.io.IOException
 import java.util.*
 import javax.inject.Inject
@@ -23,11 +24,14 @@ import javax.inject.Singleton
 
 
 @Singleton
-open class SyncRepository @Inject constructor(
+open class SyncNotesRepository @Inject constructor(
         private val notesDao: NotesDao,
         private val deletedNotesDao: DeletedNotesDao,
         private val notesService: NotesService,
-        private val prefs: SyncPrefsManager) {
+        private val prefs: SyncPrefsManager,
+        private val loginRepository: LoginRepository,  // Not great.
+        json: Json
+) : DefaultNotesRepository(notesDao, deletedNotesDao, json) {
 
     /**
      * Sync local notes with the server. This happens in two steps:
@@ -40,7 +44,7 @@ open class SyncRepository @Inject constructor(
      *
      * @throws IOException Thrown when sync fails.
      */
-    suspend open fun syncNotes(receive: Boolean) {
+    open suspend fun syncNotes(receive: Boolean) {
         // Get local sync data.
         val localChanged = notesDao.getNotSynced()
         val localDeleted = deletedNotesDao.getNotSyncedUuids()
@@ -85,6 +89,17 @@ open class SyncRepository @Inject constructor(
     suspend fun setAllNotSynced() {
         notesDao.setSyncedFlag(false)
         deletedNotesDao.setSyncedFlag(false)
+    }
+
+    override suspend fun clearAllData() {
+        if (loginRepository.isUserSignedIn) {
+            // Deleted notes table is not cleared here because it's needed in order
+            // to eventually sync the clearing of all data with server.
+            deleteNotes(notesDao.getAll())
+        } else {
+            // Do as usual.
+            super.clearAllData()
+        }
     }
 
 }

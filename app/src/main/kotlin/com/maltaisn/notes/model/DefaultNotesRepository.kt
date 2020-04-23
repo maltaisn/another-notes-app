@@ -25,12 +25,9 @@ import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import java.util.*
-import javax.inject.Inject
-import javax.inject.Singleton
 
 
-@Singleton
-open class DefaultNotesRepository @Inject constructor(
+open class DefaultNotesRepository(
         private val notesDao: NotesDao,
         private val deletedNotesDao: DeletedNotesDao,
         private val json: Json
@@ -83,7 +80,9 @@ open class DefaultNotesRepository @Inject constructor(
     }
 
     override suspend fun clearAllData() {
-        deleteNotes(notesDao.getAll())
+        // Just clear all tables. Sync flavor should provide a custom implementation.
+        notesDao.clear()
+        deletedNotesDao.clear()
     }
 
 }

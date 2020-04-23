@@ -35,6 +35,9 @@ interface DeletedNotesDao {
     @Insert
     suspend fun insertAll(notes: List<DeletedNote>)
 
+    @Query("DELETE FROM deleted_notes")
+    suspend fun clear()
+
     @Query("SELECT uuid FROM deleted_notes WHERE synced == 0")
     suspend fun getNotSyncedUuids(): List<String>
 

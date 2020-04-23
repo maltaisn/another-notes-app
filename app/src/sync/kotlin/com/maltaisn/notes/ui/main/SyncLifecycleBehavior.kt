@@ -18,17 +18,18 @@ package com.maltaisn.notes.ui.main
 
 import com.maltaisn.notes.model.LoginRepository
 import com.maltaisn.notes.model.SyncManager
+import com.maltaisn.notes.model.SyncNotesRepository
 import com.maltaisn.notes.model.SyncPrefsManager
-import com.maltaisn.notes.model.SyncRepository
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.collect
 import javax.inject.Inject
 
 
 class SyncLifecycleBehavior @Inject constructor(
-        private val syncRepository: SyncRepository,
+        private val notesRepository: SyncNotesRepository,
         private val loginRepository: LoginRepository,
-        private val syncManager: SyncManager
+        private val syncManager: SyncManager,
+        private val prefs: SyncPrefsManager
 ) : LifecycleBehavior() {
 
     private var signedIn = false
@@ -39,8 +40,9 @@ class SyncLifecycleBehavior @Inject constructor(
                 // User signed out, either manually or by deleting the account.
                 // All entities in database have their 'synced' property set to true, so if user
                 // signs in from another account, no sync will happen! So synced must be set
-                // to false for all entities.
-                syncRepository.setAllNotSynced()
+                // to false for all entities, and reset last sync time.
+                notesRepository.setAllNotSynced()
+                prefs.lastSyncTime = SyncPrefsManager.NO_LAST_SYNC
             }
             signedIn = loginRepository.currentUser != null
         }

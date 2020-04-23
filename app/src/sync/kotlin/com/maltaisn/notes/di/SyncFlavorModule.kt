@@ -16,7 +16,9 @@
 
 package com.maltaisn.notes.di
 
+import com.maltaisn.notes.model.NotesRepository
 import com.maltaisn.notes.model.PrefsManager
+import com.maltaisn.notes.model.SyncNotesRepository
 import com.maltaisn.notes.model.SyncPrefsManager
 import com.maltaisn.notes.ui.home.NoteRefreshBehavior
 import com.maltaisn.notes.ui.home.SyncNoteRefreshBehavior
@@ -34,6 +36,9 @@ abstract class SyncFlavorModule {
 
     @Binds
     abstract fun bindsPrefsManager(prefs: SyncPrefsManager): PrefsManager
+
+    @Binds
+    abstract fun bindsNotesRepository(repository: SyncNotesRepository): NotesRepository
 
     @Binds
     abstract fun bindsLifecycleBehavior(behavior: SyncLifecycleBehavior): LifecycleBehavior

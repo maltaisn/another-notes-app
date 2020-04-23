@@ -44,6 +44,9 @@ interface NotesDao {
     @Delete
     suspend fun deleteAll(notes: List<Note>)
 
+    @Query("DELETE FROM notes")
+    suspend fun clear()
+
     /**
      * Delete notes with a UUID contained in [uuids]. Used for syncing
      * to delete local notes removed remotely.

@@ -23,7 +23,7 @@ import org.junit.Test
 import java.util.*
 
 
-class SyncRepositoryTest {
+class SyncNotesRepositoryTest {
 
     private val notesDao: NotesDao = mock()
     private val deletedNotesDao: DeletedNotesDao = mock()

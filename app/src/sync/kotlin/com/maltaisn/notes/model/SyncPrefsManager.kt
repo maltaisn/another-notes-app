@@ -31,7 +31,7 @@ open class SyncPrefsManager @Inject constructor(prefs: SharedPreferences) : Pref
         get() = prefs.getBoolean(SYNC_OVER_WIFI, false)
 
     open var lastSyncTime: Long
-        get() = prefs.getLong(LAST_SYNC_TIME, 0)
+        get() = prefs.getLong(LAST_SYNC_TIME, NO_LAST_SYNC)
         set(value) = prefs.edit { putLong(LAST_SYNC_TIME, value) }
 
 
@@ -45,6 +45,8 @@ open class SyncPrefsManager @Inject constructor(prefs: SharedPreferences) : Pref
         // Values
         val MIN_AUTO_SYNC_INTERVAL = 10.minutes
         val MIN_MANUAL_SYNC_INTERVAL = 15.seconds
+
+        const val NO_LAST_SYNC = 0L
     }
 
 }

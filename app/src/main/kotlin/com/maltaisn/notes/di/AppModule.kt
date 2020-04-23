@@ -19,9 +19,6 @@ package com.maltaisn.notes.di
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.preference.PreferenceManager
-import com.maltaisn.notes.model.DefaultNotesRepository
-import com.maltaisn.notes.model.NotesRepository
-import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import kotlinx.serialization.json.Json
@@ -34,21 +31,15 @@ import kotlinx.serialization.json.JsonConfiguration
     BuildTypeModule::class,
     SyncFlavorModule::class
 ])
-abstract class AppModule {
+object AppModule {
 
-    @Binds
-    abstract fun bindsNotesRepository(repository: DefaultNotesRepository): NotesRepository
+    @Provides
+    @JvmStatic
+    fun providesSharedPreferences(context: Context): SharedPreferences =
+            PreferenceManager.getDefaultSharedPreferences(context)
 
-    @Module
-    companion object {
-        @Provides
-        @JvmStatic
-        fun providesSharedPreferences(context: Context): SharedPreferences =
-                PreferenceManager.getDefaultSharedPreferences(context)
-
-        @Provides
-        @JvmStatic
-        fun providesJson() = Json(JsonConfiguration.Stable)
-    }
+    @Provides
+    @JvmStatic
+    fun providesJson() = Json(JsonConfiguration.Stable)
 
 }
