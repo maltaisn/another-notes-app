@@ -25,7 +25,7 @@ import com.maltaisn.notes.ui.send
 import com.maltaisn.notes.ui.sync.SyncPage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.asFlow
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -42,11 +42,9 @@ class SyncMainViewModel @Inject constructor(
     val messageEvent: LiveData<Event<Int>>
         get() = _messageEvent
 
-    val currentUser = liveData {
-        loginRepository.authStateChannel.asFlow().collect {
-            emit(loginRepository.currentUser)
-        }
-    }
+    val currentUser = loginRepository.authStateChannel.asFlow()
+            .map { loginRepository.currentUser }
+            .asLiveData(viewModelScope.coroutineContext)
 
 
     fun goToPage(page: SyncPage) {
@@ -61,10 +59,14 @@ class SyncMainViewModel @Inject constructor(
     fun resendVerification() {
         viewModelScope.launch {
             try {
-                withContext(Dispatchers.IO) {
-                    loginRepository.sendVerificationEmail()
+                // Check if user has verified their email first. If not send verification.
+                loginRepository.reloadUser()
+                if (!loginRepository.isUserEmailVerified) {
+                    withContext(Dispatchers.IO) {
+                        loginRepository.sendVerificationEmail()
+                    }
+                    _messageEvent.send(R.string.sync_verification_success_message)
                 }
-                _messageEvent.send(R.string.sync_verification_success_message)
             } catch (e: FirebaseException) {
                 // Network error, too many requests, or other unknown error.
                 _messageEvent.send(R.string.sync_failed_message)

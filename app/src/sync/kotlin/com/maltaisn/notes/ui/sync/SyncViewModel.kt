@@ -17,20 +17,19 @@
 package com.maltaisn.notes.ui.sync
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.liveData
+import androidx.lifecycle.asLiveData
+import androidx.lifecycle.viewModelScope
 import com.maltaisn.notes.model.LoginRepository
 import kotlinx.coroutines.flow.asFlow
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 
 class SyncViewModel @Inject constructor(
         private val loginRepository: LoginRepository) : ViewModel() {
 
-    val currentUser = liveData {
-        loginRepository.authStateChannel.asFlow().collect {
-            emit(loginRepository.currentUser)
-        }
-    }
+    val currentUser = loginRepository.authStateChannel.asFlow()
+            .map { loginRepository.currentUser }
+            .asLiveData(viewModelScope.coroutineContext)
 
 }

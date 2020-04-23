@@ -22,6 +22,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.FirebaseException
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
+import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import com.maltaisn.notes.R
 import com.maltaisn.notes.model.LoginRepository
 import com.maltaisn.notes.ui.Event
@@ -73,7 +74,8 @@ class PasswordResetViewModel @Inject constructor(
 
             } catch (e: FirebaseException) {
                 when (e) {
-                    is FirebaseAuthInvalidCredentialsException -> {
+                    is FirebaseAuthInvalidCredentialsException,
+                    is FirebaseAuthInvalidUserException -> {
                         // Email is invalid
                         _emailError.value = R.string.sync_email_invalid_error
                         _resetBtnEnabled.value = false
