@@ -16,12 +16,16 @@
 
 <layer-list
     xmlns:android="http://schemas.android.com/apk/res/android">
+
     <item>
         <color android:color="?android:colorBackground" />
     </item>
-    <item
-        android:drawable="@drawable/splash_screen_logo"
-        android:gravity="center"
-        android:bottom="120dp"
-        />
+
+    <item android:bottom="120dp">
+        <bitmap
+            android:src="@mipmap/splash_screen_logo"
+            android:gravity="center"
+            />
+    </item>
+
 </layer-list>
