@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><!--
+<!--
   Copyright 2020 Nicolas Maltais
 
   Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,6 +25,6 @@
 
     <path
         android:fillColor="#000000"
-        android:pathData="M9,5V9H21V5M9,19H21V15H9M9,14H21V10H9M4,9H8V5H4M4,19H8V15H4M4,14H8V10H4V14Z"
+        android:pathData="M3,4H21V8H3V4M3,10H21V14H3V10M3,16H21V20H3V16Z"
         />
 </vector>
