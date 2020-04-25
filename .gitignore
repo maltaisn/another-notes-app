@@ -1,7 +1,7 @@
 dev/
 
 # Firebase
-app/google-services.json
+app/src/sync/google-services.json
 .firebaserc
 
 # Android Studio
