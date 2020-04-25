@@ -69,11 +69,15 @@ class MainActivity : AppCompatActivity() {
 
         // Check if activity was opened with a send intent
         val intent = intent
-        if (intent?.action == Intent.ACTION_SEND && intent.type == "text/plain") {
+        if (intent?.action == Intent.ACTION_SEND && intent.type == "text/plain" &&
+                !intent.getBooleanExtra(KEY_INTENT_HANDLED, false)) {
             val title = intent.getStringExtra(Intent.EXTRA_TITLE)
                     ?: intent.getStringExtra(Intent.EXTRA_SUBJECT) ?: ""
             val content = intent.getStringExtra(Intent.EXTRA_TEXT) ?: ""
             viewModel.addIntentNote(title, content)
+
+            // Mark intent as handled or it will be handled again when activity restarts.
+            intent.putExtra(KEY_INTENT_HANDLED, true)
         }
 
         // Observers
@@ -98,6 +102,10 @@ class MainActivity : AppCompatActivity() {
     override fun onStop() {
         super.onStop()
         viewModel.onStop()
+    }
+
+    companion object {
+        private const val KEY_INTENT_HANDLED = "intent_handled"
     }
 
 }
