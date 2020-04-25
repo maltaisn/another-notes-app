@@ -1,0 +1,183 @@
+<!--
+  Copyright 2020 Nicolas Maltais
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  -->
+
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <string name="app_name">Another Notes</string>
+    <string name="app_name_short">Notes</string>
+
+    <string name="action_archive">Archiver</string>
+    <string name="action_cancel">Annuler</string>
+    <string name="action_clear">Effacer</string>
+    <string name="action_convert_to_list">Convertir en liste</string>
+    <string name="action_convert_to_text">Convertir en texte</string>
+    <string name="action_copy">Faire une copie</string>
+    <string name="action_delete">Supprimer</string>
+    <string name="action_delete_checked">Effacer les éléments cochés</string>
+    <string name="action_delete_forever">Supprimer définitivement</string>
+    <string name="action_delete_selection_forever">Supprimer la sélection définitivement</string>
+    <string name="action_empty_trash">Vider la corbeille</string>
+    <string name="action_empty_trash_short">Vider</string>
+    <string name="action_keep">Garder</string>
+    <string name="action_layout_grid">Affichage grille</string>
+    <string name="action_layout_list">Affichage liste</string>
+    <string name="action_password_change_short">Changer</string>
+    <string name="action_password_forgot">Mot de passe oublié</string>
+    <string name="action_password_reset_short">Réinitialiser</string>
+    <string name="action_resend_verification">Renvoyer la vérification</string>
+    <string name="action_restore">Restaurer</string>
+    <string name="action_search">Rechercher</string>
+    <string name="action_select_all">Sélectionner tout</string>
+    <string name="action_settings">Paramètres</string>
+    <string name="action_share">Partager</string>
+    <string name="action_sign_in">Connexion</string>
+    <string name="action_sign_out">Déconnexion</string>
+    <string name="action_sign_up">Inscription</string>
+    <string name="action_sync">Synchronisation</string>
+    <string name="action_unarchive">Désarchiver</string>
+    <string name="action_uncheck_all">Décocher tous les éléments</string>
+    <string name="action_undo">Annuler</string>
+
+    <!-- Home -->
+    <string name="note_location_active">Notes</string>
+    <string name="note_location_archived">Archive</string>
+    <string name="note_location_deleted">Corbeille</string>
+
+    <string name="note_placeholder_active">Vous n\'avez aucune note.\nCliquez sur le + pour en ajouter.</string>
+    <string name="note_placeholder_archived">Aucune note archivée</string>
+    <string name="note_placeholder_deleted">La corbeille est vide</string>
+
+    <plurals name="note_list_item_info">
+        <item quantity="one">+ %d autre élément</item>
+        <item quantity="other">+ %d autres éléments</item>
+    </plurals>
+
+    <string name="trash_reminder_message">Les notes dans la corbeille sont supprimées automatiquement après %d jours.</string>
+    <string name="trash_delete_message">Cette note sera supprimée définitivement.</string>
+    <string name="trash_delete_selected_message">Les notes sélectionnées seront supprimées définitivement.</string>
+    <string name="trash_empty_message">Toutes les notes dans la corbeille sont supprimées définitivement.</string>
+
+    <string name="search_hint">Rechercher dans vos notes</string>
+    <string name="search_empty_placeholder">Aucune note trouvée pour cette recherche.</string>
+
+    <!-- Edit -->
+    <string name="edit_add_title">Ajouter une note</string>
+    <string name="edit_change_title">Modifier une note</string>
+    <string name="edit_hint_note_title">Titre</string>
+    <string name="edit_hint_note_content">Note</string>
+    <string name="edit_hint_note_item">Nouvel élément</string>
+
+    <string name="edit_message_blank_note_discarded">Note vide supprimée.</string>
+    <plurals name="edit_move_archive_message" tools:ignore="ImpliedQuantity">
+        <item quantity="one">Note archivée.</item>
+        <item quantity="other">Notes archivées.</item>
+    </plurals>
+    <plurals name="edit_message_move_delete" tools:ignore="ImpliedQuantity">
+        <item quantity="one">Note déplacée dans la corbeille.</item>
+        <item quantity="other">Notes déplacées dans la corbeille.</item>
+    </plurals>
+    <plurals name="edit_message_move_restore" tools:ignore="ImpliedQuantity">
+        <item quantity="one">Note restaurée.</item>
+        <item quantity="other">Notes réstaurées.</item>
+    </plurals>
+    <plurals name="edit_message_move_unarchive" tools:ignore="ImpliedQuantity">
+        <item quantity="one">Note désarchivée.</item>
+        <item quantity="other">Notes désarchivées.</item>
+    </plurals>
+    <string name="edit_in_trash_message">Impossible de modifier une note dans la corbeille.</string>
+
+    <string name="edit_copy_suffix">Copie</string>
+    <string name="edit_copy_untitled_name">Sans titre</string>
+
+    <string name="edit_convert_keep_checked">Effacer les éléments cochés?</string>
+
+    <!-- Sync & backup -->
+    <string name="sync_message">Sauvegarder vos notes sur le cloud et synchronisez-les avec plusieurs appareils.</string>
+    <string name="sync_failed_message">Erreur de communication avec le serveur. Assurez-vous d\'avoir une connection Internet.</string>
+
+    <string name="sync_email">Adresse courriel</string>
+    <string name="sync_password">Mot de passe</string>
+    <string name="sync_password_current">Mot de passe actuel</string>
+    <string name="sync_password_new">Nouveau mot de passe</string>
+    <string name="sync_password_confirm">Confirmer le mot de passe</string>
+
+    <string name="sync_field_missing_error">Ce champ est requis</string>
+    <string name="sync_email_invalid_error">Adresse courriel invalide</string>
+    <string name="sync_password_length_error">Le mot passe doit comporter entre %1$d et %2$d caractères</string>
+    <string name="sync_password_mismatch_error">Les mots de passe ne correspondent pas</string>
+    <string name="sync_password_wrong_error">Mot de passe invalide</string>
+
+    <string name="sync_sign_in">Se connecter à son compte</string>
+    <string name="sync_sign_in_success_message">Connexion réussie !</string>
+    <string name="sync_sign_in_failed_wrong_message">Impossible de se connecter. L\'adresse courriel ne correspond pas au mot de passe.</string>
+    <string name="sync_sign_in_failed_attempts_message">Trop d\'essais de connexion ont été effectués. Veuillez réessayez plus tard.</string>
+    <string name="sync_signed_in_message">Connecté en tant que:</string>
+    <string name="sync_signed_in_not_verified">La synchronisation est désactivée car votre compte n\'est pas vérifié. Veuillez cliquez sur le lien reçu par courriel ou le renvoyer.</string>
+    <string name="sync_sign_out_success_message">Déconnexion réussie.</string>
+
+    <string name="sync_sign_up">Créer un compte</string>
+    <string name="sync_sign_up_conditions">En créant ce compte, vous acceptez les %1$s et la %2$s.</string>
+    <string name="sync_sign_up_failed_email_used_message">Un compte a déjà été créer avec cette adresse courriel.</string>
+    <string name="sync_sign_up_success_message">Compte créé avec succès. Un courriel vous a été envoyé pour vérifier votre compte.</string>
+
+    <string name="sync_verification_success_message">Le courriel de vérification a été envoyé.</string>
+
+    <string name="sync_password_reset">Réinitialiser le mot de passe</string>
+    <string name="sync_password_reset_message">Entrer votre adresse courriel et des instructions vous seront envoyées pour réinitialiser votre mot de passe:</string>
+    <string name="sync_password_reset_success_message">Un courriel vous a été envoyé pour réinitialiser votre mot de passe.</string>
+
+    <string name="sync_password_change">Changer le mot de passe</string>
+    <string name="sync_password_change_message">Pour changer votre mot de passe, entrez votre mot de passe actuel et un nouveau mot de passe:</string>
+    <string name="sync_password_change_success_message">Mot de passe changé avec succès !</string>
+    <string name="sync_password_change_wrong_password_error">Mot de passe invalide</string>
+
+    <string name="sync_account_delete">Supprimer le compte</string>
+    <string name="sync_account_delete_message">Supprimez votre compte ainsi que toutes ses données reliées. Cette opération ne pourra pas être annulée.</string>
+    <string name="sync_account_delete_success_message">Compte supprimé avec succès.</string>
+
+    <!-- Settings -->
+    <string name="pref_group_appearance">Apparence</string>
+    <string name="pref_theme">Thème de l\'application</string>
+    <string name="pref_theme_light">Clair</string>
+    <string name="pref_theme_dark">Sombre</string>
+    <string name="pref_theme_system">Par défaut</string>
+
+    <string name="pref_group_sync">Synchronisation</string>
+    <string name="pref_sync_over_wifi">Ne synchroniser que via Wi-Fi</string>
+    <string name="pref_sync_over_wifi_summary">Empêcher la synchronisation via les données mobiles ou depuis un réseau facturé à l\'usage.</string>
+
+    <string name="pref_group_data">Données</string>
+    <string name="pref_data_export">Exporter les données</string>
+    <string name="pref_data_export_summary">Exporter les données en format JSON</string>
+    <string name="pref_data_export_title">Données exportées</string>
+    <string name="pref_data_clear">Effacer toutes les données</string>
+    <string name="pref_data_clear_confirm_message">Toutes les notes seront effacées définitivement ! Cette action ne pourra pas être annulée.</string>
+    <string name="pref_data_clear_confirm_message_sync">Toutes les notes seront effacées définitivement ! Cette action ne pourra pas être annulée. Les appareils synchronisés ne seront pas nécessairement affectés immédiatement.</string>
+    <string name="pref_data_clear_success_message">Toutes les données ont été effacées avec succès.</string>
+
+    <string name="pref_group_about">À propos</string>
+    <string name="pref_about_view_source">Voir sur Github</string>
+    <string name="pref_about_view_licenses">Licences open source</string>
+    <string name="pref_about_version">Version</string>
+
+    <string name="terms_conditions">Conditions d\'utilisation</string>
+    <string name="privacy_policy">Politique de confidentialité</string>
+
+    <!-- Content description -->
+    <string name="content_descrp_open_drawer">Ouvrir la navigation</string>
+    <string name="content_descrp_back">Revenir en arrière</string>
+
+</resources>

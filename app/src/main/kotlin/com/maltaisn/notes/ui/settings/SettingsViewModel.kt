@@ -20,7 +20,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.maltaisn.notes.BuildConfig
 import com.maltaisn.notes.R
+import com.maltaisn.notes.model.LoginRepository
 import com.maltaisn.notes.model.NotesRepository
 import com.maltaisn.notes.ui.Event
 import com.maltaisn.notes.ui.send
@@ -29,7 +31,8 @@ import javax.inject.Inject
 
 
 class SettingsViewModel @Inject constructor(
-        private val notesRepository: NotesRepository
+        private val notesRepository: NotesRepository,
+        private val loginRepository: LoginRepository
 ) : ViewModel() {
 
     private val _messageEvent = MutableLiveData<Event<Int>>()
@@ -40,11 +43,21 @@ class SettingsViewModel @Inject constructor(
     val exportDataEvent: LiveData<Event<String>>
         get() = _exportDataEvent
 
+    private val _clearDataDialogEvent = MutableLiveData<Event<Boolean>>()
+    val clearDataDialogEvent: LiveData<Event<Boolean>>
+        get() = _clearDataDialogEvent
+
 
     fun exportData() {
         viewModelScope.launch {
             _exportDataEvent.send(notesRepository.getJsonData())
         }
+    }
+
+    fun clearDataPre() {
+        val isSyncFlavor = BuildConfig.FLAVOR == BuildConfig.FLAVOR_SYNC
+        val isSignedIn = loginRepository.isUserSignedIn
+        _clearDataDialogEvent.send(isSyncFlavor && isSignedIn)
     }
 
     fun clearData() {

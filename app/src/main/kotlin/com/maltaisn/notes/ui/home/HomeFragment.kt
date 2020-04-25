@@ -126,7 +126,7 @@ class HomeFragment : NoteFragment(), Toolbar.OnMenuItemClickListener,
         })
 
         viewModel.currentSelection.observe(viewLifecycleOwner, Observer { selection ->
-            if (selection.count != 0 && actionMode == null) {
+            if (selection.count != 0) {
                 // Lock drawer when user just selected a first note.
                 drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED, GravityCompat.START)
             }
@@ -146,10 +146,16 @@ class HomeFragment : NoteFragment(), Toolbar.OnMenuItemClickListener,
 
         viewModel.listLayoutMode.observe(viewLifecycleOwner, Observer { mode ->
             val layoutItem = toolbar.menu.findItem(R.id.item_layout)
-            layoutItem.setIcon(when (mode!!) {
-                NoteListLayoutMode.LIST -> R.drawable.ic_view_grid
-                NoteListLayoutMode.GRID -> R.drawable.ic_view_list
-            })
+            when (mode!!) {
+                NoteListLayoutMode.LIST -> {
+                    layoutItem.setIcon(R.drawable.ic_view_grid)
+                    layoutItem.setTitle(R.string.action_layout_grid)
+                }
+                NoteListLayoutMode.GRID -> {
+                    layoutItem.setIcon(R.drawable.ic_view_list)
+                    layoutItem.setTitle(R.string.action_layout_list)
+                }
+            }
         })
 
         viewModel.showEmptyTrashDialogEvent.observe(viewLifecycleOwner, EventObserver {

@@ -74,13 +74,25 @@ class SettingsFragment : PreferenceFragmentCompat(), ConfirmDialog.Callback {
             intent.putExtra(Intent.EXTRA_TEXT, data)
             startActivity(Intent.createChooser(intent, null))
         })
+
+        viewModel.clearDataDialogEvent.observe(viewLifecycleOwner, EventObserver { isSyncMessage ->
+            ConfirmDialog.newInstance(
+                    title = R.string.pref_data_clear,
+                    message = if (isSyncMessage) {
+                        R.string.pref_data_clear_confirm_message_sync
+                    } else {
+                        R.string.pref_data_clear_confirm_message
+                    },
+                    btnPositive = R.string.action_clear
+            ).show(childFragmentManager, CLEAR_DATA_DIALOG_TAG)
+        })
     }
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.prefs, rootKey)
 
         val isSyncFlavor = BuildConfig.FLAVOR == BuildConfig.FLAVOR_SYNC
-        requirePreference<PreferenceGroup>(PrefsManager.GROUP_SYNC).isVisible =isSyncFlavor
+        requirePreference<PreferenceGroup>(PrefsManager.GROUP_SYNC).isVisible = isSyncFlavor
 
         requirePreference<DropDownPreference>(PrefsManager.THEME)
                 .setOnPreferenceChangeListener { _, theme ->
@@ -97,15 +109,7 @@ class SettingsFragment : PreferenceFragmentCompat(), ConfirmDialog.Callback {
 
         requirePreference<Preference>(PrefsManager.CLEAR_DATA)
                 .setOnPreferenceClickListener {
-                    ConfirmDialog.newInstance(
-                            title = R.string.pref_data_clear,
-                            message = if (isSyncFlavor) {
-                                R.string.pref_data_clear_confirm_message_sync
-                            } else {
-                                R.string.pref_data_clear_confirm_message
-                            },
-                            btnPositive = R.string.action_clear
-                    ).show(childFragmentManager, CLEAR_DATA_DIALOG_TAG)
+                    viewModel.clearDataPre()
                     true
                 }
 

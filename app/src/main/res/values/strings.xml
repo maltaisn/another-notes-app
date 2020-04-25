@@ -58,7 +58,7 @@
 
     <string name="note_placeholder_active">You don\'t have any notes.\nClick on the + to add one.</string>
     <string name="note_placeholder_archived">No archived notes</string>
-    <string name="note_placeholder_deleted">Recycle bin is empty.</string>
+    <string name="note_placeholder_deleted">Recycle bin is empty</string>
 
     <plurals name="note_list_item_info">
         <item quantity="one">+ %d other list item</item>
@@ -80,27 +80,27 @@
     <string name="edit_hint_note_content">Note</string>
     <string name="edit_hint_note_item">List item</string>
 
-    <string name="edit_message_blank_note_discarded">Blank note discarded</string>
+    <string name="edit_message_blank_note_discarded">Blank note discarded.</string>
     <plurals name="edit_move_archive_message">
-        <item quantity="one">Note archived</item>
-        <item quantity="other">Notes archived</item>
+        <item quantity="one">Note archived.</item>
+        <item quantity="other">Notes archived.</item>
     </plurals>
     <plurals name="edit_message_move_delete">
-        <item quantity="one">Note moved to recycle bin</item>
-        <item quantity="other">Notes moved to recycle bin</item>
+        <item quantity="one">Note moved to recycle bin.</item>
+        <item quantity="other">Notes moved to recycle bin.</item>
     </plurals>
     <plurals name="edit_message_move_restore">
-        <item quantity="one">Note restored</item>
-        <item quantity="other">Notes restored</item>
+        <item quantity="one">Note restored.</item>
+        <item quantity="other">Notes restored.</item>
     </plurals>
     <plurals name="edit_message_move_unarchive">
-        <item quantity="one">Note unarchived</item>
-        <item quantity="other">Notes unarchived</item>
+        <item quantity="one">Note unarchived.</item>
+        <item quantity="other">Notes unarchived.</item>
     </plurals>
     <string name="edit_in_trash_message">Cannot edit note in recycle bin.</string>
 
     <string name="edit_copy_suffix">Copy</string>
-    <string name="edit_copy_untitled_name">untitled</string>
+    <string name="edit_copy_untitled_name">Untitled</string>
 
     <string name="edit_convert_keep_checked">Remove checked items?</string>
 
@@ -125,7 +125,7 @@
     <string name="sync_sign_in_failed_wrong_message">Couldn\'t log in to your account. Email doesn\'t match password.</string>
     <string name="sync_sign_in_failed_attempts_message">Too many attempts to sign in. Try again later.</string>
     <string name="sync_signed_in_message">Currently signed in as:</string>
-    <string name="sync_signed_in_not_verified">Sync is disabled because user is not verified. Click on the link you received by email or send it again.</string>
+    <string name="sync_signed_in_not_verified">Sync is disabled because your account is not verified. Click on the link you received by email or send it again.</string>
     <string name="sync_sign_out_success_message">Signed out successfully.</string>
 
     <string name="sync_sign_up">Create an account</string>
