@@ -29,6 +29,7 @@ import com.maltaisn.notes.model.SyncManager
 import com.maltaisn.notes.ui.Event
 import com.maltaisn.notes.ui.send
 import com.maltaisn.notes.ui.sync.SyncPage
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -53,6 +54,10 @@ class SyncSignInViewModel @Inject constructor(
     private val _fieldError = MutableLiveData<FieldError?>()
     val fieldError: LiveData<FieldError?>
         get() = _fieldError
+
+    private val _progressVisible = MutableLiveData<Boolean>(false)
+    val progressVisible: LiveData<Boolean>
+        get() = _progressVisible
 
     // No need to save these in saved state handle, EditTexts save them
     // and [on___Entered] methods are called when fragment is recreated.
@@ -93,18 +98,20 @@ class SyncSignInViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
+            _progressVisible.value = true
             try {
                 // Log in to account
                 loginRepository.signIn(email, password)
-
-                // Sync notes
-                syncManager.syncNotes()
+                delay(2000)
 
                 _messageEvent.send(R.string.sync_sign_in_success_message)
                 _fieldError.value = null
                 _clearFieldsEvent.send()
 
                 goToPage(SyncPage.MAIN)
+
+                // Sync notes
+                syncManager.syncNotes()
 
             } catch (e: FirebaseException) {
                 _messageEvent.send(when (e) {
@@ -122,6 +129,7 @@ class SyncSignInViewModel @Inject constructor(
                     }
                 })
             }
+            _progressVisible.value = false
         }
     }
 

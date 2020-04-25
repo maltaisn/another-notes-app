@@ -56,6 +56,10 @@ class SyncSignUpViewModel @Inject constructor(
     val clearFieldsEvent: LiveData<Event<Unit>>
         get() = _clearFieldsEvent
 
+    private val _progressVisible = MutableLiveData<Boolean>(false)
+    val progressVisible: LiveData<Boolean>
+        get() = _progressVisible
+
     // No need to save these in saved state handle, EditTexts save them
     // and [on___Entered] methods are called when fragment is recreated.
     private var email = ""
@@ -119,6 +123,7 @@ class SyncSignUpViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
+            _progressVisible.value = true
             try {
                 // Create new account and send verification email.
                 loginRepository.signUp(email, password)
@@ -147,6 +152,7 @@ class SyncSignUpViewModel @Inject constructor(
                     }
                 }
             }
+            _progressVisible.value = false
         }
     }
 
