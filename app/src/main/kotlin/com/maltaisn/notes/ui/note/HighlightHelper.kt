@@ -23,6 +23,9 @@ import androidx.core.text.set
 import com.maltaisn.notes.model.entity.ListNoteItem
 
 
+/**
+ * Helper class to add highlight spans on search results.
+ */
 object HighlightHelper {
 
     /**

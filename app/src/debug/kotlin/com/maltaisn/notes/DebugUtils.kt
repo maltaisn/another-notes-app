@@ -17,17 +17,15 @@
 package com.maltaisn.notes
 
 import com.maltaisn.notes.model.entity.*
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonConfiguration
 import java.util.*
 import kotlin.random.Random
 import kotlin.time.days
 
 
+/**
+ * This is used to generate random notes for testing debug builds.
+ */
 object DebugUtils {
-
-    private val json = Json(JsonConfiguration.Stable)
-
 
     fun getRandomNote(status: NoteStatus): Note {
         val uuid = UUID.randomUUID().toString().replace("-", "")

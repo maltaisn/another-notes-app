@@ -17,6 +17,9 @@
 package com.maltaisn.notes.ui.edit
 
 
+/**
+ * Enum for Snackbar messages being shown in [EditFragment].
+ */
 enum class EditMessage {
     BLANK_NOTE_DISCARDED,
     RESTORED_NOTE,

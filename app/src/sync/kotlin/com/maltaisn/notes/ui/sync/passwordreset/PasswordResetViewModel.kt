@@ -32,7 +32,8 @@ import javax.inject.Inject
 
 
 class PasswordResetViewModel @Inject constructor(
-        private val loginRepository: LoginRepository) : ViewModel() {
+        private val loginRepository: LoginRepository
+) : ViewModel() {
 
     private val _messageEvent = MutableLiveData<Event<Int>>()
     val messageEvent: LiveData<Event<Int>>
@@ -50,6 +51,8 @@ class PasswordResetViewModel @Inject constructor(
     val dismissEvent: LiveData<Event<Unit>>
         get() = _dismissEvent
 
+    // No need to save this in saved state handle, EditText saves it
+    // and [onEmailEntered] method is called when dialog is recreated.
     private var email = ""
 
 

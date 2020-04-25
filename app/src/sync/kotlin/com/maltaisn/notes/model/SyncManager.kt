@@ -24,6 +24,9 @@ import javax.inject.Singleton
 import kotlin.time.Duration
 
 
+/**
+ * Helper class used to sync notes when all conditions are met.
+ */
 @Singleton
 class SyncManager @Inject constructor(
         private val context: Context,

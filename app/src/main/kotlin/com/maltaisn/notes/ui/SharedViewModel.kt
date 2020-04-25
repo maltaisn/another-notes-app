@@ -26,9 +26,15 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
+/**
+ * Shared view model used to send Snackbars from a fragment being popped from backstack.
+ */
 class SharedViewModel @Inject constructor(
-        private val notesRepository: NotesRepository) : ViewModel() {
+        private val notesRepository: NotesRepository
+) : ViewModel() {
 
+    // No need to save this in saved state handle because Snackbar
+    //
     private var lastStatusChange: StatusChange? = null
 
     private val _messageEvent = MutableLiveData<Event<Int>>()
@@ -41,6 +47,7 @@ class SharedViewModel @Inject constructor(
 
 
     fun onBlankNoteDiscarded() {
+        // Not shown from EditFragment so that FAB is pushed up.
         _messageEvent.send(R.string.edit_message_blank_note_discarded)
     }
 

@@ -26,6 +26,12 @@ import com.maltaisn.notes.ui.note.adapter.NoteListLayoutMode
 import kotlin.time.days
 
 
+/**
+ * Base preference manager. This class interacts with [SharedPreferences]
+ * so that other classes don't need knowledge of the keys and their associated type.
+ *
+ * Flavors provide their own extension of this manager.
+ */
 open class PrefsManager(protected val prefs: SharedPreferences) {
 
     val theme: AppTheme
@@ -67,8 +73,15 @@ open class PrefsManager(protected val prefs: SharedPreferences) {
         private const val LIST_LAYOUT_MODE = "is_in_list_layout"
         private const val LAST_TRASH_REMIND_TIME = "last_deleted_remind_time"
 
-        // Values
+        /**
+         * Delay after which notes in trash are automatically deleted forever.
+         * This shouldn't be changed after first release since it may cause minor syncing issues.
+         */
         val TRASH_AUTO_DELETE_DELAY = 7.days
+
+        /**
+         * Required delay before showing the trash reminder delay after user dismisses it.
+         */
         val TRASH_REMINDER_DELAY = 60.days
     }
 

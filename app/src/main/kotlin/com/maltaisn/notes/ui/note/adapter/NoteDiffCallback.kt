@@ -25,6 +25,7 @@ class NoteListDiffCallback : DiffUtil.ItemCallback<NoteListItem>() {
 
     override fun areContentsTheSame(old: NoteListItem, new: NoteListItem): Boolean {
         if (new.type != old.type) {
+            // Should never happen since items of different types can't have the same ID.
             return false
         }
 
@@ -38,18 +39,18 @@ class NoteListDiffCallback : DiffUtil.ItemCallback<NoteListItem>() {
                 new.title == old.title
             }
             is NoteItem -> {
-                // Only checked state, title, content and metadata
-                // have influence on visual representation of notes.
+                // Only check the attributes that have an influence on the
+                // visual representation of the note item.
                 old as NoteItem
                 val oldNote = old.note
                 val newNote = new.note
                 new.checked == old.checked
-                        && new.titleHighlights == old.titleHighlights
-                        && new.contentHighlights == old.contentHighlights
+                        && newNote.status == oldNote.status
                         && newNote.title == oldNote.title
                         && newNote.content == oldNote.content
                         && newNote.metadata == oldNote.metadata
-                        && newNote.status == oldNote.status
+                        && new.titleHighlights == old.titleHighlights
+                        && new.contentHighlights == old.contentHighlights
             }
         }
     }

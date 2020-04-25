@@ -16,11 +16,10 @@
 
 package com.maltaisn.notes.ui.note
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.*
 import androidx.core.view.isVisible
-import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
@@ -31,16 +30,24 @@ import com.maltaisn.notes.databinding.FragmentNoteBinding
 import com.maltaisn.notes.model.entity.NoteStatus
 import com.maltaisn.notes.ui.EventObserver
 import com.maltaisn.notes.ui.SharedViewModel
+import com.maltaisn.notes.ui.activityViewModel
 import com.maltaisn.notes.ui.common.ConfirmDialog
-import com.maltaisn.notes.ui.common.ViewModelFragment
 import com.maltaisn.notes.ui.note.adapter.NoteAdapter
 import com.maltaisn.notes.ui.note.adapter.NoteListLayoutMode
+import com.maltaisn.notes.ui.startSharingData
 import java.text.NumberFormat
+import javax.inject.Inject
+import javax.inject.Provider
 
 
-abstract class NoteFragment : ViewModelFragment(), ActionMode.Callback, ConfirmDialog.Callback {
+/**
+ * This fragment provides common code for home and search fragments.
+ */
+abstract class NoteFragment : Fragment(), ActionMode.Callback, ConfirmDialog.Callback {
 
-    private val sharedViewModel: SharedViewModel by activityViewModels { viewModelFactory }
+    @Inject lateinit var sharedViewModelProvider: Provider<SharedViewModel>
+    private val sharedViewModel by activityViewModel { sharedViewModelProvider.get() }
+
     protected abstract val viewModel: NoteViewModel
 
     private var _binding: FragmentNoteBinding? = null
@@ -125,12 +132,7 @@ abstract class NoteFragment : ViewModelFragment(), ActionMode.Callback, ConfirmD
         })
 
         viewModel.shareEvent.observe(viewLifecycleOwner, EventObserver { data ->
-            val intent = Intent(Intent.ACTION_SEND)
-            intent.type = "text/plain"
-            intent.putExtra(Intent.EXTRA_TITLE, data.title)
-            intent.putExtra(Intent.EXTRA_SUBJECT, data.title)
-            intent.putExtra(Intent.EXTRA_TEXT, data.content)
-            startActivity(Intent.createChooser(intent, null))
+            startSharingData(data)
         })
 
         viewModel.statusChangeEvent.observe(viewLifecycleOwner, EventObserver { statusChange ->
@@ -150,7 +152,7 @@ abstract class NoteFragment : ViewModelFragment(), ActionMode.Callback, ConfirmD
                     title = R.string.action_delete_selection_forever,
                     message = R.string.trash_delete_selected_message,
                     btnPositive = R.string.action_delete
-            ).show(childFragmentManager, NoteFragment.DELETE_CONFIRM_DIALOG_TAG)
+            ).show(childFragmentManager, DELETE_CONFIRM_DIALOG_TAG)
         })
 
         sharedViewModel.messageEvent.observe(viewLifecycleOwner, EventObserver { messageId ->
@@ -169,7 +171,7 @@ abstract class NoteFragment : ViewModelFragment(), ActionMode.Callback, ConfirmD
             val count = statusChange.oldNotes.size
             val message = context.resources.getQuantityString(messageId, count, count)
 
-            Snackbar.make(view, message, Snackbar.LENGTH_SHORT)
+            Snackbar.make(view, message, STATUS_CHANGE_SNACKBAR_DURATION)
                     .setAction(R.string.action_undo) {
                         sharedViewModel.undoStatusChange()
                     }.show()
@@ -216,6 +218,8 @@ abstract class NoteFragment : ViewModelFragment(), ActionMode.Callback, ConfirmD
         private val NUMBER_FORMAT = NumberFormat.getInstance()
 
         private const val DELETE_CONFIRM_DIALOG_TAG = "delete_confirm_dialog"
+
+        private const val STATUS_CHANGE_SNACKBAR_DURATION = 7500
     }
 
 }

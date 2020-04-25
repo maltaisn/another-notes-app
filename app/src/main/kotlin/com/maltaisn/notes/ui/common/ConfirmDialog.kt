@@ -25,6 +25,9 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.maltaisn.notes.R
 
 
+/**
+ * Simple dialog with a callback to ask user for confirmation.
+ */
 class ConfirmDialog : DialogFragment() {
 
     override fun onCreateDialog(state: Bundle?): Dialog {
@@ -33,12 +36,13 @@ class ConfirmDialog : DialogFragment() {
         val builder = MaterialAlertDialogBuilder(context)
                 .setTitle(args.getInt(ARG_TITLE))
                 .setPositiveButton(args.getInt(ARG_BTN_POSITIVE)) { _, _ ->
-                    (parentFragment as? Callback)?.onDialogConfirmed(tag)
+                    callback.onDialogConfirmed(tag)
                 }
                 .setNegativeButton(args.getInt(ARG_BTN_NEGATIVE)) { _, _ ->
-                    (parentFragment as? Callback)?.onDialogCancelled(tag)
+                    callback.onDialogCancelled(tag)
                 }
 
+        // Set message if there's one.
         val message = args.getInt(ARG_MESSAGE)
         if (message != 0) {
             builder.setMessage(message)
@@ -46,6 +50,11 @@ class ConfirmDialog : DialogFragment() {
 
         return builder.create()
     }
+
+    private val callback: Callback
+        get() = (parentFragment as? Callback)
+                ?: (activity as? Callback)
+                ?: error("No callback for ConfirmDialog")
 
     interface Callback {
         fun onDialogConfirmed(tag: String?) = Unit

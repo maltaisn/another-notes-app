@@ -3,6 +3,7 @@ plugins {
     id "kotlin-android"
     id "org.jetbrains.kotlin.kapt"
     id "org.jetbrains.kotlin.plugin.serialization"
+    id "kotlin-allopen"
     id "androidx.navigation.safeargs.kotlin"
     id "com.google.gms.google-services"
     id "com.google.android.gms.oss-licenses-plugin"
@@ -137,6 +138,9 @@ dependencies {
     implementation "com.google.dagger:dagger:$daggerVersion"
     kapt "com.google.dagger:dagger-compiler:$daggerVersion"
 
+    compileOnly "com.squareup.inject:assisted-inject-annotations-dagger2:$assistedInjectVersion"
+    kapt "com.squareup.inject:assisted-inject-processor-dagger2:$assistedInjectVersion"
+
     // Architecture components
     kapt "androidx.room:room-compiler:$roomVersion"
     implementation "androidx.room:room-runtime:$roomVersion"
@@ -179,4 +183,8 @@ dependencies {
     androidTestImplementation "org.mockito:mockito-android:$mockitoAndroidVersion"
     androidTestImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:$kotlinMockitoVersion"
     androidTestImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion"
+}
+
+allOpen {
+    annotation "com.maltaisn.notes.OpenClass"
 }

@@ -19,11 +19,14 @@ package com.maltaisn.notes.ui.home
 import kotlinx.coroutines.channels.ConflatedBroadcastChannel
 
 
+/**
+ * Used to provide flavor dependent refresh behavior in [HomeFragment].
+ */
 abstract class NoteRefreshBehavior {
 
     val canRefreshChannel = ConflatedBroadcastChannel<Boolean>()
 
-
+    /** Called when view model is created. */
     abstract suspend fun start()
 
     /**

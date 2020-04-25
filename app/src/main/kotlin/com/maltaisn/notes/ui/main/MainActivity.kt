@@ -18,11 +18,9 @@ package com.maltaisn.notes.ui.main
 
 import android.content.Intent
 import android.os.Bundle
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import com.google.android.material.navigation.NavigationView
@@ -31,13 +29,15 @@ import com.maltaisn.notes.NavGraphDirections
 import com.maltaisn.notes.R
 import com.maltaisn.notes.databinding.ActivityMainBinding
 import com.maltaisn.notes.ui.EventObserver
+import com.maltaisn.notes.ui.viewModel
 import javax.inject.Inject
+import javax.inject.Provider
 
 
 class MainActivity : AppCompatActivity() {
 
-    @Inject lateinit var viewModelFactory: ViewModelProvider.Factory
-    private val viewModel: MainViewModel by viewModels { viewModelFactory }
+    @Inject lateinit var viewModelProvider: Provider<MainViewModel>
+    private val viewModel by viewModel { viewModelProvider.get() }
 
     lateinit var drawerLayout: DrawerLayout
     lateinit var navigationView: NavigationView

@@ -19,6 +19,8 @@ package com.maltaisn.notes.model
 import com.maltaisn.notes.testNote
 import com.nhaarman.mockitokotlin2.*
 import kotlinx.coroutines.runBlocking
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonConfiguration
 import org.junit.Test
 import java.util.*
 
@@ -33,7 +35,8 @@ class SyncNotesRepositoryTest {
         on { lastSyncTime } doReturn 0
     }
 
-    private val syncRepo = SyncRepository(notesDao, deletedNotesDao, notesService, prefs)
+    private val syncRepo = SyncNotesRepository(notesDao, deletedNotesDao,
+            notesService, prefs, mock(), Json(JsonConfiguration.Stable))
 
     @Test
     fun `should sync notes correctly`() = runBlocking {

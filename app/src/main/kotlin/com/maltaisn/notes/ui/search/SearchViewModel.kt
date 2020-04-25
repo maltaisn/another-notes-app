@@ -16,32 +16,46 @@
 
 package com.maltaisn.notes.ui.search
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.maltaisn.notes.R
 import com.maltaisn.notes.model.NotesRepository
 import com.maltaisn.notes.model.PrefsManager
 import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.model.entity.NoteStatus
+import com.maltaisn.notes.ui.AssistedSavedStateViewModelFactory
 import com.maltaisn.notes.ui.note.HighlightHelper
 import com.maltaisn.notes.ui.note.NoteViewModel
 import com.maltaisn.notes.ui.note.PlaceholderData
 import com.maltaisn.notes.ui.note.adapter.HeaderItem
 import com.maltaisn.notes.ui.note.adapter.NoteAdapter
 import com.maltaisn.notes.ui.note.adapter.NoteItem
+import com.squareup.inject.assisted.Assisted
+import com.squareup.inject.assisted.AssistedInject
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 
-class SearchViewModel @Inject constructor(
+class SearchViewModel @AssistedInject constructor(
+        @Assisted savedStateHandle: SavedStateHandle,
         notesRepository: NotesRepository,
         prefs: PrefsManager
-) : NoteViewModel(notesRepository, prefs), NoteAdapter.Callback {
+) : NoteViewModel(savedStateHandle, notesRepository, prefs), NoteAdapter.Callback {
 
+    // No need to save this is a saved state handle, SearchView will
+    // call query changed listener after it's been recreated.
     private var lastQuery = ""
+
     private var noteListJob: Job? = null
+
+
+    init {
+        viewModelScope.launch {
+            restoreState()
+        }
+    }
 
 
     fun searchNotes(query: String) {
@@ -62,17 +76,16 @@ class SearchViewModel @Inject constructor(
 
     override val selectedNoteStatus: NoteStatus?
         get() {
-            // If a single note is active, treat all as active.
+            // If a single note is active in selection, treat all as active.
             // Otherwise all notes are archived. Deleted notes are never shown in search.
             if (selectedNotes.isEmpty()) {
                 return null
             }
-            for (note in selectedNotes) {
-                if (note.status == NoteStatus.ACTIVE) {
-                    return NoteStatus.ACTIVE
-                }
+            return if (selectedNotes.any { it.status == NoteStatus.ACTIVE }) {
+                NoteStatus.ACTIVE
+            } else {
+                NoteStatus.ARCHIVED
             }
-            return NoteStatus.ARCHIVED
         }
 
     override val isNoteSwipeEnabled = false
@@ -82,12 +95,13 @@ class SearchViewModel @Inject constructor(
         listItems = buildList {
             var addedArchivedHeader = false
             for (note in notes) {
-                val checked = selectedNotes.any { it.id == note.id }
+                // If this is the first archived note, add a header before it.
                 if (!addedArchivedHeader && note.status == NoteStatus.ARCHIVED) {
-                    this += HeaderItem(-1, R.string.note_location_archived)
+                    this += HeaderItem(ARCHIVED_HEADER_ITEM_ID, R.string.note_location_archived)
                     addedArchivedHeader = true
                 }
 
+                val checked = isNoteSelected(note)
                 val titleHighlights = HighlightHelper.findHighlightsInString(note.title, lastQuery, 2)
                 val contentHighlights = HighlightHelper.findHighlightsInString(note.content, lastQuery, 10)
 
@@ -98,5 +112,15 @@ class SearchViewModel @Inject constructor(
 
     override fun updatePlaceholder() = PlaceholderData(
             R.drawable.ic_search, R.string.search_empty_placeholder)
+
+
+    @AssistedInject.Factory
+    interface Factory : AssistedSavedStateViewModelFactory<SearchViewModel> {
+        override fun create(savedStateHandle: SavedStateHandle): SearchViewModel
+    }
+
+    companion object {
+        private const val ARCHIVED_HEADER_ITEM_ID = -1L
+    }
 
 }

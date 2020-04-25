@@ -23,8 +23,7 @@ import com.maltaisn.notes.model.entity.DeletedNote
 
 
 /**
- * This DAO is used for syncing to send which notes were deleted from trash to server.
- * The table is cleared after every successful sync.
+ * This DAO is used for syncing, in order to send to server which notes were deleted from trash.
  */
 @Dao
 interface DeletedNotesDao {
@@ -35,12 +34,21 @@ interface DeletedNotesDao {
     @Insert
     suspend fun insertAll(notes: List<DeletedNote>)
 
+    /**
+     * Used for clearing all data.
+     */
     @Query("DELETE FROM deleted_notes")
     suspend fun clear()
 
+    /**
+     * Used for syncing to get which UUIDs aren't synced.
+     */
     @Query("SELECT uuid FROM deleted_notes WHERE synced == 0")
     suspend fun getNotSyncedUuids(): List<String>
 
+    /**
+     * Used after sync to set all synced flags to `true`.
+     */
     @Query("UPDATE deleted_notes SET synced = :synced")
     suspend fun setSyncedFlag(synced: Boolean)
 

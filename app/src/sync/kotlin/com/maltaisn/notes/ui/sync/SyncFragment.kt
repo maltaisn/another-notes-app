@@ -23,28 +23,36 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.adapter.FragmentStateAdapter
+import com.maltaisn.notes.App
 import com.maltaisn.notes.R
 import com.maltaisn.notes.databinding.FragmentSyncBinding
 import com.maltaisn.notes.hideKeyboard
-import com.maltaisn.notes.ui.common.ViewModelFragment
 import com.maltaisn.notes.ui.sync.accountdelete.AccountDeleteDialog
 import com.maltaisn.notes.ui.sync.main.SyncMainFragment
 import com.maltaisn.notes.ui.sync.passwordchange.PasswordChangeDialog
 import com.maltaisn.notes.ui.sync.signin.SyncSignInFragment
 import com.maltaisn.notes.ui.sync.signup.SyncSignUpFragment
+import com.maltaisn.notes.ui.viewModel
+import javax.inject.Inject
+import javax.inject.Provider
 
 
-class SyncFragment : ViewModelFragment(), Toolbar.OnMenuItemClickListener {
+class SyncFragment : Fragment(), Toolbar.OnMenuItemClickListener {
 
-    private val viewModel: SyncViewModel by viewModels { viewModelFactory }
+    @Inject lateinit var viewModelProvider: Provider<SyncViewModel>
+    private val viewModel by viewModel { viewModelProvider.get() }
 
     private var _binding: FragmentSyncBinding? = null
     private val binding get() = _binding!!
 
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        (requireContext().applicationContext as App).appComponent.inject(this)
+    }
 
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?, savedInstanceState: Bundle?): View {

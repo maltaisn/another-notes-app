@@ -44,6 +44,9 @@ interface NotesDao {
     @Delete
     suspend fun deleteAll(notes: List<Note>)
 
+    /**
+     * Used for clearing all data.
+     */
     @Query("DELETE FROM notes")
     suspend fun clear()
 

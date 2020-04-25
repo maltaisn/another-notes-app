@@ -30,9 +30,15 @@ data class DeletedNote(
     @ColumnInfo(name = "id")
     val id: Int,
 
+    /**
+     * UUID of the deleted note.
+     */
     @ColumnInfo(name = "uuid")
     val uuid: String,
 
+    /**
+     * Whether this deletion was synced with server or note.
+     */
     @ColumnInfo(name = "synced")
     val synced: Boolean
 )

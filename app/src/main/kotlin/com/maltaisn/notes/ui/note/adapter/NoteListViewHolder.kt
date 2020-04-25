@@ -84,8 +84,7 @@ class ListNoteViewHolder(private val binding: ItemNoteListBinding) :
 
         val maxItems = adapter.listLayoutMode.maxListItems
 
-        // Add first items in list using view holders in pool.
-        // Only the first few items are shown.
+        // Add the first fewitems in list note using view holders in pool.
         val noteItems = item.note.listItems
         val itemHighlights = HighlightHelper.splitListNoteHighlightsByItem(
                 noteItems, item.contentHighlights)
@@ -107,6 +106,9 @@ class ListNoteViewHolder(private val binding: ItemNoteListBinding) :
         }
     }
 
+    /**
+     * Unbind [ListNoteViewHolder] used in this item and return them.
+     */
     fun unbind(): List<ListNoteItemViewHolder> {
         if (itemViewHolders.isEmpty()) {
             return emptyList()
@@ -145,6 +147,10 @@ class HeaderViewHolder(private val binding: ItemHeaderBinding) :
     }
 }
 
+/**
+ * A view holder for displayed an item in a list note view holder.
+ * This is effectively a view holder in a view holder...
+ */
 class ListNoteItemViewHolder(val binding: ItemNoteListItemBinding) {
 
     fun bind(adapter: NoteAdapter, item: ListNoteItem, highlights: List<IntRange>) {
@@ -157,5 +163,4 @@ class ListNoteItemViewHolder(val binding: ItemNoteListItemBinding) {
             R.drawable.ic_checkbox_off
         })
     }
-
 }

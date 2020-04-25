@@ -20,7 +20,6 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.isVisible
-import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.SimpleItemAnimator
 import com.maltaisn.notes.App
@@ -28,15 +27,18 @@ import com.maltaisn.notes.R
 import com.maltaisn.notes.hideKeyboard
 import com.maltaisn.notes.showKeyboard
 import com.maltaisn.notes.ui.note.NoteFragment
+import com.maltaisn.notes.ui.viewModel
+import javax.inject.Inject
 
 
 class SearchFragment : NoteFragment() {
 
-    override val viewModel: SearchViewModel by viewModels { viewModelFactory }
+    @Inject lateinit var viewModelFactory: SearchViewModel.Factory
+    override val viewModel by viewModel { viewModelFactory.create(it) }
 
 
-    override fun onCreate(state: Bundle?) {
-        super.onCreate(state)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         (requireContext().applicationContext as App).appComponent.inject(this)
     }
 
@@ -74,6 +76,8 @@ class SearchFragment : NoteFragment() {
                 return false
             }
         })
+
+        // Focus search view when search fragment is shown.
         searchView.setOnQueryTextFocusChangeListener { editText, hasFocus ->
             if (hasFocus) {
                 editText.showKeyboard()

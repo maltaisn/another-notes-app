@@ -17,12 +17,16 @@
 package com.maltaisn.notes.ui.main
 
 
-abstract class LifecycleBehavior {
+/**
+ * Behavior to provide flavor dependent behavior on [MainActivity] lifecycle events.
+ */
+interface LifecycleBehavior {
 
-    abstract suspend fun start()
+    /** Called when view model is created. */
+    suspend fun start()
 
-    abstract suspend fun onStart()
+    suspend fun onStart()
 
-    abstract suspend fun onStop()
+    suspend fun onStop()
 
 }

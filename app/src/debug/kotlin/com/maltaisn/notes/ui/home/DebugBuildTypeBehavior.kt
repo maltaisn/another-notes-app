@@ -26,6 +26,7 @@ class DebugBuildTypeBehavior @Inject constructor(
 ) : BuildTypeBehavior {
 
     override suspend fun doExtraAction(viewModel: HomeViewModel) {
+        // Add a few random notes of the currently selected status.
         val status = viewModel.noteStatus.value!!
         repeat(3) {
             notesRepository.insertNote(DebugUtils.getRandomNote(status))

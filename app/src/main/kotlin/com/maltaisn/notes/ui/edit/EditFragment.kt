@@ -16,7 +16,6 @@
 
 package com.maltaisn.notes.ui.edit
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.MenuItem
@@ -25,13 +24,13 @@ import android.view.ViewGroup
 import androidx.activity.addCallback
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.postDelayed
-import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
+import com.maltaisn.notes.App
 import com.maltaisn.notes.R
 import com.maltaisn.notes.databinding.FragmentEditBinding
 import com.maltaisn.notes.hideKeyboard
@@ -39,23 +38,31 @@ import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.model.entity.NoteStatus
 import com.maltaisn.notes.model.entity.NoteType
 import com.maltaisn.notes.showKeyboard
-import com.maltaisn.notes.ui.EventObserver
-import com.maltaisn.notes.ui.SharedViewModel
+import com.maltaisn.notes.ui.*
 import com.maltaisn.notes.ui.common.ConfirmDialog
-import com.maltaisn.notes.ui.common.ViewModelFragment
 import com.maltaisn.notes.ui.edit.adapter.EditAdapter
+import javax.inject.Inject
+import javax.inject.Provider
 
 
-class EditFragment : ViewModelFragment(), Toolbar.OnMenuItemClickListener, ConfirmDialog.Callback {
+class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener, ConfirmDialog.Callback {
 
-    private val viewModel: EditViewModel by viewModels { viewModelFactory }
-    private val sharedViewModel: SharedViewModel by activityViewModels { viewModelFactory }
+    @Inject lateinit var viewModelProvider: Provider<EditViewModel>
+    private val viewModel by viewModel { viewModelProvider.get() }
+
+    @Inject lateinit var sharedViewModelProvider: Provider<SharedViewModel>
+    private val sharedViewModel by activityViewModel { sharedViewModelProvider.get() }
 
     private val args: EditFragmentArgs by navArgs()
 
     private var _binding: FragmentEditBinding? = null
     private val binding get() = _binding!!
 
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        (requireContext().applicationContext as App).appComponent.inject(this)
+    }
 
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?, state: Bundle?): View {
@@ -162,7 +169,7 @@ class EditFragment : ViewModelFragment(), Toolbar.OnMenuItemClickListener, Confi
         })
 
         val restoreNoteSnackbar by lazy {
-            Snackbar.make(requireView(), R.string.edit_in_trash_message, Snackbar.LENGTH_SHORT)
+            Snackbar.make(requireView(), R.string.edit_in_trash_message, CANT_EDIT_SNACKBAR_DURATION)
                     .setAction(R.string.action_restore) { viewModel.restoreNoteAndEdit() }
         }
         viewModel.messageEvent.observe(viewLifecycleOwner, EventObserver { message ->
@@ -179,12 +186,7 @@ class EditFragment : ViewModelFragment(), Toolbar.OnMenuItemClickListener, Confi
         })
 
         viewModel.shareEvent.observe(viewLifecycleOwner, EventObserver { data ->
-            val intent = Intent(Intent.ACTION_SEND)
-            intent.type = "text/plain"
-            intent.putExtra(Intent.EXTRA_TITLE, data.title)
-            intent.putExtra(Intent.EXTRA_SUBJECT, data.title)
-            intent.putExtra(Intent.EXTRA_TEXT, data.content)
-            startActivity(Intent.createChooser(intent, null))
+            startSharingData(data)
         })
 
         viewModel.showDeleteConfirmEvent.observe(viewLifecycleOwner, EventObserver {
@@ -251,6 +253,8 @@ class EditFragment : ViewModelFragment(), Toolbar.OnMenuItemClickListener, Confi
     companion object {
         private const val DELETE_CONFIRM_DIALOG_TAG = "delete_confirm_dialog"
         private const val REMOVE_CHECKED_CONFIRM_DIALOG_TAG = "remove_checked_confirm_dialog"
+
+        private const val CANT_EDIT_SNACKBAR_DURATION = 5000
     }
 
 }

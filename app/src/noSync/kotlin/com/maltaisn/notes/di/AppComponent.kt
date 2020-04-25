@@ -14,17 +14,20 @@
  * limitations under the License.
  */
 
-package com.maltaisn.notes.ui
+package com.maltaisn.notes.di
 
-import androidx.lifecycle.ViewModel
-import dagger.MapKey
-import java.lang.annotation.Documented
-import kotlin.reflect.KClass
+import android.content.Context
+import dagger.BindsInstance
+import dagger.Component
+import javax.inject.Singleton
 
 
-@Suppress("DEPRECATED_JAVA_ANNOTATION")
-@Documented
-@Target(AnnotationTarget.FUNCTION)
-@Retention(AnnotationRetention.RUNTIME)
-@MapKey
-annotation class ViewModelKey(val value: KClass<out ViewModel>)
+@Singleton
+@Component(modules = [AppModule::class])
+interface AppComponent : BaseAppComponent {
+
+    @Component.Factory
+    interface Factory {
+        fun create(@BindsInstance appContext: Context): AppComponent
+    }
+}

@@ -26,7 +26,8 @@ import javax.inject.Inject
 
 
 class SyncViewModel @Inject constructor(
-        private val loginRepository: LoginRepository) : ViewModel() {
+        private val loginRepository: LoginRepository
+) : ViewModel() {
 
     val currentUser = loginRepository.authStateChannel.asFlow()
             .map { loginRepository.currentUser }

@@ -27,7 +27,7 @@ import kotlin.time.hours
 class SyncManagerTest {
 
     private val loginRepo: LoginRepository = mock()
-    private val syncRepo: SyncRepository = mock()
+    private val syncRepo: SyncNotesRepository = mock()
     private val prefs: SyncPrefsManager = mock()
 
     private val syncManager = SyncManager(mock(), syncRepo, loginRepo, prefs)

@@ -29,7 +29,8 @@ import javax.inject.Inject
 
 
 class SettingsViewModel @Inject constructor(
-        private val notesRepository: NotesRepository) : ViewModel() {
+        private val notesRepository: NotesRepository
+) : ViewModel() {
 
     private val _messageEvent = MutableLiveData<Event<Int>>()
     val messageEvent: LiveData<Event<Int>>

@@ -32,7 +32,8 @@ import javax.inject.Inject
 
 
 class SyncMainViewModel @Inject constructor(
-        private val loginRepository: LoginRepository) : ViewModel() {
+        private val loginRepository: LoginRepository
+) : ViewModel() {
 
     private val _changePageEvent = MutableLiveData<Event<SyncPage>>()
     val changePageEvent: LiveData<Event<SyncPage>>

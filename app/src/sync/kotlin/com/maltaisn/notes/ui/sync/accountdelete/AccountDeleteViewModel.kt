@@ -31,7 +31,8 @@ import javax.inject.Inject
 
 
 class AccountDeleteViewModel @Inject constructor(
-        private val loginRepository: LoginRepository) : ViewModel() {
+        private val loginRepository: LoginRepository
+) : ViewModel() {
 
     private val _messageEvent = MutableLiveData<Event<Int>>()
     val messageEvent: LiveData<Event<Int>>
@@ -49,6 +50,8 @@ class AccountDeleteViewModel @Inject constructor(
     val dismissEvent: LiveData<Event<Unit>>
         get() = _dismissEvent
 
+    // No need to save this in saved state handle, EditText saves it
+    // and [onPasswordEntered] method is called when dialog is recreated.
     private var password = ""
 
 

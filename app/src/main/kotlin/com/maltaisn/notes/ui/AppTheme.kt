@@ -16,7 +16,13 @@
 
 package com.maltaisn.notes.ui
 
+import com.maltaisn.notes.R
 
+
+/**
+ * Enum for different app themes.
+ * [value] is from [R.array.pref_theme_values].
+ */
 enum class AppTheme(val value: String) {
     LIGHT("light"),
     DARK("dark"),

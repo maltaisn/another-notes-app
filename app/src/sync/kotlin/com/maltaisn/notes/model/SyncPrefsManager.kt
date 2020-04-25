@@ -18,6 +18,7 @@ package com.maltaisn.notes.model
 
 import android.content.SharedPreferences
 import androidx.core.content.edit
+import com.maltaisn.notes.OpenForTesting
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.time.minutes
@@ -25,26 +26,33 @@ import kotlin.time.seconds
 
 
 @Singleton
-open class SyncPrefsManager @Inject constructor(prefs: SharedPreferences) : PrefsManager(prefs) {
+@OpenForTesting
+class SyncPrefsManager @Inject constructor(prefs: SharedPreferences) : PrefsManager(prefs) {
 
-    open val shouldSyncOverWifi: Boolean
+    val shouldSyncOverWifi: Boolean
         get() = prefs.getBoolean(SYNC_OVER_WIFI, false)
 
-    open var lastSyncTime: Long
+    var lastSyncTime: Long
         get() = prefs.getLong(LAST_SYNC_TIME, NO_LAST_SYNC)
         set(value) = prefs.edit { putLong(LAST_SYNC_TIME, value) }
 
 
     companion object {
-        // Settings keys
         const val SYNC_OVER_WIFI = "sync_over_wifi"
 
-        // Other keys
         private const val LAST_SYNC_TIME = "last_sync_time"
 
-        // Values
+        /**
+         * Minimum delay required between automatic sync events.
+         * These happen when user starts the app.
+         */
         val MIN_AUTO_SYNC_INTERVAL = 10.minutes
-        val MIN_MANUAL_SYNC_INTERVAL = 15.seconds
+
+        /**
+         * Minimum delay required between manual sync events.
+         * These happens when user refreshes the note list.
+         */
+        val MIN_MANUAL_SYNC_INTERVAL = 10.seconds
 
         const val NO_LAST_SYNC = 0L
     }

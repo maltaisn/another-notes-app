@@ -27,6 +27,9 @@ import com.maltaisn.notes.databinding.ItemEditItemBinding
 import com.maltaisn.notes.databinding.ItemEditTitleBinding
 import com.maltaisn.notes.ui.edit.BulletTextWatcher
 
+/**
+ * Interface implemented by any item that can have its focus position changed.
+ */
 interface EditFocusableViewHolder {
     fun setFocus(pos: Int)
 }

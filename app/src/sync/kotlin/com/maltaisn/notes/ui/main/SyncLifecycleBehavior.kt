@@ -30,7 +30,7 @@ class SyncLifecycleBehavior @Inject constructor(
         private val loginRepository: LoginRepository,
         private val syncManager: SyncManager,
         private val prefs: SyncPrefsManager
-) : LifecycleBehavior() {
+) : LifecycleBehavior {
 
     private var signedIn = false
 
@@ -49,10 +49,13 @@ class SyncLifecycleBehavior @Inject constructor(
     }
 
     override suspend fun onStart() {
+        // Sync notes when user opens the app.
         syncManager.syncNotes(delay = SyncPrefsManager.MIN_AUTO_SYNC_INTERVAL)
     }
 
     override suspend fun onStop() {
+        // Sync notes when user closes the app. Remote changes are not wanted here
+        // since sync will happen anyway when app starts next time.
         syncManager.syncNotes(receive = false)
     }
 

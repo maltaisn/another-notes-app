@@ -14,21 +14,9 @@
  * limitations under the License.
  */
 
-package com.maltaisn.notes.ui.common
-
-import android.os.Bundle
-import androidx.fragment.app.DialogFragment
-import androidx.lifecycle.ViewModelProvider
-import com.maltaisn.notes.App
-import javax.inject.Inject
+package com.maltaisn.notes
 
 
-abstract class ViewModelDialog : DialogFragment() {
 
-    @Inject lateinit var viewModelFactory: ViewModelProvider.Factory
-
-    override fun onCreate(state: Bundle?) {
-        super.onCreate(state)
-        (requireContext().applicationContext as App).appComponent.inject(this)
-    }
-}
+@Target(AnnotationTarget.CLASS)
+annotation class OpenForTesting

@@ -18,7 +18,6 @@ package com.maltaisn.notes.ui.note.adapter
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.Canvas
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
@@ -28,7 +27,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.maltaisn.notes.R
 import com.maltaisn.notes.databinding.*
 import java.util.*
-import kotlin.math.absoluteValue
 
 
 class NoteAdapter(val context: Context, val callback: Callback) :
@@ -38,6 +36,7 @@ class NoteAdapter(val context: Context, val callback: Callback) :
      * A pool of view holders for showing items of list notes.
      * When list note items are bound, view holders are obtained from this pool and bound.
      * When list note items are recycled, view holders are added back to the pool.
+     * **Should only be accessed on main thread.**
      */
     private val listNoteItemsPool = LinkedList<ListNoteItemViewHolder>()
 
@@ -47,39 +46,9 @@ class NoteAdapter(val context: Context, val callback: Callback) :
             notifyItemRangeChanged(0, itemCount)
         }
 
-    private val itemTouchHelper = ItemTouchHelper(object : ItemTouchHelper.Callback() {
-        override fun isLongPressDragEnabled() = false
-        override fun isItemViewSwipeEnabled() = callback.isNoteSwipeEnabled
+    private val itemTouchHelper = ItemTouchHelper(SwipeTouchHelperCallback(callback))
 
-        override fun getMovementFlags(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder) =
-                makeMovementFlags(0, if (viewHolder is NoteViewHolder) {
-                    ItemTouchHelper.START or ItemTouchHelper.END
-                } else {
-                    0
-                })
-
-        override fun onChildDraw(c: Canvas, recyclerView: RecyclerView,
-                                 viewHolder: RecyclerView.ViewHolder,
-                                 dX: Float, dY: Float, actionState: Int, isCurrentlyActive: Boolean) {
-            val view = viewHolder.itemView
-            view.alpha = ((view.width - dX.absoluteValue * 0.7f) / view.width).coerceIn(0f, 1f)
-            view.translationX = dX
-        }
-
-        override fun clearView(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder) {
-            val view = viewHolder.itemView
-            view.alpha = 1f
-            view.translationX = 0f
-        }
-
-        override fun onMove(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder,
-                            target: RecyclerView.ViewHolder) = false
-
-        override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-            callback.onNoteSwiped(viewHolder.adapterPosition)
-        }
-    })
-
+    // Used by view holders with highlighted text.
     val highlightBackgroundColor = ContextCompat.getColor(context, R.color.color_highlight)
     val highlightForegroundColor = ContextCompat.getColor(context, R.color.color_on_highlight)
 
@@ -111,13 +80,13 @@ class NoteAdapter(val context: Context, val callback: Callback) :
             is HeaderViewHolder -> holder.bind(item as HeaderItem)
             is NoteViewHolder -> {
                 if (holder is ListNoteViewHolder) {
+                    // [onViewRecycled] is not always called so unbinding is also done here.
                     unbindListNoteViewHolder(holder)
                 }
                 holder.bind(this, item as NoteItem)
             }
         }
     }
-
 
     override fun getItemViewType(position: Int) = getItem(position).type
 
@@ -130,8 +99,8 @@ class NoteAdapter(val context: Context, val callback: Callback) :
     }
 
     private fun unbindListNoteViewHolder(holder: ListNoteViewHolder) {
-        val vhs = holder.unbind()
-        listNoteItemsPool += vhs
+        val viewHolders = holder.unbind()
+        listNoteItemsPool += viewHolders
     }
 
     @SuppressLint("InflateParams")
@@ -143,15 +112,24 @@ class NoteAdapter(val context: Context, val callback: Callback) :
                         LayoutInflater.from(context), null, false))
             }
 
+
     interface Callback {
+        /** Called when a note [item] at [pos] is clicked. */
         fun onNoteItemClicked(item: NoteItem, pos: Int)
+
+        /** Called when a note [item] at [pos] is long-clicked. */
         fun onNoteItemLongClicked(item: NoteItem, pos: Int)
+
+        /** Called when a message [item] at [pos] is dismissed by clicking on close button. */
         fun onMessageItemDismissed(item: MessageItem, pos: Int)
 
+        /** Whether notes can be swiped in this list. */
         val isNoteSwipeEnabled: Boolean
-        fun onNoteSwiped(pos: Int)
 
+        /** Called when a [NoteItem] at [pos] is swiped. */
+        fun onNoteSwiped(pos: Int)
     }
+
 
     companion object {
         const val VIEW_TYPE_MESSAGE = 0

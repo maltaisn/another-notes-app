@@ -17,14 +17,17 @@
 package com.maltaisn.notes.ui.search
 
 
+/**
+ * Helper class to clean search queries.
+ */
 object SearchQueryCleaner {
 
     /**
-     * Parse a search [query] to disable all unwanted FTS features, which can prevent crashes
-     * on malformed query, like when quotes or missing.
+     * Clean a search [query] to disable all unwanted FTS features, in order to
+     * prevent crashes on malformed queries, like when quotes are missing.
      * Also adds a prefix to each search term to widen the search.
      *
-     * Only quotes and NOT operator using a minus `-` are allowed.
+     * Only balanced quotes and NOT operator using a minus `-` are allowed.
      */
     fun clean(query: String) = buildString {
         var inQuotes = false

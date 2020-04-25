@@ -19,7 +19,7 @@ package com.maltaisn.notes.ui.main
 import javax.inject.Inject
 
 
-class NoSyncLifecycleBehavior @Inject constructor() : LifecycleBehavior() {
+class NoSyncLifecycleBehavior @Inject constructor() : LifecycleBehavior {
 
     override suspend fun start() = Unit
 

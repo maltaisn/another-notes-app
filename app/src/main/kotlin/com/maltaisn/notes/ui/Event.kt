@@ -25,7 +25,7 @@ import androidx.lifecycle.Observer
  * Taken from: [https://github.com/android/architecture-samples]
  * Changes were made to allow unhandled `null` values.
  */
-open class Event<out T>(private val content: T) {
+class Event<out T>(private val content: T) {
 
     var hasBeenHandled = false
         private set

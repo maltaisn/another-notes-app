@@ -29,6 +29,8 @@ object DateTimeConverter : KSerializer<Date> {
 
     val dateFormat: SimpleDateFormat
         get() {
+            // SimpleDateFormat is not thread-safe therefore a ThreadLocal is used here. It's only
+            // used for serialization so it technically doesn't have to be thread-safe, but whatever.
             var dateFormat = threadLocalDateFormat.get()
             if (dateFormat == null) {
                 dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.ROOT)
@@ -47,6 +49,8 @@ object DateTimeConverter : KSerializer<Date> {
     @JvmStatic
     fun toLong(date: Date) = date.time
 
+
+    // This is only used for testing
     fun toDate(str: String) = dateFormat.parse(str)!!
 
 

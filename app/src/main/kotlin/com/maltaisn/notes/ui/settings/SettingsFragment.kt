@@ -19,8 +19,6 @@ package com.maltaisn.notes.ui.settings
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import androidx.fragment.app.viewModels
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.preference.DropDownPreference
 import androidx.preference.Preference
@@ -36,13 +34,15 @@ import com.maltaisn.notes.model.PrefsManager
 import com.maltaisn.notes.ui.AppTheme
 import com.maltaisn.notes.ui.EventObserver
 import com.maltaisn.notes.ui.common.ConfirmDialog
+import com.maltaisn.notes.ui.viewModel
 import javax.inject.Inject
+import javax.inject.Provider
 
 
 class SettingsFragment : PreferenceFragmentCompat(), ConfirmDialog.Callback {
 
-    @Inject lateinit var viewModelFactory: ViewModelProvider.Factory
-    private val viewModel: SettingsViewModel by viewModels { viewModelFactory }
+    @Inject lateinit var viewModelProvider: Provider<SettingsViewModel>
+    private val viewModel by viewModel { viewModelProvider.get() }
 
 
     override fun onCreate(state: Bundle?) {
@@ -80,7 +80,6 @@ class SettingsFragment : PreferenceFragmentCompat(), ConfirmDialog.Callback {
         setPreferencesFromResource(R.xml.prefs, rootKey)
 
         val isSyncFlavor = BuildConfig.FLAVOR == BuildConfig.FLAVOR_SYNC
-
         requirePreference<PreferenceGroup>(PrefsManager.GROUP_SYNC).isVisible =isSyncFlavor
 
         requirePreference<DropDownPreference>(PrefsManager.THEME)

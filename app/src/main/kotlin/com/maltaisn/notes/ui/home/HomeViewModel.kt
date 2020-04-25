@@ -16,15 +16,14 @@
 
 package com.maltaisn.notes.ui.home
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.asLiveData
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.maltaisn.notes.R
 import com.maltaisn.notes.model.NotesRepository
 import com.maltaisn.notes.model.PrefsManager
+import com.maltaisn.notes.model.converter.NoteStatusConverter
 import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.model.entity.NoteStatus
+import com.maltaisn.notes.ui.AssistedSavedStateViewModelFactory
 import com.maltaisn.notes.ui.Event
 import com.maltaisn.notes.ui.note.NoteViewModel
 import com.maltaisn.notes.ui.note.PlaceholderData
@@ -33,19 +32,21 @@ import com.maltaisn.notes.ui.note.adapter.NoteAdapter
 import com.maltaisn.notes.ui.note.adapter.NoteItem
 import com.maltaisn.notes.ui.note.adapter.NoteListLayoutMode
 import com.maltaisn.notes.ui.send
+import com.squareup.inject.assisted.Assisted
+import com.squareup.inject.assisted.AssistedInject
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 
-class HomeViewModel @Inject constructor(
+class HomeViewModel @AssistedInject constructor(
+        @Assisted savedStateHandle: SavedStateHandle,
         notesRepository: NotesRepository,
         prefs: PrefsManager,
         private val refreshBehavior: NoteRefreshBehavior,
         private val buildTypeBehavior: BuildTypeBehavior
-) : NoteViewModel(notesRepository, prefs), NoteAdapter.Callback {
+) : NoteViewModel(savedStateHandle, notesRepository, prefs), NoteAdapter.Callback {
 
     private var noteListJob: Job? = null
 
@@ -68,17 +69,26 @@ class HomeViewModel @Inject constructor(
     val showEmptyTrashDialogEvent: LiveData<Event<Unit>>
         get() = _showEmptyTrashDialogEvent
 
-
     init {
-        setNoteStatus(NoteStatus.ACTIVE)
-
         viewModelScope.launch {
+            restoreState()
+
+            setNoteStatus(noteStatus.value!!)
+
             refreshBehavior.start()
         }
     }
 
+    override suspend fun restoreState() {
+        _noteStatus.value = NoteStatusConverter.toStatus(
+                savedStateHandle.get(KEY_NOTE_STATUS) ?: NoteStatus.ACTIVE.value)
+        super.restoreState()
+    }
+
     fun setNoteStatus(status: NoteStatus) {
         _noteStatus.value = status
+
+        savedStateHandle.set(KEY_NOTE_STATUS, NoteStatusConverter.toInt(status))
 
         // Cancel previous flow collection
         noteListJob?.cancel()
@@ -100,12 +110,14 @@ class HomeViewModel @Inject constructor(
         prefs.listLayoutMode = mode
     }
 
+    /** When user clicks on empty trash. */
     fun emptyTrashPre() {
         if (listItems.isNotEmpty()) {
             _showEmptyTrashDialogEvent.send()
         }
     }
 
+    /** When user confirms emptying trash. */
     fun emptyTrash() {
         viewModelScope.launch {
             notesRepository.emptyTrash()
@@ -129,6 +141,7 @@ class HomeViewModel @Inject constructor(
     }
 
     override val selectedNoteStatus: NoteStatus?
+        // There can only be notes of one status selected in this fragment.
         get() = noteStatus.value
 
     override fun onMessageItemDismissed(item: MessageItem, pos: Int) {
@@ -161,7 +174,7 @@ class HomeViewModel @Inject constructor(
 
             // Add note items
             for (note in notes) {
-                val checked = selectedNotes.any { it.id == note.id }
+                val checked = isNoteSelected(note)
                 this += NoteItem(note.id, note, checked, emptyList(), emptyList())
             }
         }
@@ -173,11 +186,15 @@ class HomeViewModel @Inject constructor(
         NoteStatus.TRASHED -> PlaceholderData(R.drawable.ic_delete, R.string.note_placeholder_deleted)
     }
 
+    @AssistedInject.Factory
+    interface Factory : AssistedSavedStateViewModelFactory<HomeViewModel> {
+        override fun create(savedStateHandle: SavedStateHandle): HomeViewModel
+    }
 
     companion object {
         private const val TRASH_REMINDER_ITEM_ID = -1L
 
-        private val TAG = HomeViewModel::class.java.simpleName
+        private const val KEY_NOTE_STATUS = "note_status"
     }
 
 }

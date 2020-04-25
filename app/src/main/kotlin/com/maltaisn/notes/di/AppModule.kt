@@ -19,17 +19,19 @@ package com.maltaisn.notes.di
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.preference.PreferenceManager
+import com.squareup.inject.assisted.dagger2.AssistedModule
 import dagger.Module
 import dagger.Provides
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
 
 
+@AssistedModule
 @Module(includes = [
     DatabaseModule::class,
-    ViewModelModule::class,
     BuildTypeModule::class,
-    SyncFlavorModule::class
+    SyncFlavorModule::class,
+    AssistedInject_AppModule::class
 ])
 object AppModule {
 

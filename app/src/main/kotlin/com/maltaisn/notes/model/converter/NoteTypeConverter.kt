@@ -30,11 +30,8 @@ object NoteTypeConverter : KSerializer<NoteType> {
 
     @TypeConverter
     @JvmStatic
-    fun toType(value: Int) = when (value) {
-        0 -> NoteType.TEXT
-        1 -> NoteType.LIST
-        else -> error("Unknown note type value")
-    }
+    fun toType(value: Int) = NoteType.values().find { it.value == value }
+            ?: error("Unknown note type value")
 
     override val descriptor = PrimitiveDescriptor("NoteType", PrimitiveKind.INT)
     override fun serialize(encoder: Encoder, value: NoteType) = encoder.encodeInt(toInt(value))

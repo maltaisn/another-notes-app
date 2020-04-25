@@ -24,21 +24,30 @@ import android.view.WindowManager
 import androidx.appcompat.app.AlertDialog
 import androidx.core.os.bundleOf
 import androidx.core.widget.doAfterTextChanged
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.Observer
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
+import com.maltaisn.notes.App
 import com.maltaisn.notes.R
 import com.maltaisn.notes.databinding.DialogPasswordResetBinding
 import com.maltaisn.notes.hideKeyboard
 import com.maltaisn.notes.ui.EventObserver
-import com.maltaisn.notes.ui.common.ViewModelDialog
+import com.maltaisn.notes.ui.viewModel
+import javax.inject.Inject
+import javax.inject.Provider
 
 
-class PasswordResetDialog : ViewModelDialog() {
+class PasswordResetDialog : DialogFragment() {
 
-    private val viewModel: PasswordResetViewModel by viewModels { viewModelFactory }
+    @Inject lateinit var viewModelProvider: Provider<PasswordResetViewModel>
+    private val viewModel by viewModel { viewModelProvider.get() }
 
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        (requireContext().applicationContext as App).appComponent.inject(this)
+    }
 
     @SuppressLint("InflateParams")
     override fun onCreateDialog(state: Bundle?): Dialog {

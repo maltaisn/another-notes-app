@@ -17,6 +17,12 @@
 package com.maltaisn.notes.ui.note.adapter
 
 
+/**
+ * A list layout mode, with different appearance parameters.
+ *
+ * @property maxTextLines Maximum lines displayed for a text note.
+ * @property maxListItems Maximum items displayed for a list note.
+ */
 enum class NoteListLayoutMode(val value: Int,
                               val maxTextLines: Int,
                               val maxListItems: Int) {

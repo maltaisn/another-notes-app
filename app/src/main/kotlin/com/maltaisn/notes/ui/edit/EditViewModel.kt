@@ -39,12 +39,13 @@ class EditViewModel @Inject constructor(
 
     /**
      * Note being edited by user. This note data is not always up to date with UI,
-     * so [save] must be called before using it.
+     * so [save] must be called before using it and to persist it.
      */
     private var note = BLANK_NOTE
 
     /**
-     * Status of the note being edited.
+     * Status of the note being edited. This is separate from [note] so that
+     * note status can be updated from this in [updateNote].
      */
     private var status = NoteStatus.ACTIVE
 

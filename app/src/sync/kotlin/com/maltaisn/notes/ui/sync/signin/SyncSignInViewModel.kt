@@ -35,7 +35,8 @@ import javax.inject.Inject
 
 class SyncSignInViewModel @Inject constructor(
         private val loginRepository: LoginRepository,
-        private val syncManager: SyncManager) : ViewModel() {
+        private val syncManager: SyncManager
+) : ViewModel() {
 
     private val _changePageEvent = MutableLiveData<Event<SyncPage>>()
     val changePageEvent: LiveData<Event<SyncPage>>
@@ -53,6 +54,8 @@ class SyncSignInViewModel @Inject constructor(
     val fieldError: LiveData<FieldError?>
         get() = _fieldError
 
+    // No need to save these in saved state handle, EditTexts save them
+    // and [on___Entered] methods are called when fragment is recreated.
     private var email = ""
     private var password = ""
 
@@ -61,7 +64,7 @@ class SyncSignInViewModel @Inject constructor(
         _changePageEvent.send(page)
     }
 
-    fun setEnteredEmail(email: String) {
+    fun onEmailEntered(email: String) {
         this.email = email
         if (fieldError.value === noEmailError && email.isNotBlank()) {
             // User entered email, clear error.
@@ -69,7 +72,7 @@ class SyncSignInViewModel @Inject constructor(
         }
     }
 
-    fun setEnteredPassword(password: String) {
+    fun onPasswordEntered(password: String) {
         this.password = password
         if (fieldError.value === noPasswordError && password.isNotEmpty()) {
             // User entered password or password of valid length, clear error.

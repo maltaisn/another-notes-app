@@ -23,6 +23,11 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
 
 
+/**
+ * Converter used to store instances of [NoteMetadata] in the database and to serialize them.
+ * When serialized, metadata JSON in itself encoded into a JSON string. This wouldn't be
+ * necessary but it simplifies the server's job. Also metadata *could* eventually not be JSON.
+ */
 @Serializer(forClass = NoteMetadata::class)
 object NoteMetadataConverter : KSerializer<NoteMetadata> {
 

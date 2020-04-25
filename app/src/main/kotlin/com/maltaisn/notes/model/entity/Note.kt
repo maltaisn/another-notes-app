@@ -36,6 +36,10 @@ import java.util.*
 @Serializable
 @Entity(tableName = "notes")
 data class Note(
+        /**
+         * Note ID in the database. UUID could be used by integer ID is supposedly better.
+         * The default value is used for deserializing since server doesn't send this attribute.
+         */
         @PrimaryKey(autoGenerate = true)
         @Transient
         @ColumnInfo(name = "id")
@@ -69,8 +73,8 @@ data class Note(
         val content: String,
 
         /**
-         * Note metadata, not used for search. This field is represented as text encoded
-         * JSON when serialized, so server can easily encode it.
+         * Note metadata, not used for search.
+         * @see NoteMetadataConverter
          */
         @ColumnInfo(name = "metadata")
         @SerialName("metadata")
@@ -92,7 +96,7 @@ data class Note(
         val lastModifiedDate: Date,
 
         /**
-         * Status of the note, i.e. its location.
+         * Status of the note, i.e. its location in the user interface.
          */
         @ColumnInfo(name = "status")
         @SerialName("status")
@@ -100,6 +104,7 @@ data class Note(
 
         /**
          * Whether the note is synced with server or not.
+         * The default value is used for deserializing since server doesn't send this attribute.
          */
         @Transient
         @ColumnInfo(name = "synced")
@@ -107,10 +112,11 @@ data class Note(
 ) {
 
     init {
-        when (type) {
-            NoteType.TEXT -> require(metadata is BlankNoteMetadata)
-            NoteType.LIST -> require(metadata is ListNoteMetadata)
-        }
+        // Validate the type of metadata.
+        require(when (type) {
+            NoteType.TEXT -> metadata is BlankNoteMetadata
+            NoteType.LIST -> metadata is ListNoteMetadata
+        })
 
         require(addedDate.time <= lastModifiedDate.time) {
             "Note added date must be before or on last modified date."
@@ -118,7 +124,7 @@ data class Note(
     }
 
     /**
-     * Returns true if note has no content.
+     * Returns `true` if note has no title and no content.
      * Metadata is not taken into account.
      */
     val isBlank: Boolean
@@ -155,11 +161,12 @@ data class Note(
     fun asTextNote(keepCheckedItems: Boolean): Note = when (type) {
         NoteType.TEXT -> this
         NoteType.LIST -> {
-            // Append a bullet point to each line of content.
             val items = listItems
             val content = if (items.all { it.content.isBlank() }) {
+                // All list items are blank, so no content.
                 ""
             } else {
+                // Append a bullet point to each line of content.
                 buildString {
                     for (item in items) {
                         if (keepCheckedItems || !item.checked) {
@@ -199,6 +206,7 @@ data class Note(
                     deleteCharAt(lastIndex)
                 }
             } else {
+                // List note items content are separated by line breaks, and this is already the case.
                 this.content
             }
             val metadata = ListNoteMetadata(List(lines.size) { false })
@@ -225,7 +233,7 @@ data class Note(
         const val NO_ID = 0L
 
         const val BULLET_CHARS = "-+*•–"
-        const val DEFAULT_BULLET_CHAR = "-"
+        const val DEFAULT_BULLET_CHAR = '-'
 
 
         /**
@@ -253,6 +261,9 @@ data class Note(
     }
 }
 
+/**
+ * Representation of a list note item for [Note.listItems].
+ */
 data class ListNoteItem(val content: String, val checked: Boolean) {
 
     init {

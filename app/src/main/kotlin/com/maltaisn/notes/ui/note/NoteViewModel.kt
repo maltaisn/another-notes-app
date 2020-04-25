@@ -16,10 +16,7 @@
 
 package com.maltaisn.notes.ui.note
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.maltaisn.notes.model.NotesRepository
 import com.maltaisn.notes.model.PrefsManager
 import com.maltaisn.notes.model.entity.Note
@@ -31,11 +28,17 @@ import com.maltaisn.notes.ui.note.adapter.*
 import com.maltaisn.notes.ui.send
 import kotlinx.coroutines.launch
 import java.util.*
+import kotlin.collections.ArrayList
 
 
+/**
+ * This view model provides common behavior for home and search view models.
+ */
 abstract class NoteViewModel(
+        protected val savedStateHandle: SavedStateHandle,
         protected val notesRepository: NotesRepository,
-        protected val prefs: PrefsManager) : ViewModel(), NoteAdapter.Callback {
+        protected val prefs: PrefsManager
+) : ViewModel(), NoteAdapter.Callback {
 
     protected var listItems: List<NoteListItem> = emptyList()
         set(value) {
@@ -49,6 +52,11 @@ abstract class NoteViewModel(
         }
 
     protected val selectedNotes = mutableSetOf<Note>()
+
+    /**
+     * Implementation should return the "global" status of the selected notes.
+     * This is used to determine what move event will do on the selected notes.
+     */
     protected abstract val selectedNoteStatus: NoteStatus?
 
     private val _noteItems = MutableLiveData<List<NoteListItem>>()
@@ -85,7 +93,20 @@ abstract class NoteViewModel(
 
 
     init {
+        // Initialize list layout to saved value.
         _listLayoutMode.value = prefs.listLayoutMode
+    }
+
+    /**
+     * Restore the state of this fragment from [savedStateHandle].
+     * This must be called by subclass on initialization. It's not called here because
+     * it's suspending, so state might be restored *after* child is initialized...
+     */
+    protected open suspend fun restoreState() {
+        // Restore saved selected notes
+        val selectedIds = savedStateHandle.get<List<Long>>(KEY_SELECTED_IDS) ?: return
+        selectedNotes += selectedIds.mapNotNull { notesRepository.getById(it) }
+        updateNoteSelection()
     }
 
     /**
@@ -157,6 +178,7 @@ abstract class NoteViewModel(
         _shareEvent.send(ShareData(note.title, note.asText()))
     }
 
+    /** Set the selected state of all notes to [selected]. */
     private fun setAllSelected(selected: Boolean) {
         if (!selected && selectedNotes.isEmpty()) {
             // Already all unselected.
@@ -181,10 +203,27 @@ abstract class NoteViewModel(
         if (selectedBefore != selectedNotes.size) {
             // If selection changed, update list and counter.
             listItems = newList
-            _currentSelection.value = NoteSelection(selectedNotes.size, selectedNoteStatus)
+            updateNoteSelection()
+            saveNoteSelectionState()
         }
     }
 
+    protected fun isNoteSelected(note: Note): Boolean {
+        // Compare IDs because Note object can change and not be equal.
+        return selectedNotes.any { it.id == note.id }
+    }
+
+    /** Update current selection live data to reflect current selection. */
+    protected fun updateNoteSelection() {
+        _currentSelection.value = NoteSelection(selectedNotes.size, selectedNoteStatus)
+    }
+
+    /** Save [selectedNotes] to [savedStateHandle]. */
+    private fun saveNoteSelectionState() {
+        savedStateHandle.set(KEY_SELECTED_IDS, selectedNotes.mapTo(ArrayList<Long>()) { it.id })
+    }
+
+    /** Change the status of [notes] to [newStatus]. */
     protected fun changeNotesStatus(notes: Set<Note>, newStatus: NoteStatus) {
         if (notes.isEmpty()) {
             return
@@ -207,6 +246,7 @@ abstract class NoteViewModel(
         }
     }
 
+    /** Change the status of selected notes to [newStatus], and clear selection. */
     private fun changeSelectedNotesStatus(newStatus: NoteStatus) {
         if (selectedNotes.isNotEmpty()) {
             changeNotesStatus(selectedNotes, newStatus)
@@ -235,7 +275,8 @@ abstract class NoteViewModel(
         } else {
             selectedNotes -= item.note
         }
-        _currentSelection.value = NoteSelection(selectedNotes.size, selectedNoteStatus)
+        updateNoteSelection()
+        saveNoteSelectionState()
 
         changeListItems { it[pos] = item.copy(checked = checked) }
     }
@@ -257,5 +298,9 @@ abstract class NoteViewModel(
     }
 
     data class NoteSelection(val count: Int, val status: NoteStatus?)
+
+    companion object {
+        private const val KEY_SELECTED_IDS = "selected_ids"
+    }
 
 }

@@ -20,6 +20,7 @@ package com.maltaisn.notes.model
 import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import com.maltaisn.notes.OpenForTesting
 import kotlinx.coroutines.channels.ConflatedBroadcastChannel
 import kotlinx.coroutines.channels.sendBlocking
 import kotlinx.coroutines.tasks.await
@@ -28,16 +29,17 @@ import javax.inject.Singleton
 
 
 @Singleton
-open class LoginRepository @Inject constructor(
+@OpenForTesting
+class LoginRepository @Inject constructor(
         private val fbAuth: FirebaseAuth) {
 
     val currentUser: FirebaseUser?
         get() = fbAuth.currentUser
 
-    open val isUserSignedIn: Boolean
+    val isUserSignedIn: Boolean
         get() = currentUser != null
 
-    open val isUserEmailVerified: Boolean
+    val isUserEmailVerified: Boolean
         get() = currentUser?.isEmailVerified == true
 
     val authStateChannel = ConflatedBroadcastChannel<Unit>()

@@ -24,11 +24,11 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import androidx.core.view.iterator
 import androidx.drawerlayout.widget.DrawerLayout
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
+import com.maltaisn.notes.App
 import com.maltaisn.notes.BuildConfig
 import com.maltaisn.notes.NavGraphDirections
 import com.maltaisn.notes.R
@@ -38,16 +38,27 @@ import com.maltaisn.notes.ui.common.ConfirmDialog
 import com.maltaisn.notes.ui.main.MainActivity
 import com.maltaisn.notes.ui.note.NoteFragment
 import com.maltaisn.notes.ui.note.adapter.NoteListLayoutMode
+import com.maltaisn.notes.ui.viewModel
+import javax.inject.Inject
 
 
+/**
+ * Start screen fragment displaying a list of note for different note statuses.
+ */
 class HomeFragment : NoteFragment(), Toolbar.OnMenuItemClickListener,
         NavigationView.OnNavigationItemSelectedListener {
 
-    override val viewModel: HomeViewModel by viewModels { viewModelFactory }
+    @Inject lateinit var viewModelFactory: HomeViewModel.Factory
+    override val viewModel by viewModel { viewModelFactory.create(it) }
 
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var navView: NavigationView
 
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        (requireContext().applicationContext as App).appComponent.inject(this)
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -74,6 +85,7 @@ class HomeFragment : NoteFragment(), Toolbar.OnMenuItemClickListener,
         toolbar.menu.findItem(R.id.item_extra_action).isVisible = BuildConfig.DEBUG
 
         if (BuildConfig.FLAVOR == BuildConfig.FLAVOR_NO_SYNC) {
+            // Hide sync drawer item if flavor is no sync.
             for (item in navView.menu) {
                 if (item.groupId == R.id.group_sync) {
                     item.isVisible = false
@@ -115,6 +127,7 @@ class HomeFragment : NoteFragment(), Toolbar.OnMenuItemClickListener,
 
         viewModel.currentSelection.observe(viewLifecycleOwner, Observer { selection ->
             if (selection.count != 0 && actionMode == null) {
+                // Lock drawer when user just selected a first note.
                 drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED, GravityCompat.START)
             }
         })

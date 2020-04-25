@@ -25,7 +25,7 @@ import com.maltaisn.notes.R
 
 
 /**
- * Item touch helper for dragging items. Dragged item elevation is changed.
+ * Item touch helper callback for dragging items. Dragged item elevation is changed.
  * [onMove] is called when a list note item is moved.
  */
 class DragTouchHelperCallback(context: Context,

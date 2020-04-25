@@ -22,6 +22,7 @@ import javax.inject.Inject
 class NoSyncNoteRefreshBehavior @Inject constructor() : NoteRefreshBehavior() {
 
     override suspend fun start() {
+        // No sync possible so refresh is always disabled.
         canRefreshChannel.send(false)
     }
 

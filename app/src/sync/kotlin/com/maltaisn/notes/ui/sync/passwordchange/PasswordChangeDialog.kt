@@ -25,22 +25,32 @@ import android.view.WindowManager
 import androidx.appcompat.app.AlertDialog
 import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.Observer
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
+import com.maltaisn.notes.App
 import com.maltaisn.notes.R
 import com.maltaisn.notes.databinding.DialogPasswordChangeBinding
 import com.maltaisn.notes.hideKeyboard
 import com.maltaisn.notes.setCustomEndIconOnClickListener
 import com.maltaisn.notes.ui.EventObserver
-import com.maltaisn.notes.ui.common.ViewModelDialog
 import com.maltaisn.notes.ui.sync.passwordchange.PasswordChangeViewModel.FieldError
+import com.maltaisn.notes.ui.viewModel
+import javax.inject.Inject
+import javax.inject.Provider
 
 
-class PasswordChangeDialog : ViewModelDialog() {
+class PasswordChangeDialog : DialogFragment() {
 
-    private val viewModel: PasswordChangeViewModel by viewModels { viewModelFactory }
+    @Inject lateinit var viewModelProvider: Provider<PasswordChangeViewModel>
+    private val viewModel by viewModel { viewModelProvider.get() }
+
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        (requireContext().applicationContext as App).appComponent.inject(this)
+    }
 
     @SuppressLint("InflateParams")
     override fun onCreateDialog(state: Bundle?): Dialog {
@@ -59,13 +69,13 @@ class PasswordChangeDialog : ViewModelDialog() {
         }
 
         binding.passwordCurrentEdt.doAfterTextChanged {
-            viewModel.setEnteredCurrentPassword(it?.toString() ?: "")
+            viewModel.onCurrentPasswordEntered(it?.toString() ?: "")
         }
         binding.passwordNewEdt.doAfterTextChanged {
-            viewModel.setEnteredNewPassword(it?.toString() ?: "")
+            viewModel.onNewPasswordEntered(it?.toString() ?: "")
         }
         binding.passwordConfirmEdt.doAfterTextChanged {
-            viewModel.setEnteredPasswordConfirm(it?.toString() ?: "")
+            viewModel.onPasswordConfirmEntered(it?.toString() ?: "")
         }
 
         // Create dialog

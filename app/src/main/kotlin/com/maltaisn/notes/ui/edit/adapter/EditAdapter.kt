@@ -37,14 +37,19 @@ class EditAdapter(val context: Context, val callback: Callback) :
 
     private var recyclerView: RecyclerView? = null
 
-    private var pendingFocusChange: EditViewModel.FocusChange? = null
-
     private val itemTouchHelper = ItemTouchHelper(DragTouchHelperCallback(context) { from, to ->
         // submitList is not used here, since it results in a very unresponsive design.
         // Adapter and dataset are updated manually.
         notifyItemMoved(from, to)
         callback.onNoteItemSwapped(from, to)
     })
+
+    /**
+     * Pending focus change to be made when item will be bound
+     * by RecyclerView, or `null` if none is pending.
+     */
+    private var pendingFocusChange: EditViewModel.FocusChange? = null
+
 
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
         this.recyclerView = recyclerView
@@ -120,15 +125,31 @@ class EditAdapter(val context: Context, val callback: Callback) :
     }
 
     interface Callback {
+        /**
+         * Called when an [EditItemItem] at [pos] text is changed by user,
+         * either from the keyboard or from a paste event.
+         */
         fun onNoteItemChanged(item: EditItemItem, pos: Int, isPaste: Boolean)
+
+        /**
+         * Called when backspace is pressed when EditText selection
+         * is a position 0 in an [EditItemItem] at [pos].
+         */
         fun onNoteItemBackspacePressed(item: EditItemItem, pos: Int)
+
+        /** Called when the delete button is clicked on an [EditItemItem].*/
         fun onNoteItemDeleteClicked(pos: Int)
 
+        /** Called when [EditItemAddItem] is clicked.*/
         fun onNoteItemAddClicked()
 
+        /** Called when any item is clicked on to start editing.*/
         fun onNoteClickedToEdit()
 
+        /** Whether to enabled the dragging of [EditItemItem].*/
         val isNoteDragEnabled: Boolean
+
+        /** Called after an [EditItemItem] was dragged [from] a position [to] another. */
         fun onNoteItemSwapped(from: Int, to: Int)
     }
 

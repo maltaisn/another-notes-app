@@ -32,7 +32,8 @@ import javax.inject.Inject
 
 
 class PasswordChangeViewModel @Inject constructor(
-        private val loginRepository: LoginRepository) : ViewModel() {
+        private val loginRepository: LoginRepository
+) : ViewModel() {
 
     private val _messageEvent = MutableLiveData<Event<Int>>()
     val messageEvent: LiveData<Event<Int>>
@@ -50,13 +51,14 @@ class PasswordChangeViewModel @Inject constructor(
     val dismissEvent: LiveData<Event<Unit>>
         get() = _dismissEvent
 
-
+    // No need to save this in saved state handle, EditTexts save them
+    // and [on___Entered] method is called when dialog is recreated.
     private var passwordCurrent = ""
     private var passwordNew = ""
     private var passwordConfirm = ""
 
 
-    fun setEnteredCurrentPassword(password: String) {
+    fun onCurrentPasswordEntered(password: String) {
         passwordCurrent = password
         if (password.isNotEmpty() && (fieldError.value === noCurrentPasswordError
                 || fieldError.value === wrongCurrentPasswordError)) {
@@ -65,7 +67,7 @@ class PasswordChangeViewModel @Inject constructor(
         }
     }
 
-    fun setEnteredNewPassword(password: String) {
+    fun onNewPasswordEntered(password: String) {
         passwordNew = password
         if (fieldError.value === passwordLengthError
                 && password.length in LoginRepository.PASSWORD_RANGE
@@ -75,7 +77,7 @@ class PasswordChangeViewModel @Inject constructor(
         }
     }
 
-    fun setEnteredPasswordConfirm(password: String) {
+    fun onPasswordConfirmEntered(password: String) {
         passwordConfirm = password
     }
 

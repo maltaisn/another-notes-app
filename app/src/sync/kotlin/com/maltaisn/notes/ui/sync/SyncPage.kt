@@ -17,6 +17,9 @@
 package com.maltaisn.notes.ui.sync
 
 
+/**
+ * Enum for fragments in the [SyncFragment] view pager.
+ */
 enum class SyncPage(val pos: Int) {
     MAIN(0),
     SIGN_IN(1),

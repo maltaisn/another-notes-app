@@ -33,11 +33,13 @@ class SyncNoteRefreshBehavior @Inject constructor(
 
     override suspend fun start() {
         loginRepository.authStateChannel.asFlow().collect {
+            // User can only refresh if signed in.
             canRefreshChannel.send(loginRepository.isUserSignedIn)
         }
     }
 
     override suspend fun refreshNotes(): Int? {
+        // Sync notes.
         var message: Int? = null
         syncManager.syncNotes(delay = SyncPrefsManager.MIN_MANUAL_SYNC_INTERVAL) { e ->
             // Sync failed for unknown reason.

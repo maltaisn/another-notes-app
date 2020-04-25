@@ -18,15 +18,11 @@ package com.maltaisn.notes.ui.note
 
 import com.maltaisn.notes.listNote
 import com.maltaisn.notes.model.entity.ListNoteItem
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonConfiguration
 import org.junit.Test
 import kotlin.test.assertEquals
 
 
 class HighlightHelperTest {
-
-    private val json = Json(JsonConfiguration.Stable)
 
     @Test
     fun `should highlight all matches in string`() {

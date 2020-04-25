@@ -29,8 +29,7 @@ import dagger.Module
 
 
 @Module(includes = [
-    FirebaseModule::class,
-    SyncViewModelModule::class
+    FirebaseModule::class
 ])
 abstract class SyncFlavorModule {
 

@@ -25,7 +25,6 @@ import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.maltaisn.notes.R
 import com.maltaisn.notes.model.LoginRepository
-import com.maltaisn.notes.model.SyncManager
 import com.maltaisn.notes.ui.Event
 import com.maltaisn.notes.ui.send
 import com.maltaisn.notes.ui.sync.SyncPage
@@ -34,8 +33,8 @@ import javax.inject.Inject
 
 
 class SyncSignUpViewModel @Inject constructor(
-        private val loginRepository: LoginRepository,
-        private val syncManager: SyncManager) : ViewModel() {
+        private val loginRepository: LoginRepository
+) : ViewModel() {
 
     private val _changePageEvent = MutableLiveData<Event<SyncPage>>()
     val changePageEvent: LiveData<Event<SyncPage>>
@@ -57,6 +56,8 @@ class SyncSignUpViewModel @Inject constructor(
     val clearFieldsEvent: LiveData<Event<Unit>>
         get() = _clearFieldsEvent
 
+    // No need to save these in saved state handle, EditTexts save them
+    // and [on___Entered] methods are called when fragment is recreated.
     private var email = ""
     private var password = ""
     private var passwordConfirm = ""
@@ -66,7 +67,7 @@ class SyncSignUpViewModel @Inject constructor(
         _changePageEvent.send(page)
     }
 
-    fun setEnteredEmail(email: String) {
+    fun onEmailEntered(email: String) {
         this.email = email
         if (fieldError.value === noEmailError && email.isNotBlank()) {
             // User entered email, clear error.
@@ -74,7 +75,7 @@ class SyncSignUpViewModel @Inject constructor(
         }
     }
 
-    fun setEnteredPassword(password: String) {
+    fun onPasswordEntered(password: String) {
         this.password = password
         if (fieldError.value === passwordLengthError
                 && password.length in LoginRepository.PASSWORD_RANGE
@@ -84,7 +85,7 @@ class SyncSignUpViewModel @Inject constructor(
         }
     }
 
-    fun setEnteredPasswordConfirm(password: String) {
+    fun onPasswordConfirmEntered(password: String) {
         passwordConfirm = password
     }
 

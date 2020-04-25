@@ -21,6 +21,7 @@ package com.maltaisn.notes.model
 import com.google.firebase.FirebaseException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.functions.FirebaseFunctions
+import com.maltaisn.notes.OpenForTesting
 import com.maltaisn.notes.model.converter.DateTimeConverter
 import com.maltaisn.notes.model.entity.Note
 import kotlinx.coroutines.tasks.await
@@ -35,7 +36,8 @@ import javax.inject.Singleton
 
 
 @Singleton
-open class NotesService @Inject constructor(
+@OpenForTesting
+class NotesService @Inject constructor(
         private val fbAuth: FirebaseAuth,
         private val fbFunctions: FirebaseFunctions,
         private val json: Json) {
@@ -45,7 +47,7 @@ open class NotesService @Inject constructor(
      *
      * @throws IOException If sync fails for an unknown reason.
      */
-    open suspend fun syncNotes(localData: SyncData): SyncData {
+    suspend fun syncNotes(localData: SyncData): SyncData {
         // Send local changes to server, and receive remote changes
         val localDataJson = json.toJson(SyncData.serializer(), localData)
         val result = callSyncFunction(jsonElementToStructure(localDataJson))
@@ -59,7 +61,7 @@ open class NotesService @Inject constructor(
         }
     }
 
-    open suspend fun callSyncFunction(data: Any?): Any? {
+    suspend fun callSyncFunction(data: Any?): Any? {
         try {
             return fbFunctions.getHttpsCallable("sync").call(data).await().data
         } catch (e: FirebaseException) {

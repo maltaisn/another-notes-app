@@ -30,12 +30,8 @@ object NoteStatusConverter : KSerializer<NoteStatus> {
 
     @TypeConverter
     @JvmStatic
-    fun toStatus(value: Int) = when (value) {
-        0 -> NoteStatus.ACTIVE
-        1 -> NoteStatus.ARCHIVED
-        2 -> NoteStatus.TRASHED
-        else -> error("Unknown note status value")
-    }
+    fun toStatus(value: Int) = NoteStatus.values().find { it.value == value }
+            ?: error("Unknown note status value")
 
     override val descriptor = PrimitiveDescriptor("NoteStatus", PrimitiveKind.INT)
     override fun serialize(encoder: Encoder, value: NoteStatus) = encoder.encodeInt(toInt(value))

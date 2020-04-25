@@ -16,6 +16,7 @@
 
 package com.maltaisn.notes.model
 
+import com.maltaisn.notes.OpenForTesting
 import kotlinx.serialization.json.Json
 import java.io.IOException
 import java.util.*
@@ -24,7 +25,8 @@ import javax.inject.Singleton
 
 
 @Singleton
-open class SyncNotesRepository @Inject constructor(
+@OpenForTesting
+class SyncNotesRepository @Inject constructor(
         private val notesDao: NotesDao,
         private val deletedNotesDao: DeletedNotesDao,
         private val notesService: NotesService,
@@ -44,7 +46,7 @@ open class SyncNotesRepository @Inject constructor(
      *
      * @throws IOException Thrown when sync fails.
      */
-    open suspend fun syncNotes(receive: Boolean) {
+    suspend fun syncNotes(receive: Boolean) {
         // Get local sync data.
         val localChanged = notesDao.getNotSynced()
         val localDeleted = deletedNotesDao.getNotSyncedUuids()
