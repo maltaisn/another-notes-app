@@ -170,7 +170,7 @@ abstract class NoteViewModel(
         }
     }
 
-    fun shareNote() {
+    fun shareSelectedNote() {
         if (selectedNotes.isEmpty()) {
             return
         }

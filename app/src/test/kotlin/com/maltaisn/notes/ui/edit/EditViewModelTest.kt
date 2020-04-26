@@ -18,6 +18,7 @@ package com.maltaisn.notes.ui.edit
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.maltaisn.notes.MainCoroutineRule
+import com.maltaisn.notes.assertNoteEquals
 import com.maltaisn.notes.listNote
 import com.maltaisn.notes.model.MockNotesRepository
 import com.maltaisn.notes.model.converter.DateTimeConverter
@@ -584,21 +585,6 @@ class EditViewModelTest {
                 ListNoteItem("item 2", false),
                 ListNoteItem("item 1", true)
         ))
-    }
-
-    private fun assertNoteEquals(expected: Note, actual: Note,
-                                 dateEpsilon: Long = 1000,
-                                 ignoreId: Boolean = true,
-                                 ignoreUuid: Boolean = true) {
-        assertTrue("Notes have different added dates.",
-                (expected.addedDate.time - actual.addedDate.time) < dateEpsilon)
-        assertTrue("Notes have different last modified dates.",
-                (expected.lastModifiedDate.time - actual.lastModifiedDate.time) < dateEpsilon)
-        assertEquals(expected, actual.copy(
-                id = if (ignoreId) expected.id else actual.id,
-                uuid = if (ignoreUuid) expected.uuid else actual.uuid,
-                addedDate = expected.addedDate,
-                lastModifiedDate = expected.lastModifiedDate))
     }
 
 }

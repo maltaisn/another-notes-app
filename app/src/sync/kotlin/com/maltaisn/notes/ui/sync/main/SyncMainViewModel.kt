@@ -23,11 +23,9 @@ import com.maltaisn.notes.model.LoginRepository
 import com.maltaisn.notes.ui.Event
 import com.maltaisn.notes.ui.send
 import com.maltaisn.notes.ui.sync.SyncPage
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 
@@ -63,9 +61,7 @@ class SyncMainViewModel @Inject constructor(
                 // Check if user has verified their email first. If not send verification.
                 loginRepository.reloadUser()
                 if (!loginRepository.isUserEmailVerified) {
-                    withContext(Dispatchers.IO) {
-                        loginRepository.sendVerificationEmail()
-                    }
+                    loginRepository.sendVerificationEmail()
                     _messageEvent.send(R.string.sync_verification_success_message)
                 }
             } catch (e: FirebaseException) {

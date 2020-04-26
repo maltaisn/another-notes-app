@@ -128,7 +128,7 @@ class MessageViewHolder(private val binding: ItemMessageBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
     fun bind(item: MessageItem, adapter: NoteAdapter) {
-        binding.messageTxv.text = adapter.context.getString(item.message, *item.args)
+        binding.messageTxv.text = adapter.context.getString(item.message, *item.args.toTypedArray())
         binding.closeImv.setOnClickListener {
             adapter.callback.onMessageItemDismissed(item, adapterPosition)
             adapter.notifyItemRemoved(adapterPosition)

@@ -38,6 +38,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.yield
 
 
 class HomeViewModel @AssistedInject constructor(
@@ -97,6 +98,7 @@ class HomeViewModel @AssistedInject constructor(
         noteListJob = viewModelScope.launch {
             notesRepository.getNotesByStatus(status).collect { notes ->
                 createListItems(status, notes)
+                yield()
             }
         }
     }
@@ -168,7 +170,7 @@ class HomeViewModel @AssistedInject constructor(
                         PrefsManager.TRASH_REMINDER_DELAY.toLongMilliseconds()) {
                     this += MessageItem(TRASH_REMINDER_ITEM_ID,
                             R.string.trash_reminder_message,
-                            PrefsManager.TRASH_AUTO_DELETE_DELAY.inDays.toInt())
+                            listOf(PrefsManager.TRASH_AUTO_DELETE_DELAY.inDays.toInt()))
                 }
             }
 

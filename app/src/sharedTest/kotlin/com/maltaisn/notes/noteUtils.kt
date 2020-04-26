@@ -17,6 +17,8 @@
 package com.maltaisn.notes
 
 import com.maltaisn.notes.model.entity.*
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import java.util.*
 
 
@@ -44,3 +46,19 @@ fun listNote(
         synced: Boolean = true
 ) = Note(id, uuid, NoteType.LIST, title, items.joinToString("\n") { it.content },
         ListNoteMetadata(items.map { it.checked }), added, modified, status, synced)
+
+
+fun assertNoteEquals(expected: Note, actual: Note,
+                     dateEpsilon: Long = 1000,
+                     ignoreId: Boolean = true,
+                     ignoreUuid: Boolean = true) {
+    assertTrue("Notes have different added dates.",
+            (expected.addedDate.time - actual.addedDate.time) < dateEpsilon)
+    assertTrue("Notes have different last modified dates.",
+            (expected.lastModifiedDate.time - actual.lastModifiedDate.time) < dateEpsilon)
+    assertEquals(expected, actual.copy(
+            id = if (ignoreId) expected.id else actual.id,
+            uuid = if (ignoreUuid) expected.uuid else actual.uuid,
+            addedDate = expected.addedDate,
+            lastModifiedDate = expected.lastModifiedDate))
+}

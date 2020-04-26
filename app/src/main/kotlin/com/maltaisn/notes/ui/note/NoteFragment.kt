@@ -187,7 +187,7 @@ abstract class NoteFragment : Fragment(), ActionMode.Callback, ConfirmDialog.Cal
         when (item.itemId) {
             R.id.item_move -> viewModel.moveSelectedNotes()
             R.id.item_select_all -> viewModel.selectAll()
-            R.id.item_share -> viewModel.shareNote()
+            R.id.item_share -> viewModel.shareSelectedNote()
             R.id.item_copy -> viewModel.copySelectedNote(
                     getString(R.string.edit_copy_untitled_name), getString(R.string.edit_copy_suffix))
             R.id.item_delete -> viewModel.deleteSelectedNotesPre()

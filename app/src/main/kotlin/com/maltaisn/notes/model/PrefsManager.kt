@@ -20,6 +20,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.core.content.edit
 import androidx.preference.PreferenceManager
+import com.maltaisn.notes.OpenForTesting
 import com.maltaisn.notes.R
 import com.maltaisn.notes.ui.AppTheme
 import com.maltaisn.notes.ui.note.adapter.NoteListLayoutMode
@@ -32,6 +33,7 @@ import kotlin.time.days
  *
  * Flavors provide their own extension of this manager.
  */
+@OpenForTesting
 open class PrefsManager(protected val prefs: SharedPreferences) {
 
     val theme: AppTheme

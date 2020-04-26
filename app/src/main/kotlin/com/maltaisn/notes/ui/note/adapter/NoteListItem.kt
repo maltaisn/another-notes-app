@@ -37,13 +37,13 @@ data class NoteItem(override val id: Long, val note: Note, val checked: Boolean,
 
 }
 
-class HeaderItem(id: Long, @StringRes val title: Int) : NoteListItem(id) {
+data class HeaderItem(override val id: Long, @StringRes val title: Int) : NoteListItem(id) {
     override val type: Int
         get() = NoteAdapter.VIEW_TYPE_HEADER
 }
 
-class MessageItem(id: Long, @StringRes @PluralsRes val message: Int,
-                  vararg val args: Any) : NoteListItem(id) {
+data class MessageItem(override val id: Long, @StringRes @PluralsRes val message: Int,
+                  val args: List<Any>) : NoteListItem(id) {
     override val type: Int
         get() = NoteAdapter.VIEW_TYPE_MESSAGE
 }
