@@ -20,7 +20,7 @@
     <string name="action_extra" translatable="false">Do extra action</string>
 
     <string name="view_source_url" translatable="false">https://github.com/maltaisn/another-notes-app</string>
-    <string name="terms_conditions_url" translatable="false">https://maltaisn.github.io/another-notes-app/TERMS_AND_CONDITIONS.md</string>
-    <string name="privacy_policy_url" translatable="false">https://maltaisn.github.io/another-notes-app/PRIVACY_POLICY.md</string>
+    <string name="terms_conditions_url" translatable="false">https://maltaisn.github.io/another-notes-app/TERMS_AND_CONDITIONS</string>
+    <string name="privacy_policy_url" translatable="false">https://maltaisn.github.io/another-notes-app/PRIVACY_POLICY</string>
 
 </resources>
