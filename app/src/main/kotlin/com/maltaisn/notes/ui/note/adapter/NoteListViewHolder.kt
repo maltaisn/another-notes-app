@@ -62,10 +62,11 @@ class TextNoteViewHolder(private val binding: ItemNoteTextBinding) :
         super.bind(adapter, item)
         require(item.note.type == NoteType.TEXT)
 
-        val txv = binding.contentTxv
-        txv.text = HighlightHelper.getHighlightedText(item.note.content, item.contentHighlights,
+        val contentTxv = binding.contentTxv
+        contentTxv.isVisible = item.note.content.isNotBlank()
+        contentTxv.text = HighlightHelper.getHighlightedText(item.note.content, item.contentHighlights,
                 adapter.highlightBackgroundColor, adapter.highlightForegroundColor)
-        txv.maxLines = adapter.listLayoutMode.maxTextLines
+        contentTxv.maxLines = adapter.listLayoutMode.maxTextLines
     }
 }
 
@@ -82,10 +83,13 @@ class ListNoteViewHolder(private val binding: ItemNoteListBinding) :
         require(item.note.type == NoteType.LIST)
         require(itemViewHolders.isEmpty())
 
-        val maxItems = adapter.listLayoutMode.maxListItems
+        val noteItems = item.note.listItems
+
+        val itemsLayout = binding.itemsLayout
+        itemsLayout.isVisible = noteItems.isNotEmpty()
 
         // Add the first fewitems in list note using view holders in pool.
-        val noteItems = item.note.listItems
+        val maxItems = adapter.listLayoutMode.maxListItems
         val itemHighlights = HighlightHelper.splitListNoteHighlightsByItem(
                 noteItems, item.contentHighlights)
         for (i in 0 until min(maxItems, noteItems.size)) {
@@ -93,7 +97,7 @@ class ListNoteViewHolder(private val binding: ItemNoteListBinding) :
             val viewHolder = adapter.obtainListNoteItemViewHolder()
             itemViewHolders += viewHolder
             viewHolder.bind(adapter, noteItem, itemHighlights[i])
-            binding.itemsLayout.addView(viewHolder.binding.root, i + 1)
+            itemsLayout.addView(viewHolder.binding.root, i)
         }
 
         // Show a label indicating the number of items not shown.
@@ -115,9 +119,8 @@ class ListNoteViewHolder(private val binding: ItemNoteListBinding) :
         }
 
         // Free view holders used by the item.
-        val itemsLayout = binding.itemsLayout
         val viewHolders = itemViewHolders.toList()
-        binding.itemsLayout.removeViews(1, itemsLayout.childCount - 2)
+        binding.itemsLayout.removeAllViews()
         itemViewHolders.clear()
 
         return viewHolders
