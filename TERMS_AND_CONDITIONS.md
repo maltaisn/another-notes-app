@@ -71,6 +71,14 @@ giving notice of termination to you. Unless we tell you otherwise, upon any
 termination, (a) the rights and licenses granted to you in these terms will end; 
 (b) you must stop using the app, and (if needed) delete it from your device.
 
+### Synchronization feature
+
+The developer will not take responsibility for any data loss occuring due to
+use of the synchronization feature. Accounts may be deleted at any time without
+prior notice at the discretion of the server administrator and for any reason.
+Furthermore, the developer may decide to disable or remove the synchronization
+feature at any time in the future without prior notice.
+
 ### Changes to This Terms and Conditions
 
 I may update our Terms and Conditions from time to time. Thus, you are advised 

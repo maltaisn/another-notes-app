@@ -21,9 +21,10 @@ components.
 [View changelog here][changelog] for the app release notes.
 
 ### Contributing
-Contributions are welcome. Please open an issue before submitting a feature pull request so it
-can be discussed. Make sure to follow existing code style. For now the most important need
-is new translations.
+Contributions are welcome. For now the most important need is new translations.
+- Please open an issue before submitting a pull request that adds a new feature, so it can be discussed.
+- All changes should be committed the `dev` branch, not `master`.
+- Make sure to follow existing code style.
 
 ### License
 - All code is licensed under Apache License 2.0.
