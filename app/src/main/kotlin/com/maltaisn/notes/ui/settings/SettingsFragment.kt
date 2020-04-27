@@ -75,14 +75,10 @@ class SettingsFragment : PreferenceFragmentCompat(), ConfirmDialog.Callback {
             startActivity(Intent.createChooser(intent, null))
         })
 
-        viewModel.clearDataDialogEvent.observe(viewLifecycleOwner, EventObserver { isSyncMessage ->
+        viewModel.clearDataDialogEvent.observe(viewLifecycleOwner, EventObserver { message ->
             ConfirmDialog.newInstance(
                     title = R.string.pref_data_clear,
-                    message = if (isSyncMessage) {
-                        R.string.pref_data_clear_confirm_message_sync
-                    } else {
-                        R.string.pref_data_clear_confirm_message
-                    },
+                    message = message,
                     btnPositive = R.string.action_clear
             ).show(childFragmentManager, CLEAR_DATA_DIALOG_TAG)
         })

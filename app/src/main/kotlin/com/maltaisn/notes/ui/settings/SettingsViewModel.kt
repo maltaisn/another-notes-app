@@ -20,9 +20,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.maltaisn.notes.BuildConfig
 import com.maltaisn.notes.R
-import com.maltaisn.notes.model.LoginRepository
 import com.maltaisn.notes.model.NotesRepository
 import com.maltaisn.notes.ui.Event
 import com.maltaisn.notes.ui.send
@@ -32,7 +30,7 @@ import javax.inject.Inject
 
 class SettingsViewModel @Inject constructor(
         private val notesRepository: NotesRepository,
-        private val loginRepository: LoginRepository
+        private val clearDataBehavior: ClearDataBehavior
 ) : ViewModel() {
 
     private val _messageEvent = MutableLiveData<Event<Int>>()
@@ -43,8 +41,8 @@ class SettingsViewModel @Inject constructor(
     val exportDataEvent: LiveData<Event<String>>
         get() = _exportDataEvent
 
-    private val _clearDataDialogEvent = MutableLiveData<Event<Boolean>>()
-    val clearDataDialogEvent: LiveData<Event<Boolean>>
+    private val _clearDataDialogEvent = MutableLiveData<Event<Int>>()
+    val clearDataDialogEvent: LiveData<Event<Int>>
         get() = _clearDataDialogEvent
 
 
@@ -55,9 +53,7 @@ class SettingsViewModel @Inject constructor(
     }
 
     fun clearDataPre() {
-        val isSyncFlavor = BuildConfig.FLAVOR == BuildConfig.FLAVOR_SYNC
-        val isSignedIn = loginRepository.isUserSignedIn
-        _clearDataDialogEvent.send(isSyncFlavor && isSignedIn)
+        _clearDataDialogEvent.send(clearDataBehavior.clearDataMessage)
     }
 
     fun clearData() {

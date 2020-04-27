@@ -24,6 +24,8 @@ import com.maltaisn.notes.ui.home.NoSyncNoteRefreshBehavior
 import com.maltaisn.notes.ui.home.NoteRefreshBehavior
 import com.maltaisn.notes.ui.main.LifecycleBehavior
 import com.maltaisn.notes.ui.main.NoSyncLifecycleBehavior
+import com.maltaisn.notes.ui.settings.ClearDataBehavior
+import com.maltaisn.notes.ui.settings.NoSyncClearDataBehavior
 import dagger.Binds
 import dagger.Module
 
@@ -42,5 +44,8 @@ abstract class SyncFlavorModule {
 
     @Binds
     abstract fun bindsNoteRefreshBehavior(behavior: NoSyncNoteRefreshBehavior): NoteRefreshBehavior
+
+    @Binds
+    abstract fun bindsClearDataBehavior(behavior: NoSyncClearDataBehavior): ClearDataBehavior
 
 }
