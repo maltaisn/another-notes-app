@@ -1,0 +1,12 @@
+theme: jekyll-theme-primer
+plugins:
+  - jekyll-relative-links
+relative_links:
+  enabled: true
+  collections: true
+include:
+  - README.md
+  - CHANGELOG.md
+  - LICENSE.txt
+  - PRIVACY_POLICY.md
+  - TERMS_AND_CONDITIONS.md
