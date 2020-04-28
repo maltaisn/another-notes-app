@@ -1,9 +1,5 @@
 dev/
 
-# Publishing
-/app/src/*/play/listings/*/graphics/**
-/app/src/*/play/*.*
-
 # Firebase
 .firebaserc
 
