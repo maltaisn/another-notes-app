@@ -1,1 +1,1 @@
-Première version
+Liens réparés dans l'écran Paramètres pour la déclaration de confidentialité et les conditions d'utilisation.

@@ -1,1 +1,1 @@
-Initial release
+Fixed links in settings screen for privacy policy and terms & conditions.

@@ -15,7 +15,7 @@ components.
 
 ### Screenshots
 
-<img alt="Screenshot 1" src="screenshots/screenshot1.png" width="40%"/>  <img alt="Screenshot 2" src="screenshots/screenshot2.png" width="40%"/>
+<img alt="Screenshot 1" src="app/src/main/play/listings/en-US/graphics/phone-screenshots/1.png" width="40%"/>  <img alt="Screenshot 2" src="app/src/main/play/listings/en-US/graphics/phone-screenshots/2.png" width="40%"/>
 
 ### Changelog
 [View changelog here][changelog] for the app release notes.
