@@ -7,6 +7,7 @@ plugins {
     id "androidx.navigation.safeargs.kotlin"
     id "com.google.gms.google-services"
     id "com.google.android.gms.oss-licenses-plugin"
+    id "com.github.triplet.play"
 }
 
 android {
@@ -31,6 +32,8 @@ android {
         // things that couldn't be extracted to another source set.
         buildConfigField "String", "FLAVOR_SYNC", '"sync"'
         buildConfigField "String", "FLAVOR_NO_SYNC", '"noSync"'
+
+        resConfigs "en", "fr"
     }
 
     viewBinding {
@@ -115,6 +118,12 @@ android {
                 "-Xopt-in=kotlinx.coroutines.FlowPreview"
         ]
     }
+
+    playConfigs {
+        noSync {
+            enabled = false
+        }
+    }
 }
 
 dependencies {
@@ -178,6 +187,10 @@ dependencies {
     // Dependencies for android tests
     androidTestImplementation "androidx.test:runner:1.2.0"
     androidTestImplementation "androidx.test.ext:junit:1.1.1"
+    androidTestImplementation "androidx.test:core:$androidxTestCoreVersion"
+    androidTestImplementation "androidx.test:core-ktx:$androidxTestCoreKtxVersion"
+    androidTestImplementation "androidx.test.ext:junit-ktx:$androidxTestExtVersion"
+    androidTestImplementation "androidx.test:rules:$androidxTestRulesVersion"
     androidTestImplementation "org.jetbrains.kotlin:kotlin-test:$kotlinVersion"
     androidTestImplementation "org.jetbrains.kotlin:kotlin-test-junit:$kotlinVersion"
     androidTestImplementation "org.mockito:mockito-android:$mockitoAndroidVersion"
@@ -187,4 +200,8 @@ dependencies {
 
 allOpen {
     annotation "com.maltaisn.notes.OpenClass"
+}
+
+play {
+    serviceAccountCredentials = file("../dev/release/google-play-api-key.json")
 }

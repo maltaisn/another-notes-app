@@ -1,0 +1,11 @@
+Another notes app, like there have been tens of thousands before.
+
+This app doesn't strive to innovate, it strives to provide a simple way to 
+take notes. Material design is used to create a visually attractive interface.
+
+Features:
+- Text and list notes.
+- Archive and recycle bin.
+- Search text across all notes.
+- Light and dark theme support.
+- Open source and in active development.
