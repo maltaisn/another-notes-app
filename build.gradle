@@ -11,7 +11,8 @@ buildscript {
         classpath "androidx.navigation:navigation-safe-args-gradle-plugin:$navVersion"
         classpath "com.google.gms:google-services:$googleServicesVersion"
         classpath "com.google.android.gms:oss-licenses-plugin:$ossLicensesPluginVersion"
-        classpath("com.github.triplet.gradle:play-publisher:$gppVersion")
+        classpath "com.github.triplet.gradle:play-publisher:$gppVersion"
+        classpath "com.github.breadmoirai:github-release:$githubReleasePluginVersion"
     }
 }
 

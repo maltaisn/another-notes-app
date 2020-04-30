@@ -8,6 +8,7 @@ plugins {
     id "com.google.gms.google-services"
     id "com.google.android.gms.oss-licenses-plugin"
     id "com.github.triplet.play"
+    id "com.github.breadmoirai.github-release"
 }
 
 android {
@@ -59,10 +60,12 @@ android {
 
     signingConfigs {
         release {
-            storeFile file(releaseKeyStoreFile)
-            storePassword releaseKeyStorePassword
-            keyAlias releaseKeyStoreKey
-            keyPassword releaseKeyStoreKeyPassword
+            if (project.hasProperty("releaseKeyStoreFile")) {
+                storeFile file(releaseKeyStoreFile)
+                storePassword releaseKeyStorePassword
+                keyAlias releaseKeyStoreKey
+                keyPassword releaseKeyStoreKeyPassword
+            }
         }
     }
 
@@ -196,6 +199,9 @@ allOpen {
     annotation "com.maltaisn.notes.OpenClass"
 }
 
+play {
+    serviceAccountCredentials = file("fake-key.json")
+}
 if (file("publishing.gradle").exists()) {
     apply from: "publishing.gradle"
 }
