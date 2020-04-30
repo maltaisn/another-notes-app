@@ -118,12 +118,6 @@ android {
                 "-Xopt-in=kotlinx.coroutines.FlowPreview"
         ]
     }
-
-    playConfigs {
-        noSync {
-            enabled = false
-        }
-    }
 }
 
 dependencies {
@@ -202,6 +196,6 @@ allOpen {
     annotation "com.maltaisn.notes.OpenClass"
 }
 
-play {
-    serviceAccountCredentials = file("../dev/release/google-play-api-key.json")
+if (file("publishing.gradle").exists()) {
+    apply from: "publishing.gradle"
 }

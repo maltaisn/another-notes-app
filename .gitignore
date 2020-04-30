@@ -1,5 +1,8 @@
 dev/
 
+# Publishing
+/app/publishing.gradle
+
 # Firebase
 .firebaserc
 
