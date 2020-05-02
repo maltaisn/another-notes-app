@@ -22,10 +22,10 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.WindowManager
 import androidx.appcompat.app.AlertDialog
-import androidx.core.os.bundleOf
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.navArgs
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.maltaisn.notes.App
@@ -42,6 +42,8 @@ class PasswordResetDialog : DialogFragment() {
 
     @Inject lateinit var viewModelProvider: Provider<PasswordResetViewModel>
     private val viewModel by viewModel { viewModelProvider.get() }
+
+    private val args: PasswordResetDialogArgs by navArgs()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -65,10 +67,7 @@ class PasswordResetDialog : DialogFragment() {
 
         // Set initial email
         if (state == null) {
-            val args = requireArguments()
-            if (args.containsKey(ARG_EMAIL)) {
-                emailEdt.setText(args.getString(ARG_EMAIL))
-            }
+            emailEdt.setText(args.initialEmail)
         }
 
         // Create dialog
@@ -111,17 +110,6 @@ class PasswordResetDialog : DialogFragment() {
         }
 
         return dialog
-    }
-
-    companion object {
-
-        private const val ARG_EMAIL = "email"
-
-        fun newInstance(initialEmail: String): PasswordResetDialog {
-            val dialog = PasswordResetDialog()
-            dialog.arguments = bundleOf(ARG_EMAIL to initialEmail)
-            return dialog
-        }
     }
 
 }

@@ -30,9 +30,7 @@ import com.maltaisn.notes.App
 import com.maltaisn.notes.R
 import com.maltaisn.notes.databinding.FragmentSyncBinding
 import com.maltaisn.notes.hideKeyboard
-import com.maltaisn.notes.ui.sync.accountdelete.AccountDeleteDialog
 import com.maltaisn.notes.ui.sync.main.SyncMainFragment
-import com.maltaisn.notes.ui.sync.passwordchange.PasswordChangeDialog
 import com.maltaisn.notes.ui.sync.signin.SyncSignInFragment
 import com.maltaisn.notes.ui.sync.signup.SyncSignUpFragment
 import com.maltaisn.notes.ui.viewModel
@@ -98,10 +96,10 @@ class SyncFragment : Fragment(), Toolbar.OnMenuItemClickListener {
 
     override fun onMenuItemClick(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.item_password_change -> PasswordChangeDialog()
-                    .show(childFragmentManager, PASSWORD_CHANGE_DIALOG_TAG)
-            R.id.item_account_delete -> AccountDeleteDialog()
-                    .show(childFragmentManager, ACCOUNT_DELETE_DIALOG_TAG)
+            R.id.item_password_change -> findNavController().navigate(
+                    SyncFragmentDirections.actionSyncToPasswordChange())
+            R.id.item_account_delete -> findNavController().navigate(
+                    SyncFragmentDirections.actionSyncToAccountDelete())
             else -> return false
         }
         return true

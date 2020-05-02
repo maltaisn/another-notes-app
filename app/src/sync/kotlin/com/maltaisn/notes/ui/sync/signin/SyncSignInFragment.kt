@@ -24,14 +24,15 @@ import androidx.core.view.isInvisible
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
 import com.maltaisn.notes.App
 import com.maltaisn.notes.databinding.FragmentSyncSignInBinding
 import com.maltaisn.notes.hideKeyboard
 import com.maltaisn.notes.ui.EventObserver
 import com.maltaisn.notes.ui.sync.SyncFragment
+import com.maltaisn.notes.ui.sync.SyncFragmentDirections
 import com.maltaisn.notes.ui.sync.SyncPage
-import com.maltaisn.notes.ui.sync.passwordreset.PasswordResetDialog
 import com.maltaisn.notes.ui.sync.signin.SyncSignInViewModel.FieldError
 import com.maltaisn.notes.ui.viewModel
 import javax.inject.Inject
@@ -74,8 +75,8 @@ class SyncSignInFragment : Fragment() {
             viewModel.signIn()
         }
         binding.passwordResetBtn.setOnClickListener {
-            PasswordResetDialog.newInstance(emailEdt.text.toString())
-                    .show(childFragmentManager, PASSWORD_RESET_DIALOG_TAG)
+            findNavController().navigate(SyncFragmentDirections
+                    .actionSyncToPasswordReset(emailEdt.text.toString()))
         }
 
         emailEdt.doAfterTextChanged {

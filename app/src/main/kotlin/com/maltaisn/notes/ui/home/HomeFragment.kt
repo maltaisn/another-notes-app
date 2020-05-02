@@ -174,7 +174,8 @@ class HomeFragment : NoteFragment(), Toolbar.OnMenuItemClickListener,
 
     override fun onMenuItemClick(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.item_search -> findNavController().navigate(R.id.action_home_to_search)
+            R.id.item_search -> findNavController().navigate(
+                    HomeFragmentDirections.actionHomeToSearch())
             R.id.item_layout -> viewModel.toggleListLayoutMode()
             R.id.item_empty_trash -> viewModel.emptyTrashPre()
             R.id.item_extra_action -> viewModel.doExtraAction()
@@ -188,8 +189,10 @@ class HomeFragment : NoteFragment(), Toolbar.OnMenuItemClickListener,
             R.id.item_location_active -> viewModel.setNoteStatus(NoteStatus.ACTIVE)
             R.id.item_location_archived -> viewModel.setNoteStatus(NoteStatus.ARCHIVED)
             R.id.item_location_deleted -> viewModel.setNoteStatus(NoteStatus.TRASHED)
-            R.id.item_sync -> findNavController().navigate(R.id.action_home_to_sync)
-            R.id.item_settings -> findNavController().navigate(R.id.action_home_to_settings)
+            R.id.item_sync -> findNavController().navigate(
+                    HomeFragmentDirections.actionHomeToSync())
+            R.id.item_settings -> findNavController().navigate(
+                    HomeFragmentDirections.actionHomeToSettings())
             else -> return false
         }
 

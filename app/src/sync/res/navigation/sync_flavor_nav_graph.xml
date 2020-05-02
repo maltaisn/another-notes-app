@@ -26,6 +26,46 @@
         android:id="@+id/fragment_sync"
         android:name="com.maltaisn.notes.ui.sync.SyncFragment"
         tools:layout="@layout/fragment_sync"
+        >
+
+        <action
+            android:id="@+id/action_sync_to_password_reset"
+            app:destination="@id/dialog_password_reset"
+            />
+
+        <action
+            android:id="@+id/action_sync_to_password_change"
+            app:destination="@id/dialog_password_change"
+            />
+
+        <action
+            android:id="@+id/action_sync_to_account_delete"
+            app:destination="@id/dialog_account_delete"
+            />
+
+    </fragment>
+
+    <dialog
+        android:id="@+id/dialog_password_reset"
+        android:name="com.maltaisn.notes.ui.sync.passwordreset.PasswordResetDialog"
+        tools:layout="@layout/dialog_password_reset"
+        >
+        <argument
+            android:name="initialEmail"
+            app:argType="string"
+            />
+    </dialog>
+
+    <dialog
+        android:id="@+id/dialog_password_change"
+        android:name="com.maltaisn.notes.ui.sync.passwordchange.PasswordChangeDialog"
+        tools:layout="@layout/dialog_password_change"
+        />
+
+    <dialog
+        android:id="@+id/dialog_account_delete"
+        android:name="com.maltaisn.notes.ui.sync.accountdelete.AccountDeleteDialog"
+        tools:layout="@layout/dialog_account_delete"
         />
 
 </navigation>
