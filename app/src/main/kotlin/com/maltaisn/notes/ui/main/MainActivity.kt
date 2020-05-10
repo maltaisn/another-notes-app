@@ -28,6 +28,7 @@ import com.maltaisn.notes.App
 import com.maltaisn.notes.NavGraphDirections
 import com.maltaisn.notes.R
 import com.maltaisn.notes.databinding.ActivityMainBinding
+import com.maltaisn.notes.navigateSafe
 import com.maltaisn.notes.ui.EventObserver
 import com.maltaisn.notes.ui.viewModel
 import javax.inject.Inject
@@ -82,7 +83,7 @@ class MainActivity : AppCompatActivity() {
 
         // Observers
         viewModel.editItemEvent.observe(this, EventObserver { noteId ->
-            navController.navigate(NavGraphDirections.actionEditNote(noteId))
+            navController.navigateSafe(NavGraphDirections.actionEditNote(noteId))
         })
     }
 

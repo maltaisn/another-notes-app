@@ -30,6 +30,7 @@ import com.maltaisn.notes.App
 import com.maltaisn.notes.R
 import com.maltaisn.notes.databinding.FragmentSyncBinding
 import com.maltaisn.notes.hideKeyboard
+import com.maltaisn.notes.navigateSafe
 import com.maltaisn.notes.ui.sync.main.SyncMainFragment
 import com.maltaisn.notes.ui.sync.signin.SyncSignInFragment
 import com.maltaisn.notes.ui.sync.signup.SyncSignUpFragment
@@ -96,9 +97,9 @@ class SyncFragment : Fragment(), Toolbar.OnMenuItemClickListener {
 
     override fun onMenuItemClick(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.item_password_change -> findNavController().navigate(
+            R.id.item_password_change -> findNavController().navigateSafe(
                     SyncFragmentDirections.actionSyncToPasswordChange())
-            R.id.item_account_delete -> findNavController().navigate(
+            R.id.item_account_delete -> findNavController().navigateSafe(
                     SyncFragmentDirections.actionSyncToAccountDelete())
             else -> return false
         }

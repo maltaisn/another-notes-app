@@ -28,10 +28,7 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
-import com.maltaisn.notes.App
-import com.maltaisn.notes.BuildConfig
-import com.maltaisn.notes.NavGraphDirections
-import com.maltaisn.notes.R
+import com.maltaisn.notes.*
 import com.maltaisn.notes.model.entity.NoteStatus
 import com.maltaisn.notes.ui.EventObserver
 import com.maltaisn.notes.ui.common.ConfirmDialog
@@ -102,7 +99,7 @@ class HomeFragment : NoteFragment(), Toolbar.OnMenuItemClickListener,
         // Floating action button
         val fab = binding.fab
         fab.setOnClickListener {
-            navController.navigate(NavGraphDirections.actionEditNote())
+            navController.navigateSafe(NavGraphDirections.actionEditNote())
         }
 
         // Observers
@@ -174,7 +171,7 @@ class HomeFragment : NoteFragment(), Toolbar.OnMenuItemClickListener,
 
     override fun onMenuItemClick(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.item_search -> findNavController().navigate(
+            R.id.item_search -> findNavController().navigateSafe(
                     HomeFragmentDirections.actionHomeToSearch())
             R.id.item_layout -> viewModel.toggleListLayoutMode()
             R.id.item_empty_trash -> viewModel.emptyTrashPre()
@@ -189,9 +186,9 @@ class HomeFragment : NoteFragment(), Toolbar.OnMenuItemClickListener,
             R.id.item_location_active -> viewModel.setNoteStatus(NoteStatus.ACTIVE)
             R.id.item_location_archived -> viewModel.setNoteStatus(NoteStatus.ARCHIVED)
             R.id.item_location_deleted -> viewModel.setNoteStatus(NoteStatus.TRASHED)
-            R.id.item_sync -> findNavController().navigate(
+            R.id.item_sync -> findNavController().navigateSafe(
                     HomeFragmentDirections.actionHomeToSync())
-            R.id.item_settings -> findNavController().navigate(
+            R.id.item_settings -> findNavController().navigateSafe(
                     HomeFragmentDirections.actionHomeToSettings())
             else -> return false
         }

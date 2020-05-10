@@ -28,6 +28,7 @@ import com.maltaisn.notes.NavGraphDirections
 import com.maltaisn.notes.R
 import com.maltaisn.notes.databinding.FragmentNoteBinding
 import com.maltaisn.notes.model.entity.NoteStatus
+import com.maltaisn.notes.navigateSafe
 import com.maltaisn.notes.ui.EventObserver
 import com.maltaisn.notes.ui.SharedViewModel
 import com.maltaisn.notes.ui.activityViewModel
@@ -87,7 +88,7 @@ abstract class NoteFragment : Fragment(), ActionMode.Callback, ConfirmDialog.Cal
         })
 
         viewModel.editItemEvent.observe(viewLifecycleOwner, EventObserver { noteId ->
-            findNavController().navigate(NavGraphDirections.actionEditNote(noteId))
+            findNavController().navigateSafe(NavGraphDirections.actionEditNote(noteId))
         })
 
         viewModel.currentSelection.observe(viewLifecycleOwner, Observer { selection ->

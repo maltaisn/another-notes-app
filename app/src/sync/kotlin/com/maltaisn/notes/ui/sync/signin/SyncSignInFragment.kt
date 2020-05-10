@@ -29,6 +29,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.maltaisn.notes.App
 import com.maltaisn.notes.databinding.FragmentSyncSignInBinding
 import com.maltaisn.notes.hideKeyboard
+import com.maltaisn.notes.navigateSafe
 import com.maltaisn.notes.ui.EventObserver
 import com.maltaisn.notes.ui.sync.SyncFragment
 import com.maltaisn.notes.ui.sync.SyncFragmentDirections
@@ -75,7 +76,7 @@ class SyncSignInFragment : Fragment() {
             viewModel.signIn()
         }
         binding.passwordResetBtn.setOnClickListener {
-            findNavController().navigate(SyncFragmentDirections
+            findNavController().navigateSafe(SyncFragmentDirections
                     .actionSyncToPasswordReset(emailEdt.text.toString()))
         }
 

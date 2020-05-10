@@ -20,8 +20,19 @@ import android.content.Context
 import android.text.method.PasswordTransformationMethod
 import android.view.View
 import android.view.inputmethod.InputMethodManager
+import androidx.navigation.NavController
+import androidx.navigation.NavDirections
 import com.google.android.material.textfield.TextInputLayout
 
+
+fun NavController.navigateSafe(directions: NavDirections) {
+    try {
+        this.navigate(directions)
+    } catch (e: IllegalArgumentException) {
+        // "navigation destination ___ is unknown to this NavController".
+        // This happens if user presses two buttons at the same time for example.
+    }
+}
 
 /**
  * Try to hide the keyboard from [this] view.
