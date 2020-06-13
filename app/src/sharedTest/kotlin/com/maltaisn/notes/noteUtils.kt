@@ -24,41 +24,35 @@ import java.util.*
 
 fun testNote(
         id: Long = Note.NO_ID,
-        uuid: String = Note.generateNoteUuid(),
         type: NoteType = NoteType.TEXT,
         title: String = "note",
         content: String = "content",
         metadata: NoteMetadata = BlankNoteMetadata,
         added: Date = Date(),
         modified: Date = Date(),
-        status: NoteStatus = NoteStatus.ACTIVE,
-        synced: Boolean = true
-) = Note(id, uuid, type, title, content, metadata, added, modified, status, synced)
+        status: NoteStatus = NoteStatus.ACTIVE
+) = Note(id, type, title, content, metadata, added, modified, status)
 
 fun listNote(
         items: List<ListNoteItem>,
         id: Long = Note.NO_ID,
-        uuid: String = id.toString(),
         title: String = "note",
         added: Date = Date(),
         modified: Date = Date(),
-        status: NoteStatus = NoteStatus.ACTIVE,
-        synced: Boolean = true
-) = Note(id, uuid, NoteType.LIST, title, items.joinToString("\n") { it.content },
-        ListNoteMetadata(items.map { it.checked }), added, modified, status, synced)
+        status: NoteStatus = NoteStatus.ACTIVE
+) = Note(id, NoteType.LIST, title, items.joinToString("\n") { it.content },
+        ListNoteMetadata(items.map { it.checked }), added, modified, status)
 
 
 fun assertNoteEquals(expected: Note, actual: Note,
                      dateEpsilon: Long = 1000,
-                     ignoreId: Boolean = true,
-                     ignoreUuid: Boolean = true) {
+                     ignoreId: Boolean = true) {
     assertTrue("Notes have different added dates.",
             (expected.addedDate.time - actual.addedDate.time) < dateEpsilon)
     assertTrue("Notes have different last modified dates.",
             (expected.lastModifiedDate.time - actual.lastModifiedDate.time) < dateEpsilon)
     assertEquals(expected, actual.copy(
             id = if (ignoreId) expected.id else actual.id,
-            uuid = if (ignoreUuid) expected.uuid else actual.uuid,
             addedDate = expected.addedDate,
             lastModifiedDate = expected.lastModifiedDate))
 }

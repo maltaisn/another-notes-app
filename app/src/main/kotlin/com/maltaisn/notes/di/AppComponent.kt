@@ -16,15 +16,21 @@
 
 package com.maltaisn.notes.di
 
+import android.content.Context
 import com.maltaisn.notes.App
 import com.maltaisn.notes.ui.edit.EditFragment
 import com.maltaisn.notes.ui.home.HomeFragment
 import com.maltaisn.notes.ui.main.MainActivity
 import com.maltaisn.notes.ui.search.SearchFragment
 import com.maltaisn.notes.ui.settings.SettingsFragment
+import dagger.BindsInstance
+import dagger.Component
+import javax.inject.Singleton
 
 
-interface BaseAppComponent {
+@Singleton
+@Component(modules = [AppModule::class])
+interface AppComponent {
 
     fun inject(app: App)
 
@@ -35,4 +41,8 @@ interface BaseAppComponent {
     fun inject(fragment: EditFragment)
     fun inject(fragment: SettingsFragment)
 
+    @Component.Factory
+    interface Factory {
+        fun create(@BindsInstance appContext: Context): AppComponent
+    }
 }

@@ -122,10 +122,8 @@ class EditViewModel @Inject constructor(
                 // Note doesn't exist, create new blank text note.
                 val date = Date()
                 note = BLANK_NOTE.copy(
-                        uuid = Note.generateNoteUuid(),
                         addedDate = date,
-                        lastModifiedDate = date,
-                        synced = false)
+                        lastModifiedDate = date)
                 val id = notesRepository.insertNote(note)
                 note = note.copy(id = id)
 
@@ -143,7 +141,7 @@ class EditViewModel @Inject constructor(
 
     /**
      * Create note and save it in database if it was changed.
-     * This updates last modified date and synced flag.
+     * This updates last modified date.
      */
     fun save() {
         // Update note
@@ -154,7 +152,7 @@ class EditViewModel @Inject constructor(
             val oldNote = notesRepository.getById(note.id)
             if (oldNote != note) {
                 // Note was changed.
-                note = note.copy(lastModifiedDate = Date(), synced = false)
+                note = note.copy(lastModifiedDate = Date())
                 notesRepository.updateNote(note)
             }
         }
@@ -236,11 +234,9 @@ class EditViewModel @Inject constructor(
                 val date = Date()
                 val copy = note.copy(
                         id = Note.NO_ID,
-                        uuid = Note.generateNoteUuid(),
                         title = newTitle,
                         addedDate = date,
-                        lastModifiedDate = date,
-                        synced = false)
+                        lastModifiedDate = date)
                 val id = notesRepository.insertNote(copy)
                 this@EditViewModel.note = copy.copy(id = id)
             }
@@ -332,8 +328,8 @@ class EditViewModel @Inject constructor(
                 metadata = ListNoteMetadata(items.map { it.checked })
             }
         }
-        note = Note(note.id, note.uuid, note.type, title, content, metadata,
-                note.addedDate, note.lastModifiedDate, status, note.synced)
+        note = Note(note.id, note.type, title, content, metadata,
+                note.addedDate, note.lastModifiedDate, status)
     }
 
     /**
@@ -489,8 +485,8 @@ class EditViewModel @Inject constructor(
 
 
     companion object {
-        private val BLANK_NOTE = Note(Note.NO_ID, "", NoteType.TEXT, "", "",
-                BlankNoteMetadata, Date(0), Date(0), NoteStatus.ACTIVE, true)
+        private val BLANK_NOTE = Note(Note.NO_ID, NoteType.TEXT, "", "",
+                BlankNoteMetadata, Date(0), Date(0), NoteStatus.ACTIVE)
     }
 
 }

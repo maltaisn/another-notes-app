@@ -20,8 +20,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.maltaisn.notes.R
 import com.maltaisn.notes.model.NotesRepository
+import com.maltaisn.notes.sync.R
 import com.maltaisn.notes.ui.Event
 import com.maltaisn.notes.ui.send
 import kotlinx.coroutines.launch
@@ -29,8 +29,7 @@ import javax.inject.Inject
 
 
 class SettingsViewModel @Inject constructor(
-        private val notesRepository: NotesRepository,
-        private val clearDataBehavior: ClearDataBehavior
+        private val notesRepository: NotesRepository
 ) : ViewModel() {
 
     private val _messageEvent = MutableLiveData<Event<Int>>()
@@ -41,19 +40,11 @@ class SettingsViewModel @Inject constructor(
     val exportDataEvent: LiveData<Event<String>>
         get() = _exportDataEvent
 
-    private val _clearDataDialogEvent = MutableLiveData<Event<Int>>()
-    val clearDataDialogEvent: LiveData<Event<Int>>
-        get() = _clearDataDialogEvent
-
 
     fun exportData() {
         viewModelScope.launch {
             _exportDataEvent.send(notesRepository.getJsonData())
         }
-    }
-
-    fun clearDataPre() {
-        _clearDataDialogEvent.send(clearDataBehavior.clearDataMessage)
     }
 
     fun clearData() {

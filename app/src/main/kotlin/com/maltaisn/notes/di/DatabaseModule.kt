@@ -31,14 +31,12 @@ object DatabaseModule {
     @Singleton
     @JvmStatic
     fun providesDatabase(context: Context) = Room.databaseBuilder(context,
-            NotesDatabase::class.java, "notes_db").build()
+            NotesDatabase::class.java, "notes_db")
+            .addMigrations(NotesDatabase.MIGRATION_1_2)
+            .build()
 
     @Provides
     @JvmStatic
     fun providesNotesDao(database: NotesDatabase) = database.notesDao()
-
-    @Provides
-    @JvmStatic
-    fun providesDeletedNotesDao(database: NotesDatabase) = database.deletedNotesDao()
 
 }

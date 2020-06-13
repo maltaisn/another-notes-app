@@ -16,13 +16,16 @@
 
 package com.maltaisn.notes.ui.home
 
-import androidx.lifecycle.*
-import com.maltaisn.notes.R
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.viewModelScope
 import com.maltaisn.notes.model.NotesRepository
 import com.maltaisn.notes.model.PrefsManager
 import com.maltaisn.notes.model.converter.NoteStatusConverter
 import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.model.entity.NoteStatus
+import com.maltaisn.notes.sync.R
 import com.maltaisn.notes.ui.AssistedSavedStateViewModelFactory
 import com.maltaisn.notes.ui.Event
 import com.maltaisn.notes.ui.note.NoteViewModel
@@ -35,7 +38,6 @@ import com.maltaisn.notes.ui.send
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.yield
@@ -45,7 +47,6 @@ class HomeViewModel @AssistedInject constructor(
         @Assisted savedStateHandle: SavedStateHandle,
         notesRepository: NotesRepository,
         prefs: PrefsManager,
-        private val refreshBehavior: NoteRefreshBehavior,
         private val buildTypeBehavior: BuildTypeBehavior
 ) : NoteViewModel(savedStateHandle, notesRepository, prefs), NoteAdapter.Callback {
 
@@ -59,13 +60,6 @@ class HomeViewModel @AssistedInject constructor(
     val messageEvent: LiveData<Event<Int>>
         get() = _messageEvent
 
-    val canRefresh = refreshBehavior.canRefreshChannel
-            .asFlow().asLiveData(viewModelScope.coroutineContext)
-
-    private val _stopRefreshEvent = MutableLiveData<Event<Unit>>()
-    val stopRefreshEvent: LiveData<Event<Unit>>
-        get() = _stopRefreshEvent
-
     private val _showEmptyTrashDialogEvent = MutableLiveData<Event<Unit>>()
     val showEmptyTrashDialogEvent: LiveData<Event<Unit>>
         get() = _showEmptyTrashDialogEvent
@@ -75,8 +69,6 @@ class HomeViewModel @AssistedInject constructor(
             restoreState()
 
             setNoteStatus(noteStatus.value!!)
-
-            refreshBehavior.start()
         }
     }
 
@@ -123,16 +115,6 @@ class HomeViewModel @AssistedInject constructor(
     fun emptyTrash() {
         viewModelScope.launch {
             notesRepository.emptyTrash()
-        }
-    }
-
-    fun refreshNotes() {
-        viewModelScope.launch {
-            val message = refreshBehavior.refreshNotes()
-            if (message != null) {
-                _messageEvent.send(message)
-            }
-            _stopRefreshEvent.send()
         }
     }
 

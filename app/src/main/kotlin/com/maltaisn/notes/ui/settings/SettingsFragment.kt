@@ -23,14 +23,13 @@ import androidx.navigation.fragment.findNavController
 import androidx.preference.DropDownPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
-import androidx.preference.PreferenceGroup
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import com.google.android.material.snackbar.Snackbar
 import com.maltaisn.notes.App
-import com.maltaisn.notes.BuildConfig
-import com.maltaisn.notes.R
-import com.maltaisn.notes.databinding.FragmentSettingsBinding
 import com.maltaisn.notes.model.PrefsManager
+import com.maltaisn.notes.sync.BuildConfig
+import com.maltaisn.notes.sync.R
+import com.maltaisn.notes.sync.databinding.FragmentSettingsBinding
 import com.maltaisn.notes.ui.AppTheme
 import com.maltaisn.notes.ui.EventObserver
 import com.maltaisn.notes.ui.common.ConfirmDialog
@@ -74,21 +73,10 @@ class SettingsFragment : PreferenceFragmentCompat(), ConfirmDialog.Callback {
             intent.putExtra(Intent.EXTRA_TEXT, data)
             startActivity(Intent.createChooser(intent, null))
         })
-
-        viewModel.clearDataDialogEvent.observe(viewLifecycleOwner, EventObserver { message ->
-            ConfirmDialog.newInstance(
-                    title = R.string.pref_data_clear,
-                    message = message,
-                    btnPositive = R.string.action_clear
-            ).show(childFragmentManager, CLEAR_DATA_DIALOG_TAG)
-        })
     }
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.prefs, rootKey)
-
-        val isSyncFlavor = BuildConfig.FLAVOR == BuildConfig.FLAVOR_SYNC
-        requirePreference<PreferenceGroup>(PrefsManager.GROUP_SYNC).isVisible = isSyncFlavor
 
         requirePreference<DropDownPreference>(PrefsManager.THEME)
                 .setOnPreferenceChangeListener { _, theme ->
@@ -105,7 +93,11 @@ class SettingsFragment : PreferenceFragmentCompat(), ConfirmDialog.Callback {
 
         requirePreference<Preference>(PrefsManager.CLEAR_DATA)
                 .setOnPreferenceClickListener {
-                    viewModel.clearDataPre()
+                    ConfirmDialog.newInstance(
+                            title = R.string.pref_data_clear,
+                            message = R.string.pref_data_clear_confirm_message,
+                            btnPositive = R.string.action_clear
+                    ).show(childFragmentManager, CLEAR_DATA_DIALOG_TAG)
                     true
                 }
 

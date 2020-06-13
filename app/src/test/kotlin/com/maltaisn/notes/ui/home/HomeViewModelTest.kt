@@ -19,10 +19,10 @@ package com.maltaisn.notes.ui.home
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.SavedStateHandle
 import com.maltaisn.notes.MainCoroutineRule
-import com.maltaisn.notes.R
 import com.maltaisn.notes.model.MockNotesRepository
 import com.maltaisn.notes.model.PrefsManager
 import com.maltaisn.notes.model.entity.NoteStatus
+import com.maltaisn.notes.sync.R
 import com.maltaisn.notes.testNote
 import com.maltaisn.notes.ui.StatusChange
 import com.maltaisn.notes.ui.assertLiveDataEventSent
@@ -34,12 +34,12 @@ import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
-import junit.framework.Assert.assertEquals
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
@@ -50,8 +50,7 @@ class HomeViewModelTest {
 
     private lateinit var notesRepo: MockNotesRepository
     private lateinit var prefs: PrefsManager
-    
-    private val noteRefreshBehavior: NoteRefreshBehavior = mock()
+
     private val buildTypeBehavior: BuildTypeBehavior = mock()
 
     
@@ -75,7 +74,7 @@ class HomeViewModelTest {
         }
 
         viewModel = HomeViewModel(SavedStateHandle(), notesRepo, prefs,
-                noteRefreshBehavior, buildTypeBehavior)
+                buildTypeBehavior)
     }
 
     @Test
@@ -158,12 +157,6 @@ class HomeViewModelTest {
 
         verify(prefs).listLayoutMode = NoteListLayoutMode.GRID
         assertEquals(NoteListLayoutMode.GRID, viewModel.listLayoutMode.getOrAwaitValue())
-    }
-
-    @Test
-    fun `should invoke refresh behavior`() = mainCoroutineRule.runBlockingTest {
-        viewModel.refreshNotes()
-        verify(noteRefreshBehavior).refreshNotes()
     }
 
     @Test

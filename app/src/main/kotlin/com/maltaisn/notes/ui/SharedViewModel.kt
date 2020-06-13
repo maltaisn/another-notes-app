@@ -20,8 +20,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.maltaisn.notes.R
 import com.maltaisn.notes.model.NotesRepository
+import com.maltaisn.notes.sync.R
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 

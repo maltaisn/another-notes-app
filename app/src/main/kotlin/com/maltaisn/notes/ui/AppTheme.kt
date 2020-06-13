@@ -16,7 +16,7 @@
 
 package com.maltaisn.notes.ui
 
-import com.maltaisn.notes.R
+import com.maltaisn.notes.sync.R
 
 
 /**

@@ -22,7 +22,7 @@ import androidx.annotation.StringRes
 import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.maltaisn.notes.R
+import com.maltaisn.notes.sync.R
 
 
 /**

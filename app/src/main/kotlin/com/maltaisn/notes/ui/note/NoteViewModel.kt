@@ -160,11 +160,9 @@ abstract class NoteViewModel(
             val date = Date()
             val copy = note.copy(
                     id = Note.NO_ID,
-                    uuid = Note.generateNoteUuid(),
                     title = Note.getCopiedNoteTitle(note.title, untitledName, copySuffix),
                     addedDate = date,
-                    lastModifiedDate = date,
-                    synced = false)
+                    lastModifiedDate = date)
             notesRepository.insertNote(copy)
             clearSelection()
         }
@@ -235,8 +233,7 @@ abstract class NoteViewModel(
             val oldNotes = notes.toList()
             val newNotes = oldNotes.map { note ->
                 note.copy(status = newStatus,
-                        lastModifiedDate = date,
-                        synced = false)
+                        lastModifiedDate = date)
             }
             notesRepository.updateNotes(newNotes)
 

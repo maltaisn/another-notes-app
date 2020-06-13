@@ -35,8 +35,7 @@ import kotlin.time.hours
 
 
 class MainViewModel @Inject constructor(
-        private val notesRepository: NotesRepository,
-        private val lifecycleBehavior: LifecycleBehavior
+        private val notesRepository: NotesRepository
 ) : ViewModel() {
 
     private val _editNoteEvent = MutableLiveData<Event<Long>>()
@@ -46,8 +45,6 @@ class MainViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            lifecycleBehavior.start()
-
             // Periodically remove old notes in trash
             while (true) {
                 notesRepository.deleteOldNotesInTrash()
@@ -59,13 +56,6 @@ class MainViewModel @Inject constructor(
     fun onStart() {
         viewModelScope.launch {
             notesRepository.deleteOldNotesInTrash()
-            lifecycleBehavior.onStart()
-        }
-    }
-
-    fun onStop() {
-        viewModelScope.launch {
-            lifecycleBehavior.onStop()
         }
     }
 
@@ -73,8 +63,8 @@ class MainViewModel @Inject constructor(
         // Add note to database, then edit it.
         viewModelScope.launch {
             val date = Date()
-            val note = Note(Note.NO_ID, Note.generateNoteUuid(), NoteType.TEXT,
-                    title, content, BlankNoteMetadata, date, date, NoteStatus.ACTIVE, false)
+            val note = Note(Note.NO_ID, NoteType.TEXT,
+                    title, content, BlankNoteMetadata, date, date, NoteStatus.ACTIVE)
             val id = notesRepository.insertNote(note)
             _editNoteEvent.send(id)
         }

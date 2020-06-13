@@ -79,31 +79,23 @@
             app:constraint_referenced_ids="placeholder_imv,placeholder_txv"
             />
 
-        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-            android:id="@+id/swipe_refresh_layout"
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_view"
             android:layout_width="0dp"
             android:layout_height="0dp"
+            android:paddingTop="5dp"
+            android:paddingBottom="10dp"
+            android:paddingStart="5dp"
+            android:paddingEnd="5dp"
+            android:clipToPadding="false"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            >
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recycler_view"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:paddingTop="5dp"
-                android:paddingBottom="10dp"
-                android:paddingStart="5dp"
-                android:paddingEnd="5dp"
-                android:clipToPadding="false"
-                tools:itemCount="3"
-                tools:listitem="@layout/item_note_text"
-                tools:visibility="gone"
-                />
-
-        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+            tools:itemCount="3"
+            tools:listitem="@layout/item_note_text"
+            tools:visibility="gone"
+            />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

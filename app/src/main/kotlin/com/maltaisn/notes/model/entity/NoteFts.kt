@@ -16,7 +16,10 @@
 
 package com.maltaisn.notes.model.entity
 
-import androidx.room.*
+import androidx.room.ColumnInfo
+import androidx.room.Entity
+import androidx.room.Fts4
+import androidx.room.FtsOptions
 
 
 @Fts4(
@@ -25,10 +28,6 @@ import androidx.room.*
 )
 @Entity(tableName = "notes_fts")
 data class NoteFts(
-        @PrimaryKey
-        @ColumnInfo(name = "rowid")
-        val rowid: Long,
-
         @ColumnInfo(name = "title")
         val title: String,
 

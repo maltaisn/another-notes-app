@@ -5,7 +5,6 @@ plugins {
     id "org.jetbrains.kotlin.plugin.serialization"
     id "kotlin-allopen"
     id "androidx.navigation.safeargs.kotlin"
-    id "com.google.gms.google-services"
     id "com.google.android.gms.oss-licenses-plugin"
     id "com.github.triplet.play"
     id "com.github.breadmoirai.github-release"
@@ -13,10 +12,14 @@ plugins {
 
 android {
     compileSdkVersion 29
-    buildToolsVersion "29.0.2"
+    buildToolsVersion "29.0.3"
+
+    def schemasLocation = "$projectDir/schemas"
 
     defaultConfig {
-        applicationId "com.maltaisn.notes"
+        // Using legacy package name 'com.maltaisn.notes.sync' which was used at the time where
+        // there was a sync flavor. Package can't be changed on Play Store so it was kept.
+        applicationId "com.maltaisn.notes.sync"
         minSdkVersion 21
         targetSdkVersion 29
         versionCode appVersion.split(/\./).collect { it.padLeft(2, "0") }.sum().toInteger()
@@ -25,37 +28,39 @@ android {
 
         kapt {
             arguments {
-                arg("room.schemaLocation", "$projectDir/schemas")
+                arg("room.schemaLocation", schemasLocation)
             }
         }
-
-        // Flavor name constants determining the current flavor and toggling
-        // things that couldn't be extracted to another source set.
-        buildConfigField "String", "FLAVOR_SYNC", '"sync"'
-        buildConfigField "String", "FLAVOR_NO_SYNC", '"noSync"'
 
         resConfigs "en", "fr"
     }
 
-    viewBinding {
-        enabled = true
+    buildFeatures {
+        viewBinding = true
     }
 
     sourceSets {
         // This just add "kotlin" folder to source sets since the default is "java".
-        main.java.srcDirs += "src/main/kotlin"
+        main {
+            java.srcDirs += "src/main/kotlin"
+        }
 
-        debug.java.srcDirs += "src/debug/kotlin"
-        release.java.srcDirs += "src/release/kotlin"
-
-        sync.java.srcDirs += "src/sync/kotlin"
-        noSync.java.srcDirs += "src/noSync/kotlin"
+        debug {
+            java.srcDirs += "src/debug/kotlin"
+        }
+        release {
+            java.srcDirs += "src/release/kotlin"
+        }
 
         // All test source sets have a shared source set.
         def sharedTestDir = "src/sharedTest/kotlin"
-        test.java.srcDirs += [sharedTestDir, "src/test/kotlin"]
-        androidTest.java.srcDirs += [sharedTestDir, "src/androidTest/kotlin"]
-        testSync.java.srcDirs += [sharedTestDir, "src/testSync/kotlin"]
+        test {
+            java.srcDirs += [sharedTestDir, "src/test/kotlin"]
+        }
+        androidTest {
+            java.srcDirs += [sharedTestDir, "src/androidTest/kotlin"]
+            assets.srcDirs += files(schemasLocation)
+        }
     }
 
     signingConfigs {
@@ -78,33 +83,6 @@ android {
             shrinkResources true
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
             signingConfig signingConfigs.release
-        }
-    }
-
-    // Sync flavor dimension. This is used to provide a version without sync functionality
-    // for F-Droid, because Firebase is not open source so it wouldn't allowed.
-    flavorDimensions "sync"
-
-    productFlavors {
-        sync {
-            dimension "sync"
-            applicationIdSuffix ".sync"
-            versionNameSuffix "-s"
-        }
-        noSync {
-            dimension "sync"
-            applicationIdSuffix ".nosync"
-            versionNameSuffix "-ns"
-        }
-    }
-
-    applicationVariants.all { variant ->
-        // Disable google services task in no sync flavor, because it will try to find
-        // an inexistant google-services.json file and build will fail.
-        if (variant.name == "noSyncDebug") {
-            project.tasks.getByName("processNoSyncDebugGoogleServices").enabled = false
-        } else if (variant.name == "noSyncRelease") {
-            project.tasks.getByName("processNoSyncReleaseGoogleServices").enabled = false
         }
     }
 
@@ -162,11 +140,6 @@ dependencies {
     implementation "androidx.navigation:navigation-fragment:$navVersion"
     implementation "androidx.navigation:navigation-fragment-ktx:$navVersion"
 
-    // Firebase
-    syncImplementation "com.google.firebase:firebase-auth:$firebaseAuthVersion"
-    syncImplementation "com.google.firebase:firebase-functions-ktx:$firebaseFunctionsVersion"
-    syncImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-play-services:$coroutinesVersion"
-
     // Debug
     debugImplementation "com.squareup.leakcanary:leakcanary-android:$leakCanaryVersion"
 
@@ -193,6 +166,15 @@ dependencies {
     androidTestImplementation "org.mockito:mockito-android:$mockitoAndroidVersion"
     androidTestImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:$kotlinMockitoVersion"
     androidTestImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion"
+    androidTestImplementation "androidx.room:room-testing:$roomVersion"
+}
+
+configurations.all {
+    resolutionStrategy {
+        // Fixes https://github.com/Kotlin/kotlinx.coroutines/issues/2023 bug
+        // preventing android test compilation since kotlin coroutines 1.3.6.
+        exclude group: "org.jetbrains.kotlinx", module: "kotlinx-coroutines-debug"
+    }
 }
 
 allOpen {

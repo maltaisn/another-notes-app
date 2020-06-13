@@ -23,9 +23,9 @@ import androidx.core.view.isVisible
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.SimpleItemAnimator
 import com.maltaisn.notes.App
-import com.maltaisn.notes.R
 import com.maltaisn.notes.hideKeyboard
 import com.maltaisn.notes.showKeyboard
+import com.maltaisn.notes.sync.R
 import com.maltaisn.notes.ui.note.NoteFragment
 import com.maltaisn.notes.ui.viewModel
 import javax.inject.Inject

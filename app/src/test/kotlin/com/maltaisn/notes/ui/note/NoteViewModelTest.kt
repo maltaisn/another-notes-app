@@ -34,8 +34,6 @@ import com.maltaisn.notes.ui.note.adapter.NoteItem
 import com.maltaisn.notes.ui.note.adapter.NoteListLayoutMode
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
-import junit.framework.Assert.assertEquals
-import junit.framework.Assert.assertTrue
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runBlockingTest
@@ -43,9 +41,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import java.util.*
-import kotlin.test.assertFalse
-import kotlin.test.assertNotNull
-import kotlin.test.assertNull
+import kotlin.test.*
 
 
 class NoteViewModelTest {
@@ -213,7 +209,7 @@ class NoteViewModelTest {
 
         assertNoteEquals(testNote(title = "title - Copy", content = "content",
                 type = NoteType.TEXT, status = NoteStatus.ACTIVE,
-                added = Date(), modified = Date(), synced = false), notesRepo.getById(notesRepo.lastId)!!)
+                added = Date(), modified = Date()), notesRepo.getById(notesRepo.lastId)!!)
     }
 
     @Test

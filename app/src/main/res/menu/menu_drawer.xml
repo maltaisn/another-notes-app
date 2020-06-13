@@ -44,19 +44,6 @@
     </group>
 
     <group
-        android:id="@+id/group_sync"
-        android:checkableBehavior="none"
-        >
-
-        <item
-            android:id="@+id/item_sync"
-            android:icon="@drawable/ic_sync"
-            android:title="@string/action_sync"
-            />
-
-    </group>
-
-    <group
         android:id="@+id/group_options"
         android:checkableBehavior="none"
         >

@@ -143,7 +143,7 @@ class MockNotesRepository : NotesRepository {
 
     override suspend fun getJsonData(): String {
         val notesJson = JsonObject(notes.values.associate { note ->
-            note.uuid to json.toJson(Note.serializer(), note)
+            note.id.toString() to json.toJson(Note.serializer(), note)
         })
         return json.stringify(JsonObject.serializer(), notesJson)
     }

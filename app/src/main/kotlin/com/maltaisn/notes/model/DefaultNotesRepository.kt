@@ -16,7 +16,6 @@
 
 package com.maltaisn.notes.model
 
-import com.maltaisn.notes.model.entity.DeletedNote
 import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.model.entity.NoteStatus
 import kotlinx.coroutines.NonCancellable
@@ -25,11 +24,11 @@ import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import java.util.*
+import javax.inject.Inject
 
 
-open class DefaultNotesRepository(
+class DefaultNotesRepository @Inject constructor(
         private val notesDao: NotesDao,
-        private val deletedNotesDao: DeletedNotesDao,
         private val json: Json
 ) : NotesRepository {
 
@@ -47,12 +46,10 @@ open class DefaultNotesRepository(
 
     override suspend fun deleteNote(note: Note) = withContext(NonCancellable) {
         notesDao.delete(note)
-        deletedNotesDao.insert(DeletedNote(0, note.uuid, false))
     }
 
     override suspend fun deleteNotes(notes: List<Note>) = withContext(NonCancellable) {
         notesDao.deleteAll(notes)
-        deletedNotesDao.insertAll(notes.map { DeletedNote(0, it.uuid, false) })
     }
 
     override suspend fun getById(id: Long) = notesDao.getById(id)
@@ -74,15 +71,13 @@ open class DefaultNotesRepository(
     override suspend fun getJsonData(): String {
         val notesList = notesDao.getAll()
         val notesJson = JsonObject(notesList.associate { note ->
-            note.uuid to json.toJson(Note.serializer(), note)
+            note.id.toString() to json.toJson(Note.serializer(), note)
         })
         return json.stringify(JsonObject.serializer(), notesJson)
     }
 
     override suspend fun clearAllData() {
-        // Just clear all tables. Sync flavor should provide a custom implementation.
         notesDao.clear()
-        deletedNotesDao.clear()
     }
 
 }

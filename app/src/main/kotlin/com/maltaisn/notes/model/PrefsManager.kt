@@ -21,9 +21,10 @@ import android.content.SharedPreferences
 import androidx.core.content.edit
 import androidx.preference.PreferenceManager
 import com.maltaisn.notes.OpenForTesting
-import com.maltaisn.notes.R
+import com.maltaisn.notes.sync.R
 import com.maltaisn.notes.ui.AppTheme
 import com.maltaisn.notes.ui.note.adapter.NoteListLayoutMode
+import javax.inject.Inject
 import kotlin.time.days
 
 
@@ -34,7 +35,7 @@ import kotlin.time.days
  * Flavors provide their own extension of this manager.
  */
 @OpenForTesting
-open class PrefsManager(protected val prefs: SharedPreferences) {
+class PrefsManager @Inject constructor(private val prefs: SharedPreferences) {
 
     val theme: AppTheme
         get() {
@@ -69,15 +70,12 @@ open class PrefsManager(protected val prefs: SharedPreferences) {
         const val VIEW_LICENSES = "view_licenses"
         const val VERSION = "version"
 
-        const val GROUP_SYNC = "group_sync"
-
         // Other keys
         private const val LIST_LAYOUT_MODE = "is_in_list_layout"
         private const val LAST_TRASH_REMIND_TIME = "last_deleted_remind_time"
 
         /**
          * Delay after which notes in trash are automatically deleted forever.
-         * This shouldn't be changed after first release since it may cause minor syncing issues.
          */
         val TRASH_AUTO_DELETE_DELAY = 7.days
 

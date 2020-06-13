@@ -34,21 +34,6 @@
 
     </PreferenceCategory>
 
-    <PreferenceCategory
-        app:key="group_sync"
-        app:title="@string/pref_group_sync"
-        >
-
-        <SwitchPreferenceCompat
-            app:defaultValue="false"
-            app:icon="@drawable/ic_network"
-            app:key="sync_over_wifi"
-            app:summary="@string/pref_sync_over_wifi_summary"
-            app:title="@string/pref_sync_over_wifi"
-            />
-
-    </PreferenceCategory>
-
     <PreferenceCategory app:title="@string/pref_group_data">
 
         <Preference
@@ -66,26 +51,6 @@
     </PreferenceCategory>
 
     <PreferenceCategory app:title="@string/pref_group_about">
-
-        <Preference
-            app:key="terms_conditions"
-            app:title="@string/terms_conditions"
-            >
-            <intent
-                android:action="android.intent.action.VIEW"
-                android:data="@string/terms_conditions_url"
-                />
-        </Preference>
-
-        <Preference
-            app:key="privacy_policy"
-            app:title="@string/privacy_policy"
-            >
-            <intent
-                android:action="android.intent.action.VIEW"
-                android:data="@string/privacy_policy_url"
-                />
-        </Preference>
 
         <Preference
             app:icon="@drawable/ic_code"

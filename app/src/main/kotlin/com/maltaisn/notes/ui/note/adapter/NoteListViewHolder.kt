@@ -22,10 +22,10 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.google.android.material.card.MaterialCardView
-import com.maltaisn.notes.R
-import com.maltaisn.notes.databinding.*
 import com.maltaisn.notes.model.entity.ListNoteItem
 import com.maltaisn.notes.model.entity.NoteType
+import com.maltaisn.notes.sync.R
+import com.maltaisn.notes.sync.databinding.*
 import com.maltaisn.notes.ui.note.HighlightHelper
 import kotlin.math.min
 

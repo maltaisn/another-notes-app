@@ -28,7 +28,6 @@ import com.maltaisn.notes.model.converter.NoteStatusConverter
 import com.maltaisn.notes.model.converter.NoteTypeConverter
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.Transient
 import kotlinx.serialization.UseSerializers
 import java.util.*
 
@@ -37,19 +36,11 @@ import java.util.*
 @Entity(tableName = "notes")
 data class Note(
         /**
-         * Note ID in the database. UUID could be used by integer ID is supposedly better.
-         * The default value is used for deserializing since server doesn't send this attribute.
+         * Note ID in the database.
          */
         @PrimaryKey(autoGenerate = true)
-        @Transient
         @ColumnInfo(name = "id")
-        val id: Long = NO_ID,
-
-        /**
-         * UUID used to identify the note uniquely.
-         */
-        @ColumnInfo(name = "uuid", index = true)
-        val uuid: String,
+        val id: Long,
 
         /**
          * Note type, determines the type of metadata.
@@ -100,15 +91,7 @@ data class Note(
          */
         @ColumnInfo(name = "status")
         @SerialName("status")
-        val status: NoteStatus,
-
-        /**
-         * Whether the note is synced with server or not.
-         * The default value is used for deserializing since server doesn't send this attribute.
-         */
-        @Transient
-        @ColumnInfo(name = "synced")
-        val synced: Boolean = true
+        val status: NoteStatus
 ) {
 
     init {
@@ -181,8 +164,8 @@ data class Note(
                     }
                 }
             }
-            Note(id, uuid, NoteType.TEXT, title, content, BlankNoteMetadata,
-                    addedDate, lastModifiedDate, status, synced)
+            Note(id, NoteType.TEXT, title, content, BlankNoteMetadata,
+                    addedDate, lastModifiedDate, status)
         }
     }
 
@@ -210,8 +193,8 @@ data class Note(
                 this.content
             }
             val metadata = ListNoteMetadata(List(lines.size) { false })
-            Note(id, uuid, NoteType.LIST, title, content, metadata,
-                    addedDate, lastModifiedDate, status, synced)
+            Note(id, NoteType.LIST, title, content, metadata,
+                    addedDate, lastModifiedDate, status)
         }
     }
 
@@ -253,11 +236,6 @@ data class Note(
                 else -> "$currentTitle - $copySuffix"
             }
         }
-
-        /**
-         * Generate a UUID to be used by a note.
-         */
-        fun generateNoteUuid() = UUID.randomUUID().toString().replace("-", "")
     }
 }
 

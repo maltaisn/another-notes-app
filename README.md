@@ -10,16 +10,15 @@ components.
    target="blank"><img alt="Get it on Google Play"
    src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png"
    height="80"/></a>
- <a href="https://github.com/maltaisn/another-notes-app/releases/latest"
-    target="blank"><img alt="Direct APK download"
-    src=".github/assets/direct-apk-download.png"
-    height="80"/></a>
+<a href="https://github.com/maltaisn/another-notes-app/releases/latest"
+   target="blank"><img alt="Direct APK download"
+   src=".github/assets/direct-apk-download.png"
+   height="80"/></a>
 
 #### Features
 - Text and list notes.
 - Archive and recycle bin.
 - Searching notes.
-- Synchronize & backup notes on the cloud. (optional)
 - Light and dark theme support.
 
 ### Screenshots

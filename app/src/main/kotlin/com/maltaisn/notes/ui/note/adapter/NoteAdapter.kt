@@ -24,8 +24,8 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.maltaisn.notes.R
-import com.maltaisn.notes.databinding.*
+import com.maltaisn.notes.sync.R
+import com.maltaisn.notes.sync.databinding.*
 import java.util.*
 
 

@@ -21,7 +21,7 @@ import android.graphics.Canvas
 import androidx.core.view.ViewCompat
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
-import com.maltaisn.notes.R
+import com.maltaisn.notes.sync.R
 
 
 /**

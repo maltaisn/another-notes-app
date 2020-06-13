@@ -51,13 +51,6 @@ interface NotesDao {
     suspend fun clear()
 
     /**
-     * Delete notes with a UUID contained in [uuids]. Used for syncing
-     * to delete local notes removed remotely.
-     */
-    @Query("DELETE FROM notes WHERE uuid IN (:uuids)")
-    suspend fun deleteByUuid(uuids: List<String>)
-
-    /**
      * Get all notes in database.
      * Used for exporting data.
      */
@@ -69,13 +62,6 @@ interface NotesDao {
      */
     @Query("SELECT * FROM notes WHERE id == :id")
     suspend fun getById(id: Long): Note?
-
-    /**
-     * Get a note ID from its [uuid]. Used for syncing to know which notes were added and which
-     * were updated, since local database uses ID as a key but server uses UUID.
-     */
-    @Query("SELECT id FROM notes WHERE uuid == :uuid")
-    suspend fun getIdByUuid(uuid: String): Long?
 
     /**
      * Get all notes with a [status], sorted by last modified date.
@@ -90,20 +76,6 @@ interface NotesDao {
      */
     @Query("SELECT * FROM notes WHERE status == :status AND modified_date < :minDate")
     suspend fun getByStatusAndDate(status: NoteStatus, minDate: Date): List<Note>
-
-    /**
-     * Get all notes with a changed flag set to `true`. Used for syncing.
-     */
-    @Query("SELECT * FROM notes WHERE synced == 0")
-    suspend fun getNotSynced(): List<Note>
-
-    /**
-     * Reset the changed flag of all notes to [synced]. Used after syncing.
-     * This is also used when user signs out of its account to make sure sync will work
-     * if a different account is used afterwards.
-     */
-    @Query("UPDATE notes SET synced = :synced")
-    suspend fun setSyncedFlag(synced: Boolean)
 
     /**
      * Search active and archived notes for a [query] using full-text search,

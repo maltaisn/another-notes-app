@@ -19,11 +19,12 @@ package com.maltaisn.notes.model
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 import com.maltaisn.notes.model.converter.DateTimeConverter
 import com.maltaisn.notes.model.converter.NoteMetadataConverter
 import com.maltaisn.notes.model.converter.NoteStatusConverter
 import com.maltaisn.notes.model.converter.NoteTypeConverter
-import com.maltaisn.notes.model.entity.DeletedNote
 import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.model.entity.NoteFts
 
@@ -31,16 +32,32 @@ import com.maltaisn.notes.model.entity.NoteFts
 @Database(
         entities = [
             Note::class,
-            NoteFts::class,
-            DeletedNote::class
+            NoteFts::class
         ],
-        version = 1)
+        version = 2)
 @TypeConverters(DateTimeConverter::class, NoteTypeConverter::class,
         NoteStatusConverter::class, NoteMetadataConverter::class)
 abstract class NotesDatabase : RoomDatabase() {
 
     abstract fun notesDao(): NotesDao
 
-    abstract fun deletedNotesDao(): DeletedNotesDao
 
+    companion object {
+
+        val MIGRATION_1_2 = object : Migration(1, 2) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                // By removing the sync feature, some data is now useless.
+                // - Deleted notes table
+                // - Synced flag on notes
+                // - UUID flag on notes (unique ID across devices)
+                database.apply {
+                    execSQL("DROP TABLE deleted_notes")
+                    execSQL("CREATE TABLE notes_temp (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, type INTEGER NOT NULL, title TEXT NOT NULL, content TEXT NOT NULL, metadata TEXT NOT NULL, added_date INTEGER NOT NULL, modified_date INTEGER NOT NULL, status INTEGER NOT NULL)")
+                    execSQL("INSERT INTO notes_temp (id, type, title, content, metadata, added_date, modified_date, status) SELECT id, type, title, content, metadata, added_date, modified_date, status FROM notes")
+                    execSQL("DROP TABLE notes")
+                    execSQL("ALTER TABLE notes_temp RENAME TO notes")
+                }
+            }
+        }
+    }
 }

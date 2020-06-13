@@ -21,10 +21,10 @@ import android.view.KeyEvent
 import androidx.core.view.isInvisible
 import androidx.core.widget.doOnTextChanged
 import androidx.recyclerview.widget.RecyclerView
-import com.maltaisn.notes.databinding.ItemEditContentBinding
-import com.maltaisn.notes.databinding.ItemEditItemAddBinding
-import com.maltaisn.notes.databinding.ItemEditItemBinding
-import com.maltaisn.notes.databinding.ItemEditTitleBinding
+import com.maltaisn.notes.sync.databinding.ItemEditContentBinding
+import com.maltaisn.notes.sync.databinding.ItemEditItemAddBinding
+import com.maltaisn.notes.sync.databinding.ItemEditItemBinding
+import com.maltaisn.notes.sync.databinding.ItemEditTitleBinding
 import com.maltaisn.notes.ui.edit.BulletTextWatcher
 
 /**

@@ -28,7 +28,6 @@ import kotlin.time.days
 object DebugUtils {
 
     fun getRandomNote(status: NoteStatus): Note {
-        val uuid = UUID.randomUUID().toString().replace("-", "")
         val title = getRandomString(10..32)
         val type = NoteType.values().random()
 
@@ -55,7 +54,7 @@ object DebugUtils {
         val added = getRandomDate()
         val modified = getRandomDate(added)
 
-        return Note(0, uuid, type, title, content, metadata, added, modified, status, false)
+        return Note(0, type, title, content, metadata, added, modified, status)
     }
 
     private fun getRandomString(size: IntRange): String {

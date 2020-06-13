@@ -32,10 +32,6 @@
             app:destination="@id/fragment_search"
             />
         <action
-            android:id="@+id/action_home_to_sync"
-            app:destination="@id/sync_flavor_nav_graph"
-            />
-        <action
             android:id="@+id/action_home_to_settings"
             app:destination="@id/fragment_settings"
             />
@@ -69,7 +65,5 @@
         android:id="@+id/action_edit_note"
         app:destination="@id/fragment_edit"
         />
-
-    <include app:graph="@navigation/sync_flavor_nav_graph"/>
 
 </navigation>

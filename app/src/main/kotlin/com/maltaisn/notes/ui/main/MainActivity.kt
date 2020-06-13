@@ -25,10 +25,10 @@ import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import com.google.android.material.navigation.NavigationView
 import com.maltaisn.notes.App
-import com.maltaisn.notes.NavGraphDirections
-import com.maltaisn.notes.R
-import com.maltaisn.notes.databinding.ActivityMainBinding
 import com.maltaisn.notes.navigateSafe
+import com.maltaisn.notes.sync.NavGraphDirections
+import com.maltaisn.notes.sync.R
+import com.maltaisn.notes.sync.databinding.ActivityMainBinding
 import com.maltaisn.notes.ui.EventObserver
 import com.maltaisn.notes.ui.viewModel
 import javax.inject.Inject
@@ -98,11 +98,6 @@ class MainActivity : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
         viewModel.onStart()
-    }
-
-    override fun onStop() {
-        super.onStop()
-        viewModel.onStop()
     }
 
     companion object {

@@ -24,11 +24,11 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.google.android.material.snackbar.Snackbar
-import com.maltaisn.notes.NavGraphDirections
-import com.maltaisn.notes.R
-import com.maltaisn.notes.databinding.FragmentNoteBinding
 import com.maltaisn.notes.model.entity.NoteStatus
 import com.maltaisn.notes.navigateSafe
+import com.maltaisn.notes.sync.NavGraphDirections
+import com.maltaisn.notes.sync.R
+import com.maltaisn.notes.sync.databinding.FragmentNoteBinding
 import com.maltaisn.notes.ui.EventObserver
 import com.maltaisn.notes.ui.SharedViewModel
 import com.maltaisn.notes.ui.activityViewModel

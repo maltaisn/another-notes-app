@@ -36,15 +36,15 @@ import com.maltaisn.notes.ui.edit.adapter.EditItemAddItem
 import com.maltaisn.notes.ui.edit.adapter.EditItemItem
 import com.maltaisn.notes.ui.edit.adapter.EditTitleItem
 import com.maltaisn.notes.ui.getOrAwaitValue
-import junit.framework.Assert.assertEquals
-import junit.framework.Assert.assertTrue
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import java.util.*
+import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 
 class EditViewModelTest {
@@ -97,7 +97,7 @@ class EditViewModelTest {
         viewModel.start(Note.NO_ID)
 
         assertNoteEquals(notesRepo.lastAddedNote!!,
-                testNote(title = "", content = "", synced = false))
+                testNote(title = "", content = ""))
 
         assertEquals(viewModel.noteStatus.getOrAwaitValue(), NoteStatus.ACTIVE)
         assertEquals(viewModel.noteType.getOrAwaitValue(), NoteType.TEXT)
@@ -172,7 +172,7 @@ class EditViewModelTest {
         viewModel.save()
 
         assertNoteEquals(notesRepo.lastAddedNote!!, testNote(id = 1, title = "modified",
-                content = "content", added = oldNote.addedDate, modified = Date(), synced = false))
+                content = "content", added = oldNote.addedDate, modified = Date()))
     }
 
     @Test
@@ -191,7 +191,7 @@ class EditViewModelTest {
                 ListNoteItem("modified item", false),
                 ListNoteItem("item 2", false)
         ), title = "title", status = NoteStatus.ACTIVE,
-                added = oldNote.addedDate, modified = Date(), synced = false))
+                added = oldNote.addedDate, modified = Date()))
     }
 
     @Test
@@ -277,7 +277,7 @@ class EditViewModelTest {
         assertNoteEquals(notesRepo.getById(1)!!, testNote(
                 title = "title", content = "content", status = NoteStatus.ARCHIVED,
                 added = DateTimeConverter.toDate("2018-01-01T00:00:00.000Z"),
-                modified = Date(), synced = false))
+                modified = Date()))
         assertLiveDataEventSent(viewModel.statusChangeEvent,
                 StatusChange(listOf(oldNote), NoteStatus.ACTIVE, NoteStatus.ARCHIVED))
         assertLiveDataEventSent(viewModel.exitEvent, Unit)
@@ -292,7 +292,7 @@ class EditViewModelTest {
 
         assertNoteEquals(notesRepo.getById(6)!!, testNote(
                 title = "title", content = "content", status = NoteStatus.ACTIVE,
-                added = oldNote.addedDate, modified = Date(), synced = false))
+                added = oldNote.addedDate, modified = Date()))
         assertLiveDataEventSent(viewModel.statusChangeEvent,
                 StatusChange(listOf(oldNote), NoteStatus.ARCHIVED, NoteStatus.ACTIVE))
         assertLiveDataEventSent(viewModel.exitEvent, Unit)
@@ -307,7 +307,7 @@ class EditViewModelTest {
 
         assertNoteEquals(notesRepo.getById(4)!!, testNote(
                 title = "title", content = "content", status = NoteStatus.ACTIVE,
-                added = oldNote.addedDate, modified = Date(), synced = false))
+                added = oldNote.addedDate, modified = Date()))
         assertLiveDataEventSent(viewModel.statusChangeEvent,
                 StatusChange(listOf(oldNote), NoteStatus.TRASHED, NoteStatus.ACTIVE))
         assertLiveDataEventSent(viewModel.exitEvent, Unit)
@@ -348,7 +348,7 @@ class EditViewModelTest {
 
         assertNoteEquals(notesRepo.lastAddedNote!!, testNote(title = "title - Copy",
                 content = "content", added = Date(), modified = Date(),
-                status = NoteStatus.ARCHIVED, synced = false))
+                status = NoteStatus.ARCHIVED))
         assertEquals(viewModel.editItems.getOrAwaitValue(), listOf(
                 EditTitleItem(DefaultEditableText("title - Copy"), true),
                 EditContentItem(DefaultEditableText("content"), true)
@@ -387,7 +387,7 @@ class EditViewModelTest {
         viewModel.deleteNote()
 
         assertNoteEquals(notesRepo.getById(6)!!, oldNote.copy(status = NoteStatus.TRASHED,
-                lastModifiedDate = Date(), synced = false))
+                lastModifiedDate = Date()))
         assertLiveDataEventSent(viewModel.statusChangeEvent,
                 StatusChange(listOf(oldNote), NoteStatus.ARCHIVED, NoteStatus.TRASHED))
         assertLiveDataEventSent(viewModel.exitEvent, Unit)

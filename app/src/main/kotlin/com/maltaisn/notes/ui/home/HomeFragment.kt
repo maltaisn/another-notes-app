@@ -22,14 +22,17 @@ import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
-import androidx.core.view.iterator
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
-import com.maltaisn.notes.*
+import com.maltaisn.notes.App
 import com.maltaisn.notes.model.entity.NoteStatus
+import com.maltaisn.notes.navigateSafe
+import com.maltaisn.notes.sync.BuildConfig
+import com.maltaisn.notes.sync.NavGraphDirections
+import com.maltaisn.notes.sync.R
 import com.maltaisn.notes.ui.EventObserver
 import com.maltaisn.notes.ui.common.ConfirmDialog
 import com.maltaisn.notes.ui.main.MainActivity
@@ -81,21 +84,6 @@ class HomeFragment : NoteFragment(), Toolbar.OnMenuItemClickListener,
         // Hide or show build type and flavor specific items
         toolbar.menu.findItem(R.id.item_extra_action).isVisible = BuildConfig.DEBUG
 
-        if (BuildConfig.FLAVOR == BuildConfig.FLAVOR_NO_SYNC) {
-            // Hide sync drawer item if flavor is no sync.
-            for (item in navView.menu) {
-                if (item.groupId == R.id.group_sync) {
-                    item.isVisible = false
-                }
-            }
-        }
-
-        // Swipe refresh
-        val refreshLayout = binding.swipeRefreshLayout
-        refreshLayout.setOnRefreshListener {
-            viewModel.refreshNotes()
-        }
-
         // Floating action button
         val fab = binding.fab
         fab.setOnClickListener {
@@ -131,14 +119,6 @@ class HomeFragment : NoteFragment(), Toolbar.OnMenuItemClickListener,
 
         viewModel.messageEvent.observe(viewLifecycleOwner, EventObserver { messageId ->
             Snackbar.make(view, messageId, Snackbar.LENGTH_SHORT).show()
-        })
-
-        viewModel.canRefresh.observe(viewLifecycleOwner, Observer {
-            refreshLayout.isEnabled = it
-        })
-
-        viewModel.stopRefreshEvent.observe(viewLifecycleOwner, EventObserver {
-            refreshLayout.isRefreshing = false
         })
 
         viewModel.listLayoutMode.observe(viewLifecycleOwner, Observer { mode ->
@@ -186,8 +166,6 @@ class HomeFragment : NoteFragment(), Toolbar.OnMenuItemClickListener,
             R.id.item_location_active -> viewModel.setNoteStatus(NoteStatus.ACTIVE)
             R.id.item_location_archived -> viewModel.setNoteStatus(NoteStatus.ARCHIVED)
             R.id.item_location_deleted -> viewModel.setNoteStatus(NoteStatus.TRASHED)
-            R.id.item_sync -> findNavController().navigateSafe(
-                    HomeFragmentDirections.actionHomeToSync())
             R.id.item_settings -> findNavController().navigateSafe(
                     HomeFragmentDirections.actionHomeToSettings())
             else -> return false

@@ -24,11 +24,11 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.maltaisn.notes.databinding.ItemEditContentBinding
-import com.maltaisn.notes.databinding.ItemEditItemAddBinding
-import com.maltaisn.notes.databinding.ItemEditItemBinding
-import com.maltaisn.notes.databinding.ItemEditTitleBinding
 import com.maltaisn.notes.hideKeyboard
+import com.maltaisn.notes.sync.databinding.ItemEditContentBinding
+import com.maltaisn.notes.sync.databinding.ItemEditItemAddBinding
+import com.maltaisn.notes.sync.databinding.ItemEditItemBinding
+import com.maltaisn.notes.sync.databinding.ItemEditTitleBinding
 import com.maltaisn.notes.ui.edit.EditViewModel
 
 
