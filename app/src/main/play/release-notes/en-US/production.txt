@@ -1,1 +1,1 @@
-Fixed links in settings screen for privacy policy and terms & conditions.
+Removed synchronization feature.
