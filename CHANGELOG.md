@@ -1,7 +1,5 @@
 ## v1.1.0
 - Removed synchronization feature.
-
-### v1.0.2
 - Fixed crash when navigating to two destination at the same time.
 
 ### v1.0.1

@@ -108,7 +108,6 @@ dependencies {
     implementation "androidx.recyclerview:recyclerview:$recyclerViewVersion"
     implementation "androidx.constraintlayout:constraintlayout:$constraintLayoutVersion"
     implementation "androidx.preference:preference:$preferenceVersion"
-    implementation "androidx.swiperefreshlayout:swiperefreshlayout:$swipeRefreshVersion"
     implementation "com.google.android.material:material:$materialVersion"
     implementation "com.google.android.gms:play-services-oss-licenses:$ossLicensesVersion"
 

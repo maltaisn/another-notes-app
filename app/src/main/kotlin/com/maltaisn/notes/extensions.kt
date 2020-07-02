@@ -17,12 +17,10 @@
 package com.maltaisn.notes
 
 import android.content.Context
-import android.text.method.PasswordTransformationMethod
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import androidx.navigation.NavController
 import androidx.navigation.NavDirections
-import com.google.android.material.textfield.TextInputLayout
 
 
 fun NavController.navigateSafe(directions: NavDirections) {
@@ -51,20 +49,3 @@ fun View.showKeyboard() {
     val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
     imm.showSoftInput(this.findFocus(), 0)
 }
-
-/**
- * [TextInputLayout] doesn't really allow customizing the end icon click listener so this
- * is a copy of the click listener used internally, but this one also calls [listener].
- */
-fun TextInputLayout.setCustomEndIconOnClickListener(listener: (View) -> Unit) =
-        this.setEndIconOnClickListener { view ->
-            // Store the current cursor position
-            val edt = this.editText ?: return@setEndIconOnClickListener
-            val oldSelection = edt.selectionEnd
-            val hidePassword = edt.transformationMethod !is PasswordTransformationMethod
-            edt.transformationMethod = PasswordTransformationMethod.getInstance().takeIf { hidePassword }
-            if (oldSelection >= 0) {
-                edt.setSelection(oldSelection)
-            }
-            listener(view)
-        }
