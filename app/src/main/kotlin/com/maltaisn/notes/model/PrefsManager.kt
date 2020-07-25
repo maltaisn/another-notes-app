@@ -23,6 +23,7 @@ import androidx.preference.PreferenceManager
 import com.maltaisn.notes.OpenForTesting
 import com.maltaisn.notes.sync.R
 import com.maltaisn.notes.ui.AppTheme
+import com.maltaisn.notes.ui.note.SwipeAction
 import com.maltaisn.notes.ui.note.adapter.NoteListLayoutMode
 import javax.inject.Inject
 import kotlin.time.days
@@ -52,6 +53,12 @@ class PrefsManager @Inject constructor(private val prefs: SharedPreferences) {
             prefs.edit { putInt(LIST_LAYOUT_MODE, value.value) }
         }
 
+    val swipeAction: SwipeAction
+        get() {
+            val value = prefs.getString(SWIPE_ACTION, SwipeAction.ARCHIVE.value)
+            return SwipeAction.values().find { it.value == value }!!
+        }
+
     var lastTrashReminderTime: Long
         get() = prefs.getLong(LAST_TRASH_REMIND_TIME, 0)
         set(value) = prefs.edit { putLong(LAST_TRASH_REMIND_TIME, value) }
@@ -65,6 +72,7 @@ class PrefsManager @Inject constructor(private val prefs: SharedPreferences) {
     companion object {
         // Settings keys
         const val THEME = "theme"
+        const val SWIPE_ACTION = "swipe_action"
         const val EXPORT_DATA = "export_data"
         const val CLEAR_DATA = "clear_data"
         const val VIEW_LICENSES = "view_licenses"

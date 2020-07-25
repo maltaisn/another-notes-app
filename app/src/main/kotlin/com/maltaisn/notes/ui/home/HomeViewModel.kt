@@ -30,6 +30,7 @@ import com.maltaisn.notes.ui.AssistedSavedStateViewModelFactory
 import com.maltaisn.notes.ui.Event
 import com.maltaisn.notes.ui.note.NoteViewModel
 import com.maltaisn.notes.ui.note.PlaceholderData
+import com.maltaisn.notes.ui.note.SwipeAction
 import com.maltaisn.notes.ui.note.adapter.MessageItem
 import com.maltaisn.notes.ui.note.adapter.NoteAdapter
 import com.maltaisn.notes.ui.note.adapter.NoteItem
@@ -141,7 +142,10 @@ class HomeViewModel @AssistedInject constructor(
     override fun onNoteSwiped(pos: Int) {
         // Archive note
         val note = (noteItems.value!![pos] as NoteItem).note
-        changeNotesStatus(setOf(note), NoteStatus.ARCHIVED)
+        changeNotesStatus(setOf(note), when (prefs.swipeAction) {
+            SwipeAction.ARCHIVE -> NoteStatus.ARCHIVED
+            SwipeAction.DELETE -> NoteStatus.TRASHED
+        })
     }
 
     private fun createListItems(status: NoteStatus, notes: List<Note>) {

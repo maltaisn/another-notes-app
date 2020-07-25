@@ -27,13 +27,11 @@ import com.maltaisn.notes.testNote
 import com.maltaisn.notes.ui.StatusChange
 import com.maltaisn.notes.ui.assertLiveDataEventSent
 import com.maltaisn.notes.ui.getOrAwaitValue
+import com.maltaisn.notes.ui.note.SwipeAction
 import com.maltaisn.notes.ui.note.adapter.MessageItem
 import com.maltaisn.notes.ui.note.adapter.NoteItem
 import com.maltaisn.notes.ui.note.adapter.NoteListLayoutMode
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.verify
+import com.nhaarman.mockitokotlin2.*
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Before
@@ -186,13 +184,28 @@ class HomeViewModelTest {
 
     @Test
     fun `should archive note on swipe`() = mainCoroutineRule.runBlockingTest {
-        val oldNote = notesRepo.getById(1)!!
+        whenever(prefs.swipeAction) doReturn SwipeAction.ARCHIVE
+
+        val note = notesRepo.getById(1)!!
         viewModel.setNoteStatus(NoteStatus.ACTIVE)
         viewModel.onNoteSwiped(0)
 
         assertEquals(NoteStatus.ARCHIVED, notesRepo.getById(1)!!.status)
         assertLiveDataEventSent(viewModel.statusChangeEvent, StatusChange(
-                listOf(oldNote), NoteStatus.ACTIVE, NoteStatus.ARCHIVED))
+                listOf(note), NoteStatus.ACTIVE, NoteStatus.ARCHIVED))
+    }
+
+    @Test
+    fun `should delete note on swipe`() = mainCoroutineRule.runBlockingTest {
+        whenever(prefs.swipeAction) doReturn SwipeAction.DELETE
+
+        val note = notesRepo.getById(1)!!
+        viewModel.setNoteStatus(NoteStatus.ACTIVE)
+        viewModel.onNoteSwiped(0)
+
+        assertEquals(NoteStatus.TRASHED, notesRepo.getById(1)!!.status)
+        assertLiveDataEventSent(viewModel.statusChangeEvent, StatusChange(
+                listOf(note), NoteStatus.ACTIVE, NoteStatus.TRASHED))
     }
 
     private fun getNoteItemAt(pos: Int) = viewModel.noteItems.getOrAwaitValue()[pos] as NoteItem

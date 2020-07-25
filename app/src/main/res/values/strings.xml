@@ -110,6 +110,9 @@
     <string name="pref_theme_dark">Dark</string>
     <string name="pref_theme_system">Follow system</string>
 
+    <string name="pref_group_behavior">Behavior</string>
+    <string name="pref_behavior_swipe_action">Swipe action</string>
+
     <string name="pref_group_data">Data</string>
     <string name="pref_data_export">Export data</string>
     <string name="pref_data_export_summary">Export notes data as JSON</string>

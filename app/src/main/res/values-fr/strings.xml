@@ -110,6 +110,9 @@
     <string name="pref_theme_dark">Sombre</string>
     <string name="pref_theme_system">Par défaut</string>
 
+    <string name="pref_group_behavior">Comportement</string>
+    <string name="pref_behavior_swipe_action">Action de glissement</string>
+
     <string name="pref_group_data">Données</string>
     <string name="pref_data_export">Exporter les données</string>
     <string name="pref_data_export_summary">Exporter les données en format JSON</string>

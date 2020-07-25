@@ -34,6 +34,19 @@
 
     </PreferenceCategory>
 
+    <PreferenceCategory app:title="@string/pref_group_behavior">
+
+        <DropDownPreference
+            app:defaultValue="archive"
+            app:entries="@array/pref_swipe_action_entries"
+            app:entryValues="@array/pref_swipe_action_values"
+            app:key="swipe_action"
+            app:title="@string/pref_behavior_swipe_action"
+            app:useSimpleSummaryProvider="true"
+            />
+
+    </PreferenceCategory>
+
     <PreferenceCategory app:title="@string/pref_group_data">
 
         <Preference

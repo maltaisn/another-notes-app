@@ -29,4 +29,14 @@
         <item>system</item>
     </string-array>
 
+    <string-array name="pref_swipe_action_entries">
+        <item>@string/action_archive</item>
+        <item>@string/action_delete</item>
+    </string-array>
+
+    <string-array name="pref_swipe_action_values">
+        <item>archive</item>
+        <item>delete</item>
+    </string-array>
+
 </resources>
