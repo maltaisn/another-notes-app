@@ -37,17 +37,15 @@ import kotlinx.serialization.json.JsonConfiguration
 ])
 abstract class AppModule {
 
-    @Binds
-    abstract fun bindsNotesRepository(repository: DefaultNotesRepository): NotesRepository
+    @get:Binds
+    abstract val DefaultNotesRepository.bind: NotesRepository
 
     companion object {
         @Provides
-        @JvmStatic
         fun providesSharedPreferences(context: Context): SharedPreferences =
                 PreferenceManager.getDefaultSharedPreferences(context)
 
-        @Provides
-        @JvmStatic
-        fun providesJson() = Json(JsonConfiguration.Stable)
+        @get:Provides
+        val json get() = Json(JsonConfiguration.Stable)
     }
 }
