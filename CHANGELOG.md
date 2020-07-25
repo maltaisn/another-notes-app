@@ -1,6 +1,7 @@
 ## v1.2.0
 - Added customizable swipe action in main screen.
 - Fixed auto-correction not enabled in text fields.
+- Fixed formatting not removed when pasting text.
 
 ## v1.1.0
 - Removed synchronization feature.
