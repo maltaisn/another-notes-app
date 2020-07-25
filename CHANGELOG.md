@@ -1,5 +1,7 @@
 ## v1.2.0
 - Added customizable swipe action in main screen.
+- Added option to strikethrough checked items.
+- Checked items text now changes color.
 - Fixed auto-correction not enabled in text fields.
 - Fixed formatting not removed when pasting text.
 

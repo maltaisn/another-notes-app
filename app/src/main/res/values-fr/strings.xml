@@ -109,6 +109,7 @@
     <string name="pref_theme_light">Clair</string>
     <string name="pref_theme_dark">Sombre</string>
     <string name="pref_theme_system">Par défaut</string>
+    <string name="pref_strikethrough_checked">Barrer les éléments cochés</string>
 
     <string name="pref_group_behavior">Comportement</string>
     <string name="pref_behavior_swipe_action">Action de glissement</string>

@@ -32,6 +32,12 @@
             app:useSimpleSummaryProvider="true"
             />
 
+        <SwitchPreferenceCompat
+            android:defaultValue="true"
+            app:key="strikethrough_checked"
+            app:title="@string/pref_strikethrough_checked"
+            />
+
     </PreferenceCategory>
 
     <PreferenceCategory app:title="@string/pref_group_behavior">

@@ -21,6 +21,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.maltaisn.notes.model.NotesRepository
+import com.maltaisn.notes.model.PrefsManager
 import com.maltaisn.notes.model.entity.*
 import com.maltaisn.notes.ui.Event
 import com.maltaisn.notes.ui.ShareData
@@ -34,7 +35,8 @@ import javax.inject.Inject
 
 
 class EditViewModel @Inject constructor(
-        private val notesRepository: NotesRepository
+        private val notesRepository: NotesRepository,
+        private val prefs: PrefsManager
 ) : ViewModel(), EditAdapter.Callback {
 
     /**
@@ -444,6 +446,9 @@ class EditViewModel @Inject constructor(
     override fun onNoteItemSwapped(from: Int, to: Int) {
         Collections.swap(listItems, from, to)
     }
+
+    override val strikethroughCheckedItems: Boolean
+        get() = prefs.strikethroughChecked
 
     private fun focusItemAt(pos: Int, textPos: Int, itemExists: Boolean) {
         _focusEvent.send(FocusChange(pos, textPos, itemExists))

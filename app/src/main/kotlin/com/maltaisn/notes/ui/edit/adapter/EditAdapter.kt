@@ -151,6 +151,9 @@ class EditAdapter(val context: Context, val callback: Callback) :
 
         /** Called after an [EditItemItem] was dragged [from] a position [to] another. */
         fun onNoteItemSwapped(from: Int, to: Int)
+
+        /** Whether strikethrough should be added to checked items or not. */
+        val strikethroughCheckedItems: Boolean
     }
 
     companion object {

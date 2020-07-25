@@ -44,6 +44,9 @@ class PrefsManager @Inject constructor(private val prefs: SharedPreferences) {
             return AppTheme.values().find { it.value == value }!!
         }
 
+    val strikethroughChecked: Boolean
+        get() = prefs.getBoolean(STRIKETHROUGH_CHECKED, true)
+
     var listLayoutMode: NoteListLayoutMode
         get() {
             val value = prefs.getInt(LIST_LAYOUT_MODE, NoteListLayoutMode.LIST.value)
@@ -72,6 +75,7 @@ class PrefsManager @Inject constructor(private val prefs: SharedPreferences) {
     companion object {
         // Settings keys
         const val THEME = "theme"
+        const val STRIKETHROUGH_CHECKED = "strikethrough_checked"
         const val SWIPE_ACTION = "swipe_action"
         const val EXPORT_DATA = "export_data"
         const val CLEAR_DATA = "clear_data"
