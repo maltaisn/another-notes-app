@@ -1,3 +1,7 @@
+## v1.2.0
+- Added customizable swipe action in main screen.
+- Fixed auto-correction not enabled in text fields.
+
 ## v1.1.0
 - Removed synchronization feature.
 - Fixed crash when navigating to two destination at the same time.

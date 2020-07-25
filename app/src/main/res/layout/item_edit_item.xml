@@ -58,7 +58,7 @@
         android:textAppearance="?textAppearanceBody1"
         android:textSize="15sp"
         android:background="@null"
-        android:inputType="textMultiLine"
+        android:inputType="textMultiLine|textCapSentences|textAutoCorrect"
         android:imeOptions="flagNoExtractUi"
         android:padding="5dp"
         android:importantForAutofill="no"

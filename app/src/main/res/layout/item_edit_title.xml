@@ -24,7 +24,7 @@
     android:paddingTop="16dp"
     android:paddingBottom="16dp"
     android:background="@null"
-    android:inputType="textShortMessage"
+    android:inputType="textShortMessage|textCapSentences|textAutoCorrect"
     android:imeOptions="flagNoExtractUi|actionNext"
     android:singleLine="true"
     android:maxLines="1"

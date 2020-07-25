@@ -24,7 +24,7 @@
     android:paddingTop="8dp"
     android:paddingBottom="16dp"
     android:background="@null"
-    android:inputType="textMultiLine|textLongMessage"
+    android:inputType="textMultiLine|textLongMessage|textCapSentences|textAutoCorrect"
     android:imeOptions="flagNoExtractUi"
     android:textAppearance="?textAppearanceBody1"
     android:textSize="15sp"
