@@ -121,11 +121,11 @@ class NotesDaoTest {
         val notes = dates.mapIndexed { i, dateStr ->
             val date = DateTimeConverter.toDate(dateStr)
             testNote(id = i + 1L, added = date, modified = date,
-                    status = NoteStatus.TRASHED)
+                    status = NoteStatus.DELETED)
         }
         notesDao.insertAll(notes)
 
-        val queryNotes = notesDao.getByStatusAndDate(NoteStatus.TRASHED,
+        val queryNotes = notesDao.getByStatusAndDate(NoteStatus.DELETED,
                 DateTimeConverter.toDate("2020-01-01T00:00:00.000Z"))
         assertEquals(notes.subList(0, 4).toSet(), queryNotes.toSet())
     }

@@ -59,13 +59,13 @@ class DefaultNotesRepository @Inject constructor(
     override fun searchNotes(query: String) = notesDao.search(query)
 
     override suspend fun emptyTrash() {
-        deleteNotes(getNotesByStatus(NoteStatus.TRASHED).first())
+        deleteNotes(getNotesByStatus(NoteStatus.DELETED).first())
     }
 
     override suspend fun deleteOldNotesInTrash() {
         val delay = PrefsManager.TRASH_AUTO_DELETE_DELAY.toLongMilliseconds()
         val minDate = Date(System.currentTimeMillis() - delay)
-        deleteNotes(notesDao.getByStatusAndDate(NoteStatus.TRASHED, minDate))
+        deleteNotes(notesDao.getByStatusAndDate(NoteStatus.DELETED, minDate))
     }
 
     override suspend fun getJsonData(): String {

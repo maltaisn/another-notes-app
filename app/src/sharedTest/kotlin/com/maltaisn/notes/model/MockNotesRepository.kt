@@ -115,7 +115,7 @@ class MockNotesRepository : NotesRepository {
             changeChannel.asFlow().collect {
                 val found = notes.mapNotNullTo(ArrayList()) { (_, note) ->
                     note.takeIf {
-                        note.status != NoteStatus.TRASHED &&
+                        note.status != NoteStatus.DELETED &&
                                 (queryNoFtsSyntax in note.title || queryNoFtsSyntax in note.content)
                     }
                 }
@@ -127,14 +127,14 @@ class MockNotesRepository : NotesRepository {
 
     override suspend fun emptyTrash() {
         notes.entries.removeIf { (_, note) ->
-            note.status == NoteStatus.TRASHED
+            note.status == NoteStatus.DELETED
         }
         changeChannel.sendBlocking(Unit)
     }
 
     override suspend fun deleteOldNotesInTrash() {
         notes.entries.removeIf { (_, note) ->
-            note.status == NoteStatus.TRASHED &&
+            note.status == NoteStatus.DELETED &&
                     (System.currentTimeMillis() - note.lastModifiedDate.time) >
                     PrefsManager.TRASH_AUTO_DELETE_DELAY.toLongMilliseconds()
         }

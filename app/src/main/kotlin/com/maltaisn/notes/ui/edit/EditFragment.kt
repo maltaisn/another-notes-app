@@ -129,13 +129,13 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener, ConfirmDialog.
                         moveItem.setIcon(R.drawable.ic_unarchive)
                         moveItem.setTitle(R.string.action_unarchive)
                     }
-                    NoteStatus.TRASHED -> {
+                    NoteStatus.DELETED -> {
                         moveItem.setIcon(R.drawable.ic_restore)
                         moveItem.setTitle(R.string.action_restore)
                     }
                 }
 
-                val isTrash = status == NoteStatus.TRASHED
+                val isTrash = status == NoteStatus.DELETED
                 shareItem.isVisible = !isTrash
                 copyItem.isVisible = !isTrash
                 deleteItem.setTitle(if (isTrash) {

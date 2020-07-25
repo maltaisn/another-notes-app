@@ -59,7 +59,7 @@ class SearchViewModelTest {
         notesRepo = MockNotesRepository()
         notesRepo.addNote(testNote(id = 1, title = "13", status = NoteStatus.ACTIVE))
         notesRepo.addNote(testNote(id = 2, title = "23", status = NoteStatus.ARCHIVED))
-        notesRepo.addNote(testNote(id = 3, title = "12", status = NoteStatus.TRASHED))
+        notesRepo.addNote(testNote(id = 3, title = "12", status = NoteStatus.DELETED))
 
         prefs = mock {
             on { listLayoutMode } doReturn NoteListLayoutMode.LIST

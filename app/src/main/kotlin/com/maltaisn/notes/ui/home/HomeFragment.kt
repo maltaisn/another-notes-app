@@ -93,13 +93,13 @@ class HomeFragment : NoteFragment(), Toolbar.OnMenuItemClickListener,
         // Observers
         viewModel.noteStatus.observe(viewLifecycleOwner, Observer { status ->
             // Show "Empty recycle bin" toolbar option
-            toolbar.menu.findItem(R.id.item_empty_trash).isVisible = status == NoteStatus.TRASHED
+            toolbar.menu.findItem(R.id.item_empty_trash).isVisible = status == NoteStatus.DELETED
 
             // Update toolbar title
             toolbar.setTitle(when (status!!) {
                 NoteStatus.ACTIVE -> R.string.note_location_active
                 NoteStatus.ARCHIVED -> R.string.note_location_archived
-                NoteStatus.TRASHED -> R.string.note_location_deleted
+                NoteStatus.DELETED -> R.string.note_location_deleted
             })
 
             // Fab is only shown in active notes.
@@ -165,7 +165,7 @@ class HomeFragment : NoteFragment(), Toolbar.OnMenuItemClickListener,
         when (item.itemId) {
             R.id.item_location_active -> viewModel.setNoteStatus(NoteStatus.ACTIVE)
             R.id.item_location_archived -> viewModel.setNoteStatus(NoteStatus.ARCHIVED)
-            R.id.item_location_deleted -> viewModel.setNoteStatus(NoteStatus.TRASHED)
+            R.id.item_location_deleted -> viewModel.setNoteStatus(NoteStatus.DELETED)
             R.id.item_settings -> findNavController().navigateSafe(
                     HomeFragmentDirections.actionHomeToSettings())
             else -> return false

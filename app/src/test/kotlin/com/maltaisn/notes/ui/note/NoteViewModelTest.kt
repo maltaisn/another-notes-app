@@ -65,7 +65,7 @@ class NoteViewModelTest {
                 added = Date(10), modified = Date(12)))
         notesRepo.addNote(testNote(id = 2, status = NoteStatus.ARCHIVED,
                 added = Date(10), modified = Date(11)))
-        notesRepo.addNote(testNote(id = 3, status = NoteStatus.TRASHED,
+        notesRepo.addNote(testNote(id = 3, status = NoteStatus.DELETED,
                 added = Date(10), modified = Date(10)))
 
         prefs = mock {
@@ -153,14 +153,14 @@ class NoteViewModelTest {
     }
 
     @Test
-    fun `should move trashed note to active`() = mainCoroutineRule.runBlockingTest {
+    fun `should move deleted note to active`() = mainCoroutineRule.runBlockingTest {
         val oldNote = notesRepo.getById(3)!!
         viewModel.onNoteItemLongClicked(viewModel.getNoteItemAt(2), 2)
         viewModel.moveSelectedNotes()
 
         assertEquals(NoteStatus.ACTIVE, notesRepo.getById(3)!!.status)
         assertLiveDataEventSent(viewModel.statusChangeEvent, StatusChange(
-                listOf(oldNote), NoteStatus.TRASHED, NoteStatus.ACTIVE))
+                listOf(oldNote), NoteStatus.DELETED, NoteStatus.ACTIVE))
     }
 
     @Test
@@ -169,9 +169,9 @@ class NoteViewModelTest {
         viewModel.onNoteItemLongClicked(viewModel.getNoteItemAt(0), 0)
         viewModel.deleteSelectedNotesPre()
 
-        assertEquals(NoteStatus.TRASHED, notesRepo.getById(1)!!.status)
+        assertEquals(NoteStatus.DELETED, notesRepo.getById(1)!!.status)
         assertLiveDataEventSent(viewModel.statusChangeEvent, StatusChange(
-                listOf(oldNote), NoteStatus.ACTIVE, NoteStatus.TRASHED))
+                listOf(oldNote), NoteStatus.ACTIVE, NoteStatus.DELETED))
     }
 
     @Test
@@ -180,13 +180,13 @@ class NoteViewModelTest {
         viewModel.onNoteItemLongClicked(viewModel.getNoteItemAt(1), 1)
         viewModel.deleteSelectedNotesPre()
 
-        assertEquals(NoteStatus.TRASHED, notesRepo.getById(2)!!.status)
+        assertEquals(NoteStatus.DELETED, notesRepo.getById(2)!!.status)
         assertLiveDataEventSent(viewModel.statusChangeEvent, StatusChange(
-                listOf(oldNote), NoteStatus.ARCHIVED, NoteStatus.TRASHED))
+                listOf(oldNote), NoteStatus.ARCHIVED, NoteStatus.DELETED))
     }
 
     @Test
-    fun `should ask for confirmation to delete trashed note`() = mainCoroutineRule.runBlockingTest {
+    fun `should ask for confirmation to delete note in trash`() = mainCoroutineRule.runBlockingTest {
         viewModel.onNoteItemLongClicked(viewModel.getNoteItemAt(2), 2)
         viewModel.deleteSelectedNotesPre()
 
@@ -195,7 +195,7 @@ class NoteViewModelTest {
     }
 
     @Test
-    fun `should delete trashed note directly`() = mainCoroutineRule.runBlockingTest {
+    fun `should delete note in trash directly`() = mainCoroutineRule.runBlockingTest {
         viewModel.onNoteItemLongClicked(viewModel.getNoteItemAt(2), 2)
         viewModel.deleteSelectedNotes()
 

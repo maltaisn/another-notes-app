@@ -132,13 +132,13 @@ abstract class NoteViewModel(
     }
 
     fun deleteSelectedNotesPre() {
-        if (selectedNoteStatus == NoteStatus.TRASHED) {
+        if (selectedNoteStatus == NoteStatus.DELETED) {
             // Ask user for confirmation before deleting selected notes forever.
             _showDeletedForeverConfirmEvent.send()
 
         } else {
             // Send to trash
-            changeSelectedNotesStatus(NoteStatus.TRASHED)
+            changeSelectedNotesStatus(NoteStatus.DELETED)
         }
     }
 

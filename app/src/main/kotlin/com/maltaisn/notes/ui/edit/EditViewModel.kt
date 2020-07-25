@@ -106,7 +106,7 @@ class EditViewModel @Inject constructor(
 
 
     private val isNoteInTrash: Boolean
-        get() = status == NoteStatus.TRASHED
+        get() = status == NoteStatus.DELETED
 
 
     /**
@@ -259,7 +259,7 @@ class EditViewModel @Inject constructor(
 
         } else {
             // Send to trash
-            changeNoteStatusAndExit(NoteStatus.TRASHED)
+            changeNoteStatusAndExit(NoteStatus.DELETED)
         }
     }
 

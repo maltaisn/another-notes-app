@@ -64,7 +64,7 @@ class HomeViewModelTest {
         notesRepo = MockNotesRepository()
         notesRepo.addNote(testNote(id = 1, status = NoteStatus.ACTIVE))
         notesRepo.addNote(testNote(id = 2, status = NoteStatus.ARCHIVED))
-        notesRepo.addNote(testNote(id = 3, status = NoteStatus.TRASHED))
+        notesRepo.addNote(testNote(id = 3, status = NoteStatus.DELETED))
 
         prefs = mock {
             on { listLayoutMode } doReturn NoteListLayoutMode.LIST
@@ -98,11 +98,11 @@ class HomeViewModelTest {
     }
 
     @Test
-    fun `should show only trashed notes`() = mainCoroutineRule.runBlockingTest {
+    fun `should show only deleted notes`() = mainCoroutineRule.runBlockingTest {
         val note = notesRepo.getById(3)!!
-        viewModel.setNoteStatus(NoteStatus.TRASHED)
+        viewModel.setNoteStatus(NoteStatus.DELETED)
 
-        assertEquals(NoteStatus.TRASHED, viewModel.noteStatus.getOrAwaitValue())
+        assertEquals(NoteStatus.DELETED, viewModel.noteStatus.getOrAwaitValue())
         assertEquals(listOf(
                 MessageItem(-1, R.string.trash_reminder_message,
                         listOf(PrefsManager.TRASH_AUTO_DELETE_DELAY.inDays.toInt())),
@@ -127,7 +127,7 @@ class HomeViewModelTest {
     @Test
     fun `should update list when trash reminder item is dismissed`() = mainCoroutineRule.runBlockingTest {
         val note = notesRepo.getById(3)!!
-        viewModel.setNoteStatus(NoteStatus.TRASHED)
+        viewModel.setNoteStatus(NoteStatus.DELETED)
         viewModel.onMessageItemDismissed(MessageItem(-1, 0, emptyList()), 0)
 
         verify(prefs).lastTrashReminderTime = any()
@@ -145,7 +145,7 @@ class HomeViewModelTest {
         viewModel.setNoteStatus(NoteStatus.ARCHIVED)
         assertFalse(viewModel.isNoteSwipeEnabled)
 
-        viewModel.setNoteStatus(NoteStatus.TRASHED)
+        viewModel.setNoteStatus(NoteStatus.DELETED)
         assertFalse(viewModel.isNoteSwipeEnabled)
     }
 
@@ -172,7 +172,7 @@ class HomeViewModelTest {
     @Test
     fun `should empty trash`() = mainCoroutineRule.runBlockingTest {
         viewModel.emptyTrash()
-        assertTrue(notesRepo.getNotesByStatus(NoteStatus.TRASHED).first().isEmpty())
+        assertTrue(notesRepo.getNotesByStatus(NoteStatus.DELETED).first().isEmpty())
     }
 
     @Test
@@ -203,9 +203,9 @@ class HomeViewModelTest {
         viewModel.setNoteStatus(NoteStatus.ACTIVE)
         viewModel.onNoteSwiped(0)
 
-        assertEquals(NoteStatus.TRASHED, notesRepo.getById(1)!!.status)
+        assertEquals(NoteStatus.DELETED, notesRepo.getById(1)!!.status)
         assertLiveDataEventSent(viewModel.statusChangeEvent, StatusChange(
-                listOf(note), NoteStatus.ACTIVE, NoteStatus.TRASHED))
+                listOf(note), NoteStatus.ACTIVE, NoteStatus.DELETED))
     }
 
     private fun getNoteItemAt(pos: Int) = viewModel.noteItems.getOrAwaitValue()[pos] as NoteItem

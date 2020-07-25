@@ -77,13 +77,13 @@ class EditViewModelTest {
                 ListNoteItem("item 2", false)
         ), id = 3, title = "title", status = NoteStatus.ACTIVE))
 
-        // Sample trashed notes
+        // Sample deleted notes
         notesRepo.addNote(testNote(id = 4, title = "title",
-                content = "content", status = NoteStatus.TRASHED))
+                content = "content", status = NoteStatus.DELETED))
         notesRepo.addNote(listNote(listOf(
                 ListNoteItem("item 1", true),
                 ListNoteItem("item 2", false)
-        ), id = 5, title = "title", status = NoteStatus.TRASHED))
+        ), id = 5, title = "title", status = NoteStatus.DELETED))
 
         // Sample archived note
         notesRepo.addNote(testNote(id = 6, title = "title",
@@ -140,7 +140,7 @@ class EditViewModelTest {
     fun `should open existing text note in trash, not editable`() = mainCoroutineRule.runBlockingTest {
         viewModel.start(4)
 
-        assertEquals(viewModel.noteStatus.getOrAwaitValue(), NoteStatus.TRASHED)
+        assertEquals(viewModel.noteStatus.getOrAwaitValue(), NoteStatus.DELETED)
         assertEquals(viewModel.noteType.getOrAwaitValue(), NoteType.TEXT)
 
         assertEquals(viewModel.editItems.getOrAwaitValue(), listOf(
@@ -153,7 +153,7 @@ class EditViewModelTest {
     fun `should open existing list note in trash, not editable`() = mainCoroutineRule.runBlockingTest {
         viewModel.start(5)
 
-        assertEquals(viewModel.noteStatus.getOrAwaitValue(), NoteStatus.TRASHED)
+        assertEquals(viewModel.noteStatus.getOrAwaitValue(), NoteStatus.DELETED)
         assertEquals(viewModel.noteType.getOrAwaitValue(), NoteType.LIST)
 
         assertEquals(viewModel.editItems.getOrAwaitValue(), listOf(
@@ -299,7 +299,7 @@ class EditViewModelTest {
     }
 
     @Test
-    fun `should move trashed note to active`() = mainCoroutineRule.runBlockingTest {
+    fun `should move deleted note to active`() = mainCoroutineRule.runBlockingTest {
         val oldNote = notesRepo.getById(4)!!
 
         viewModel.start(4)
@@ -309,12 +309,12 @@ class EditViewModelTest {
                 title = "title", content = "content", status = NoteStatus.ACTIVE,
                 added = oldNote.addedDate, modified = Date()))
         assertLiveDataEventSent(viewModel.statusChangeEvent,
-                StatusChange(listOf(oldNote), NoteStatus.TRASHED, NoteStatus.ACTIVE))
+                StatusChange(listOf(oldNote), NoteStatus.DELETED, NoteStatus.ACTIVE))
         assertLiveDataEventSent(viewModel.exitEvent, Unit)
     }
 
     @Test
-    fun `should restore trashed text note and allow edit`() = mainCoroutineRule.runBlockingTest {
+    fun `should restore deleted text note and allow edit`() = mainCoroutineRule.runBlockingTest {
         viewModel.start(4)
         viewModel.restoreNoteAndEdit()
 
@@ -327,7 +327,7 @@ class EditViewModelTest {
     }
 
     @Test
-    fun `should restore trashed list note and allow edit`() = mainCoroutineRule.runBlockingTest {
+    fun `should restore deleted list note and allow edit`() = mainCoroutineRule.runBlockingTest {
         viewModel.start(5)
         viewModel.restoreNoteAndEdit()
 
@@ -386,15 +386,15 @@ class EditViewModelTest {
         viewModel.start(6)
         viewModel.deleteNote()
 
-        assertNoteEquals(notesRepo.getById(6)!!, oldNote.copy(status = NoteStatus.TRASHED,
+        assertNoteEquals(notesRepo.getById(6)!!, oldNote.copy(status = NoteStatus.DELETED,
                 lastModifiedDate = Date()))
         assertLiveDataEventSent(viewModel.statusChangeEvent,
-                StatusChange(listOf(oldNote), NoteStatus.ARCHIVED, NoteStatus.TRASHED))
+                StatusChange(listOf(oldNote), NoteStatus.ARCHIVED, NoteStatus.DELETED))
         assertLiveDataEventSent(viewModel.exitEvent, Unit)
     }
 
     @Test
-    fun `should ask confirmation when deleting trashed note`() = mainCoroutineRule.runBlockingTest {
+    fun `should ask confirmation when deleting deleted note`() = mainCoroutineRule.runBlockingTest {
         viewModel.start(4)
         viewModel.deleteNote()
 
@@ -402,7 +402,7 @@ class EditViewModelTest {
     }
 
     @Test
-    fun `should delete trashed note forever and exit`() = mainCoroutineRule.runBlockingTest {
+    fun `should delete deleted note forever and exit`() = mainCoroutineRule.runBlockingTest {
         viewModel.start(4)
         viewModel.deleteNoteForeverAndExit()
 
@@ -570,7 +570,7 @@ class EditViewModelTest {
     }
 
     @Test
-    fun `should prevent note drag on trashed note`() = mainCoroutineRule.runBlockingTest {
+    fun `should prevent note drag on deleted note`() = mainCoroutineRule.runBlockingTest {
         viewModel.start(5)
         assertFalse(viewModel.isNoteDragEnabled)
     }

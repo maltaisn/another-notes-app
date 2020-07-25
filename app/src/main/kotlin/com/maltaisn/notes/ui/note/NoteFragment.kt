@@ -125,7 +125,7 @@ abstract class NoteFragment : Fragment(), ActionMode.Callback, ConfirmDialog.Cal
                         moveItem.setTitle(R.string.action_unarchive)
                         deleteItem.setTitle(R.string.action_delete)
                     }
-                    NoteStatus.TRASHED -> {
+                    NoteStatus.DELETED -> {
                         moveItem.setIcon(R.drawable.ic_restore)
                         moveItem.setTitle(R.string.action_restore)
                         deleteItem.setTitle(R.string.action_delete_forever)
@@ -163,13 +163,13 @@ abstract class NoteFragment : Fragment(), ActionMode.Callback, ConfirmDialog.Cal
         })
         sharedViewModel.statusChangeEvent.observe(viewLifecycleOwner, EventObserver { statusChange ->
             val messageId = when (statusChange.newStatus) {
-                NoteStatus.ACTIVE -> if (statusChange.oldStatus == NoteStatus.TRASHED) {
+                NoteStatus.ACTIVE -> if (statusChange.oldStatus == NoteStatus.DELETED) {
                     R.plurals.edit_message_move_restore
                 } else {
                     R.plurals.edit_message_move_unarchive
                 }
                 NoteStatus.ARCHIVED -> R.plurals.edit_move_archive_message
-                NoteStatus.TRASHED -> R.plurals.edit_message_move_delete
+                NoteStatus.DELETED -> R.plurals.edit_message_move_delete
             }
             val count = statusChange.oldNotes.size
             val message = context.resources.getQuantityString(messageId, count, count)

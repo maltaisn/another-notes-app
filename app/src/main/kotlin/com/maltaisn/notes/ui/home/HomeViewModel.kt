@@ -144,13 +144,13 @@ class HomeViewModel @AssistedInject constructor(
         val note = (noteItems.value!![pos] as NoteItem).note
         changeNotesStatus(setOf(note), when (prefs.swipeAction) {
             SwipeAction.ARCHIVE -> NoteStatus.ARCHIVED
-            SwipeAction.DELETE -> NoteStatus.TRASHED
+            SwipeAction.DELETE -> NoteStatus.DELETED
         })
     }
 
     private fun createListItems(status: NoteStatus, notes: List<Note>) {
         listItems = buildList {
-            if (status == NoteStatus.TRASHED && notes.isNotEmpty()) {
+            if (status == NoteStatus.DELETED && notes.isNotEmpty()) {
                 // If needed, add reminder that notes get auto-deleted when in trash.
                 if (System.currentTimeMillis() - prefs.lastTrashReminderTime >
                         PrefsManager.TRASH_REMINDER_DELAY.toLongMilliseconds()) {
@@ -171,7 +171,7 @@ class HomeViewModel @AssistedInject constructor(
     override fun updatePlaceholder() = when (noteStatus.value!!) {
         NoteStatus.ACTIVE -> PlaceholderData(R.drawable.ic_list, R.string.note_placeholder_active)
         NoteStatus.ARCHIVED -> PlaceholderData(R.drawable.ic_archive, R.string.note_placeholder_archived)
-        NoteStatus.TRASHED -> PlaceholderData(R.drawable.ic_delete, R.string.note_placeholder_deleted)
+        NoteStatus.DELETED -> PlaceholderData(R.drawable.ic_delete, R.string.note_placeholder_deleted)
     }
 
     @AssistedInject.Factory
