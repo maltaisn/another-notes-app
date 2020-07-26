@@ -27,32 +27,42 @@ import kotlin.test.assertTrue
 
 class NoteTest {
 
-    @Test(expected = IllegalArgumentException::class)
+    @Test
     fun `should fail to create text note with wrong metadata`() {
-        testNote(type = NoteType.TEXT, metadata = ListNoteMetadata(emptyList()))
+        assertFailsWith<IllegalArgumentException> {
+            testNote(type = NoteType.TEXT, metadata = ListNoteMetadata(emptyList()))
+        }
     }
 
-    @Test(expected = IllegalArgumentException::class)
+    @Test
     fun `should fail to create list note with wrong metadata`() {
-        testNote(type = NoteType.LIST, metadata = BlankNoteMetadata)
+        assertFailsWith<IllegalArgumentException> {
+            testNote(type = NoteType.LIST, metadata = BlankNoteMetadata)
+        }
     }
 
-    @Test(expected = IllegalArgumentException::class)
+    @Test
     fun `should fail to create list item with line break`() {
-        ListNoteItem("two\nlines", false)
+        assertFailsWith<IllegalArgumentException> {
+            ListNoteItem("two\nlines", false)
+        }
     }
 
-    @Test(expected = IllegalStateException::class)
+    @Test
     fun `should fail to get list items on text note`() {
-        val note = testNote(type = NoteType.TEXT)
-        note.listItems
+        assertFailsWith<IllegalStateException> {
+            val note = testNote(type = NoteType.TEXT)
+            note.listItems
+        }
     }
 
-    @Test(expected = IllegalArgumentException::class)
+    @Test
     fun `should fail to create note with added date after last modified`() {
-        testNote(type = NoteType.TEXT,
-            added = DateTimeConverter.toDate("2020-01-01T00:00:00.000Z"),
-            modified = DateTimeConverter.toDate("2019-12-31T23:59:59.999Z"))
+        assertFailsWith<IllegalArgumentException> {
+            testNote(type = NoteType.TEXT,
+                added = DateTimeConverter.toDate("2020-01-01T00:00:00.000Z"),
+                modified = DateTimeConverter.toDate("2019-12-31T23:59:59.999Z"))
+        }
     }
 
     @Test
