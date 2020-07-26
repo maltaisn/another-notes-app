@@ -100,44 +100,43 @@ class EditViewModelTest {
     fun `should create new blank note`() = mainCoroutineRule.runBlockingTest {
         viewModel.start(Note.NO_ID)
 
-        assertNoteEquals(notesRepo.lastAddedNote!!,
-                testNote(title = "", content = ""))
+        assertNoteEquals(testNote(title = "", content = ""), notesRepo.lastAddedNote!!)
 
-        assertEquals(viewModel.noteStatus.getOrAwaitValue(), NoteStatus.ACTIVE)
-        assertEquals(viewModel.noteType.getOrAwaitValue(), NoteType.TEXT)
+        assertEquals(NoteStatus.ACTIVE, viewModel.noteStatus.getOrAwaitValue())
+        assertEquals(NoteType.TEXT, viewModel.noteType.getOrAwaitValue())
 
-        assertEquals(viewModel.editItems.getOrAwaitValue(), listOf(
+        assertEquals(listOf(
                 EditTitleItem(DefaultEditableText(""), true),
                 EditContentItem(DefaultEditableText(""), true)
-        ))
+        ), viewModel.editItems.getOrAwaitValue())
     }
 
     @Test
     fun `should edit existing text note`() = mainCoroutineRule.runBlockingTest {
         viewModel.start(1)
 
-        assertEquals(viewModel.noteStatus.getOrAwaitValue(), NoteStatus.ACTIVE)
-        assertEquals(viewModel.noteType.getOrAwaitValue(), NoteType.TEXT)
+        assertEquals(NoteStatus.ACTIVE, viewModel.noteStatus.getOrAwaitValue())
+        assertEquals(NoteType.TEXT, viewModel.noteType.getOrAwaitValue())
 
-        assertEquals(viewModel.editItems.getOrAwaitValue(), listOf(
+        assertEquals(listOf(
                 EditTitleItem(DefaultEditableText("title"), true),
                 EditContentItem(DefaultEditableText("content"), true)
-        ))
+        ), viewModel.editItems.getOrAwaitValue())
     }
 
     @Test
     fun `should edit existing list note`() = mainCoroutineRule.runBlockingTest {
         viewModel.start(2)
 
-        assertEquals(viewModel.noteStatus.getOrAwaitValue(), NoteStatus.ACTIVE)
-        assertEquals(viewModel.noteType.getOrAwaitValue(), NoteType.LIST)
+        assertEquals(NoteStatus.ACTIVE, viewModel.noteStatus.getOrAwaitValue())
+        assertEquals(NoteType.LIST, viewModel.noteType.getOrAwaitValue())
 
-        assertEquals(viewModel.editItems.getOrAwaitValue(), listOf(
+        assertEquals(listOf(
                 EditTitleItem(DefaultEditableText("title"), true),
                 EditItemItem(DefaultEditableText("item 1"), checked = true, editable = true),
                 EditItemItem(DefaultEditableText("item 2"), checked = false, editable = true),
                 EditItemAddItem
-        ))
+        ), viewModel.editItems.getOrAwaitValue())
     }
 
     @Test
@@ -147,24 +146,24 @@ class EditViewModelTest {
         assertEquals(viewModel.noteStatus.getOrAwaitValue(), NoteStatus.DELETED)
         assertEquals(viewModel.noteType.getOrAwaitValue(), NoteType.TEXT)
 
-        assertEquals(viewModel.editItems.getOrAwaitValue(), listOf(
+        assertEquals(listOf(
                 EditTitleItem(DefaultEditableText("title"), false),
                 EditContentItem(DefaultEditableText("content"), false)
-        ))
+        ), viewModel.editItems.getOrAwaitValue())
     }
 
     @Test
     fun `should open existing list note in trash, not editable`() = mainCoroutineRule.runBlockingTest {
         viewModel.start(5)
 
-        assertEquals(viewModel.noteStatus.getOrAwaitValue(), NoteStatus.DELETED)
-        assertEquals(viewModel.noteType.getOrAwaitValue(), NoteType.LIST)
+        assertEquals(NoteStatus.DELETED, viewModel.noteStatus.getOrAwaitValue())
+        assertEquals(NoteType.LIST, viewModel.noteType.getOrAwaitValue())
 
-        assertEquals(viewModel.editItems.getOrAwaitValue(), listOf(
+        assertEquals(listOf(
                 EditTitleItem(DefaultEditableText("title"), false),
                 EditItemItem(DefaultEditableText("item 1"), checked = true, editable = false),
                 EditItemItem(DefaultEditableText("item 2"), checked = false, editable = false)
-        ))
+        ), viewModel.editItems.getOrAwaitValue())
     }
 
     @Test
@@ -175,8 +174,8 @@ class EditViewModelTest {
         (viewModel.editItems.getOrAwaitValue()[0] as EditTitleItem).title.replaceAll("modified")
         viewModel.save()
 
-        assertNoteEquals(notesRepo.lastAddedNote!!, testNote(id = 1, title = "modified",
-                content = "content", added = oldNote.addedDate, modified = Date()))
+        assertNoteEquals(testNote(id = 1, title = "modified", content = "content",
+                added = oldNote.addedDate, modified = Date()), notesRepo.lastAddedNote!!)
     }
 
     @Test
@@ -191,11 +190,11 @@ class EditViewModelTest {
 
         viewModel.save()
 
-        assertNoteEquals(notesRepo.lastAddedNote!!, listNote(listOf(
+        assertNoteEquals(listNote(listOf(
                 ListNoteItem("modified item", false),
                 ListNoteItem("item 2", false)
         ), title = "title", status = NoteStatus.ACTIVE,
-                added = oldNote.addedDate, modified = Date()))
+                added = oldNote.addedDate, modified = Date()), notesRepo.lastAddedNote!!)
     }
 
     @Test
@@ -205,7 +204,7 @@ class EditViewModelTest {
         viewModel.start(1)
         viewModel.save()
 
-        assertNoteEquals(notesRepo.getById(1)!!, note)
+        assertNoteEquals(note, notesRepo.getById(1)!!)
     }
 
     @Test
@@ -223,11 +222,11 @@ class EditViewModelTest {
         viewModel.start(1)
         viewModel.toggleNoteType()
 
-        assertEquals(viewModel.editItems.getOrAwaitValue(), listOf(
+        assertEquals(listOf(
                 EditTitleItem(DefaultEditableText("title"), true),
                 EditItemItem(DefaultEditableText("content"), checked = false, editable = true),
                 EditItemAddItem
-        ))
+        ), viewModel.editItems.getOrAwaitValue())
     }
 
     @Test
@@ -235,10 +234,10 @@ class EditViewModelTest {
         viewModel.start(3)
         viewModel.toggleNoteType()
 
-        assertEquals(viewModel.editItems.getOrAwaitValue(), listOf(
+        assertEquals(listOf(
                 EditTitleItem(DefaultEditableText("title"), true),
                 EditContentItem(DefaultEditableText("- item 1\n- item 2"), true)
-        ))
+        ), viewModel.editItems.getOrAwaitValue())
     }
 
     @Test
@@ -254,10 +253,10 @@ class EditViewModelTest {
         viewModel.start(2)
         viewModel.convertToText(false)
 
-        assertEquals(viewModel.editItems.getOrAwaitValue(), listOf(
+        assertEquals(listOf(
                 EditTitleItem(DefaultEditableText("title"), true),
                 EditContentItem(DefaultEditableText("- item 2"), true)
-        ))
+        ), viewModel.editItems.getOrAwaitValue())
     }
 
     @Test
@@ -265,10 +264,10 @@ class EditViewModelTest {
         viewModel.start(2)
         viewModel.convertToText(true)
 
-        assertEquals(viewModel.editItems.getOrAwaitValue(), listOf(
+        assertEquals(listOf(
                 EditTitleItem(DefaultEditableText("title"), true),
                 EditContentItem(DefaultEditableText("- item 1\n- item 2"), true)
-        ))
+        ), viewModel.editItems.getOrAwaitValue())
     }
 
     @Test
@@ -278,10 +277,10 @@ class EditViewModelTest {
         viewModel.start(1)
         viewModel.moveNoteAndExit()
 
-        assertNoteEquals(notesRepo.getById(1)!!, testNote(
+        assertNoteEquals(testNote(
                 title = "title", content = "content", status = NoteStatus.ARCHIVED,
                 added = DateTimeConverter.toDate("2018-01-01T00:00:00.000Z"),
-                modified = Date()))
+                modified = Date()), notesRepo.getById(1)!!)
         assertLiveDataEventSent(viewModel.statusChangeEvent,
                 StatusChange(listOf(oldNote), NoteStatus.ACTIVE, NoteStatus.ARCHIVED))
         assertLiveDataEventSent(viewModel.exitEvent, Unit)
@@ -294,9 +293,9 @@ class EditViewModelTest {
         viewModel.start(6)
         viewModel.moveNoteAndExit()
 
-        assertNoteEquals(notesRepo.getById(6)!!, testNote(
+        assertNoteEquals(testNote(
                 title = "title", content = "content", status = NoteStatus.ACTIVE,
-                added = oldNote.addedDate, modified = Date()))
+                added = oldNote.addedDate, modified = Date()), notesRepo.getById(6)!!)
         assertLiveDataEventSent(viewModel.statusChangeEvent,
                 StatusChange(listOf(oldNote), NoteStatus.ARCHIVED, NoteStatus.ACTIVE))
         assertLiveDataEventSent(viewModel.exitEvent, Unit)
@@ -309,9 +308,9 @@ class EditViewModelTest {
         viewModel.start(4)
         viewModel.moveNoteAndExit()
 
-        assertNoteEquals(notesRepo.getById(4)!!, testNote(
+        assertNoteEquals(testNote(
                 title = "title", content = "content", status = NoteStatus.ACTIVE,
-                added = oldNote.addedDate, modified = Date()))
+                added = oldNote.addedDate, modified = Date()), notesRepo.getById(4)!!)
         assertLiveDataEventSent(viewModel.statusChangeEvent,
                 StatusChange(listOf(oldNote), NoteStatus.DELETED, NoteStatus.ACTIVE))
         assertLiveDataEventSent(viewModel.exitEvent, Unit)
@@ -322,12 +321,12 @@ class EditViewModelTest {
         viewModel.start(4)
         viewModel.restoreNoteAndEdit()
 
-        assertEquals(viewModel.noteStatus.getOrAwaitValue(), NoteStatus.ACTIVE)
+        assertEquals(NoteStatus.ACTIVE, viewModel.noteStatus.getOrAwaitValue())
         assertLiveDataEventSent(viewModel.messageEvent, EditMessage.RESTORED_NOTE)
-        assertEquals(viewModel.editItems.getOrAwaitValue(), listOf(
+        assertEquals(listOf(
                 EditTitleItem(DefaultEditableText("title"), true),
                 EditContentItem(DefaultEditableText("content"), true)
-        ))
+        ), viewModel.editItems.getOrAwaitValue())
     }
 
     @Test
@@ -335,14 +334,14 @@ class EditViewModelTest {
         viewModel.start(5)
         viewModel.restoreNoteAndEdit()
 
-        assertEquals(viewModel.noteStatus.getOrAwaitValue(), NoteStatus.ACTIVE)
+        assertEquals(NoteStatus.ACTIVE, viewModel.noteStatus.getOrAwaitValue())
         assertLiveDataEventSent(viewModel.messageEvent, EditMessage.RESTORED_NOTE)
-        assertEquals(viewModel.editItems.getOrAwaitValue(), listOf(
+        assertEquals(listOf(
                 EditTitleItem(DefaultEditableText("title"), true),
                 EditItemItem(DefaultEditableText("item 1"), checked = true, editable = true),
                 EditItemItem(DefaultEditableText("item 2"), checked = false, editable = true),
                 EditItemAddItem
-        ))
+        ), viewModel.editItems.getOrAwaitValue())
     }
 
     @Test
@@ -353,10 +352,10 @@ class EditViewModelTest {
         assertNoteEquals(notesRepo.lastAddedNote!!, testNote(title = "title - Copy",
                 content = "content", added = Date(), modified = Date(),
                 status = NoteStatus.ARCHIVED))
-        assertEquals(viewModel.editItems.getOrAwaitValue(), listOf(
+        assertEquals(listOf(
                 EditTitleItem(DefaultEditableText("title - Copy"), true),
                 EditContentItem(DefaultEditableText("content"), true)
-        ))
+        ), viewModel.editItems.getOrAwaitValue())
         assertLiveDataEventSent(viewModel.focusEvent, EditViewModel.FocusChange(0, 12, true))
     }
 
@@ -367,11 +366,11 @@ class EditViewModelTest {
 
         viewModel.copyNote("untitled", "Copy")
 
-        assertNoteEquals(notesRepo.lastAddedNote!!, lastAdded)
-        assertEquals(viewModel.editItems.getOrAwaitValue(), listOf(
+        assertNoteEquals(lastAdded, notesRepo.lastAddedNote!!)
+        assertEquals(listOf(
                 EditTitleItem(DefaultEditableText("untitled - Copy"), true),
                 EditContentItem(DefaultEditableText(""), true)
-        ))
+        ), viewModel.editItems.getOrAwaitValue())
         assertLiveDataEventSent(viewModel.focusEvent, EditViewModel.FocusChange(0, 15, true))
     }
 
@@ -419,12 +418,25 @@ class EditViewModelTest {
         viewModel.start(2)
         viewModel.uncheckAllItems()
 
-        assertEquals(viewModel.editItems.getOrAwaitValue(), listOf(
+        assertEquals(listOf(
                 EditTitleItem(DefaultEditableText("title"), true),
                 EditItemItem(DefaultEditableText("item 1"), checked = false, editable = true),
                 EditItemItem(DefaultEditableText("item 2"), checked = false, editable = true),
                 EditItemAddItem
-        ))
+        ), viewModel.editItems.getOrAwaitValue())
+    }
+
+    @Test
+    fun `should not uncheck all items in deleted list note`() = mainCoroutineRule.runBlockingTest {
+        viewModel.start(5)
+        viewModel.uncheckAllItems()
+
+        assertEquals(listOf(
+                EditTitleItem(DefaultEditableText("title"), false),
+                EditItemItem(DefaultEditableText("item 1"), checked = true, editable = false),
+                EditItemItem(DefaultEditableText("item 2"), checked = false, editable = false)
+        ), viewModel.editItems.getOrAwaitValue())
+        assertLiveDataEventSent(viewModel.messageEvent, EditMessage.CANT_EDIT_IN_TRASH)
     }
 
     @Test
@@ -432,11 +444,24 @@ class EditViewModelTest {
         viewModel.start(2)
         viewModel.deleteCheckedItems()
 
-        assertEquals(viewModel.editItems.getOrAwaitValue(), listOf(
+        assertEquals(listOf(
                 EditTitleItem(DefaultEditableText("title"), true),
                 EditItemItem(DefaultEditableText("item 2"), checked = false, editable = true),
                 EditItemAddItem
-        ))
+        ), viewModel.editItems.getOrAwaitValue())
+    }
+
+    @Test
+    fun `should not delete checked items in deleted list note`() = mainCoroutineRule.runBlockingTest {
+        viewModel.start(5)
+        viewModel.deleteCheckedItems()
+
+        assertEquals(listOf(
+                EditTitleItem(DefaultEditableText("title"), false),
+                EditItemItem(DefaultEditableText("item 1"), checked = true, editable = false),
+                EditItemItem(DefaultEditableText("item 2"), checked = false, editable = false)
+        ), viewModel.editItems.getOrAwaitValue())
+        assertLiveDataEventSent(viewModel.messageEvent, EditMessage.CANT_EDIT_IN_TRASH)
     }
 
     @Test
@@ -448,13 +473,13 @@ class EditViewModelTest {
 
         viewModel.onNoteItemChanged(item, 1, false)
 
-        assertEquals(viewModel.editItems.getOrAwaitValue(), listOf(
+        assertEquals(listOf(
                 EditTitleItem(DefaultEditableText("title"), true),
                 EditItemItem(DefaultEditableText("item 1"), checked = true, editable = true),
                 EditItemItem(DefaultEditableText(""), checked = false, editable = true),
                 EditItemItem(DefaultEditableText("item 2"), checked = false, editable = true),
                 EditItemAddItem
-        ))
+        ), viewModel.editItems.getOrAwaitValue())
         assertLiveDataEventSent(viewModel.focusEvent,
                 EditViewModel.FocusChange(2, 0, false))
     }
@@ -468,14 +493,14 @@ class EditViewModelTest {
 
         viewModel.onNoteItemChanged(item, 1, true)
 
-        assertEquals(viewModel.editItems.getOrAwaitValue(), listOf(
+        assertEquals(listOf(
                 EditTitleItem(DefaultEditableText("title"), true),
                 EditItemItem(DefaultEditableText("item 1"), checked = true, editable = true),
                 EditItemItem(DefaultEditableText("new item first"), checked = false, editable = true),
                 EditItemItem(DefaultEditableText("new item second"), checked = false, editable = true),
                 EditItemItem(DefaultEditableText("item 2"), checked = false, editable = true),
                 EditItemAddItem
-        ))
+        ), viewModel.editItems.getOrAwaitValue())
         assertLiveDataEventSent(viewModel.focusEvent,
                 EditViewModel.FocusChange(3, 15, false))
     }
@@ -486,11 +511,11 @@ class EditViewModelTest {
         val item = viewModel.editItems.getOrAwaitValue()[2] as EditItemItem
         viewModel.onNoteItemBackspacePressed(item, 2)
 
-        assertEquals(viewModel.editItems.getOrAwaitValue(), listOf(
+        assertEquals(listOf(
                 EditTitleItem(DefaultEditableText("title"), true),
                 EditItemItem(DefaultEditableText("item 1item 2"), checked = true, editable = true),
                 EditItemAddItem
-        ))
+        ), viewModel.editItems.getOrAwaitValue())
         assertLiveDataEventSent(viewModel.focusEvent,
                 EditViewModel.FocusChange(1, 6, true))
     }
@@ -501,12 +526,12 @@ class EditViewModelTest {
         val item = viewModel.editItems.getOrAwaitValue()[1] as EditItemItem
         viewModel.onNoteItemBackspacePressed(item, 1)
 
-        assertEquals(viewModel.editItems.getOrAwaitValue(), listOf(
+        assertEquals(listOf(
                 EditTitleItem(DefaultEditableText("title"), true),
                 EditItemItem(DefaultEditableText("item 1"), checked = true, editable = true),
                 EditItemItem(DefaultEditableText("item 2"), checked = false, editable = true),
                 EditItemAddItem
-        ))
+        ), viewModel.editItems.getOrAwaitValue())
     }
 
     @Test
@@ -514,11 +539,11 @@ class EditViewModelTest {
         viewModel.start(2)
         viewModel.onNoteItemDeleteClicked(2)
 
-        assertEquals(viewModel.editItems.getOrAwaitValue(), listOf(
+        assertEquals(listOf(
                 EditTitleItem(DefaultEditableText("title"), true),
                 EditItemItem(DefaultEditableText("item 1"), checked = true, editable = true),
                 EditItemAddItem
-        ))
+        ), viewModel.editItems.getOrAwaitValue())
         assertLiveDataEventSent(viewModel.focusEvent,
                 EditViewModel.FocusChange(1, 6, true))
     }
@@ -528,11 +553,11 @@ class EditViewModelTest {
         viewModel.start(2)
         viewModel.onNoteItemDeleteClicked(1)
 
-        assertEquals(viewModel.editItems.getOrAwaitValue(), listOf(
+        assertEquals(listOf(
                 EditTitleItem(DefaultEditableText("title"), true),
                 EditItemItem(DefaultEditableText("item 2"), checked = false, editable = true),
                 EditItemAddItem
-        ))
+        ), viewModel.editItems.getOrAwaitValue())
         assertLiveDataEventSent(viewModel.focusEvent,
                 EditViewModel.FocusChange(2, 6, true))
     }
@@ -542,13 +567,13 @@ class EditViewModelTest {
         viewModel.start(2)
         viewModel.onNoteItemAddClicked()
 
-        assertEquals(viewModel.editItems.getOrAwaitValue(), listOf(
+        assertEquals(listOf(
                 EditTitleItem(DefaultEditableText("title"), true),
                 EditItemItem(DefaultEditableText("item 1"), checked = true, editable = true),
                 EditItemItem(DefaultEditableText("item 2"), checked = false, editable = true),
                 EditItemItem(DefaultEditableText(""), checked = false, editable = true),
                 EditItemAddItem
-        ))
+        ), viewModel.editItems.getOrAwaitValue())
         assertLiveDataEventSent(viewModel.focusEvent,
                 EditViewModel.FocusChange(3, 0, false))
     }
@@ -585,10 +610,10 @@ class EditViewModelTest {
         viewModel.onNoteItemSwapped(2, 1)
         viewModel.save()
 
-        assertEquals(notesRepo.lastAddedNote!!.listItems, listOf(
+        assertEquals(listOf(
                 ListNoteItem("item 2", false),
                 ListNoteItem("item 1", true)
-        ))
+        ), notesRepo.lastAddedNote!!.listItems)
     }
 
 }

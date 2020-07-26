@@ -295,6 +295,11 @@ class EditViewModel @Inject constructor(
     }
 
     fun uncheckAllItems() {
+        if (isNoteInTrash) {
+            sendRestoreMessage()
+            return
+        }
+
         changeListItems { list ->
             for ((i, item) in list.withIndex()) {
                 if (item is EditItemItem && item.checked) {
@@ -305,6 +310,11 @@ class EditViewModel @Inject constructor(
     }
 
     fun deleteCheckedItems() {
+        if (isNoteInTrash) {
+            sendRestoreMessage()
+            return
+        }
+
         changeListItems { list ->
             val iterator = list.iterator()
             for (item in iterator) {
@@ -456,11 +466,15 @@ class EditViewModel @Inject constructor(
 
     override fun onNoteClickedToEdit() {
         if (isNoteInTrash) {
-            // Cannot edit note in trash! Show message suggesting user to restore the note.
-            // This is not just for fun. Editing note would change its last modified date
-            // which would mess up the auto-delete interval in trash.
-            _messageEvent.send(EditMessage.CANT_EDIT_IN_TRASH)
+            sendRestoreMessage()
         }
+    }
+
+    private fun sendRestoreMessage() {
+        // Cannot edit note in trash! Show message suggesting user to restore the note.
+        // This is not just for show. Editing note would change its last modified date
+        // which would mess up the auto-delete interval in trash.
+        _messageEvent.send(EditMessage.CANT_EDIT_IN_TRASH)
     }
 
     override val isNoteDragEnabled: Boolean
