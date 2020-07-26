@@ -66,16 +66,14 @@ class NoteAdapter(val context: Context, val callback: Callback) :
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         return when (viewType) {
-            VIEW_TYPE_MESSAGE -> MessageViewHolder(ItemMessageBinding.inflate(inflater,
-                parent,
-                false))
-            VIEW_TYPE_HEADER -> HeaderViewHolder(ItemHeaderBinding.inflate(inflater, parent, false))
-            VIEW_TYPE_TEXT_NOTE -> TextNoteViewHolder(ItemNoteTextBinding.inflate(inflater,
-                parent,
-                false))
-            VIEW_TYPE_LIST_NOTE -> ListNoteViewHolder(ItemNoteListBinding.inflate(inflater,
-                parent,
-                false))
+            ViewType.MESSAGE.ordinal -> MessageViewHolder(ItemMessageBinding
+                .inflate(inflater, parent, false))
+            ViewType.HEADER.ordinal -> HeaderViewHolder(ItemHeaderBinding
+                .inflate(inflater, parent, false))
+            ViewType.TEXT_NOTE.ordinal -> TextNoteViewHolder(ItemNoteTextBinding
+                .inflate(inflater, parent, false))
+            ViewType.LIST_NOTE.ordinal -> ListNoteViewHolder(ItemNoteListBinding
+                .inflate(inflater, parent, false))
             else -> error("Unknown view type")
         }
     }
@@ -95,7 +93,7 @@ class NoteAdapter(val context: Context, val callback: Callback) :
         }
     }
 
-    override fun getItemViewType(position: Int) = getItem(position).type
+    override fun getItemViewType(position: Int) = getItem(position).type.ordinal
 
     override fun getItemId(position: Int) = getItem(position).id
 
@@ -119,6 +117,13 @@ class NoteAdapter(val context: Context, val callback: Callback) :
                 LayoutInflater.from(context), null, false))
         }
 
+    enum class ViewType {
+        MESSAGE,
+        HEADER,
+        TEXT_NOTE,
+        LIST_NOTE
+    }
+
     interface Callback {
         /** Called when a note [item] at [pos] is clicked. */
         fun onNoteItemClicked(item: NoteItem, pos: Int)
@@ -137,12 +142,5 @@ class NoteAdapter(val context: Context, val callback: Callback) :
 
         /** Whether strikethrough should be added to checked items or not. */
         val strikethroughCheckedItems: Boolean
-    }
-
-    companion object {
-        const val VIEW_TYPE_MESSAGE = 0
-        const val VIEW_TYPE_HEADER = 1
-        const val VIEW_TYPE_TEXT_NOTE = 10
-        const val VIEW_TYPE_LIST_NOTE = 11
     }
 }

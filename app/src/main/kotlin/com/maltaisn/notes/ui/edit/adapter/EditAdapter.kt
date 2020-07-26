@@ -62,15 +62,15 @@ class EditAdapter(val context: Context, val callback: Callback) :
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         return when (viewType) {
-            VIEW_TYPE_TITLE -> EditTitleViewHolder(ItemEditTitleBinding.inflate(
-                inflater, parent, false), callback)
-            VIEW_TYPE_CONTENT -> EditContentViewHolder(ItemEditContentBinding.inflate(
-                inflater, parent, false), callback)
-            VIEW_TYPE_ITEM_ADD -> EditItemAddViewHolder(ItemEditItemAddBinding.inflate(
-                inflater, parent, false), callback)
-            VIEW_TYPE_ITEM -> {
-                val viewHolder = EditItemViewHolder(ItemEditItemBinding.inflate(
-                    inflater, parent, false), callback)
+            ViewType.TITLE.ordinal -> EditTitleViewHolder(ItemEditTitleBinding
+                .inflate(inflater, parent, false), callback)
+            ViewType.CONTENT.ordinal -> EditContentViewHolder(ItemEditContentBinding
+                .inflate(inflater, parent, false), callback)
+            ViewType.ITEM_ADD.ordinal -> EditItemAddViewHolder(ItemEditItemAddBinding
+                .inflate(inflater, parent, false), callback)
+            ViewType.ITEM.ordinal -> {
+                val viewHolder = EditItemViewHolder(ItemEditItemBinding
+                    .inflate(inflater, parent, false), callback)
                 viewHolder.binding.dragImv.setOnTouchListener { view, event ->
                     if (event.action == MotionEvent.ACTION_DOWN && callback.isNoteDragEnabled) {
                         // Drag handle was touched. Hide keyboard and start dragging.
@@ -100,7 +100,7 @@ class EditAdapter(val context: Context, val callback: Callback) :
         }
     }
 
-    override fun getItemViewType(position: Int) = getItem(position).type
+    override fun getItemViewType(position: Int) = getItem(position).type.ordinal
 
     fun setItemFocus(focus: EditViewModel.FocusChange) {
         val rcv = recyclerView ?: return
@@ -119,6 +119,13 @@ class EditAdapter(val context: Context, val callback: Callback) :
             // Not supposed to happen, but if it does, just save it for later.
             pendingFocusChange = focus
         }
+    }
+
+    enum class ViewType {
+        TITLE,
+        CONTENT,
+        ITEM,
+        ITEM_ADD
     }
 
     interface Callback {
@@ -151,12 +158,5 @@ class EditAdapter(val context: Context, val callback: Callback) :
 
         /** Whether strikethrough should be added to checked items or not. */
         val strikethroughCheckedItems: Boolean
-    }
-
-    companion object {
-        const val VIEW_TYPE_TITLE = 0
-        const val VIEW_TYPE_CONTENT = 1
-        const val VIEW_TYPE_ITEM = 2
-        const val VIEW_TYPE_ITEM_ADD = 3
     }
 }

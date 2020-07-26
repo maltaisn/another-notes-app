@@ -20,10 +20,11 @@ import androidx.annotation.PluralsRes
 import androidx.annotation.StringRes
 import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.model.entity.NoteType
+import com.maltaisn.notes.ui.note.adapter.NoteAdapter.ViewType
 
 sealed class NoteListItem {
     abstract val id: Long
-    abstract val type: Int
+    abstract val type: ViewType
 }
 
 data class NoteItem(
@@ -34,10 +35,10 @@ data class NoteItem(
     val contentHighlights: List<IntRange> = emptyList()
 ) : NoteListItem() {
 
-    override val type: Int
+    override val type: ViewType
         get() = when (note.type) {
-            NoteType.TEXT -> NoteAdapter.VIEW_TYPE_TEXT_NOTE
-            NoteType.LIST -> NoteAdapter.VIEW_TYPE_LIST_NOTE
+            NoteType.TEXT -> ViewType.TEXT_NOTE
+            NoteType.LIST -> ViewType.LIST_NOTE
         }
 }
 
@@ -45,8 +46,8 @@ data class HeaderItem(
     override val id: Long,
     @StringRes val title: Int
 ) : NoteListItem() {
-    override val type: Int
-        get() = NoteAdapter.VIEW_TYPE_HEADER
+
+    override val type get() = ViewType.HEADER
 }
 
 data class MessageItem(
@@ -54,6 +55,6 @@ data class MessageItem(
     @StringRes @PluralsRes val message: Int,
     val args: List<Any>
 ) : NoteListItem() {
-    override val type: Int
-        get() = NoteAdapter.VIEW_TYPE_MESSAGE
+
+    override val type get() = ViewType.MESSAGE
 }
