@@ -18,8 +18,12 @@ package com.maltaisn.notes.model.converter
 
 import androidx.room.TypeConverter
 import com.maltaisn.notes.model.entity.NoteType
-import kotlinx.serialization.*
-
+import kotlinx.serialization.Decoder
+import kotlinx.serialization.Encoder
+import kotlinx.serialization.KSerializer
+import kotlinx.serialization.PrimitiveDescriptor
+import kotlinx.serialization.PrimitiveKind
+import kotlinx.serialization.Serializer
 
 @Serializer(forClass = NoteType::class)
 object NoteTypeConverter : KSerializer<NoteType> {
@@ -31,10 +35,11 @@ object NoteTypeConverter : KSerializer<NoteType> {
     @TypeConverter
     @JvmStatic
     fun toType(value: Int) = NoteType.values().find { it.value == value }
-            ?: error("Unknown note type value")
+        ?: error("Unknown note type value")
 
     override val descriptor = PrimitiveDescriptor("NoteType", PrimitiveKind.INT)
-    override fun serialize(encoder: Encoder, value: NoteType) = encoder.encodeInt(toInt(value))
-    override fun deserialize(decoder: Decoder) = toType(decoder.decodeInt())
 
+    override fun serialize(encoder: Encoder, value: NoteType) = encoder.encodeInt(toInt(value))
+
+    override fun deserialize(decoder: Decoder) = toType(decoder.decodeInt())
 }

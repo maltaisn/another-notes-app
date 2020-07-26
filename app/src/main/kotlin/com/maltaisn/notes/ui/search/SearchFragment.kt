@@ -30,12 +30,12 @@ import com.maltaisn.notes.ui.note.NoteFragment
 import com.maltaisn.notes.ui.viewModel
 import javax.inject.Inject
 
-
 class SearchFragment : NoteFragment() {
 
-    @Inject lateinit var viewModelFactory: SearchViewModel.Factory
-    override val viewModel by viewModel { viewModelFactory.create(it) }
+    @Inject
+    lateinit var viewModelFactory: SearchViewModel.Factory
 
+    override val viewModel by viewModel { viewModelFactory.create(it) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,15 +46,17 @@ class SearchFragment : NoteFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val navController = findNavController()
-        
+
         // Toolbar
         val toolbar = binding.toolbar
-        toolbar.inflateMenu(R.menu.toolbar_search)
-        toolbar.setNavigationIcon(R.drawable.ic_arrow_left)
-        toolbar.setNavigationContentDescription(R.string.content_descrp_back)
-        toolbar.setNavigationOnClickListener {
-            view.hideKeyboard()
-            navController.popBackStack()
+        toolbar.apply {
+            inflateMenu(R.menu.toolbar_search)
+            setNavigationIcon(R.drawable.ic_arrow_left)
+            setNavigationContentDescription(R.string.content_descrp_back)
+            setNavigationOnClickListener {
+                view.hideKeyboard()
+                navController.popBackStack()
+            }
         }
 
         binding.fab.isVisible = false
@@ -85,5 +87,4 @@ class SearchFragment : NoteFragment() {
         }
         searchView.requestFocus()
     }
-
 }

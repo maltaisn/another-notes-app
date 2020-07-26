@@ -27,20 +27,20 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"
         android:paddingTop="8dp"
         android:paddingBottom="16dp"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
         >
 
         <TextView
             android:id="@+id/title_txv"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textAppearance="?textAppearanceSubtitle1"
-            android:maxLines="2"
-            android:ellipsize="end"
             android:layout_marginTop="8dp"
+            android:ellipsize="end"
+            android:maxLines="2"
+            android:textAppearance="?textAppearanceSubtitle1"
             tools:text="Lorem ipsum dolor sit amet"
             tools:visibility="visible"
             />
@@ -49,19 +49,20 @@
             android:id="@+id/items_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
             android:orientation="vertical"
-            tools:visibility="gone"/>
+            android:layout_marginTop="8dp"
+            tools:visibility="gone"
+            />
 
         <TextView
             android:id="@+id/info_txv"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textAppearance="?textAppearanceCaption"
             android:layout_marginTop="4dp"
             android:layout_marginStart="24dp"
-            android:maxLines="1"
             android:ellipsize="end"
+            android:maxLines="1"
+            android:textAppearance="?textAppearanceCaption"
             android:visibility="gone"
             tools:text="+ 12 list items"
             />

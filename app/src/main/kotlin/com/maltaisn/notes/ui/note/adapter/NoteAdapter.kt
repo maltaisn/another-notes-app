@@ -25,12 +25,15 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.maltaisn.notes.sync.R
-import com.maltaisn.notes.sync.databinding.*
-import java.util.*
-
+import com.maltaisn.notes.sync.databinding.ItemHeaderBinding
+import com.maltaisn.notes.sync.databinding.ItemMessageBinding
+import com.maltaisn.notes.sync.databinding.ItemNoteListBinding
+import com.maltaisn.notes.sync.databinding.ItemNoteListItemBinding
+import com.maltaisn.notes.sync.databinding.ItemNoteTextBinding
+import java.util.LinkedList
 
 class NoteAdapter(val context: Context, val callback: Callback) :
-        ListAdapter<NoteListItem, RecyclerView.ViewHolder>(NoteListDiffCallback()) {
+    ListAdapter<NoteListItem, RecyclerView.ViewHolder>(NoteListDiffCallback()) {
 
     /**
      * A pool of view holders for showing items of list notes.
@@ -52,11 +55,9 @@ class NoteAdapter(val context: Context, val callback: Callback) :
     val highlightBackgroundColor = ContextCompat.getColor(context, R.color.color_highlight)
     val highlightForegroundColor = ContextCompat.getColor(context, R.color.color_on_highlight)
 
-
     init {
         setHasStableIds(true)
     }
-
 
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
         itemTouchHelper.attachToRecyclerView(recyclerView)
@@ -65,10 +66,16 @@ class NoteAdapter(val context: Context, val callback: Callback) :
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         return when (viewType) {
-            VIEW_TYPE_MESSAGE -> MessageViewHolder(ItemMessageBinding.inflate(inflater, parent, false))
+            VIEW_TYPE_MESSAGE -> MessageViewHolder(ItemMessageBinding.inflate(inflater,
+                parent,
+                false))
             VIEW_TYPE_HEADER -> HeaderViewHolder(ItemHeaderBinding.inflate(inflater, parent, false))
-            VIEW_TYPE_TEXT_NOTE -> TextNoteViewHolder(ItemNoteTextBinding.inflate(inflater, parent, false))
-            VIEW_TYPE_LIST_NOTE -> ListNoteViewHolder(ItemNoteListBinding.inflate(inflater, parent, false))
+            VIEW_TYPE_TEXT_NOTE -> TextNoteViewHolder(ItemNoteTextBinding.inflate(inflater,
+                parent,
+                false))
+            VIEW_TYPE_LIST_NOTE -> ListNoteViewHolder(ItemNoteListBinding.inflate(inflater,
+                parent,
+                false))
             else -> error("Unknown view type")
         }
     }
@@ -105,13 +112,12 @@ class NoteAdapter(val context: Context, val callback: Callback) :
 
     @SuppressLint("InflateParams")
     fun obtainListNoteItemViewHolder(): ListNoteItemViewHolder =
-            if (listNoteItemsPool.isNotEmpty()) {
-                listNoteItemsPool.pop()
-            } else {
-                ListNoteItemViewHolder(ItemNoteListItemBinding.inflate(
-                        LayoutInflater.from(context), null, false))
-            }
-
+        if (listNoteItemsPool.isNotEmpty()) {
+            listNoteItemsPool.pop()
+        } else {
+            ListNoteItemViewHolder(ItemNoteListItemBinding.inflate(
+                LayoutInflater.from(context), null, false))
+        }
 
     interface Callback {
         /** Called when a note [item] at [pos] is clicked. */
@@ -132,7 +138,6 @@ class NoteAdapter(val context: Context, val callback: Callback) :
         /** Whether strikethrough should be added to checked items or not. */
         val strikethroughCheckedItems: Boolean
     }
-
 
     companion object {
         const val VIEW_TYPE_MESSAGE = 0

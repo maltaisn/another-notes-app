@@ -22,7 +22,6 @@ import android.text.style.ForegroundColorSpan
 import androidx.core.text.set
 import com.maltaisn.notes.model.entity.ListNoteItem
 
-
 /**
  * Helper class to add highlight spans on search results.
  */
@@ -50,8 +49,7 @@ object HighlightHelper {
      * Group highlights of a list note by item.
      * Highlight indices are also shifted to the item's content.
      */
-    fun splitListNoteHighlightsByItem(items: List<ListNoteItem>,
-                                      highlights: List<IntRange>): List<List<IntRange>> {
+    fun splitListNoteHighlightsByItem(items: List<ListNoteItem>, highlights: List<IntRange>): List<List<IntRange>> {
         var currHighlightIndex = 0
         var contentStartPos = 0
         val itemHighlights = mutableListOf<List<IntRange>>()
@@ -76,8 +74,7 @@ object HighlightHelper {
     /**
      * Creates a spannable string of a [text] with background spans of a [bgColor] for [highlights].
      */
-    fun getHighlightedText(text: String, highlights: List<IntRange>,
-                           bgColor: Int, fgColor: Int): CharSequence {
+    fun getHighlightedText(text: String, highlights: List<IntRange>, bgColor: Int, fgColor: Int): CharSequence {
         if (highlights.isEmpty()) {
             return text
         }
@@ -89,5 +86,4 @@ object HighlightHelper {
         }
         return highlightedText
     }
-
 }

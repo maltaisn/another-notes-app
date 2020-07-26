@@ -21,11 +21,9 @@ import com.maltaisn.notes.ui.home.ReleaseBuildTypeBehavior
 import dagger.Binds
 import dagger.Module
 
-
 @Module
 abstract class BuildTypeModule {
 
-    @Binds
-    abstract fun bindsBuildTypeBehavior(behavior: ReleaseBuildTypeBehavior): BuildTypeBehavior
-
+    @get:Binds
+    abstract val ReleaseBuildTypeBehavior.bind: BuildTypeBehavior
 }

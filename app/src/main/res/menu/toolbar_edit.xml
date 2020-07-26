@@ -22,8 +22,8 @@
 
     <item
         android:id="@+id/item_type"
-        android:title="@null"
         android:icon="@null"
+        android:title="@null"
         app:showAsAction="always"
         tools:icon="@drawable/ic_checkbox"
         tools:title="@string/action_convert_to_list"
@@ -40,8 +40,8 @@
 
     <item
         android:id="@+id/item_pin"
-        android:title="@null"
         android:icon="@null"
+        android:title="@null"
         app:showAsAction="ifRoom"
         tools:icon="@drawable/ic_pin"
         tools:title="@string/action_pin"

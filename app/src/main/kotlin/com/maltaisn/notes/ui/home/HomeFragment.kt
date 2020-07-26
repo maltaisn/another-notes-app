@@ -41,19 +41,18 @@ import com.maltaisn.notes.ui.note.adapter.NoteListLayoutMode
 import com.maltaisn.notes.ui.viewModel
 import javax.inject.Inject
 
-
 /**
  * Start screen fragment displaying a list of note for different note statuses.
  */
 class HomeFragment : NoteFragment(), Toolbar.OnMenuItemClickListener,
-        NavigationView.OnNavigationItemSelectedListener {
+    NavigationView.OnNavigationItemSelectedListener {
 
-    @Inject lateinit var viewModelFactory: HomeViewModel.Factory
+    @Inject
+    lateinit var viewModelFactory: HomeViewModel.Factory
     override val viewModel by viewModel { viewModelFactory.create(it) }
 
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var navView: NavigationView
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,8 +62,6 @@ class HomeFragment : NoteFragment(), Toolbar.OnMenuItemClickListener,
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val navController = findNavController()
-
         // Drawer
         val activity = requireActivity() as MainActivity
         drawerLayout = activity.drawerLayout
@@ -72,76 +69,95 @@ class HomeFragment : NoteFragment(), Toolbar.OnMenuItemClickListener,
         navView.setNavigationItemSelectedListener(this)
 
         // Toolbar
-        val toolbar = binding.toolbar
-        toolbar.inflateMenu(R.menu.toolbar_home)
-        toolbar.setOnMenuItemClickListener(this)
-        toolbar.setNavigationIcon(R.drawable.ic_menu)
-        toolbar.setNavigationContentDescription(R.string.content_descrp_open_drawer)
-        toolbar.setNavigationOnClickListener {
-            drawerLayout.openDrawer(GravityCompat.START)
-        }
+        binding.toolbar.apply {
+            inflateMenu(R.menu.toolbar_home)
+            setOnMenuItemClickListener(this@HomeFragment)
+            setNavigationIcon(R.drawable.ic_menu)
+            setNavigationContentDescription(R.string.content_descrp_open_drawer)
+            setNavigationOnClickListener {
+                drawerLayout.openDrawer(GravityCompat.START)
+            }
 
-        // Hide or show build type and flavor specific items
-        toolbar.menu.findItem(R.id.item_extra_action).isVisible = BuildConfig.DEBUG
+            // Hide or show build type and flavor specific items
+            menu.findItem(R.id.item_extra_action).isVisible = BuildConfig.DEBUG
+        }
 
         // Floating action button
-        val fab = binding.fab
-        fab.setOnClickListener {
-            navController.navigateSafe(NavGraphDirections.actionEditNote())
+        binding.fab.setOnClickListener {
+            findNavController().navigateSafe(NavGraphDirections.actionEditNote())
         }
 
-        // Observers
+        setupViewModelObservers()
+    }
+
+    private fun setupViewModelObservers() {
         viewModel.noteStatus.observe(viewLifecycleOwner, Observer { status ->
-            // Show "Empty recycle bin" toolbar option
-            toolbar.menu.findItem(R.id.item_empty_trash).isVisible = status == NoteStatus.DELETED
-
-            // Update toolbar title
-            toolbar.setTitle(when (status!!) {
-                NoteStatus.ACTIVE -> R.string.note_location_active
-                NoteStatus.ARCHIVED -> R.string.note_location_archived
-                NoteStatus.DELETED -> R.string.note_location_deleted
-            })
-
-            // Fab is only shown in active notes.
-            if (status == NoteStatus.ACTIVE) {
-                fab.show()
-            } else {
-                fab.hide()
-            }
+            updateToolbarForNoteStatus(status)
+            updateFabForNoteStatus(status)
         })
 
         viewModel.currentSelection.observe(viewLifecycleOwner, Observer { selection ->
             if (selection.count != 0) {
                 // Lock drawer when user just selected a first note.
-                drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED, GravityCompat.START)
+                drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED,
+                    GravityCompat.START)
             }
         })
 
         viewModel.messageEvent.observe(viewLifecycleOwner, EventObserver { messageId ->
-            Snackbar.make(view, messageId, Snackbar.LENGTH_SHORT).show()
+            Snackbar.make(requireView(), messageId, Snackbar.LENGTH_SHORT).show()
         })
 
         viewModel.listLayoutMode.observe(viewLifecycleOwner, Observer { mode ->
-            val layoutItem = toolbar.menu.findItem(R.id.item_layout)
-            when (mode!!) {
-                NoteListLayoutMode.LIST -> {
-                    layoutItem.setIcon(R.drawable.ic_view_grid)
-                    layoutItem.setTitle(R.string.action_layout_grid)
-                }
-                NoteListLayoutMode.GRID -> {
-                    layoutItem.setIcon(R.drawable.ic_view_list)
-                    layoutItem.setTitle(R.string.action_layout_list)
-                }
-            }
+            updateListLayoutItemForMode(mode ?: return@Observer)
         })
 
         viewModel.showEmptyTrashDialogEvent.observe(viewLifecycleOwner, EventObserver {
-            ConfirmDialog.newInstance(
-                    title = R.string.action_empty_trash,
-                    message = R.string.trash_empty_message,
-                    btnPositive = R.string.action_empty_trash_short
-            ).show(childFragmentManager, EMPTY_TRASH_DIALOG_TAG)
+            showEmptyTrashConfirmDialog()
         })
+    }
+
+    private fun updateToolbarForNoteStatus(status: NoteStatus) {
+        // Show "Empty recycle bin" toolbar option
+        binding.toolbar.menu.findItem(R.id.item_empty_trash).isVisible = status == NoteStatus.DELETED
+
+        // Update toolbar title
+        binding.toolbar.setTitle(when (status) {
+            NoteStatus.ACTIVE -> R.string.note_location_active
+            NoteStatus.ARCHIVED -> R.string.note_location_archived
+            NoteStatus.DELETED -> R.string.note_location_deleted
+        })
+    }
+
+    private fun updateFabForNoteStatus(status: NoteStatus) {
+        // Fab is only shown in active notes.
+        if (status == NoteStatus.ACTIVE) {
+            binding.fab.show()
+        } else {
+            binding.fab.hide()
+        }
+    }
+
+    private fun updateListLayoutItemForMode(mode: NoteListLayoutMode) {
+        val layoutItem = binding.toolbar.menu.findItem(R.id.item_layout)
+        when (mode) {
+            NoteListLayoutMode.LIST -> {
+                layoutItem.setIcon(R.drawable.ic_view_grid)
+                layoutItem.setTitle(R.string.action_layout_grid)
+            }
+            NoteListLayoutMode.GRID -> {
+                layoutItem.setIcon(R.drawable.ic_view_list)
+                layoutItem.setTitle(R.string.action_layout_list)
+            }
+        }
+    }
+
+    private fun showEmptyTrashConfirmDialog() {
+        ConfirmDialog.newInstance(
+            title = R.string.action_empty_trash,
+            message = R.string.trash_empty_message,
+            btnPositive = R.string.action_empty_trash_short
+        ).show(childFragmentManager, EMPTY_TRASH_DIALOG_TAG)
     }
 
     override fun onDestroyView() {
@@ -152,7 +168,7 @@ class HomeFragment : NoteFragment(), Toolbar.OnMenuItemClickListener,
     override fun onMenuItemClick(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.item_search -> findNavController().navigateSafe(
-                    HomeFragmentDirections.actionHomeToSearch())
+                HomeFragmentDirections.actionHomeToSearch())
             R.id.item_layout -> viewModel.toggleListLayoutMode()
             R.id.item_empty_trash -> viewModel.emptyTrashPre()
             R.id.item_extra_action -> viewModel.doExtraAction()
@@ -167,7 +183,7 @@ class HomeFragment : NoteFragment(), Toolbar.OnMenuItemClickListener,
             R.id.item_location_archived -> viewModel.setNoteStatus(NoteStatus.ARCHIVED)
             R.id.item_location_deleted -> viewModel.setNoteStatus(NoteStatus.DELETED)
             R.id.item_settings -> findNavController().navigateSafe(
-                    HomeFragmentDirections.actionHomeToSettings())
+                HomeFragmentDirections.actionHomeToSettings())
             else -> return false
         }
 
@@ -190,5 +206,4 @@ class HomeFragment : NoteFragment(), Toolbar.OnMenuItemClickListener,
     companion object {
         private const val EMPTY_TRASH_DIALOG_TAG = "empty_trash_dialog"
     }
-
 }

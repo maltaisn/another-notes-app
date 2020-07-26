@@ -23,8 +23,8 @@
 
     <item android:bottom="120dp">
         <bitmap
-            android:src="@mipmap/splash_screen_logo"
             android:gravity="center"
+            android:src="@mipmap/splash_screen_logo"
             />
     </item>
 

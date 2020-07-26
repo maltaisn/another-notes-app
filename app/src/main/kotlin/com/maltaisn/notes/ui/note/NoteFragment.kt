@@ -18,7 +18,12 @@ package com.maltaisn.notes.ui.note
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.view.*
+import android.view.ActionMode
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -33,6 +38,7 @@ import com.maltaisn.notes.sync.R
 import com.maltaisn.notes.sync.databinding.FragmentNoteBinding
 import com.maltaisn.notes.ui.EventObserver
 import com.maltaisn.notes.ui.SharedViewModel
+import com.maltaisn.notes.ui.StatusChange
 import com.maltaisn.notes.ui.activityViewModel
 import com.maltaisn.notes.ui.common.ConfirmDialog
 import com.maltaisn.notes.ui.note.adapter.NoteAdapter
@@ -42,13 +48,14 @@ import java.text.NumberFormat
 import javax.inject.Inject
 import javax.inject.Provider
 
-
 /**
  * This fragment provides common code for home and search fragments.
  */
 abstract class NoteFragment : Fragment(), ActionMode.Callback, ConfirmDialog.Callback {
 
-    @Inject lateinit var sharedViewModelProvider: Provider<SharedViewModel>
+    @Inject
+    lateinit var sharedViewModelProvider: Provider<SharedViewModel>
+
     private val sharedViewModel by activityViewModel { sharedViewModelProvider.get() }
 
     protected abstract val viewModel: NoteViewModel
@@ -56,20 +63,16 @@ abstract class NoteFragment : Fragment(), ActionMode.Callback, ConfirmDialog.Cal
     private var _binding: FragmentNoteBinding? = null
     protected val binding get() = _binding!!
 
-    protected var actionMode: ActionMode? = null
+    private var actionMode: ActionMode? = null
 
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentNoteBinding.inflate(inflater, container, false)
         return binding.root
     }
 
-    @SuppressLint("WrongConstant")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val context = requireContext()
 
-        // Recycler view
         val rcv = binding.recyclerView
         rcv.setHasFixedSize(true)
         val adapter = NoteAdapter(context, viewModel)
@@ -77,7 +80,10 @@ abstract class NoteFragment : Fragment(), ActionMode.Callback, ConfirmDialog.Cal
         rcv.adapter = adapter
         rcv.layoutManager = layoutManager
 
-        // Observers
+        setupViewModelObservers(adapter, layoutManager)
+    }
+
+    private fun setupViewModelObservers(adapter: NoteAdapter, layoutManager: StaggeredGridLayoutManager) {
         viewModel.noteItems.observe(viewLifecycleOwner, Observer { items ->
             adapter.submitList(items)
         })
@@ -95,62 +101,8 @@ abstract class NoteFragment : Fragment(), ActionMode.Callback, ConfirmDialog.Cal
         })
 
         viewModel.currentSelection.observe(viewLifecycleOwner, Observer { selection ->
-            if (selection.count != 0 && actionMode == null) {
-                actionMode = binding.toolbar.startActionMode(this)
-
-            } else if (selection.count == 0 && actionMode != null) {
-                actionMode?.finish()
-                actionMode = null
-            }
-
-            actionMode?.let {
-                it.title = NUMBER_FORMAT.format(selection.count)
-
-                // Share and copy are only visible if there is a single note selected.
-                val menu = it.menu
-                val singleSelection = selection.count == 1
-                menu.findItem(R.id.item_share).isVisible = singleSelection
-                menu.findItem(R.id.item_copy).isVisible = singleSelection
-
-                // Pin item
-                val pinItem = it.menu.findItem(R.id.item_pin)
-                when (selection.pinned) {
-                    PinnedStatus.PINNED -> {
-                        pinItem.isVisible = true
-                        pinItem.setIcon(R.drawable.ic_pin_outline)
-                        pinItem.setTitle(R.string.action_unpin)
-                    }
-                    PinnedStatus.UNPINNED -> {
-                        pinItem.isVisible = true
-                        pinItem.setIcon(R.drawable.ic_pin)
-                        pinItem.setTitle(R.string.action_pin)
-                    }
-                    PinnedStatus.CANT_PIN -> {
-                        pinItem.isVisible = false
-                    }
-                }
-
-                // Update move items depending on status
-                val moveItem = menu.findItem(R.id.item_move)
-                val deleteItem = menu.findItem(R.id.item_delete)
-                when (selection.status!!) {
-                    NoteStatus.ACTIVE -> {
-                        moveItem.setIcon(R.drawable.ic_archive)
-                        moveItem.setTitle(R.string.action_archive)
-                        deleteItem.setTitle(R.string.action_delete)
-                    }
-                    NoteStatus.ARCHIVED -> {
-                        moveItem.setIcon(R.drawable.ic_unarchive)
-                        moveItem.setTitle(R.string.action_unarchive)
-                        deleteItem.setTitle(R.string.action_delete)
-                    }
-                    NoteStatus.DELETED -> {
-                        moveItem.setIcon(R.drawable.ic_restore)
-                        moveItem.setTitle(R.string.action_restore)
-                        deleteItem.setTitle(R.string.action_delete_forever)
-                    }
-                }
-            }
+            updateActionModeForSelection(selection)
+            updateItemsForSelection(selection)
         })
 
         viewModel.shareEvent.observe(viewLifecycleOwner, EventObserver { data ->
@@ -170,34 +122,103 @@ abstract class NoteFragment : Fragment(), ActionMode.Callback, ConfirmDialog.Cal
         })
 
         viewModel.showDeleteConfirmEvent.observe(viewLifecycleOwner, EventObserver {
-            ConfirmDialog.newInstance(
-                    title = R.string.action_delete_selection_forever,
-                    message = R.string.trash_delete_selected_message,
-                    btnPositive = R.string.action_delete
-            ).show(childFragmentManager, DELETE_CONFIRM_DIALOG_TAG)
+            showDeleteConfirmDialog()
         })
 
         sharedViewModel.messageEvent.observe(viewLifecycleOwner, EventObserver { messageId ->
-            Snackbar.make(view, messageId, Snackbar.LENGTH_SHORT).show()
+            Snackbar.make(requireView(), messageId, Snackbar.LENGTH_SHORT).show()
         })
         sharedViewModel.statusChangeEvent.observe(viewLifecycleOwner, EventObserver { statusChange ->
-            val messageId = when (statusChange.newStatus) {
-                NoteStatus.ACTIVE -> if (statusChange.oldStatus == NoteStatus.DELETED) {
-                    R.plurals.edit_message_move_restore
-                } else {
-                    R.plurals.edit_message_move_unarchive
-                }
-                NoteStatus.ARCHIVED -> R.plurals.edit_move_archive_message
-                NoteStatus.DELETED -> R.plurals.edit_message_move_delete
-            }
-            val count = statusChange.oldNotes.size
-            val message = context.resources.getQuantityString(messageId, count, count)
-
-            Snackbar.make(view, message, STATUS_CHANGE_SNACKBAR_DURATION)
-                    .setAction(R.string.action_undo) {
-                        sharedViewModel.undoStatusChange()
-                    }.show()
+            showMessageForStatusChange(statusChange)
         })
+    }
+
+    private fun updateActionModeForSelection(selection: NoteViewModel.NoteSelection) {
+        if (selection.count != 0 && actionMode == null) {
+            actionMode = binding.toolbar.startActionMode(this)
+        } else if (selection.count == 0 && actionMode != null) {
+            actionMode?.finish()
+            actionMode = null
+        }
+    }
+
+    private fun updateItemsForSelection(selection: NoteViewModel.NoteSelection) {
+        actionMode?.let {
+            it.title = NUMBER_FORMAT.format(selection.count)
+
+            // Share and copy are only visible if there is a single note selected.
+            val menu = it.menu
+            val singleSelection = selection.count == 1
+            menu.findItem(R.id.item_share).isVisible = singleSelection
+            menu.findItem(R.id.item_copy).isVisible = singleSelection
+
+            // Pin item
+            val pinItem = it.menu.findItem(R.id.item_pin)
+            when (selection.pinned) {
+                PinnedStatus.PINNED -> {
+                    pinItem.isVisible = true
+                    pinItem.setIcon(R.drawable.ic_pin_outline)
+                    pinItem.setTitle(R.string.action_unpin)
+                }
+                PinnedStatus.UNPINNED -> {
+                    pinItem.isVisible = true
+                    pinItem.setIcon(R.drawable.ic_pin)
+                    pinItem.setTitle(R.string.action_pin)
+                }
+                PinnedStatus.CANT_PIN -> {
+                    pinItem.isVisible = false
+                }
+            }
+
+            // Update move items depending on status
+            val moveItem = menu.findItem(R.id.item_move)
+            val deleteItem = menu.findItem(R.id.item_delete)
+            when (selection.status!!) {
+                NoteStatus.ACTIVE -> {
+                    moveItem.setIcon(R.drawable.ic_archive)
+                    moveItem.setTitle(R.string.action_archive)
+                    deleteItem.setTitle(R.string.action_delete)
+                }
+                NoteStatus.ARCHIVED -> {
+                    moveItem.setIcon(R.drawable.ic_unarchive)
+                    moveItem.setTitle(R.string.action_unarchive)
+                    deleteItem.setTitle(R.string.action_delete)
+                }
+                NoteStatus.DELETED -> {
+                    moveItem.setIcon(R.drawable.ic_restore)
+                    moveItem.setTitle(R.string.action_restore)
+                    deleteItem.setTitle(R.string.action_delete_forever)
+                }
+            }
+        }
+    }
+
+    private fun showDeleteConfirmDialog() {
+        ConfirmDialog.newInstance(
+            title = R.string.action_delete_selection_forever,
+            message = R.string.trash_delete_selected_message,
+            btnPositive = R.string.action_delete
+        ).show(childFragmentManager, DELETE_CONFIRM_DIALOG_TAG)
+    }
+
+    @SuppressLint("WrongConstant")
+    private fun showMessageForStatusChange(statusChange: StatusChange) {
+        val messageId = when (statusChange.newStatus) {
+            NoteStatus.ACTIVE -> if (statusChange.oldStatus == NoteStatus.DELETED) {
+                R.plurals.edit_message_move_restore
+            } else {
+                R.plurals.edit_message_move_unarchive
+            }
+            NoteStatus.ARCHIVED -> R.plurals.edit_move_archive_message
+            NoteStatus.DELETED -> R.plurals.edit_message_move_delete
+        }
+        val count = statusChange.oldNotes.size
+        val message = requireContext().resources.getQuantityString(messageId, count, count)
+
+        Snackbar.make(requireView(), message, STATUS_CHANGE_SNACKBAR_DURATION)
+            .setAction(R.string.action_undo) {
+                sharedViewModel.undoStatusChange()
+            }.show()
     }
 
     override fun onDestroyView() {
@@ -212,7 +233,7 @@ abstract class NoteFragment : Fragment(), ActionMode.Callback, ConfirmDialog.Cal
             R.id.item_select_all -> viewModel.selectAll()
             R.id.item_share -> viewModel.shareSelectedNote()
             R.id.item_copy -> viewModel.copySelectedNote(
-                    getString(R.string.edit_copy_untitled_name), getString(R.string.edit_copy_suffix))
+                getString(R.string.edit_copy_untitled_name), getString(R.string.edit_copy_suffix))
             R.id.item_delete -> viewModel.deleteSelectedNotesPre()
             else -> return false
         }
@@ -244,5 +265,4 @@ abstract class NoteFragment : Fragment(), ActionMode.Callback, ConfirmDialog.Cal
 
         private const val STATUS_CHANGE_SNACKBAR_DURATION = 7500
     }
-
 }

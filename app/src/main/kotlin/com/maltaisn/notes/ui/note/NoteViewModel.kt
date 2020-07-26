@@ -16,7 +16,11 @@
 
 package com.maltaisn.notes.ui.note
 
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.maltaisn.notes.model.NotesRepository
 import com.maltaisn.notes.model.PrefsManager
 import com.maltaisn.notes.model.entity.Note
@@ -25,20 +29,22 @@ import com.maltaisn.notes.model.entity.PinnedStatus
 import com.maltaisn.notes.ui.Event
 import com.maltaisn.notes.ui.ShareData
 import com.maltaisn.notes.ui.StatusChange
-import com.maltaisn.notes.ui.note.adapter.*
+import com.maltaisn.notes.ui.note.adapter.MessageItem
+import com.maltaisn.notes.ui.note.adapter.NoteAdapter
+import com.maltaisn.notes.ui.note.adapter.NoteItem
+import com.maltaisn.notes.ui.note.adapter.NoteListItem
+import com.maltaisn.notes.ui.note.adapter.NoteListLayoutMode
 import com.maltaisn.notes.ui.send
 import kotlinx.coroutines.launch
-import java.util.*
-import kotlin.collections.ArrayList
-
+import java.util.Date
 
 /**
  * This view model provides common behavior for home and search view models.
  */
 abstract class NoteViewModel(
-        protected val savedStateHandle: SavedStateHandle,
-        protected val notesRepository: NotesRepository,
-        protected val prefs: PrefsManager
+    protected val savedStateHandle: SavedStateHandle,
+    protected val notesRepository: NotesRepository,
+    protected val prefs: PrefsManager
 ) : ViewModel(), NoteAdapter.Callback {
 
     protected var listItems: List<NoteListItem> = emptyList()
@@ -56,9 +62,9 @@ abstract class NoteViewModel(
             val selectedBefore = selectedNotes.size
             _selectedNotes.clear()
             value.asSequence()
-                    .filterIsInstance<NoteItem>()
-                    .filter { it.checked }
-                    .mapTo(_selectedNotes) { it.note }
+                .filterIsInstance<NoteItem>()
+                .filter { it.checked }
+                .mapTo(_selectedNotes) { it.note }
 
             updateNoteSelection()
             if (selectedNotes.size != selectedBefore) {
@@ -79,7 +85,7 @@ abstract class NoteViewModel(
     val noteItems: LiveData<List<NoteListItem>>
         get() = _noteItems
 
-    protected val _listLayoutMode = MutableLiveData<NoteListLayoutMode>()
+    private val _listLayoutMode = MutableLiveData<NoteListLayoutMode>()
     val listLayoutMode: LiveData<NoteListLayoutMode>
         get() = _listLayoutMode
 
@@ -107,7 +113,6 @@ abstract class NoteViewModel(
     val showDeleteConfirmEvent: LiveData<Event<Unit>>
         get() = _showDeletedForeverConfirmEvent
 
-
     init {
         // Initialize list layout to saved value.
         _listLayoutMode.value = prefs.listLayoutMode
@@ -129,7 +134,6 @@ abstract class NoteViewModel(
      * Called when note list is empty to update the placeholder data.
      */
     abstract fun updatePlaceholder(): PlaceholderData
-
 
     fun clearSelection() {
         setAllSelected(false)
@@ -159,6 +163,15 @@ abstract class NoteViewModel(
         }
     }
 
+    fun toggleListLayoutMode() {
+        val mode = when (_listLayoutMode.value!!) {
+            NoteListLayoutMode.LIST -> NoteListLayoutMode.GRID
+            NoteListLayoutMode.GRID -> NoteListLayoutMode.LIST
+        }
+        _listLayoutMode.value = mode
+        prefs.listLayoutMode = mode
+    }
+
     fun moveSelectedNotes() {
         changeSelectedNotesStatus(if (selectedNoteStatus == NoteStatus.ACTIVE) {
             NoteStatus.ARCHIVED
@@ -171,7 +184,6 @@ abstract class NoteViewModel(
         if (selectedNoteStatus == NoteStatus.DELETED) {
             // Ask user for confirmation before deleting selected notes forever.
             _showDeletedForeverConfirmEvent.send()
-
         } else {
             // Send to trash
             changeSelectedNotesStatus(NoteStatus.DELETED)
@@ -195,10 +207,10 @@ abstract class NoteViewModel(
             val note = selectedNotes.first()
             val date = Date()
             val copy = note.copy(
-                    id = Note.NO_ID,
-                    title = Note.getCopiedNoteTitle(note.title, untitledName, copySuffix),
-                    addedDate = date,
-                    lastModifiedDate = date)
+                id = Note.NO_ID,
+                title = Note.getCopiedNoteTitle(note.title, untitledName, copySuffix),
+                addedDate = date,
+                lastModifiedDate = date)
             notesRepository.insertNote(copy)
             clearSelection()
         }
@@ -255,14 +267,13 @@ abstract class NoteViewModel(
     /** Change the status of [notes] to [newStatus]. */
     protected fun changeNotesStatus(notes: Set<Note>, newStatus: NoteStatus) {
         val oldNotes = notes
-                .filter { it.status != newStatus }
-                .ifEmpty { return }
+            .filter { it.status != newStatus }
+            .ifEmpty { return }
 
         val date = Date()
         val newNotes = oldNotes.map { note ->
-            note.copy(status = newStatus,
-                    lastModifiedDate = date,
-                    pinned = if (newStatus == NoteStatus.ACTIVE) PinnedStatus.UNPINNED else PinnedStatus.CANT_PIN)
+            note.copy(status = newStatus, lastModifiedDate = date,
+                pinned = if (newStatus == NoteStatus.ACTIVE) PinnedStatus.UNPINNED else PinnedStatus.CANT_PIN)
         }
 
         // Update the status in database
@@ -326,5 +337,4 @@ abstract class NoteViewModel(
     companion object {
         private const val KEY_SELECTED_IDS = "selected_ids"
     }
-
 }

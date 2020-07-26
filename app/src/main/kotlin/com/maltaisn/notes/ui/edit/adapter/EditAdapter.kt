@@ -31,9 +31,8 @@ import com.maltaisn.notes.sync.databinding.ItemEditItemBinding
 import com.maltaisn.notes.sync.databinding.ItemEditTitleBinding
 import com.maltaisn.notes.ui.edit.EditViewModel
 
-
 class EditAdapter(val context: Context, val callback: Callback) :
-        ListAdapter<EditListItem, RecyclerView.ViewHolder>(EditDiffCallback()) {
+    ListAdapter<EditListItem, RecyclerView.ViewHolder>(EditDiffCallback()) {
 
     private var recyclerView: RecyclerView? = null
 
@@ -50,7 +49,6 @@ class EditAdapter(val context: Context, val callback: Callback) :
      */
     private var pendingFocusChange: EditViewModel.FocusChange? = null
 
-
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
         this.recyclerView = recyclerView
         itemTouchHelper.attachToRecyclerView(recyclerView)
@@ -65,14 +63,14 @@ class EditAdapter(val context: Context, val callback: Callback) :
         val inflater = LayoutInflater.from(parent.context)
         return when (viewType) {
             VIEW_TYPE_TITLE -> EditTitleViewHolder(ItemEditTitleBinding.inflate(
-                    inflater, parent, false), callback)
+                inflater, parent, false), callback)
             VIEW_TYPE_CONTENT -> EditContentViewHolder(ItemEditContentBinding.inflate(
-                    inflater, parent, false), callback)
+                inflater, parent, false), callback)
             VIEW_TYPE_ITEM_ADD -> EditItemAddViewHolder(ItemEditItemAddBinding.inflate(
-                    inflater, parent, false), callback)
+                inflater, parent, false), callback)
             VIEW_TYPE_ITEM -> {
                 val viewHolder = EditItemViewHolder(ItemEditItemBinding.inflate(
-                        inflater, parent, false), callback)
+                    inflater, parent, false), callback)
                 viewHolder.binding.dragImv.setOnTouchListener { view, event ->
                     if (event.action == MotionEvent.ACTION_DOWN && callback.isNoteDragEnabled) {
                         // Drag handle was touched. Hide keyboard and start dragging.
@@ -103,7 +101,6 @@ class EditAdapter(val context: Context, val callback: Callback) :
     }
 
     override fun getItemViewType(position: Int) = getItem(position).type
-
 
     fun setItemFocus(focus: EditViewModel.FocusChange) {
         val rcv = recyclerView ?: return

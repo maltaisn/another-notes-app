@@ -18,8 +18,12 @@ package com.maltaisn.notes.model.converter
 
 import androidx.room.TypeConverter
 import com.maltaisn.notes.model.entity.PinnedStatus
-import kotlinx.serialization.*
-
+import kotlinx.serialization.Decoder
+import kotlinx.serialization.Encoder
+import kotlinx.serialization.KSerializer
+import kotlinx.serialization.PrimitiveDescriptor
+import kotlinx.serialization.PrimitiveKind
+import kotlinx.serialization.Serializer
 
 @Serializer(forClass = PinnedStatus::class)
 object PinnedStatusConverter : KSerializer<PinnedStatus> {
@@ -31,10 +35,11 @@ object PinnedStatusConverter : KSerializer<PinnedStatus> {
     @TypeConverter
     @JvmStatic
     fun toStatus(value: Int) = PinnedStatus.values().find { it.value == value }
-            ?: error("Unknown pinned status value")
+        ?: error("Unknown pinned status value")
 
     override val descriptor = PrimitiveDescriptor("PinnedStatus", PrimitiveKind.INT)
-    override fun serialize(encoder: Encoder, value: PinnedStatus) = encoder.encodeInt(toInt(value))
-    override fun deserialize(decoder: Decoder) = toStatus(decoder.decodeInt())
 
+    override fun serialize(encoder: Encoder, value: PinnedStatus) = encoder.encodeInt(toInt(value))
+
+    override fun deserialize(decoder: Decoder) = toStatus(decoder.decodeInt())
 }

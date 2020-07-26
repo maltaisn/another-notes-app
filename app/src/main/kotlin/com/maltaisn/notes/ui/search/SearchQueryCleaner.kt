@@ -16,7 +16,6 @@
 
 package com.maltaisn.notes.ui.search
 
-
 /**
  * Helper class to clean search queries.
  */
@@ -73,5 +72,4 @@ object SearchQueryCleaner {
             deleteCharAt(lastIndex)
         }
     }
-
 }

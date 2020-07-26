@@ -15,89 +15,92 @@
  */
 
 @file:UseSerializers(DateTimeConverter::class, NoteTypeConverter::class,
-        NoteStatusConverter::class, NoteMetadataConverter::class, PinnedStatusConverter::class)
+    NoteStatusConverter::class, NoteMetadataConverter::class, PinnedStatusConverter::class)
 
 package com.maltaisn.notes.model.entity
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.maltaisn.notes.model.converter.*
+import com.maltaisn.notes.model.converter.DateTimeConverter
+import com.maltaisn.notes.model.converter.NoteMetadataConverter
+import com.maltaisn.notes.model.converter.NoteStatusConverter
+import com.maltaisn.notes.model.converter.NoteTypeConverter
+import com.maltaisn.notes.model.converter.PinnedStatusConverter
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.UseSerializers
-import java.util.*
-
+import java.util.Date
 
 @Serializable
 @Entity(tableName = "notes")
 data class Note(
-        /**
-         * Note ID in the database.
-         */
-        @PrimaryKey(autoGenerate = true)
-        @ColumnInfo(name = "id")
-        val id: Long,
+    /**
+     * Note ID in the database.
+     */
+    @PrimaryKey(autoGenerate = true)
+    @ColumnInfo(name = "id")
+    val id: Long,
 
-        /**
-         * Note type, determines the type of metadata.
-         */
-        @ColumnInfo(name = "type")
-        @SerialName("type")
-        val type: NoteType,
+    /**
+     * Note type, determines the type of metadata.
+     */
+    @ColumnInfo(name = "type")
+    @SerialName("type")
+    val type: NoteType,
 
-        /**
-         * Note title, can be used for search.
-         */
-        @ColumnInfo(name = "title")
-        @SerialName("title")
-        val title: String,
+    /**
+     * Note title, can be used for search.
+     */
+    @ColumnInfo(name = "title")
+    @SerialName("title")
+    val title: String,
 
-        /**
-         * Note text content, can be used for search.
-         */
-        @ColumnInfo(name = "content")
-        @SerialName("content")
-        val content: String,
+    /**
+     * Note text content, can be used for search.
+     */
+    @ColumnInfo(name = "content")
+    @SerialName("content")
+    val content: String,
 
-        /**
-         * Note metadata, not used for search.
-         * @see NoteMetadataConverter
-         */
-        @ColumnInfo(name = "metadata")
-        @SerialName("metadata")
-        val metadata: NoteMetadata,
+    /**
+     * Note metadata, not used for search.
+     * @see NoteMetadataConverter
+     */
+    @ColumnInfo(name = "metadata")
+    @SerialName("metadata")
+    val metadata: NoteMetadata,
 
-        /**
-         * Creation date of the note, in UTC time.
-         */
-        @ColumnInfo(name = "added_date")
-        @SerialName("added")
-        val addedDate: Date,
+    /**
+     * Creation date of the note, in UTC time.
+     */
+    @ColumnInfo(name = "added_date")
+    @SerialName("added")
+    val addedDate: Date,
 
-        /**
-         * Last modification date of the note, in UTC time.
-         * Change of [status] changes last modified date too.
-         */
-        @ColumnInfo(name = "modified_date")
-        @SerialName("modified")
-        val lastModifiedDate: Date,
+    /**
+     * Last modification date of the note, in UTC time.
+     * Change of [status] changes last modified date too.
+     */
+    @ColumnInfo(name = "modified_date")
+    @SerialName("modified")
+    val lastModifiedDate: Date,
 
-        /**
-         * Status of the note, i.e. its location in the user interface.
-         */
-        @ColumnInfo(name = "status")
-        @SerialName("status")
-        val status: NoteStatus,
+    /**
+     * Status of the note, i.e. its location in the user interface.
+     */
+    @ColumnInfo(name = "status")
+    @SerialName("status")
+    val status: NoteStatus,
 
-        /**
-         * Describes how the note is pinned.
-         * Notes with [status] set to [NoteStatus.ACTIVE] should be pinned or unpinned.
-         * Other notes should be set to [PinnedStatus.CANT_PIN].
-         */
-        @ColumnInfo(name = "pinned")
-        @SerialName("pinned")
-        val pinned: PinnedStatus
+    /**
+     * Describes how the note is pinned.
+     * Notes with [status] set to [NoteStatus.ACTIVE] should be pinned or unpinned.
+     * Other notes should be set to [PinnedStatus.CANT_PIN].
+     */
+    @ColumnInfo(name = "pinned")
+    @SerialName("pinned")
+    val pinned: PinnedStatus
 ) {
 
     init {
@@ -229,13 +232,16 @@ data class Note(
         const val BULLET_CHARS = "-+*•–"
         const val DEFAULT_BULLET_CHAR = '-'
 
-
         /**
          * Get the title of a copy of a note with [currentTitle].
          * Localized strings [untitledName] and [copySuffix] must be provided.
          * Returns "- Copy", "- Copy 2", "- Copy 3", etc, and sets a title if current is blank.
          */
-        fun getCopiedNoteTitle(currentTitle: String, untitledName: String, copySuffix: String): String {
+        fun getCopiedNoteTitle(
+            currentTitle: String,
+            untitledName: String,
+            copySuffix: String
+        ): String {
             val match = "^(.*) - $copySuffix(?:\\s+([1-9]\\d*))?$".toRegex().find(currentTitle)
             return when {
                 match != null -> {

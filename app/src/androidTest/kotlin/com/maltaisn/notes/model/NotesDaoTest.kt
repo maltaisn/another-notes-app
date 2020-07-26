@@ -31,10 +31,9 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import java.util.*
+import java.util.Date
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
-
 
 @RunWith(AndroidJUnit4::class)
 class NotesDaoTest {
@@ -95,7 +94,7 @@ class NotesDaoTest {
         val activeNotes = mutableListOf<Note>()
 
         val pinnedNote = testNote(id = 1, status = NoteStatus.ACTIVE, added = baseDate,
-                modified = baseDate, pinned = PinnedStatus.PINNED)
+            modified = baseDate, pinned = PinnedStatus.PINNED)
         activeNotes += pinnedNote
         notesDao.insert(pinnedNote)
 
@@ -123,21 +122,21 @@ class NotesDaoTest {
     @Test
     fun getByStatusAndDateTest() = runBlocking {
         val dates = listOf(
-                "2019-01-01T00:00:00.000Z",
-                "2019-05-01T00:00:00.000Z",
-                "2019-12-31T12:34:56.789Z",
-                "2019-12-31T23:59:59.999Z",
-                "2020-01-01T00:00:00.000Z",
-                "2020-01-02T00:00:00.000Z")
+            "2019-01-01T00:00:00.000Z",
+            "2019-05-01T00:00:00.000Z",
+            "2019-12-31T12:34:56.789Z",
+            "2019-12-31T23:59:59.999Z",
+            "2020-01-01T00:00:00.000Z",
+            "2020-01-02T00:00:00.000Z")
         val notes = dates.mapIndexed { i, dateStr ->
             val date = DateTimeConverter.toDate(dateStr)
             testNote(id = i + 1L, added = date, modified = date,
-                    status = NoteStatus.DELETED)
+                status = NoteStatus.DELETED)
         }
         notesDao.insertAll(notes)
 
         val queryNotes = notesDao.getByStatusAndDate(NoteStatus.DELETED,
-                DateTimeConverter.toDate("2020-01-01T00:00:00.000Z"))
+            DateTimeConverter.toDate("2020-01-01T00:00:00.000Z"))
         assertEquals(notes.subList(0, 4).toSet(), queryNotes.toSet())
     }
 
@@ -152,10 +151,12 @@ class NotesDaoTest {
         assertEquals(listOf(note0), noteFlow.first())
 
         val note1 = testNote(id = 4, title = "note copy", content = "content copy")
-        val note2 = testNote(id = 5, title = "archived", content = "archived content", status = NoteStatus.ARCHIVED)
+        val note2 = testNote(id = 5,
+            title = "archived",
+            content = "archived content",
+            status = NoteStatus.ARCHIVED)
         notesDao.insert(note1)
         notesDao.insert(note2)
         assertEquals(listOf(note1, note0, note2), noteFlow.first())
     }
-
 }

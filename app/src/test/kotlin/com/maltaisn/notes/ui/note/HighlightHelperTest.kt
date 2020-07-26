@@ -21,56 +21,54 @@ import com.maltaisn.notes.model.entity.ListNoteItem
 import org.junit.Test
 import kotlin.test.assertEquals
 
-
 class HighlightHelperTest {
 
     @Test
     fun `should highlight all matches in string`() {
         assertEquals(listOf(4..5, 7..8),
-                HighlightHelper.findHighlightsInString("hello world", "o"))
+            HighlightHelper.findHighlightsInString("hello world", "o"))
     }
 
     @Test
     fun `should highlight all matches in string up to a max`() {
         assertEquals(listOf(4..5, 7..8, 13..14),
-                HighlightHelper.findHighlightsInString("hello world foo", "o", 3))
+            HighlightHelper.findHighlightsInString("hello world foo", "o", 3))
     }
 
     @Test
     fun `should highlight longer matches`() {
         assertEquals(listOf(2..10),
-                HighlightHelper.findHighlightsInString("hello world", "llo worl"))
+            HighlightHelper.findHighlightsInString("hello world", "llo worl"))
     }
 
     @Test
     fun `should highlight no matches`() {
         assertEquals(emptyList(),
-                HighlightHelper.findHighlightsInString("hello world", "z"))
+            HighlightHelper.findHighlightsInString("hello world", "z"))
     }
 
     @Test
     fun `should highlight no matches diacritics`() {
         assertEquals(emptyList(),
-                HighlightHelper.findHighlightsInString("hello world", "é"))
+            HighlightHelper.findHighlightsInString("hello world", "é"))
     }
 
     @Test
     fun `should highlight no matches spanning items in list note`() {
         assertEquals(emptyList(),
-                HighlightHelper.findHighlightsInString("bar\nfoo bar\nhello\nworld", "bar foo"))
+            HighlightHelper.findHighlightsInString("bar\nfoo bar\nhello\nworld", "bar foo"))
     }
 
     @Test
     fun `should split and shift list note highlights`() {
         val items = listOf(
-                ListNoteItem("bar", false),
-                ListNoteItem("foo bar", false),
-                ListNoteItem("hello", false),
-                ListNoteItem("world", false))
+            ListNoteItem("bar", false),
+            ListNoteItem("foo bar", false),
+            ListNoteItem("hello", false),
+            ListNoteItem("world", false))
         val note = listNote(items)
         val highlights = HighlightHelper.findHighlightsInString(note.content, "o")
         assertEquals(listOf(emptyList(), listOf(1..2, 2..3), listOf(4..5), listOf(1..2)),
-                HighlightHelper.splitListNoteHighlightsByItem(items, highlights))
+            HighlightHelper.splitListNoteHighlightsByItem(items, highlights))
     }
-
 }

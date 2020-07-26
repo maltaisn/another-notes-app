@@ -21,7 +21,6 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import kotlin.math.absoluteValue
 
-
 /**
  * Item touch helper callback for swiping items.
  */
@@ -31,17 +30,24 @@ class SwipeTouchHelperCallback(private val callback: NoteAdapter.Callback) : Ite
     override fun isItemViewSwipeEnabled() = callback.isNoteSwipeEnabled
 
     override fun getMovementFlags(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder) =
-            makeMovementFlags(0, if (viewHolder is NoteViewHolder) {
-                ItemTouchHelper.START or ItemTouchHelper.END
-            } else {
-                0
-            })
+        makeMovementFlags(0, if (viewHolder is NoteViewHolder) {
+            ItemTouchHelper.START or ItemTouchHelper.END
+        } else {
+            0
+        })
 
-    override fun onChildDraw(c: Canvas, recyclerView: RecyclerView,
-                             viewHolder: RecyclerView.ViewHolder,
-                             dX: Float, dY: Float, actionState: Int, isCurrentlyActive: Boolean) {
+    override fun onChildDraw(
+        c: Canvas,
+        recyclerView: RecyclerView,
+        viewHolder: RecyclerView.ViewHolder,
+        dX: Float,
+        dY: Float,
+        actionState: Int,
+        isCurrentlyActive: Boolean
+    ) {
         val view = viewHolder.itemView
-        view.alpha = ((view.width - dX.absoluteValue * 0.7f) / view.width).coerceIn(0f, 1f)
+        view.alpha = (1 - dX.absoluteValue / view.width * ITEM_SWIPE_OPACITY_FACTOR)
+            .coerceAtLeast(ITEM_SWIPE_OPACITY_MIN)
         view.translationX = dX
     }
 
@@ -51,11 +57,21 @@ class SwipeTouchHelperCallback(private val callback: NoteAdapter.Callback) : Ite
         view.translationX = 0f
     }
 
-    override fun onMove(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder,
-                        target: RecyclerView.ViewHolder) = false
+    override fun onMove(
+        recyclerView: RecyclerView,
+        viewHolder: RecyclerView.ViewHolder,
+        target: RecyclerView.ViewHolder
+    ) = false
 
     override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
         callback.onNoteSwiped(viewHolder.adapterPosition)
     }
 
+    companion object {
+        /** Determines how fast opacity changes with swipe distance. */
+        private const val ITEM_SWIPE_OPACITY_FACTOR = 0.7f
+
+        /** Minimum item opacity when swiping. */
+        private const val ITEM_SWIPE_OPACITY_MIN = 0.1f
+    }
 }

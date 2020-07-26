@@ -16,7 +16,6 @@
 
 package com.maltaisn.notes.ui.home
 
-
 /**
  * Used to provide built-type dependent behavior.
  */
@@ -27,6 +26,4 @@ interface BuildTypeBehavior {
      * This is only called in debug builds.
      */
     suspend fun doExtraAction(viewModel: HomeViewModel)
-
 }
-

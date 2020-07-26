@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
-
 package com.maltaisn.notes.model
 
 import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.model.entity.NoteStatus
 import kotlinx.coroutines.flow.Flow
-
 
 interface NotesRepository {
 
@@ -40,5 +38,4 @@ interface NotesRepository {
 
     suspend fun getJsonData(): String
     suspend fun clearAllData()
-
 }

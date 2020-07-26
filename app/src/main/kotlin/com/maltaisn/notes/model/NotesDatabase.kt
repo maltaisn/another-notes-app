@@ -21,24 +21,27 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
-import com.maltaisn.notes.model.converter.*
+import com.maltaisn.notes.model.converter.DateTimeConverter
+import com.maltaisn.notes.model.converter.NoteMetadataConverter
+import com.maltaisn.notes.model.converter.NoteStatusConverter
+import com.maltaisn.notes.model.converter.NoteTypeConverter
+import com.maltaisn.notes.model.converter.PinnedStatusConverter
 import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.model.entity.NoteFts
 
-
 @Database(
-        entities = [
-            Note::class,
-            NoteFts::class
-        ],
-        version = 3)
+    entities = [
+        Note::class,
+        NoteFts::class
+    ],
+    version = 3)
 @TypeConverters(DateTimeConverter::class, NoteTypeConverter::class,
-        NoteStatusConverter::class, NoteMetadataConverter::class, PinnedStatusConverter::class)
+    NoteStatusConverter::class, NoteMetadataConverter::class, PinnedStatusConverter::class)
 abstract class NotesDatabase : RoomDatabase() {
 
     abstract fun notesDao(): NotesDao
 
-
+    @Suppress("MagicNumber")
     companion object {
 
         val MIGRATION_1_2 = object : Migration(1, 2) {
@@ -49,8 +52,13 @@ abstract class NotesDatabase : RoomDatabase() {
                 // - UUID flag on notes (unique ID across devices)
                 database.apply {
                     execSQL("DROP TABLE deleted_notes")
-                    execSQL("CREATE TABLE notes_temp (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, type INTEGER NOT NULL, title TEXT NOT NULL, content TEXT NOT NULL, metadata TEXT NOT NULL, added_date INTEGER NOT NULL, modified_date INTEGER NOT NULL, status INTEGER NOT NULL)")
-                    execSQL("INSERT INTO notes_temp (id, type, title, content, metadata, added_date, modified_date, status) SELECT id, type, title, content, metadata, added_date, modified_date, status FROM notes")
+                    execSQL("CREATE TABLE notes_temp (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+                            "type INTEGER NOT NULL, title TEXT NOT NULL, content TEXT NOT NULL, " +
+                            "metadata TEXT NOT NULL, added_date INTEGER NOT NULL, modified_date INTEGER NOT NULL, " +
+                            "status INTEGER NOT NULL)")
+                    execSQL("INSERT INTO notes_temp (id, type, title, content, metadata, added_date, modified_date, " +
+                            "status) SELECT id, type, title, content, metadata, added_date, modified_date, status " +
+                            "FROM notes")
                     execSQL("DROP TABLE notes")
                     execSQL("ALTER TABLE notes_temp RENAME TO notes")
                 }
@@ -68,8 +76,8 @@ abstract class NotesDatabase : RoomDatabase() {
         }
 
         val ALL_MIGRATIONS = arrayOf(
-                MIGRATION_1_2,
-                MIGRATION_2_3
+            MIGRATION_1_2,
+            MIGRATION_2_3
         )
     }
 }

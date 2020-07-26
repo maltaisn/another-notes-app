@@ -37,11 +37,10 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
-
 class SearchViewModel @AssistedInject constructor(
-        @Assisted savedStateHandle: SavedStateHandle,
-        notesRepository: NotesRepository,
-        prefs: PrefsManager
+    @Assisted savedStateHandle: SavedStateHandle,
+    notesRepository: NotesRepository,
+    prefs: PrefsManager
 ) : NoteViewModel(savedStateHandle, notesRepository, prefs), NoteAdapter.Callback {
 
     // No need to save this is a saved state handle, SearchView will
@@ -50,13 +49,11 @@ class SearchViewModel @AssistedInject constructor(
 
     private var noteListJob: Job? = null
 
-
     init {
         viewModelScope.launch {
             restoreState()
         }
     }
-
 
     fun searchNotes(query: String) {
         lastQuery = query
@@ -67,7 +64,7 @@ class SearchViewModel @AssistedInject constructor(
         // Update note items live data when database flow emits a list.
         val cleanedQuery = SearchQueryCleaner.clean(query)
         noteListJob = viewModelScope.launch {
-            delay(100)
+            delay(SEARCH_DEBOUNCE_DELAY)
             notesRepository.searchNotes(cleanedQuery).collect { notes ->
                 createListItems(notes)
             }
@@ -90,7 +87,6 @@ class SearchViewModel @AssistedInject constructor(
 
     override val isNoteSwipeEnabled = false
 
-
     private fun createListItems(notes: List<Note>) {
         listItems = buildList {
             var addedArchivedHeader = false
@@ -102,8 +98,10 @@ class SearchViewModel @AssistedInject constructor(
                 }
 
                 val checked = isNoteSelected(note)
-                val titleHighlights = HighlightHelper.findHighlightsInString(note.title, lastQuery, 2)
-                val contentHighlights = HighlightHelper.findHighlightsInString(note.content, lastQuery, 10)
+                val titleHighlights = HighlightHelper.findHighlightsInString(
+                    note.title, lastQuery, MAX_HIGHLIGHTS_IN_TITLE)
+                val contentHighlights = HighlightHelper.findHighlightsInString(
+                    note.content, lastQuery, MAX_HIGHLIGHTS_IN_CONTENT)
 
                 this += NoteItem(note.id, note, checked, titleHighlights, contentHighlights)
             }
@@ -111,8 +109,7 @@ class SearchViewModel @AssistedInject constructor(
     }
 
     override fun updatePlaceholder() = PlaceholderData(
-            R.drawable.ic_search, R.string.search_empty_placeholder)
-
+        R.drawable.ic_search, R.string.search_empty_placeholder)
 
     @AssistedInject.Factory
     interface Factory : AssistedSavedStateViewModelFactory<SearchViewModel> {
@@ -121,6 +118,10 @@ class SearchViewModel @AssistedInject constructor(
 
     companion object {
         val ARCHIVED_HEADER_ITEM = HeaderItem(-1, R.string.note_location_archived)
-    }
 
+        private const val SEARCH_DEBOUNCE_DELAY = 100L
+
+        private const val MAX_HIGHLIGHTS_IN_TITLE = 2
+        private const val MAX_HIGHLIGHTS_IN_CONTENT = 10
+    }
 }

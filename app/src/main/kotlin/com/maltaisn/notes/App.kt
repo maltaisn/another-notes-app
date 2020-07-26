@@ -23,15 +23,14 @@ import com.maltaisn.notes.model.PrefsManager
 import com.maltaisn.notes.ui.AppTheme
 import javax.inject.Inject
 
-
 class App : Application() {
 
     val appComponent by lazy {
         DaggerAppComponent.factory().create(applicationContext)
     }
 
-    @Inject lateinit var prefs: PrefsManager
-
+    @Inject
+    lateinit var prefs: PrefsManager
 
     override fun onCreate() {
         super.onCreate()
@@ -50,5 +49,4 @@ class App : Application() {
             AppTheme.SYSTEM -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
         })
     }
-
 }

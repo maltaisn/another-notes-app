@@ -18,7 +18,6 @@ package com.maltaisn.notes.ui.edit.adapter
 
 import androidx.recyclerview.widget.DiffUtil
 
-
 class EditDiffCallback : DiffUtil.ItemCallback<EditListItem>() {
 
     override fun areItemsTheSame(old: EditListItem, new: EditListItem): Boolean {

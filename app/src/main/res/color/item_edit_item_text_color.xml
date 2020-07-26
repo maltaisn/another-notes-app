@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   Copyright 2020 Nicolas Maltais
 
   Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,6 +15,6 @@
   -->
 
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:color="@color/material_on_background_emphasis_high_type" android:state_activated="true"/>
-    <item android:color="@color/material_on_background_disabled"/>
+    <item android:color="@color/material_on_background_emphasis_high_type" android:state_activated="true" />
+    <item android:color="@color/material_on_background_disabled" />
 </selector>

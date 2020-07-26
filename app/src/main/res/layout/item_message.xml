@@ -27,11 +27,11 @@
         android:layout_width="36dp"
         android:layout_height="36dp"
         android:layout_weight="0"
+        android:layout_gravity="center_vertical"
         android:background="?selectableItemBackgroundBorderless"
         android:src="@drawable/ic_information"
         android:tint="@color/material_on_background_emphasis_medium"
         android:tintMode="src_in"
-        android:layout_gravity="center_vertical"
         tools:ignore="ContentDescription"
         />
 
@@ -40,11 +40,11 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:textAppearance="?textAppearanceBody2"
-        android:textColor="@color/material_on_background_emphasis_medium"
-        android:layout_gravity="center_vertical"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
+        android:layout_gravity="center_vertical"
+        android:textAppearance="?textAppearanceBody2"
+        android:textColor="@color/material_on_background_emphasis_medium"
         tools:text="@string/trash_reminder_message"
         />
 
@@ -53,13 +53,13 @@
         android:layout_width="24dp"
         android:layout_height="24dp"
         android:layout_weight="0"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_gravity="center_vertical"
         android:background="?selectableItemBackgroundBorderless"
         android:src="@drawable/ic_close"
         android:tint="@color/material_on_background_emphasis_medium"
         android:tintMode="src_in"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_gravity="center_vertical"
         tools:ignore="ContentDescription"
         />
 

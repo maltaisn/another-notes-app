@@ -17,9 +17,13 @@ buildscript {
 
 plugins {
     id "base"
+    id "io.gitlab.arturbosch.detekt" version "1.10.0"
 }
 
+
 allprojects {
+    apply plugin: "io.gitlab.arturbosch.detekt"
+
     repositories {
         google()
         jcenter()
@@ -29,3 +33,13 @@ allprojects {
 clean {
     delete rootProject.buildDir
 }
+
+detekt {
+    failFast = true
+    buildUponDefaultConfig = true
+    parallel = true
+    autoCorrect = true
+    config = rootProject.files("config/detekt/detekt.yml")
+}
+
+tasks.detekt.jvmTarget = "1.8"

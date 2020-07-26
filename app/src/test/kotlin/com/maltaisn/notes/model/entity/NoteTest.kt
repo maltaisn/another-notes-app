@@ -25,7 +25,6 @@ import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
-
 class NoteTest {
 
     @Test(expected = IllegalArgumentException::class)
@@ -52,8 +51,8 @@ class NoteTest {
     @Test(expected = IllegalArgumentException::class)
     fun `should fail to create note with added date after last modified`() {
         testNote(type = NoteType.TEXT,
-                added = DateTimeConverter.toDate("2020-01-01T00:00:00.000Z"),
-                modified = DateTimeConverter.toDate("2019-12-31T23:59:59.999Z"))
+            added = DateTimeConverter.toDate("2020-01-01T00:00:00.000Z"),
+            modified = DateTimeConverter.toDate("2019-12-31T23:59:59.999Z"))
     }
 
     @Test
@@ -76,9 +75,9 @@ class NoteTest {
     @Test
     fun `should get list items on list note`() {
         val items = listOf(
-                ListNoteItem("0", false),
-                ListNoteItem("1", true),
-                ListNoteItem("2", true))
+            ListNoteItem("0", false),
+            ListNoteItem("1", true),
+            ListNoteItem("2", true))
         val note = listNote(items)
         assertEquals(items, note.listItems)
     }
@@ -106,8 +105,8 @@ class NoteTest {
     fun `should convert text note to list`() {
         val textNote = testNote(content = "0\n1")
         val listNote = listNote(listOf(
-                ListNoteItem("0", false),
-                ListNoteItem("1", false)))
+            ListNoteItem("0", false),
+            ListNoteItem("1", false)))
         assertEquals(listNote, textNote.asListNote())
     }
 
@@ -115,17 +114,17 @@ class NoteTest {
     fun `should convert text note with bullets to list`() {
         val textNote = testNote(content = "- 0\n* 1\n+ 2")
         val listNote = listNote(listOf(
-                ListNoteItem("0", false),
-                ListNoteItem("1", false),
-                ListNoteItem("2", false)))
+            ListNoteItem("0", false),
+            ListNoteItem("1", false),
+            ListNoteItem("2", false)))
         assertEquals(listNote, textNote.asListNote())
     }
 
     @Test
     fun `should convert empty list note with bullet to text`() {
         val listNote = listNote(listOf(
-                ListNoteItem("    ", false),
-                ListNoteItem("", true)))
+            ListNoteItem("    ", false),
+            ListNoteItem("", true)))
         val textNote = testNote(content = "")
         assertEquals(textNote, listNote.asTextNote(true))
     }
@@ -133,8 +132,8 @@ class NoteTest {
     @Test
     fun `should convert list note to text`() {
         val listNote = listNote(listOf(
-                ListNoteItem("0", false),
-                ListNoteItem("1", false)))
+            ListNoteItem("0", false),
+            ListNoteItem("1", false)))
         val textNote = testNote(content = "- 0\n- 1")
         assertEquals(textNote, listNote.asTextNote(true))
     }
@@ -149,9 +148,9 @@ class NoteTest {
     @Test
     fun `should convert blank list note to text`() {
         val listNote = listNote(listOf(
-                ListNoteItem("  ", false),
-                ListNoteItem("", false),
-                ListNoteItem("    ", false)))
+            ListNoteItem("  ", false),
+            ListNoteItem("", false),
+            ListNoteItem("    ", false)))
         val textNote = testNote(content = "")
         assertEquals(textNote, listNote.asTextNote(true))
     }
@@ -159,9 +158,9 @@ class NoteTest {
     @Test
     fun `should convert list note to text removing checked items`() {
         val listNote = listNote(listOf(
-                ListNoteItem("item 1", true),
-                ListNoteItem("item 2", true),
-                ListNoteItem("item 3", false)))
+            ListNoteItem("item 1", true),
+            ListNoteItem("item 2", true),
+            ListNoteItem("item 3", false)))
         val textNote = testNote(content = "- item 3")
         assertEquals(textNote, listNote.asTextNote(false))
     }
@@ -169,7 +168,7 @@ class NoteTest {
     @Test
     fun `should convert list note to text removing checked items (leaving none)`() {
         val listNote = listNote(listOf(
-                ListNoteItem("item 1", true)))
+            ListNoteItem("item 1", true)))
         val textNote = testNote(content = "")
         assertEquals(textNote, listNote.asTextNote(false))
     }
@@ -177,40 +176,39 @@ class NoteTest {
     @Test
     fun `should add copy suffix to title`() {
         assertEquals("note - Copy", Note.getCopiedNoteTitle(
-                "note", "untitled", "Copy"))
+            "note", "untitled", "Copy"))
     }
 
     @Test
     fun `should increment copy number in title`() {
         assertEquals("note - Copy 43", Note.getCopiedNoteTitle(
-                "note - Copy 42", "untitled", "Copy"))
+            "note - Copy 42", "untitled", "Copy"))
     }
 
     @Test
     fun `should name untitled note copy`() {
         assertEquals("untitled - Copy", Note.getCopiedNoteTitle(
-                "  ", "untitled", "Copy"))
+            "  ", "untitled", "Copy"))
     }
 
     @Test
     fun `should represent text note as text`() {
-        val note = testNote(title = "note title", content = "line 1\nline 2" )
+        val note = testNote(title = "note title", content = "line 1\nline 2")
         assertEquals("note title\nline 1\nline 2", note.asText())
     }
 
     @Test
     fun `should represent text note with no title as text`() {
-        val note = testNote(title = "   ", content = "line 1\nline 2" )
+        val note = testNote(title = "   ", content = "line 1\nline 2")
         assertEquals("line 1\nline 2", note.asText())
     }
 
     @Test
     fun `should represent list note as text`() {
         val note = listNote(listOf(
-                ListNoteItem("item 1", false),
-                ListNoteItem("item 2", true)
+            ListNoteItem("item 1", false),
+            ListNoteItem("item 2", true)
         ), title = "list title")
         assertEquals("list title\n- item 1\n- item 2", note.asText())
     }
-
 }

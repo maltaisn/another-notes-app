@@ -23,32 +23,40 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.maltaisn.notes.sync.R
 
-
 /**
  * Item touch helper callback for dragging items. Dragged item elevation is changed.
  * [onMove] is called when a list note item is moved.
  */
-class DragTouchHelperCallback(context: Context,
-                              private val onMove: (from: Int, to: Int) -> Unit) : ItemTouchHelper.Callback() {
+class DragTouchHelperCallback(
+    context: Context,
+    private val onMove: (from: Int, to: Int) -> Unit
+) : ItemTouchHelper.Callback() {
 
     private val dragElevation = context.resources.getDimensionPixelSize(
-            R.dimen.edit_dragged_item_elevation).toFloat()
+        R.dimen.edit_dragged_item_elevation).toFloat()
 
     override fun isLongPressDragEnabled() = false
     override fun isItemViewSwipeEnabled() = false
 
-    override fun getMovementFlags(recyclerView: RecyclerView,
-                                  viewHolder: RecyclerView.ViewHolder) =
-            makeFlag(ItemTouchHelper.ACTION_STATE_DRAG,
-                    ItemTouchHelper.UP or ItemTouchHelper.DOWN)
+    override fun getMovementFlags(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder) =
+        makeFlag(ItemTouchHelper.ACTION_STATE_DRAG,
+            ItemTouchHelper.UP or ItemTouchHelper.DOWN)
 
-    override fun canDropOver(recyclerView: RecyclerView,
-                             current: RecyclerView.ViewHolder,
-                             target: RecyclerView.ViewHolder) = target is EditItemViewHolder
+    override fun canDropOver(
+        recyclerView: RecyclerView,
+        current: RecyclerView.ViewHolder,
+        target: RecyclerView.ViewHolder
+    ) = target is EditItemViewHolder
 
-    override fun onChildDraw(c: Canvas, recyclerView: RecyclerView,
-                             viewHolder: RecyclerView.ViewHolder,
-                             dX: Float, dY: Float, actionState: Int, isCurrentlyActive: Boolean) {
+    override fun onChildDraw(
+        c: Canvas,
+        recyclerView: RecyclerView,
+        viewHolder: RecyclerView.ViewHolder,
+        dX: Float,
+        dY: Float,
+        actionState: Int,
+        isCurrentlyActive: Boolean
+    ) {
         val view = viewHolder.itemView
         view.translationX = dX
         view.translationY = dY
@@ -64,9 +72,11 @@ class DragTouchHelperCallback(context: Context,
         ViewCompat.setElevation(view, 0f)
     }
 
-    override fun onMove(recyclerView: RecyclerView,
-                        viewHolder: RecyclerView.ViewHolder,
-                        target: RecyclerView.ViewHolder): Boolean {
+    override fun onMove(
+        recyclerView: RecyclerView,
+        viewHolder: RecyclerView.ViewHolder,
+        target: RecyclerView.ViewHolder
+    ): Boolean {
         onMove(viewHolder.adapterPosition, target.adapterPosition)
         return true
     }

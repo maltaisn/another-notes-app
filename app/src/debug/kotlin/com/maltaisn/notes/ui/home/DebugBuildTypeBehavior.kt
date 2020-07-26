@@ -20,9 +20,8 @@ import com.maltaisn.notes.DebugUtils
 import com.maltaisn.notes.model.NotesRepository
 import javax.inject.Inject
 
-
 class DebugBuildTypeBehavior @Inject constructor(
-        private val notesRepository: NotesRepository
+    private val notesRepository: NotesRepository
 ) : BuildTypeBehavior {
 
     override suspend fun doExtraAction(viewModel: HomeViewModel) {
@@ -32,5 +31,4 @@ class DebugBuildTypeBehavior @Inject constructor(
             notesRepository.insertNote(DebugUtils.getRandomNote(status))
         }
     }
-
 }

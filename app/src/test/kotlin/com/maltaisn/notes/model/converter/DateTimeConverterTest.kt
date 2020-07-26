@@ -22,10 +22,9 @@ import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
 import org.junit.Test
-import java.util.*
+import java.util.Date
 import kotlin.test.assertEquals
 import kotlin.test.assertNotSame
-
 
 class DateTimeConverterTest {
 
@@ -34,7 +33,7 @@ class DateTimeConverterTest {
     @Test
     fun `should convert date to string`() {
         assertEquals(1587230071650,
-                DateTimeConverter.toLong(Date(1587230071650)))
+            DateTimeConverter.toLong(Date(1587230071650)))
     }
 
     @Test
@@ -45,13 +44,13 @@ class DateTimeConverterTest {
     @Test
     fun `should convert date to json literal`() {
         assertEquals("\"2020-04-18T17:14:31.650Z\"",
-                json.stringify(DateTimeConverter, Date(1587230071650)))
+            json.stringify(DateTimeConverter, Date(1587230071650)))
     }
 
     @Test
     fun `should convert json literal to date`() {
         assertEquals(Date(1587230071650),
-                json.parse(DateTimeConverter, "\"2020-04-18T17:14:31.650Z\""))
+            json.parse(DateTimeConverter, "\"2020-04-18T17:14:31.650Z\""))
     }
 
     @Test
@@ -65,5 +64,4 @@ class DateTimeConverterTest {
         }
         assertNotSame(dateFormat1, dateFormat2)
     }
-
 }

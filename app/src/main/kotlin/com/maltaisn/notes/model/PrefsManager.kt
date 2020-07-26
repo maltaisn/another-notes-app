@@ -28,7 +28,6 @@ import com.maltaisn.notes.ui.note.adapter.NoteListLayoutMode
 import javax.inject.Inject
 import kotlin.time.days
 
-
 /**
  * Base preference manager. This class interacts with [SharedPreferences]
  * so that other classes don't need knowledge of the keys and their associated type.
@@ -36,7 +35,9 @@ import kotlin.time.days
  * Flavors provide their own extension of this manager.
  */
 @OpenForTesting
-class PrefsManager @Inject constructor(private val prefs: SharedPreferences) {
+class PrefsManager @Inject constructor(
+    private val prefs: SharedPreferences
+) {
 
     val theme: AppTheme
         get() {
@@ -66,11 +67,9 @@ class PrefsManager @Inject constructor(private val prefs: SharedPreferences) {
         get() = prefs.getLong(LAST_TRASH_REMIND_TIME, 0)
         set(value) = prefs.edit { putLong(LAST_TRASH_REMIND_TIME, value) }
 
-
     fun setDefaults(context: Context) {
         PreferenceManager.setDefaultValues(context, R.xml.prefs, false)
     }
-
 
     companion object {
         // Settings keys
@@ -96,5 +95,4 @@ class PrefsManager @Inject constructor(private val prefs: SharedPreferences) {
          */
         val TRASH_REMINDER_DELAY = 60.days
     }
-
 }

@@ -32,7 +32,11 @@ import com.maltaisn.notes.ui.Event
 import com.maltaisn.notes.ui.note.NoteViewModel
 import com.maltaisn.notes.ui.note.PlaceholderData
 import com.maltaisn.notes.ui.note.SwipeAction
-import com.maltaisn.notes.ui.note.adapter.*
+import com.maltaisn.notes.ui.note.adapter.HeaderItem
+import com.maltaisn.notes.ui.note.adapter.MessageItem
+import com.maltaisn.notes.ui.note.adapter.NoteAdapter
+import com.maltaisn.notes.ui.note.adapter.NoteItem
+import com.maltaisn.notes.ui.note.adapter.NoteListItem
 import com.maltaisn.notes.ui.send
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
@@ -41,12 +45,11 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.yield
 
-
 class HomeViewModel @AssistedInject constructor(
-        @Assisted savedStateHandle: SavedStateHandle,
-        notesRepository: NotesRepository,
-        prefs: PrefsManager,
-        private val buildTypeBehavior: BuildTypeBehavior
+    @Assisted savedStateHandle: SavedStateHandle,
+    notesRepository: NotesRepository,
+    prefs: PrefsManager,
+    private val buildTypeBehavior: BuildTypeBehavior
 ) : NoteViewModel(savedStateHandle, notesRepository, prefs), NoteAdapter.Callback {
 
     private var noteListJob: Job? = null
@@ -73,7 +76,7 @@ class HomeViewModel @AssistedInject constructor(
 
     override suspend fun restoreState() {
         _noteStatus.value = NoteStatusConverter.toStatus(
-                savedStateHandle.get(KEY_NOTE_STATUS) ?: NoteStatus.ACTIVE.value)
+            savedStateHandle.get(KEY_NOTE_STATUS) ?: NoteStatus.ACTIVE.value)
         super.restoreState()
     }
 
@@ -96,15 +99,6 @@ class HomeViewModel @AssistedInject constructor(
                 yield()
             }
         }
-    }
-
-    fun toggleListLayoutMode() {
-        val mode = when (_listLayoutMode.value!!) {
-            NoteListLayoutMode.LIST -> NoteListLayoutMode.GRID
-            NoteListLayoutMode.GRID -> NoteListLayoutMode.LIST
-        }
-        _listLayoutMode.value = mode
-        prefs.listLayoutMode = mode
     }
 
     /** When user clicks on empty trash. */
@@ -181,11 +175,12 @@ class HomeViewModel @AssistedInject constructor(
     private fun createDeletedListItems(notes: List<Note>): List<NoteListItem> = buildList {
         // If needed, add reminder that notes get auto-deleted when in trash.
         if (notes.isNotEmpty() &&
-                System.currentTimeMillis() - prefs.lastTrashReminderTime >
-                PrefsManager.TRASH_REMINDER_DELAY.toLongMilliseconds()) {
+            System.currentTimeMillis() - prefs.lastTrashReminderTime >
+            PrefsManager.TRASH_REMINDER_DELAY.toLongMilliseconds()
+        ) {
             this += MessageItem(TRASH_REMINDER_ITEM_ID,
-                    R.string.trash_reminder_message,
-                    listOf(PrefsManager.TRASH_AUTO_DELETE_DELAY.inDays.toInt()))
+                R.string.trash_reminder_message,
+                listOf(PrefsManager.TRASH_AUTO_DELETE_DELAY.inDays.toInt()))
         }
 
         for (note in notes) {
@@ -200,8 +195,10 @@ class HomeViewModel @AssistedInject constructor(
 
     override fun updatePlaceholder() = when (noteStatus.value!!) {
         NoteStatus.ACTIVE -> PlaceholderData(R.drawable.ic_list, R.string.note_placeholder_active)
-        NoteStatus.ARCHIVED -> PlaceholderData(R.drawable.ic_archive, R.string.note_placeholder_archived)
-        NoteStatus.DELETED -> PlaceholderData(R.drawable.ic_delete, R.string.note_placeholder_deleted)
+        NoteStatus.ARCHIVED -> PlaceholderData(R.drawable.ic_archive,
+            R.string.note_placeholder_archived)
+        NoteStatus.DELETED -> PlaceholderData(R.drawable.ic_delete,
+            R.string.note_placeholder_deleted)
     }
 
     @AssistedInject.Factory
@@ -217,5 +214,4 @@ class HomeViewModel @AssistedInject constructor(
 
         private const val KEY_NOTE_STATUS = "note_status"
     }
-
 }

@@ -27,14 +27,13 @@ import org.junit.runner.RunWith
 import java.io.IOException
 import kotlin.test.assertEquals
 
-
 @RunWith(AndroidJUnit4::class)
 class MigrationTest {
 
     @get:Rule
     val helper = MigrationTestHelper(InstrumentationRegistry.getInstrumentation(),
-            NotesDatabase::class.java.canonicalName,
-            FrameworkSQLiteOpenHelperFactory())
+        NotesDatabase::class.java.canonicalName,
+        FrameworkSQLiteOpenHelperFactory())
 
     @Test
     @Throws(IOException::class)
@@ -78,18 +77,17 @@ class MigrationTest {
 
         // Open latest version of the database. Room will validate the schema once all migrations execute.
         Room.databaseBuilder(
-                InstrumentationRegistry.getInstrumentation().targetContext,
-                NotesDatabase::class.java,
-                DB_NAME
+            InstrumentationRegistry.getInstrumentation().targetContext,
+            NotesDatabase::class.java,
+            DB_NAME
         ).addMigrations(*NotesDatabase.ALL_MIGRATIONS)
-                .build().apply {
-                    openHelper.writableDatabase
-                    close()
-                }
+            .build().apply {
+                openHelper.writableDatabase
+                close()
+            }
     }
 
     companion object {
         private const val DB_NAME = "migration-test"
     }
-
 }

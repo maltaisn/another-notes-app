@@ -40,19 +40,24 @@ import com.maltaisn.notes.model.entity.PinnedStatus
 import com.maltaisn.notes.showKeyboard
 import com.maltaisn.notes.sync.R
 import com.maltaisn.notes.sync.databinding.FragmentEditBinding
-import com.maltaisn.notes.ui.*
+import com.maltaisn.notes.ui.EventObserver
+import com.maltaisn.notes.ui.SharedViewModel
+import com.maltaisn.notes.ui.activityViewModel
 import com.maltaisn.notes.ui.common.ConfirmDialog
 import com.maltaisn.notes.ui.edit.adapter.EditAdapter
+import com.maltaisn.notes.ui.startSharingData
+import com.maltaisn.notes.ui.viewModel
 import javax.inject.Inject
 import javax.inject.Provider
 
-
 class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener, ConfirmDialog.Callback {
 
-    @Inject lateinit var viewModelProvider: Provider<EditViewModel>
+    @Inject
+    lateinit var viewModelProvider: Provider<EditViewModel>
     private val viewModel by viewModel { viewModelProvider.get() }
 
-    @Inject lateinit var sharedViewModelProvider: Provider<SharedViewModel>
+    @Inject
+    lateinit var sharedViewModelProvider: Provider<SharedViewModel>
     private val sharedViewModel by activityViewModel { sharedViewModelProvider.get() }
 
     private val args: EditFragmentArgs by navArgs()
@@ -60,19 +65,16 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener, ConfirmDialog.
     private var _binding: FragmentEditBinding? = null
     private val binding get() = _binding!!
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         (requireContext().applicationContext as App).appComponent.inject(this)
     }
 
-    override fun onCreateView(inflater: LayoutInflater,
-                              container: ViewGroup?, state: Bundle?): View {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, state: Bundle?): View {
         _binding = FragmentEditBinding.inflate(inflater, container, false)
         return binding.root
     }
 
-    @SuppressLint("WrongConstant")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val context = requireContext()
 
@@ -84,32 +86,23 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener, ConfirmDialog.
         viewModel.start(args.noteId)
 
         // Toolbar
-        val toolbar = binding.toolbar
-        toolbar.setOnMenuItemClickListener(this)
-        toolbar.setNavigationIcon(R.drawable.ic_arrow_left)
-        toolbar.setNavigationOnClickListener {
-            view.hideKeyboard()
-            viewModel.save()
-            viewModel.exit()
-        }
-        toolbar.setTitle(if (args.noteId == Note.NO_ID) {
-            view.postDelayed(200) {
-                view.showKeyboard()
+        binding.toolbar.apply {
+            setOnMenuItemClickListener(this@EditFragment)
+            setNavigationIcon(R.drawable.ic_arrow_left)
+            setNavigationOnClickListener {
+                view.hideKeyboard()
+                viewModel.save()
+                viewModel.exit()
             }
-            R.string.edit_add_title
-        } else {
-            R.string.edit_change_title
-        })
-
-        val toolbarMenu = toolbar.menu
-        val typeItem = toolbarMenu.findItem(R.id.item_type)
-        val moveItem = toolbarMenu.findItem(R.id.item_move)
-        val pinItem = toolbarMenu.findItem(R.id.item_pin)
-        val shareItem = toolbarMenu.findItem(R.id.item_share)
-        val uncheckAllItem = toolbarMenu.findItem(R.id.item_uncheck_all)
-        val deleteCheckedItem = toolbarMenu.findItem(R.id.item_delete_checked)
-        val copyItem = toolbarMenu.findItem(R.id.item_copy)
-        val deleteItem = toolbarMenu.findItem(R.id.item_delete)
+            setTitle(if (args.noteId == Note.NO_ID) {
+                view.postDelayed(SHOW_KEYBOARD_INITIAL_DELAY) {
+                    view.showKeyboard()
+                }
+                R.string.edit_add_title
+            } else {
+                R.string.edit_change_title
+            })
+        }
 
         // Recycler view
         val rcv = binding.recyclerView
@@ -119,67 +112,21 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener, ConfirmDialog.
         rcv.adapter = adapter
         rcv.layoutManager = layoutManager
 
-        // Observers
-        viewModel.noteStatus.observe(viewLifecycleOwner, Observer { status ->
-            if (status != null) {
-                when (status) {
-                    NoteStatus.ACTIVE -> {
-                        moveItem.setIcon(R.drawable.ic_archive)
-                        moveItem.setTitle(R.string.action_archive)
-                    }
-                    NoteStatus.ARCHIVED -> {
-                        moveItem.setIcon(R.drawable.ic_unarchive)
-                        moveItem.setTitle(R.string.action_unarchive)
-                    }
-                    NoteStatus.DELETED -> {
-                        moveItem.setIcon(R.drawable.ic_restore)
-                        moveItem.setTitle(R.string.action_restore)
-                    }
-                }
+        setupViewModelObservers(adapter)
+    }
 
-                val isTrash = status == NoteStatus.DELETED
-                shareItem.isVisible = !isTrash
-                copyItem.isVisible = !isTrash
-                deleteItem.setTitle(if (isTrash) {
-                    R.string.action_delete_forever
-                } else {
-                    R.string.action_delete
-                })
-            }
+    @SuppressLint("WrongConstant")
+    private fun setupViewModelObservers(adapter: EditAdapter) {
+        viewModel.noteStatus.observe(viewLifecycleOwner, Observer { status ->
+            updateItemsForNoteStatus(status ?: return@Observer)
         })
 
         viewModel.notePinned.observe(viewLifecycleOwner, Observer { pinned ->
-            when (pinned) {
-                PinnedStatus.PINNED -> {
-                    pinItem.isVisible = true
-                    pinItem.setTitle(R.string.action_unpin)
-                    pinItem.setIcon(R.drawable.ic_pin_outline)
-                }
-                PinnedStatus.UNPINNED -> {
-                    pinItem.isVisible = true
-                    pinItem.setTitle(R.string.action_pin)
-                    pinItem.setIcon(R.drawable.ic_pin)
-                }
-                PinnedStatus.CANT_PIN, null -> {
-                    pinItem.isVisible = false
-                }
-            }
+            updateItemsForPinnedStatus(pinned ?: return@Observer)
         })
 
         viewModel.noteType.observe(viewLifecycleOwner, Observer { type ->
-            val isList = type == NoteType.LIST
-            uncheckAllItem.isVisible = isList
-            deleteCheckedItem.isVisible = isList
-            when (type) {
-                NoteType.TEXT -> {
-                    typeItem.setIcon(R.drawable.ic_checkbox)
-                    typeItem.setTitle(R.string.action_convert_to_list)
-                }
-                NoteType.LIST -> {
-                    typeItem.setIcon(R.drawable.ic_text)
-                    typeItem.setTitle(R.string.action_convert_to_text)
-                }
-            }
+            updateItemsForNoteType(type ?: return@Observer)
         })
 
         viewModel.editItems.observe(viewLifecycleOwner, Observer { items ->
@@ -192,13 +139,13 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener, ConfirmDialog.
 
         val restoreNoteSnackbar by lazy {
             Snackbar.make(requireView(), R.string.edit_in_trash_message, CANT_EDIT_SNACKBAR_DURATION)
-                    .setAction(R.string.action_restore) { viewModel.restoreNoteAndEdit() }
+                .setAction(R.string.action_restore) { viewModel.restoreNoteAndEdit() }
         }
         viewModel.messageEvent.observe(viewLifecycleOwner, EventObserver { message ->
             when (message) {
                 EditMessage.BLANK_NOTE_DISCARDED -> sharedViewModel.onBlankNoteDiscarded()
-                EditMessage.RESTORED_NOTE -> Snackbar.make(view, resources.getQuantityText(
-                        R.plurals.edit_message_move_restore, 1), Snackbar.LENGTH_SHORT).show()
+                EditMessage.RESTORED_NOTE -> Snackbar.make(requireView(), resources.getQuantityText(
+                    R.plurals.edit_message_move_restore, 1), Snackbar.LENGTH_SHORT).show()
                 EditMessage.CANT_EDIT_IN_TRASH -> restoreNoteSnackbar.show()
             }
         })
@@ -213,23 +160,91 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener, ConfirmDialog.
 
         viewModel.showDeleteConfirmEvent.observe(viewLifecycleOwner, EventObserver {
             ConfirmDialog.newInstance(
-                    title = R.string.action_delete_forever,
-                    message = R.string.trash_delete_message,
-                    btnPositive = R.string.action_delete
+                title = R.string.action_delete_forever,
+                message = R.string.trash_delete_message,
+                btnPositive = R.string.action_delete
             ).show(childFragmentManager, DELETE_CONFIRM_DIALOG_TAG)
         })
 
         viewModel.showRemoveCheckedConfirmEvent.observe(viewLifecycleOwner, EventObserver {
             ConfirmDialog.newInstance(
-                    title = R.string.edit_convert_keep_checked,
-                    btnPositive = R.string.action_delete,
-                    btnNegative = R.string.action_keep
+                title = R.string.edit_convert_keep_checked,
+                btnPositive = R.string.action_delete,
+                btnNegative = R.string.action_keep
             ).show(childFragmentManager, REMOVE_CHECKED_CONFIRM_DIALOG_TAG)
         })
 
         viewModel.exitEvent.observe(viewLifecycleOwner, EventObserver {
             findNavController().popBackStack()
         })
+    }
+
+    private fun updateItemsForNoteStatus(status: NoteStatus) {
+        val menu = binding.toolbar.menu
+
+        val moveItem = menu.findItem(R.id.item_move)
+        when (status) {
+            NoteStatus.ACTIVE -> {
+                moveItem.setIcon(R.drawable.ic_archive)
+                moveItem.setTitle(R.string.action_archive)
+            }
+            NoteStatus.ARCHIVED -> {
+                moveItem.setIcon(R.drawable.ic_unarchive)
+                moveItem.setTitle(R.string.action_unarchive)
+            }
+            NoteStatus.DELETED -> {
+                moveItem.setIcon(R.drawable.ic_restore)
+                moveItem.setTitle(R.string.action_restore)
+            }
+        }
+
+        val isTrash = status == NoteStatus.DELETED
+        menu.findItem(R.id.item_share).isVisible = !isTrash
+        menu.findItem(R.id.item_copy).isVisible = !isTrash
+        menu.findItem(R.id.item_delete).setTitle(if (isTrash) {
+            R.string.action_delete_forever
+        } else {
+            R.string.action_delete
+        })
+    }
+
+    private fun updateItemsForPinnedStatus(pinned: PinnedStatus) {
+        val item = binding.toolbar.menu.findItem(R.id.item_pin)
+        when (pinned) {
+            PinnedStatus.PINNED -> {
+                item.isVisible = true
+                item.setTitle(R.string.action_unpin)
+                item.setIcon(R.drawable.ic_pin_outline)
+            }
+            PinnedStatus.UNPINNED -> {
+                item.isVisible = true
+                item.setTitle(R.string.action_pin)
+                item.setIcon(R.drawable.ic_pin)
+            }
+            PinnedStatus.CANT_PIN -> {
+                item.isVisible = false
+            }
+        }
+    }
+
+    private fun updateItemsForNoteType(type: NoteType) {
+        val menu = binding.toolbar.menu
+
+        val isList = type == NoteType.LIST
+        menu.findItem(R.id.item_uncheck_all).isVisible = isList
+        menu.findItem(R.id.item_delete_checked).isVisible = isList
+
+        val typeItem = menu.findItem(R.id.item_type)
+        when (type) {
+            NoteType.TEXT -> {
+                typeItem.setIcon(R.drawable.ic_checkbox)
+                typeItem.setTitle(R.string.action_convert_to_list)
+            }
+            NoteType.LIST -> {
+                typeItem.setIcon(R.drawable.ic_text)
+                typeItem.setTitle(R.string.action_convert_to_text)
+            }
+        }
     }
 
     override fun onDestroyView() {
@@ -253,7 +268,7 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener, ConfirmDialog.
             }
             R.id.item_delete_checked -> viewModel.deleteCheckedItems()
             R.id.item_copy -> viewModel.copyNote(getString(R.string.edit_copy_untitled_name),
-                    getString(R.string.edit_copy_suffix))
+                getString(R.string.edit_copy_suffix))
             R.id.item_delete -> viewModel.deleteNote()
             else -> return false
         }
@@ -278,6 +293,7 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener, ConfirmDialog.
         private const val REMOVE_CHECKED_CONFIRM_DIALOG_TAG = "remove_checked_confirm_dialog"
 
         private const val CANT_EDIT_SNACKBAR_DURATION = 5000
-    }
 
+        private const val SHOW_KEYBOARD_INITIAL_DELAY = 200L
+    }
 }

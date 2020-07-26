@@ -19,7 +19,6 @@ package com.maltaisn.notes.model.entity
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
-
 @Serializable
 sealed class NoteMetadata
 
@@ -36,5 +35,6 @@ object BlankNoteMetadata : NoteMetadata()
 @Serializable
 @SerialName("list")
 data class ListNoteMetadata(
-        @SerialName("checked")
-        val checked: List<Boolean>) : NoteMetadata()
+    @SerialName("checked")
+    val checked: List<Boolean>
+) : NoteMetadata()

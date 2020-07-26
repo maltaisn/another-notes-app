@@ -26,7 +26,6 @@ import kotlin.test.assertFalse
 import kotlin.time.Duration
 import kotlin.time.seconds
 
-
 /**
  * Gets the value of a [LiveData] or waits for it to have one, with a timeout.
  */
@@ -59,9 +58,7 @@ fun <T> LiveData<T>.getOrAwaitValue(time: Duration = 1.seconds): T {
  * Observes a [LiveData] until the `block` is done executing.
  */
 fun <T> LiveData<T>.observeForTesting(block: () -> Unit) {
-    val observer = Observer<T> {
-
-    }
+    val observer = Observer<T> {}
     try {
         observeForever(observer)
         block()

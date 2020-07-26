@@ -17,10 +17,16 @@
 package com.maltaisn.notes.model.converter
 
 import androidx.room.TypeConverter
-import kotlinx.serialization.*
+import kotlinx.serialization.Decoder
+import kotlinx.serialization.Encoder
+import kotlinx.serialization.KSerializer
+import kotlinx.serialization.PrimitiveDescriptor
+import kotlinx.serialization.PrimitiveKind
+import kotlinx.serialization.Serializer
 import java.text.SimpleDateFormat
-import java.util.*
-
+import java.util.Date
+import java.util.Locale
+import java.util.TimeZone
 
 @Serializer(forClass = Date::class)
 object DateTimeConverter : KSerializer<Date> {
@@ -40,7 +46,6 @@ object DateTimeConverter : KSerializer<Date> {
             return dateFormat
         }
 
-
     @TypeConverter
     @JvmStatic
     fun toDate(date: Long) = Date(date)
@@ -49,17 +54,13 @@ object DateTimeConverter : KSerializer<Date> {
     @JvmStatic
     fun toLong(date: Date) = date.time
 
-
     // This is only used for testing
     fun toDate(str: String) = dateFormat.parse(str)!!
-
 
     override val descriptor = PrimitiveDescriptor("Date", PrimitiveKind.STRING)
 
     override fun serialize(encoder: Encoder, value: Date) =
-            encoder.encodeString(dateFormat.format(value))
+        encoder.encodeString(dateFormat.format(value))
 
     override fun deserialize(decoder: Decoder) = toDate(decoder.decodeString())
-
-
 }

@@ -16,7 +16,6 @@
 
 package com.maltaisn.notes.ui.edit
 
-
 /**
  * Enum for Snackbar messages being shown in [EditFragment].
  */

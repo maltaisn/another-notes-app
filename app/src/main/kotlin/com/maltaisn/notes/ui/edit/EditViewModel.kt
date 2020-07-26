@@ -22,21 +22,33 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.maltaisn.notes.model.NotesRepository
 import com.maltaisn.notes.model.PrefsManager
-import com.maltaisn.notes.model.entity.*
+import com.maltaisn.notes.model.entity.BlankNoteMetadata
+import com.maltaisn.notes.model.entity.ListNoteMetadata
+import com.maltaisn.notes.model.entity.Note
+import com.maltaisn.notes.model.entity.NoteMetadata
+import com.maltaisn.notes.model.entity.NoteStatus
+import com.maltaisn.notes.model.entity.NoteType
+import com.maltaisn.notes.model.entity.PinnedStatus
 import com.maltaisn.notes.ui.Event
 import com.maltaisn.notes.ui.ShareData
 import com.maltaisn.notes.ui.StatusChange
-import com.maltaisn.notes.ui.edit.adapter.*
+import com.maltaisn.notes.ui.edit.adapter.EditAdapter
+import com.maltaisn.notes.ui.edit.adapter.EditContentItem
+import com.maltaisn.notes.ui.edit.adapter.EditItemAddItem
+import com.maltaisn.notes.ui.edit.adapter.EditItemItem
+import com.maltaisn.notes.ui.edit.adapter.EditListItem
+import com.maltaisn.notes.ui.edit.adapter.EditTitleItem
+import com.maltaisn.notes.ui.edit.adapter.EditableText
 import com.maltaisn.notes.ui.send
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.launch
-import java.util.*
+import java.util.Collections
+import java.util.Date
 import javax.inject.Inject
 
-
 class EditViewModel @Inject constructor(
-        private val notesRepository: NotesRepository,
-        private val prefs: PrefsManager
+    private val notesRepository: NotesRepository,
+    private val prefs: PrefsManager
 ) : ViewModel(), EditAdapter.Callback {
 
     /**
@@ -70,7 +82,6 @@ class EditViewModel @Inject constructor(
      */
     private var titleItem: EditTitleItem? = null
 
-
     private val _noteType = MutableLiveData<NoteType?>()
     val noteType: LiveData<NoteType?>
         get() = _noteType
@@ -79,8 +90,8 @@ class EditViewModel @Inject constructor(
     val noteStatus: LiveData<NoteStatus?>
         get() = _noteStatus
 
-    private val _notePinned = MutableLiveData<PinnedStatus>()
-    val notePinned: LiveData<PinnedStatus>
+    private val _notePinned = MutableLiveData<PinnedStatus?>()
+    val notePinned: LiveData<PinnedStatus?>
         get() = _notePinned
 
     private val _editItems = MutableLiveData<List<EditListItem>>()
@@ -115,10 +126,8 @@ class EditViewModel @Inject constructor(
     val exitEvent: LiveData<Event<Unit>>
         get() = _exitEvent
 
-
     private val isNoteInTrash: Boolean
         get() = status == NoteStatus.DELETED
-
 
     /**
      * Initialize the view model to edit a note with the ID [noteId].
@@ -133,8 +142,8 @@ class EditViewModel @Inject constructor(
                 // Note doesn't exist, create new blank text note.
                 val date = Date()
                 note = BLANK_NOTE.copy(
-                        addedDate = date,
-                        lastModifiedDate = date)
+                    addedDate = date,
+                    lastModifiedDate = date)
                 val id = notesRepository.insertNote(note)
                 note = note.copy(id = id)
 
@@ -257,10 +266,10 @@ class EditViewModel @Inject constructor(
                 // Copied blank note should be discarded anyway.
                 val date = Date()
                 val copy = note.copy(
-                        id = Note.NO_ID,
-                        title = newTitle,
-                        addedDate = date,
-                        lastModifiedDate = date)
+                    id = Note.NO_ID,
+                    title = newTitle,
+                    addedDate = date,
+                    lastModifiedDate = date)
                 val id = notesRepository.insertNote(copy)
                 this@EditViewModel.note = copy.copy(id = id)
             }
@@ -280,7 +289,6 @@ class EditViewModel @Inject constructor(
         if (isNoteInTrash) {
             // Delete forever, ask for confirmation.
             _showDeleteConfirmEvent.send()
-
         } else {
             // Send to trash
             changeNoteStatusAndExit(NoteStatus.DELETED)
@@ -332,7 +340,8 @@ class EditViewModel @Inject constructor(
             // If note is blank, it will be discarded on exit anyway, so don't change it.
             val oldNote = note
             status = newStatus
-            pinned = if (status == NoteStatus.ACTIVE) PinnedStatus.UNPINNED else PinnedStatus.CANT_PIN
+            pinned =
+                if (status == NoteStatus.ACTIVE) PinnedStatus.UNPINNED else PinnedStatus.CANT_PIN
             save()
 
             // Show status change message.
@@ -364,7 +373,7 @@ class EditViewModel @Inject constructor(
             }
         }
         note = note.copy(title = title, content = content,
-                metadata = metadata, status = status, pinned = pinned)
+            metadata = metadata, status = status, pinned = pinned)
     }
 
     /**
@@ -414,7 +423,7 @@ class EditViewModel @Inject constructor(
             changeListItems { list ->
                 for (i in 1 until lines.size) {
                     list.add(pos + i, EditItemItem(DefaultEditableText(lines[i]),
-                            checked = false, editable = true))
+                        checked = false, editable = true))
                 }
             }
 
@@ -478,7 +487,7 @@ class EditViewModel @Inject constructor(
     }
 
     override val isNoteDragEnabled: Boolean
-        get() = listItems.size > 3 && !isNoteInTrash
+        get() = listItems.size >= MIN_DRAG_ITEMS && !isNoteInTrash
 
     override fun onNoteItemSwapped(from: Int, to: Int) {
         Collections.swap(listItems, from, to)
@@ -497,9 +506,7 @@ class EditViewModel @Inject constructor(
         listItems = newList
     }
 
-
     data class FocusChange(val itemPos: Int, val pos: Int, val itemExists: Boolean)
-
 
     /**
      * The default class used for editable item text, backed by StringBuilder.
@@ -517,18 +524,19 @@ class EditViewModel @Inject constructor(
             this.text.replace(0, this.text.length, text.toString())
         }
 
-        override fun equals(other: Any?) = (other is DefaultEditableText
-                && other.text.toString() == text.toString())
+        override fun equals(other: Any?) = (other is DefaultEditableText &&
+                other.text.toString() == text.toString())
 
         override fun hashCode() = text.hashCode()
 
         override fun toString() = text.toString()
     }
 
-
     companion object {
         private val BLANK_NOTE = Note(Note.NO_ID, NoteType.TEXT, "", "",
-                BlankNoteMetadata, Date(0), Date(0), NoteStatus.ACTIVE, PinnedStatus.UNPINNED)
-    }
+            BlankNoteMetadata, Date(0), Date(0), NoteStatus.ACTIVE, PinnedStatus.UNPINNED)
 
+        /** Minimum items needed for dragging. (title + 2 items + add new) */
+        private const val MIN_DRAG_ITEMS = 4
+    }
 }

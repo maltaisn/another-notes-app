@@ -23,13 +23,12 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
-import java.util.*
+import java.util.Date
 import javax.inject.Inject
 
-
 class DefaultNotesRepository @Inject constructor(
-        private val notesDao: NotesDao,
-        private val json: Json
+    private val notesDao: NotesDao,
+    private val json: Json
 ) : NotesRepository {
 
     override suspend fun insertNote(note: Note): Long = withContext(NonCancellable) {
@@ -79,5 +78,4 @@ class DefaultNotesRepository @Inject constructor(
     override suspend fun clearAllData() {
         notesDao.clear()
     }
-
 }

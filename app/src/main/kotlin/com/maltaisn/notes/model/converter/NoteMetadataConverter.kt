@@ -18,10 +18,14 @@ package com.maltaisn.notes.model.converter
 
 import androidx.room.TypeConverter
 import com.maltaisn.notes.model.entity.NoteMetadata
-import kotlinx.serialization.*
+import kotlinx.serialization.Decoder
+import kotlinx.serialization.Encoder
+import kotlinx.serialization.KSerializer
+import kotlinx.serialization.PrimitiveDescriptor
+import kotlinx.serialization.PrimitiveKind
+import kotlinx.serialization.Serializer
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
-
 
 /**
  * Converter used to store instances of [NoteMetadata] in the database and to serialize them.
@@ -41,12 +45,10 @@ object NoteMetadataConverter : KSerializer<NoteMetadata> {
     @JvmStatic
     fun toString(metadata: NoteMetadata) = json.stringify(NoteMetadata.serializer(), metadata)
 
-
     override val descriptor = PrimitiveDescriptor("NoteMetadata", PrimitiveKind.STRING)
 
     override fun serialize(encoder: Encoder, value: NoteMetadata) =
-            encoder.encodeString(toString(value))
+        encoder.encodeString(toString(value))
 
     override fun deserialize(decoder: Decoder) = toMetadata(decoder.decodeString())
-
 }

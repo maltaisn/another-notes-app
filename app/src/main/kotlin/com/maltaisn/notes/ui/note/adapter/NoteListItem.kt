@@ -21,33 +21,39 @@ import androidx.annotation.StringRes
 import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.model.entity.NoteType
 
-
-sealed class NoteListItem(open val id: Long) {
+sealed class NoteListItem {
+    abstract val id: Long
     abstract val type: Int
 }
 
 data class NoteItem(
-        override val id: Long,
-        val note: Note,
-        val checked: Boolean = false,
-        val titleHighlights: List<IntRange> = emptyList(),
-        val contentHighlights: List<IntRange> = emptyList()
-) : NoteListItem(id) {
+    override val id: Long,
+    val note: Note,
+    val checked: Boolean = false,
+    val titleHighlights: List<IntRange> = emptyList(),
+    val contentHighlights: List<IntRange> = emptyList()
+) : NoteListItem() {
+
     override val type: Int
         get() = when (note.type) {
             NoteType.TEXT -> NoteAdapter.VIEW_TYPE_TEXT_NOTE
             NoteType.LIST -> NoteAdapter.VIEW_TYPE_LIST_NOTE
         }
-
 }
 
-data class HeaderItem(override val id: Long, @StringRes val title: Int) : NoteListItem(id) {
+data class HeaderItem(
+    override val id: Long,
+    @StringRes val title: Int
+) : NoteListItem() {
     override val type: Int
         get() = NoteAdapter.VIEW_TYPE_HEADER
 }
 
-data class MessageItem(override val id: Long, @StringRes @PluralsRes val message: Int,
-                       val args: List<Any>) : NoteListItem(id) {
+data class MessageItem(
+    override val id: Long,
+    @StringRes @PluralsRes val message: Int,
+    val args: List<Any>
+) : NoteListItem() {
     override val type: Int
         get() = NoteAdapter.VIEW_TYPE_MESSAGE
 }

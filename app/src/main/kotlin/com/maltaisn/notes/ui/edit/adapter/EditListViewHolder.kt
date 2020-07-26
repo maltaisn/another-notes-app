@@ -39,7 +39,7 @@ interface EditFocusableViewHolder {
 }
 
 class EditTitleViewHolder(binding: ItemEditTitleBinding, callback: EditAdapter.Callback) :
-        RecyclerView.ViewHolder(binding.root), EditFocusableViewHolder {
+    RecyclerView.ViewHolder(binding.root), EditFocusableViewHolder {
 
     private val titleEdt = binding.titleEdt
 
@@ -68,7 +68,7 @@ class EditTitleViewHolder(binding: ItemEditTitleBinding, callback: EditAdapter.C
 }
 
 class EditContentViewHolder(binding: ItemEditContentBinding, callback: EditAdapter.Callback) :
-        RecyclerView.ViewHolder(binding.root), EditFocusableViewHolder {
+    RecyclerView.ViewHolder(binding.root), EditFocusableViewHolder {
 
     private val contentEdt = binding.contentEdt
 
@@ -97,7 +97,7 @@ class EditContentViewHolder(binding: ItemEditContentBinding, callback: EditAdapt
 }
 
 class EditItemViewHolder(val binding: ItemEditItemBinding, callback: EditAdapter.Callback) :
-        RecyclerView.ViewHolder(binding.root), EditFocusableViewHolder {
+    RecyclerView.ViewHolder(binding.root), EditFocusableViewHolder {
 
     private val itemCheck = binding.itemChk
     private val itemEdt = binding.contentEdt
@@ -126,10 +126,8 @@ class EditItemViewHolder(val binding: ItemEditItemBinding, callback: EditAdapter
             deleteImv.isInvisible = !hasFocus
         }
         itemEdt.setOnKeyListener { _, _, event ->
-            if (event.action == KeyEvent.ACTION_DOWN
-                    && event.keyCode == KeyEvent.KEYCODE_DEL
-                    && itemEdt.selectionStart == itemEdt.selectionEnd
-                    && itemEdt.selectionStart == 0) {
+            val isCursorAtStart = itemEdt.selectionStart == 0 && itemEdt.selectionStart == itemEdt.selectionEnd
+            if (isCursorAtStart && event.action == KeyEvent.ACTION_DOWN && event.keyCode == KeyEvent.KEYCODE_DEL) {
                 // If user presses backspace at the start of an item, current item
                 // will be merged with previous.
                 val pos = adapterPosition
@@ -178,7 +176,7 @@ class EditItemViewHolder(val binding: ItemEditItemBinding, callback: EditAdapter
 }
 
 class EditItemAddViewHolder(binding: ItemEditItemAddBinding, callback: EditAdapter.Callback) :
-        RecyclerView.ViewHolder(binding.root) {
+    RecyclerView.ViewHolder(binding.root) {
 
     init {
         itemView.setOnClickListener {

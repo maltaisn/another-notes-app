@@ -32,7 +32,11 @@ import com.maltaisn.notes.ui.note.SwipeAction
 import com.maltaisn.notes.ui.note.adapter.MessageItem
 import com.maltaisn.notes.ui.note.adapter.NoteItem
 import com.maltaisn.notes.ui.note.adapter.NoteListLayoutMode
-import com.nhaarman.mockitokotlin2.*
+import com.nhaarman.mockitokotlin2.any
+import com.nhaarman.mockitokotlin2.doReturn
+import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.verify
+import com.nhaarman.mockitokotlin2.whenever
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Before
@@ -41,7 +45,6 @@ import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
-
 
 class HomeViewModelTest {
 
@@ -52,18 +55,18 @@ class HomeViewModelTest {
 
     private val buildTypeBehavior: BuildTypeBehavior = mock()
 
-    
     @get:Rule
     var mainCoroutineRule = MainCoroutineRule()
 
     @get:Rule
     var instantExecutorRule = InstantTaskExecutorRule()
 
-
     @Before
     fun before() {
         notesRepo = MockNotesRepository()
-        notesRepo.addNote(testNote(id = 1, status = NoteStatus.ACTIVE, pinned = PinnedStatus.PINNED))
+        notesRepo.addNote(testNote(id = 1,
+            status = NoteStatus.ACTIVE,
+            pinned = PinnedStatus.PINNED))
         notesRepo.addNote(testNote(id = 2, status = NoteStatus.ACTIVE))
         notesRepo.addNote(testNote(id = 3, status = NoteStatus.ARCHIVED))
         notesRepo.addNote(testNote(id = 4, status = NoteStatus.DELETED))
@@ -74,23 +77,24 @@ class HomeViewModelTest {
         }
 
         viewModel = HomeViewModel(SavedStateHandle(), notesRepo, prefs,
-                buildTypeBehavior)
+            buildTypeBehavior)
     }
 
     @Test
-    fun `should show only active notes (both pinned and unpinned)`() = mainCoroutineRule.runBlockingTest {
-        val note1 = notesRepo.getById(1)!!
-        val note2 = notesRepo.getById(2)!!
-        viewModel.setNoteStatus(NoteStatus.ACTIVE)
+    fun `should show only active notes (both pinned and unpinned)`() =
+        mainCoroutineRule.runBlockingTest {
+            val note1 = notesRepo.getById(1)!!
+            val note2 = notesRepo.getById(2)!!
+            viewModel.setNoteStatus(NoteStatus.ACTIVE)
 
-        assertEquals(NoteStatus.ACTIVE, viewModel.noteStatus.getOrAwaitValue())
-        assertEquals(listOf(
+            assertEquals(NoteStatus.ACTIVE, viewModel.noteStatus.getOrAwaitValue())
+            assertEquals(listOf(
                 HomeViewModel.PINNED_HEADER_ITEM,
                 NoteItem(1, note1),
                 HomeViewModel.NOT_PINNED_HEADER_ITEM,
                 NoteItem(2, note2)
-        ), viewModel.noteItems.getOrAwaitValue())
-    }
+            ), viewModel.noteItems.getOrAwaitValue())
+        }
 
     @Test
     fun `should show only active notes (pinned only)`() = mainCoroutineRule.runBlockingTest {
@@ -100,8 +104,8 @@ class HomeViewModelTest {
 
         assertEquals(NoteStatus.ACTIVE, viewModel.noteStatus.getOrAwaitValue())
         assertEquals(listOf(
-                HomeViewModel.PINNED_HEADER_ITEM,
-                NoteItem(1, note)
+            HomeViewModel.PINNED_HEADER_ITEM,
+            NoteItem(1, note)
         ), viewModel.noteItems.getOrAwaitValue())
     }
 
@@ -113,7 +117,7 @@ class HomeViewModelTest {
 
         assertEquals(NoteStatus.ACTIVE, viewModel.noteStatus.getOrAwaitValue())
         assertEquals(listOf(
-                NoteItem(2, note)
+            NoteItem(2, note)
         ), viewModel.noteItems.getOrAwaitValue())
     }
 
@@ -124,7 +128,7 @@ class HomeViewModelTest {
 
         assertEquals(NoteStatus.ARCHIVED, viewModel.noteStatus.getOrAwaitValue())
         assertEquals(listOf(
-                NoteItem(3, note)
+            NoteItem(3, note)
         ), viewModel.noteItems.getOrAwaitValue())
     }
 
@@ -135,9 +139,9 @@ class HomeViewModelTest {
 
         assertEquals(NoteStatus.DELETED, viewModel.noteStatus.getOrAwaitValue())
         assertEquals(listOf(
-                MessageItem(-1, R.string.trash_reminder_message,
-                        listOf(PrefsManager.TRASH_AUTO_DELETE_DELAY.inDays.toInt())),
-                NoteItem(4, note)
+            MessageItem(-1, R.string.trash_reminder_message,
+                listOf(PrefsManager.TRASH_AUTO_DELETE_DELAY.inDays.toInt())),
+            NoteItem(4, note)
         ), viewModel.noteItems.getOrAwaitValue())
     }
 
@@ -150,23 +154,24 @@ class HomeViewModelTest {
         val newNote = notesRepo.getById(notesRepo.lastId)!!
 
         assertEquals(listOf(
-                NoteItem(newNote.id, newNote),
-                NoteItem(firstNote.id, firstNote)
+            NoteItem(newNote.id, newNote),
+            NoteItem(firstNote.id, firstNote)
         ), viewModel.noteItems.getOrAwaitValue())
     }
 
     @Test
-    fun `should update list when trash reminder item is dismissed`() = mainCoroutineRule.runBlockingTest {
-        val note = notesRepo.getById(4)!!
-        viewModel.setNoteStatus(NoteStatus.DELETED)
-        viewModel.onMessageItemDismissed(MessageItem(-1, 0, emptyList()), 0)
+    fun `should update list when trash reminder item is dismissed`() =
+        mainCoroutineRule.runBlockingTest {
+            val note = notesRepo.getById(4)!!
+            viewModel.setNoteStatus(NoteStatus.DELETED)
+            viewModel.onMessageItemDismissed(MessageItem(-1, 0, emptyList()), 0)
 
-        verify(prefs).lastTrashReminderTime = any()
+            verify(prefs).lastTrashReminderTime = any()
 
-        assertEquals(listOf(
+            assertEquals(listOf(
                 NoteItem(4, note)
-        ), viewModel.noteItems.getOrAwaitValue())
-    }
+            ), viewModel.noteItems.getOrAwaitValue())
+        }
 
     @Test
     fun `should only allow note swipe in active notes`() = mainCoroutineRule.runBlockingTest {
@@ -223,7 +228,7 @@ class HomeViewModelTest {
 
         assertEquals(NoteStatus.ARCHIVED, notesRepo.getById(1)!!.status)
         assertLiveDataEventSent(viewModel.statusChangeEvent, StatusChange(
-                listOf(note), NoteStatus.ACTIVE, NoteStatus.ARCHIVED))
+            listOf(note), NoteStatus.ACTIVE, NoteStatus.ARCHIVED))
     }
 
     @Test
@@ -236,9 +241,8 @@ class HomeViewModelTest {
 
         assertEquals(NoteStatus.DELETED, notesRepo.getById(1)!!.status)
         assertLiveDataEventSent(viewModel.statusChangeEvent, StatusChange(
-                listOf(note), NoteStatus.ACTIVE, NoteStatus.DELETED))
+            listOf(note), NoteStatus.ACTIVE, NoteStatus.DELETED))
     }
 
     private fun getNoteItemAt(pos: Int) = viewModel.noteItems.getOrAwaitValue()[pos] as NoteItem
-
 }

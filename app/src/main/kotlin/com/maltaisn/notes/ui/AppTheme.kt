@@ -18,7 +18,6 @@ package com.maltaisn.notes.ui
 
 import com.maltaisn.notes.sync.R
 
-
 /**
  * Enum for different app themes.
  * [value] is from [R.array.pref_theme_values].

@@ -19,9 +19,7 @@ package com.maltaisn.notes.ui
 import android.content.Intent
 import androidx.fragment.app.Fragment
 
-
 data class ShareData(val title: String, val content: String)
-
 
 /**
  * Use an intent to share some [data] from this fragment.

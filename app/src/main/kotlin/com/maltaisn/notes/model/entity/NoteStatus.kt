@@ -16,7 +16,6 @@
 
 package com.maltaisn.notes.model.entity
 
-
 enum class NoteStatus(val value: Int) {
     ACTIVE(0),
     ARCHIVED(1),

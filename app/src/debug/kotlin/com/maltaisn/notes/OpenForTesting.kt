@@ -16,8 +16,6 @@
 
 package com.maltaisn.notes
 
-
-
 @Target(AnnotationTarget.ANNOTATION_CLASS)
 annotation class OpenClass
 

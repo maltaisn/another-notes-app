@@ -37,12 +37,12 @@ import com.maltaisn.notes.ui.viewModel
 import javax.inject.Inject
 import javax.inject.Provider
 
-
 class SettingsFragment : PreferenceFragmentCompat(), ConfirmDialog.Callback {
 
-    @Inject lateinit var viewModelProvider: Provider<SettingsViewModel>
-    private val viewModel by viewModel { viewModelProvider.get() }
+    @Inject
+    lateinit var viewModelProvider: Provider<SettingsViewModel>
 
+    private val viewModel by viewModel { viewModelProvider.get() }
 
     override fun onCreate(state: Bundle?) {
         super.onCreate(state)
@@ -51,17 +51,18 @@ class SettingsFragment : PreferenceFragmentCompat(), ConfirmDialog.Callback {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         val binding = FragmentSettingsBinding.bind(view)
 
-        // Toolbar
         binding.toolbar.setNavigationOnClickListener {
             findNavController().popBackStack()
         }
 
-        // Observers
+        setupViewModelObservers()
+    }
+
+    private fun setupViewModelObservers() {
         viewModel.messageEvent.observe(viewLifecycleOwner, EventObserver { messageId ->
-            Snackbar.make(view, messageId, Snackbar.LENGTH_SHORT).show()
+            Snackbar.make(requireView(), messageId, Snackbar.LENGTH_SHORT).show()
         })
 
         viewModel.exportDataEvent.observe(viewLifecycleOwner, EventObserver { data ->
@@ -78,31 +79,28 @@ class SettingsFragment : PreferenceFragmentCompat(), ConfirmDialog.Callback {
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.prefs, rootKey)
 
-        requirePreference<DropDownPreference>(PrefsManager.THEME)
-                .setOnPreferenceChangeListener { _, theme ->
-                    (requireContext().applicationContext as App)
-                            .updateTheme(AppTheme.values().find { it.value == theme }!!)
-                    true
-                }
+        requirePreference<DropDownPreference>(PrefsManager.THEME).setOnPreferenceChangeListener { _, theme ->
+            (requireContext().applicationContext as App)
+                .updateTheme(AppTheme.values().find { it.value == theme }!!)
+            true
+        }
 
-        requirePreference<Preference>(PrefsManager.EXPORT_DATA)
-                .setOnPreferenceClickListener {
-                    viewModel.exportData()
-                    true
-                }
+        requirePreference<Preference>(PrefsManager.EXPORT_DATA).setOnPreferenceClickListener {
+            viewModel.exportData()
+            true
+        }
 
-        requirePreference<Preference>(PrefsManager.CLEAR_DATA)
-                .setOnPreferenceClickListener {
-                    ConfirmDialog.newInstance(
-                            title = R.string.pref_data_clear,
-                            message = R.string.pref_data_clear_confirm_message,
-                            btnPositive = R.string.action_clear
-                    ).show(childFragmentManager, CLEAR_DATA_DIALOG_TAG)
-                    true
-                }
+        requirePreference<Preference>(PrefsManager.CLEAR_DATA).setOnPreferenceClickListener {
+            ConfirmDialog.newInstance(
+                title = R.string.pref_data_clear,
+                message = R.string.pref_data_clear_confirm_message,
+                btnPositive = R.string.action_clear
+            ).show(childFragmentManager, CLEAR_DATA_DIALOG_TAG)
+            true
+        }
 
         requirePreference<Preference>(PrefsManager.VIEW_LICENSES)
-                .intent = Intent(requireActivity(), OssLicensesMenuActivity::class.java)
+            .intent = Intent(requireActivity(), OssLicensesMenuActivity::class.java)
         OssLicensesMenuActivity.setActivityTitle(getString(R.string.pref_about_view_licenses))
 
         // Set version name as summary text for version preference
@@ -110,8 +108,7 @@ class SettingsFragment : PreferenceFragmentCompat(), ConfirmDialog.Callback {
     }
 
     private fun <T : Preference> requirePreference(key: CharSequence) =
-            checkNotNull(findPreference<T>(key)) { "Could not find preference with key '$key'." }
-
+        checkNotNull(findPreference<T>(key)) { "Could not find preference with key '$key'." }
 
     override fun onDialogConfirmed(tag: String?) {
         if (tag == CLEAR_DATA_DIALOG_TAG) {
@@ -122,5 +119,4 @@ class SettingsFragment : PreferenceFragmentCompat(), ConfirmDialog.Callback {
     companion object {
         private const val CLEAR_DATA_DIALOG_TAG = "clear_data_dialog"
     }
-
 }

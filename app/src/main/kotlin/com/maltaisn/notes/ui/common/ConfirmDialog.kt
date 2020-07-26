@@ -24,7 +24,6 @@ import androidx.fragment.app.DialogFragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.maltaisn.notes.sync.R
 
-
 /**
  * Simple dialog with a callback to ask user for confirmation.
  */
@@ -34,13 +33,13 @@ class ConfirmDialog : DialogFragment() {
         val context = requireContext()
         val args = requireArguments()
         val builder = MaterialAlertDialogBuilder(context)
-                .setTitle(args.getInt(ARG_TITLE))
-                .setPositiveButton(args.getInt(ARG_BTN_POSITIVE)) { _, _ ->
-                    callback.onDialogConfirmed(tag)
-                }
-                .setNegativeButton(args.getInt(ARG_BTN_NEGATIVE)) { _, _ ->
-                    callback.onDialogCancelled(tag)
-                }
+            .setTitle(args.getInt(ARG_TITLE))
+            .setPositiveButton(args.getInt(ARG_BTN_POSITIVE)) { _, _ ->
+                callback.onDialogConfirmed(tag)
+            }
+            .setNegativeButton(args.getInt(ARG_BTN_NEGATIVE)) { _, _ ->
+                callback.onDialogCancelled(tag)
+            }
 
         // Set message if there's one.
         val message = args.getInt(ARG_MESSAGE)
@@ -53,8 +52,8 @@ class ConfirmDialog : DialogFragment() {
 
     private val callback: Callback
         get() = (parentFragment as? Callback)
-                ?: (activity as? Callback)
-                ?: error("No callback for ConfirmDialog")
+            ?: (activity as? Callback)
+            ?: error("No callback for ConfirmDialog")
 
     interface Callback {
         fun onDialogConfirmed(tag: String?) = Unit
@@ -68,18 +67,19 @@ class ConfirmDialog : DialogFragment() {
         private const val ARG_BTN_POSITIVE = "btn_positive"
         private const val ARG_BTN_NEGATIVE = "btn_negative"
 
-        fun newInstance(@StringRes title: Int,
-                        @StringRes message: Int = 0,
-                        @StringRes btnPositive: Int,
-                        @StringRes btnNegative: Int = R.string.action_cancel): ConfirmDialog {
+        fun newInstance(
+            @StringRes title: Int,
+            @StringRes message: Int = 0,
+            @StringRes btnPositive: Int,
+            @StringRes btnNegative: Int = R.string.action_cancel
+        ): ConfirmDialog {
             val dialog = ConfirmDialog()
             dialog.arguments = bundleOf(
-                    ARG_TITLE to title,
-                    ARG_MESSAGE to message,
-                    ARG_BTN_POSITIVE to btnPositive,
-                    ARG_BTN_NEGATIVE to btnNegative)
+                ARG_TITLE to title,
+                ARG_MESSAGE to message,
+                ARG_BTN_POSITIVE to btnPositive,
+                ARG_BTN_NEGATIVE to btnNegative)
             return dialog
         }
     }
-
 }

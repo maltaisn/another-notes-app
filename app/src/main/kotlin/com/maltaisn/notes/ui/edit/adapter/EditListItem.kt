@@ -16,25 +16,31 @@
 
 package com.maltaisn.notes.ui.edit.adapter
 
-
 sealed class EditListItem {
     abstract val type: Int
 }
 
-data class EditTitleItem(var title: EditableText,
-                         var editable: Boolean) : EditListItem() {
+data class EditTitleItem(
+    var title: EditableText,
+    var editable: Boolean
+) : EditListItem() {
     override val type: Int
         get() = EditAdapter.VIEW_TYPE_TITLE
 }
 
-data class EditContentItem(var content: EditableText,
-                           val editable: Boolean) : EditListItem() {
+data class EditContentItem(
+    var content: EditableText,
+    val editable: Boolean
+) : EditListItem() {
     override val type: Int
         get() = EditAdapter.VIEW_TYPE_CONTENT
 }
 
-data class EditItemItem(var content: EditableText,
-                        var checked: Boolean, val editable: Boolean) : EditListItem() {
+data class EditItemItem(
+    var content: EditableText,
+    var checked: Boolean,
+    val editable: Boolean
+) : EditListItem() {
     override val type: Int
         get() = EditAdapter.VIEW_TYPE_ITEM
 }

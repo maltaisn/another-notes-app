@@ -21,24 +21,26 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.maltaisn.notes.model.NotesRepository
-import com.maltaisn.notes.model.entity.*
+import com.maltaisn.notes.model.entity.BlankNoteMetadata
+import com.maltaisn.notes.model.entity.Note
+import com.maltaisn.notes.model.entity.NoteStatus
+import com.maltaisn.notes.model.entity.NoteType
+import com.maltaisn.notes.model.entity.PinnedStatus
 import com.maltaisn.notes.ui.Event
 import com.maltaisn.notes.ui.send
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import java.util.*
+import java.util.Date
 import javax.inject.Inject
 import kotlin.time.hours
 
-
 class MainViewModel @Inject constructor(
-        private val notesRepository: NotesRepository
+    private val notesRepository: NotesRepository
 ) : ViewModel() {
 
     private val _editNoteEvent = MutableLiveData<Event<Long>>()
     val editItemEvent: LiveData<Event<Long>>
         get() = _editNoteEvent
-
 
     init {
         viewModelScope.launch {
@@ -60,8 +62,15 @@ class MainViewModel @Inject constructor(
         // Add note to database, then edit it.
         viewModelScope.launch {
             val date = Date()
-            val note = Note(Note.NO_ID, NoteType.TEXT,
-                    title, content, BlankNoteMetadata, date, date, NoteStatus.ACTIVE, PinnedStatus.UNPINNED)
+            val note = Note(Note.NO_ID,
+                NoteType.TEXT,
+                title,
+                content,
+                BlankNoteMetadata,
+                date,
+                date,
+                NoteStatus.ACTIVE,
+                PinnedStatus.UNPINNED)
             val id = notesRepository.insertNote(note)
             _editNoteEvent.send(id)
         }
@@ -70,5 +79,4 @@ class MainViewModel @Inject constructor(
     companion object {
         private val TRASH_AUTO_DELETE_INTERVAL = 1.hours
     }
-
 }

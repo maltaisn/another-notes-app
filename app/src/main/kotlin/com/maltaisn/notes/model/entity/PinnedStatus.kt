@@ -16,7 +16,6 @@
 
 package com.maltaisn.notes.model.entity
 
-
 /**
  * Describes how a note or a group of notes are pinned.
  */

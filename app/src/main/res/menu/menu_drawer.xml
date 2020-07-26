@@ -24,9 +24,9 @@
 
         <item
             android:id="@+id/item_location_active"
+            android:checked="true"
             android:icon="@drawable/ic_text"
             android:title="@string/note_location_active"
-            android:checked="true"
             />
 
         <item

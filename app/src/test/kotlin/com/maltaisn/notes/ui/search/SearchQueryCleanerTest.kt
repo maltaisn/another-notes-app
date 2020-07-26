@@ -19,61 +19,59 @@ package com.maltaisn.notes.ui.search
 import org.junit.Test
 import kotlin.test.assertEquals
 
-
 class SearchQueryCleanerTest {
 
     @Test
     fun `should add wildcard to all terms`() {
         assertEquals("a* b* c*",
-                SearchQueryCleaner.clean("a  b  c"))
+            SearchQueryCleaner.clean("a  b  c"))
     }
 
     @Test
     fun `shouldn't add wildcard in quotes`() {
         assertEquals("""a* "b c"""",
-                SearchQueryCleaner.clean("""a "b c""""))
+            SearchQueryCleaner.clean("""a "b c""""))
     }
 
     @Test
     fun `should remove disabled chars`() {
         assertEquals("a* columnb* c*",
-                SearchQueryCleaner.clean("^a column:b c* ( )\\"))
+            SearchQueryCleaner.clean("^a column:b c* ( )\\"))
     }
 
     @Test
     fun `should remove disabled chars in quotes`() {
         assertEquals("""a* "columnb c"""",
-                SearchQueryCleaner.clean("""^a "column:b c*""""))
+            SearchQueryCleaner.clean("""^a "column:b c*""""))
     }
 
     @Test
     fun `should disable fts keywords`() {
         assertEquals("a* and* b* or* not* c*",
-                SearchQueryCleaner.clean("a AND (b OR NOT c)"))
+            SearchQueryCleaner.clean("a AND (b OR NOT c)"))
     }
 
     @Test
     fun `should add missing quote`() {
         assertEquals("""a* "b c"""",
-                SearchQueryCleaner.clean("""a "b c"""))
+            SearchQueryCleaner.clean("""a "b c"""))
     }
 
     @Test
     fun `should allow minus NOT operator`() {
         assertEquals("a* -b*",
-                SearchQueryCleaner.clean("a -b"))
+            SearchQueryCleaner.clean("a -b"))
     }
 
     @Test
     fun `should ignore extra separators`() {
         assertEquals("a* b* c*",
-                SearchQueryCleaner.clean(";, a,;;  ,b   ;;c ;;,  "))
+            SearchQueryCleaner.clean(";, a,;;  ,b   ;;c ;;,  "))
     }
 
     @Test
     fun `should ignore query of only separators`() {
         assertEquals("",
-                SearchQueryCleaner.clean("        "))
+            SearchQueryCleaner.clean("        "))
     }
-
 }

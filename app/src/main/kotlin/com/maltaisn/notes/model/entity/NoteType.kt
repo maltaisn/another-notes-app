@@ -16,7 +16,6 @@
 
 package com.maltaisn.notes.model.entity
 
-
 enum class NoteType(val value: Int) {
     TEXT(0),
     LIST(1)

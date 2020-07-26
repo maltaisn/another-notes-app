@@ -19,7 +19,6 @@ package com.maltaisn.notes
 import androidx.navigation.NavController
 import androidx.navigation.NavDirections
 
-
 fun NavController.navigateSafe(directions: NavDirections) {
     try {
         this.navigate(directions)

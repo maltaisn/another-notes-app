@@ -28,7 +28,6 @@ import dagger.Provides
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
 
-
 @AssistedModule
 @Module(includes = [
     DatabaseModule::class,
@@ -43,9 +42,10 @@ abstract class AppModule {
     companion object {
         @Provides
         fun providesSharedPreferences(context: Context): SharedPreferences =
-                PreferenceManager.getDefaultSharedPreferences(context)
+            PreferenceManager.getDefaultSharedPreferences(context)
 
         @get:Provides
-        val json get() = Json(JsonConfiguration.Stable)
+        val json
+            get() = Json(JsonConfiguration.Stable)
     }
 }

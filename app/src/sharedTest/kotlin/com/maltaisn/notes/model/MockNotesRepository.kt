@@ -27,7 +27,6 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
 import kotlinx.serialization.json.JsonObject
 
-
 /**
  * Implementation of the notes repository that stores data itself instead of relying on DAOs.
  *
@@ -51,7 +50,6 @@ class MockNotesRepository : NotesRepository {
 
     private val changeChannel = ConflatedBroadcastChannel(Unit)
 
-
     fun addNote(note: Note): Long {
         val id = if (note.id != Note.NO_ID) {
             notes[note.id] = note
@@ -70,7 +68,6 @@ class MockNotesRepository : NotesRepository {
     }
 
     override suspend fun insertNote(note: Note) = addNote(note)
-
 
     override suspend fun updateNote(note: Note) {
         require(note.id != Note.NO_ID)
@@ -104,7 +101,7 @@ class MockNotesRepository : NotesRepository {
         changeChannel.asFlow().collect {
             // Sort by last modified, then by ID.
             val sorted = notes.values.sortedWith(
-                    compareByDescending<Note> { it.lastModifiedDate }.thenBy { it.id })
+                compareByDescending<Note> { it.lastModifiedDate }.thenBy { it.id })
             emit(sorted.mapNotNull { note ->
                 note.takeIf { note.status == status }
             })
@@ -163,5 +160,4 @@ class MockNotesRepository : NotesRepository {
             emit(notes.values)
         }
     }
-
 }

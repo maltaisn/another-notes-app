@@ -22,7 +22,6 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.TextView
 
-
 /**
  * Try to hide the keyboard from [this] view.
  */

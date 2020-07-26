@@ -16,7 +16,7 @@
 
 <resources xmlns:tools="http://schemas.android.com/tools">
 
-    <style name="AppTheme.DayNight" parent="Base.AppTheme"/>
+    <style name="AppTheme.DayNight" parent="Base.AppTheme" />
 
     <style name="AppTheme.DayNight.DarkActionBar" parent="Base.AppTheme">
         <item name="windowActionBar">true</item>
@@ -81,9 +81,10 @@
     <style name="SearchViewThemeOverlay">
         <item name="android:editTextColor">?colorControlNormal</item>
         <item name="android:textColorHint">@color/color_toolbar_hint</item>
-        <item name="android:colorControlActivated">@color/material_on_primary_emphasis_high_type</item>
+        <item name="android:colorControlActivated">@color/material_on_primary_emphasis_high_type
+        </item>
     </style>
-    
+
     <style name="PreferenceTheme" parent="PreferenceThemeOverlay">
         <item name="android:layout">@layout/fragment_settings</item>
     </style>

@@ -23,8 +23,8 @@
     <item
         android:id="@+id/item_pin"
         android:icon="@null"
-        android:title="@null"
         android:showAsAction="always"
+        android:title="@null"
         tools:icon="@drawable/ic_pin"
         tools:title="@string/action_pin"
         />
@@ -32,8 +32,8 @@
     <item
         android:id="@+id/item_move"
         android:icon="@null"
-        android:title="@null"
         android:showAsAction="always"
+        android:title="@null"
         tools:icon="@drawable/ic_archive"
         tools:title="@string/action_archive"
         />
@@ -41,26 +41,26 @@
     <item
         android:id="@+id/item_select_all"
         android:icon="@drawable/ic_select_all"
-        android:title="@string/action_select_all"
         android:showAsAction="ifRoom"
+        android:title="@string/action_select_all"
         />
 
     <item
         android:id="@+id/item_share"
-        android:title="@string/action_share"
         android:showAsAction="never"
+        android:title="@string/action_share"
         />
 
     <item
         android:id="@+id/item_copy"
-        android:title="@string/action_copy"
         android:showAsAction="never"
+        android:title="@string/action_copy"
         />
 
     <item
         android:id="@+id/item_delete"
-        android:title="@null"
         android:showAsAction="never"
+        android:title="@null"
         tools:title="@string/action_delete"
         />
 

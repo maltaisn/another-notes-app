@@ -18,7 +18,6 @@ package com.maltaisn.notes.ui.note.adapter
 
 import androidx.recyclerview.widget.DiffUtil
 
-
 class NoteListDiffCallback : DiffUtil.ItemCallback<NoteListItem>() {
 
     override fun areItemsTheSame(old: NoteListItem, new: NoteListItem) = old.id == new.id
@@ -44,16 +43,15 @@ class NoteListDiffCallback : DiffUtil.ItemCallback<NoteListItem>() {
                 old as NoteItem
                 val oldNote = old.note
                 val newNote = new.note
-                new.checked == old.checked
-                        && newNote.status == oldNote.status
-                        && newNote.pinned == oldNote.pinned
-                        && newNote.title == oldNote.title
-                        && newNote.content == oldNote.content
-                        && newNote.metadata == oldNote.metadata
-                        && new.titleHighlights == old.titleHighlights
-                        && new.contentHighlights == old.contentHighlights
+                new.checked == old.checked &&
+                        newNote.status == oldNote.status &&
+                        newNote.pinned == oldNote.pinned &&
+                        newNote.title == oldNote.title &&
+                        newNote.content == oldNote.content &&
+                        newNote.metadata == oldNote.metadata &&
+                        new.titleHighlights == old.titleHighlights &&
+                        new.contentHighlights == old.contentHighlights
             }
         }
     }
-
 }

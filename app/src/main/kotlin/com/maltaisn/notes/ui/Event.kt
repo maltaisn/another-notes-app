@@ -19,7 +19,6 @@ package com.maltaisn.notes.ui
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 
-
 /**
  * Used as a wrapper for data that is exposed via a LiveData that represents an event.
  * Taken from: [https://github.com/android/architecture-samples]

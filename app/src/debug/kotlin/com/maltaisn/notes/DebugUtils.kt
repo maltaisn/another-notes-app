@@ -16,11 +16,17 @@
 
 package com.maltaisn.notes
 
-import com.maltaisn.notes.model.entity.*
-import java.util.*
+import com.maltaisn.notes.model.entity.BlankNoteMetadata
+import com.maltaisn.notes.model.entity.ListNoteMetadata
+import com.maltaisn.notes.model.entity.Note
+import com.maltaisn.notes.model.entity.NoteMetadata
+import com.maltaisn.notes.model.entity.NoteStatus
+import com.maltaisn.notes.model.entity.NoteType
+import com.maltaisn.notes.model.entity.PinnedStatus
+import java.util.Date
+import java.util.Locale
 import kotlin.random.Random
 import kotlin.time.days
-
 
 /**
  * This is used to generate random notes for testing debug builds.
@@ -75,7 +81,7 @@ object DebugUtils {
             end++
         }
         return LOREM_IPSUM.substring(start + 1, end)
-                .trim().capitalize(Locale.getDefault())
+            .trim().capitalize(Locale.getDefault())
     }
 
     private fun getRandomDate(min: Date? = null): Date {
@@ -105,5 +111,4 @@ object DebugUtils {
          feugiat lacinia nec vitae nibh. Praesent dictum ligula eros, sit amet sollicitudin magna
          dapibus a. 
     """.trimIndent().replace('\n', ' ')
-
 }

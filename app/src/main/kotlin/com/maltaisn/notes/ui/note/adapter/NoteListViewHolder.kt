@@ -26,20 +26,23 @@ import com.maltaisn.notes.model.entity.ListNoteItem
 import com.maltaisn.notes.model.entity.NoteType
 import com.maltaisn.notes.strikethroughText
 import com.maltaisn.notes.sync.R
-import com.maltaisn.notes.sync.databinding.*
+import com.maltaisn.notes.sync.databinding.ItemHeaderBinding
+import com.maltaisn.notes.sync.databinding.ItemMessageBinding
+import com.maltaisn.notes.sync.databinding.ItemNoteListBinding
+import com.maltaisn.notes.sync.databinding.ItemNoteListItemBinding
+import com.maltaisn.notes.sync.databinding.ItemNoteTextBinding
 import com.maltaisn.notes.ui.note.HighlightHelper
 import kotlin.math.min
 
-
 abstract class NoteViewHolder(itemView: View) :
-        RecyclerView.ViewHolder(itemView) {
+    RecyclerView.ViewHolder(itemView) {
 
     protected abstract val cardView: MaterialCardView
     protected abstract val titleTxv: TextView
 
     open fun bind(adapter: NoteAdapter, item: NoteItem) {
         titleTxv.text = HighlightHelper.getHighlightedText(item.note.title, item.titleHighlights,
-                adapter.highlightBackgroundColor, adapter.highlightForegroundColor)
+            adapter.highlightBackgroundColor, adapter.highlightForegroundColor)
         titleTxv.isVisible = item.note.title.isNotBlank()
 
         cardView.isChecked = item.checked
@@ -54,7 +57,7 @@ abstract class NoteViewHolder(itemView: View) :
 }
 
 class TextNoteViewHolder(private val binding: ItemNoteTextBinding) :
-        NoteViewHolder(binding.root) {
+    NoteViewHolder(binding.root) {
 
     override val cardView = binding.cardView
     override val titleTxv = binding.titleTxv
@@ -66,13 +69,12 @@ class TextNoteViewHolder(private val binding: ItemNoteTextBinding) :
         val contentTxv = binding.contentTxv
         contentTxv.isVisible = item.note.content.isNotBlank()
         contentTxv.text = HighlightHelper.getHighlightedText(item.note.content, item.contentHighlights,
-                adapter.highlightBackgroundColor, adapter.highlightForegroundColor)
+            adapter.highlightBackgroundColor, adapter.highlightForegroundColor)
         contentTxv.maxLines = adapter.listLayoutMode.maxTextLines
     }
 }
 
-class ListNoteViewHolder(private val binding: ItemNoteListBinding) :
-        NoteViewHolder(binding.root) {
+class ListNoteViewHolder(private val binding: ItemNoteListBinding) : NoteViewHolder(binding.root) {
 
     override val cardView = binding.cardView
     override val titleTxv = binding.titleTxv
@@ -91,8 +93,7 @@ class ListNoteViewHolder(private val binding: ItemNoteListBinding) :
 
         // Add the first fewitems in list note using view holders in pool.
         val maxItems = adapter.listLayoutMode.maxListItems
-        val itemHighlights = HighlightHelper.splitListNoteHighlightsByItem(
-                noteItems, item.contentHighlights)
+        val itemHighlights = HighlightHelper.splitListNoteHighlightsByItem(noteItems, item.contentHighlights)
         for (i in 0 until min(maxItems, noteItems.size)) {
             val noteItem = noteItems[i]
             val viewHolder = adapter.obtainListNoteItemViewHolder()
@@ -107,7 +108,7 @@ class ListNoteViewHolder(private val binding: ItemNoteListBinding) :
         infoTxv.isVisible = overflowCount > 0
         if (overflowCount > 0) {
             infoTxv.text = adapter.context.resources.getQuantityString(
-                    R.plurals.note_list_item_info, overflowCount, overflowCount)
+                R.plurals.note_list_item_info, overflowCount, overflowCount)
         }
     }
 
@@ -128,8 +129,7 @@ class ListNoteViewHolder(private val binding: ItemNoteListBinding) :
     }
 }
 
-class MessageViewHolder(private val binding: ItemMessageBinding) :
-        RecyclerView.ViewHolder(binding.root) {
+class MessageViewHolder(private val binding: ItemMessageBinding) : RecyclerView.ViewHolder(binding.root) {
 
     fun bind(item: MessageItem, adapter: NoteAdapter) {
         binding.messageTxv.text = adapter.context.getString(item.message, *item.args.toTypedArray())
@@ -142,8 +142,7 @@ class MessageViewHolder(private val binding: ItemMessageBinding) :
     }
 }
 
-class HeaderViewHolder(private val binding: ItemHeaderBinding) :
-        RecyclerView.ViewHolder(binding.root) {
+class HeaderViewHolder(private val binding: ItemHeaderBinding) : RecyclerView.ViewHolder(binding.root) {
 
     fun bind(item: HeaderItem) {
         binding.titleTxv.setText(item.title)
@@ -160,7 +159,7 @@ class ListNoteItemViewHolder(val binding: ItemNoteListItemBinding) {
     fun bind(adapter: NoteAdapter, item: ListNoteItem, highlights: List<IntRange>) {
         binding.contentTxv.apply {
             text = HighlightHelper.getHighlightedText(item.content, highlights,
-                    adapter.highlightBackgroundColor, adapter.highlightForegroundColor)
+                adapter.highlightBackgroundColor, adapter.highlightForegroundColor)
             strikethroughText = item.checked && adapter.callback.strikethroughCheckedItems
         }
 

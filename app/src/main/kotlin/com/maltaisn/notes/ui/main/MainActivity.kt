@@ -34,10 +34,11 @@ import com.maltaisn.notes.ui.viewModel
 import javax.inject.Inject
 import javax.inject.Provider
 
-
 class MainActivity : AppCompatActivity() {
 
-    @Inject lateinit var viewModelProvider: Provider<MainViewModel>
+    @Inject
+    lateinit var viewModelProvider: Provider<MainViewModel>
+
     private val viewModel by viewModel { viewModelProvider.get() }
 
     lateinit var drawerLayout: DrawerLayout
@@ -45,7 +46,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var navController: NavController
 
     private lateinit var binding: ActivityMainBinding
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme_DayNight)
@@ -71,9 +71,10 @@ class MainActivity : AppCompatActivity() {
         // Check if activity was opened with a send intent
         val intent = intent
         if (intent?.action == Intent.ACTION_SEND && intent.type == "text/plain" &&
-                !intent.getBooleanExtra(KEY_INTENT_HANDLED, false)) {
+            !intent.getBooleanExtra(KEY_INTENT_HANDLED, false)
+        ) {
             val title = intent.getStringExtra(Intent.EXTRA_TITLE)
-                    ?: intent.getStringExtra(Intent.EXTRA_SUBJECT) ?: ""
+                ?: intent.getStringExtra(Intent.EXTRA_SUBJECT) ?: ""
             val content = intent.getStringExtra(Intent.EXTRA_TEXT) ?: ""
             viewModel.addIntentNote(title, content)
 
@@ -103,5 +104,4 @@ class MainActivity : AppCompatActivity() {
     companion object {
         private const val KEY_INTENT_HANDLED = "intent_handled"
     }
-
 }

@@ -27,9 +27,8 @@ import com.maltaisn.notes.ui.send
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-
 class SettingsViewModel @Inject constructor(
-        private val notesRepository: NotesRepository
+    private val notesRepository: NotesRepository
 ) : ViewModel() {
 
     private val _messageEvent = MutableLiveData<Event<Int>>()
@@ -39,7 +38,6 @@ class SettingsViewModel @Inject constructor(
     private val _exportDataEvent = MutableLiveData<Event<String>>()
     val exportDataEvent: LiveData<Event<String>>
         get() = _exportDataEvent
-
 
     fun exportData() {
         viewModelScope.launch {
@@ -53,5 +51,4 @@ class SettingsViewModel @Inject constructor(
             _messageEvent.send(R.string.pref_data_clear_success_message)
         }
     }
-
 }

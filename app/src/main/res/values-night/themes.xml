@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   Copyright 2020 Nicolas Maltais
 
   Licensed under the Apache License, Version 2.0 (the "License");
@@ -35,7 +34,8 @@
     <style name="SearchViewThemeOverlay">
         <item name="android:editTextColor">?colorControlNormal</item>
         <item name="android:textColorHint">@color/color_toolbar_hint</item>
-        <item name="android:colorControlActivated">@color/material_on_surface_emphasis_high_type</item>
+        <item name="android:colorControlActivated">@color/material_on_surface_emphasis_high_type
+        </item>
     </style>
 
 </resources>

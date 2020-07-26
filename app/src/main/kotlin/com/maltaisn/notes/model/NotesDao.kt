@@ -16,12 +16,16 @@
 
 package com.maltaisn.notes.model
 
-import androidx.room.*
+import androidx.room.Dao
+import androidx.room.Delete
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
+import androidx.room.Update
 import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.model.entity.NoteStatus
 import kotlinx.coroutines.flow.Flow
-import java.util.*
-
+import java.util.Date
 
 @Dao
 interface NotesDao {
@@ -85,5 +89,4 @@ interface NotesDao {
         WHERE notes_fts MATCH :query AND status != 2
         ORDER BY status ASC, modified_date DESC""")
     fun search(query: String): Flow<List<Note>>
-
 }
