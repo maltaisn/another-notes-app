@@ -128,6 +128,9 @@ class NoteAdapter(val context: Context, val callback: Callback) :
 
         /** Called when a [NoteItem] at [pos] is swiped. */
         fun onNoteSwiped(pos: Int)
+
+        /** Whether strikethrough should be added to checked items or not. */
+        val strikethroughCheckedItems: Boolean
     }
 
 

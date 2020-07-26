@@ -16,16 +16,15 @@
 
 package com.maltaisn.notes.ui.edit.adapter
 
-import android.graphics.Paint
 import android.text.Editable
 import android.text.InputFilter
 import android.text.Spannable
 import android.view.KeyEvent
-import android.widget.EditText
 import androidx.core.text.clearSpans
 import androidx.core.view.isInvisible
 import androidx.core.widget.doOnTextChanged
 import androidx.recyclerview.widget.RecyclerView
+import com.maltaisn.notes.strikethroughText
 import com.maltaisn.notes.sync.databinding.ItemEditContentBinding
 import com.maltaisn.notes.sync.databinding.ItemEditItemAddBinding
 import com.maltaisn.notes.sync.databinding.ItemEditItemBinding
@@ -208,13 +207,3 @@ private val clearSpansInputFilter = InputFilter { source, start, end, _, _, _ ->
     }
     filtered
 }
-
-private var EditText.strikethroughText: Boolean
-    get() = (this.paintFlags and Paint.STRIKE_THRU_TEXT_FLAG) != 0
-    set(value) {
-        this.paintFlags = if (value) {
-            this.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
-        } else {
-            this.paintFlags and Paint.STRIKE_THRU_TEXT_FLAG.inv()
-        }
-    }

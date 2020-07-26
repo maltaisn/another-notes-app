@@ -312,6 +312,9 @@ abstract class NoteViewModel(
         // Do nothing.
     }
 
+    override val strikethroughCheckedItems: Boolean
+        get() = prefs.strikethroughChecked
+
     protected inline fun changeListItems(change: (MutableList<NoteListItem>) -> Unit) {
         val newList = listItems.toMutableList()
         change(newList)

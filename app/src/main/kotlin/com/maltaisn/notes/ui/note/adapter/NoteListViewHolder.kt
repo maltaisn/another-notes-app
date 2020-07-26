@@ -24,6 +24,7 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.google.android.material.card.MaterialCardView
 import com.maltaisn.notes.model.entity.ListNoteItem
 import com.maltaisn.notes.model.entity.NoteType
+import com.maltaisn.notes.strikethroughText
 import com.maltaisn.notes.sync.R
 import com.maltaisn.notes.sync.databinding.*
 import com.maltaisn.notes.ui.note.HighlightHelper
@@ -157,8 +158,11 @@ class HeaderViewHolder(private val binding: ItemHeaderBinding) :
 class ListNoteItemViewHolder(val binding: ItemNoteListItemBinding) {
 
     fun bind(adapter: NoteAdapter, item: ListNoteItem, highlights: List<IntRange>) {
-        binding.contentTxv.text = HighlightHelper.getHighlightedText(item.content, highlights,
-                adapter.highlightBackgroundColor, adapter.highlightForegroundColor)
+        binding.contentTxv.apply {
+            text = HighlightHelper.getHighlightedText(item.content, highlights,
+                    adapter.highlightBackgroundColor, adapter.highlightForegroundColor)
+            strikethroughText = item.checked && adapter.callback.strikethroughCheckedItems
+        }
 
         binding.checkboxImv.setImageResource(if (item.checked) {
             R.drawable.ic_checkbox_on

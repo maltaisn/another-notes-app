@@ -16,9 +16,6 @@
 
 package com.maltaisn.notes
 
-import android.content.Context
-import android.view.View
-import android.view.inputmethod.InputMethodManager
 import androidx.navigation.NavController
 import androidx.navigation.NavDirections
 
@@ -30,22 +27,4 @@ fun NavController.navigateSafe(directions: NavDirections) {
         // "navigation destination ___ is unknown to this NavController".
         // This happens if user presses two buttons at the same time for example.
     }
-}
-
-/**
- * Try to hide the keyboard from [this] view.
- */
-fun View.hideKeyboard() {
-    val context = this.context ?: return
-    val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-    imm.hideSoftInputFromWindow(this.windowToken, 0)
-}
-
-/**
- * Try to show the keyboard from [this] view.
- */
-fun View.showKeyboard() {
-    val context = this.context ?: return
-    val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-    imm.showSoftInput(this.findFocus(), 0)
 }
