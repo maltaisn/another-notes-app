@@ -116,10 +116,6 @@ class ListNoteViewHolder(private val binding: ItemNoteListBinding) : NoteViewHol
      * Unbind [ListNoteViewHolder] used in this item and return them.
      */
     fun unbind(): List<ListNoteItemViewHolder> {
-        if (itemViewHolders.isEmpty()) {
-            return emptyList()
-        }
-
         // Free view holders used by the item.
         val viewHolders = itemViewHolders.toList()
         binding.itemsLayout.removeAllViews()

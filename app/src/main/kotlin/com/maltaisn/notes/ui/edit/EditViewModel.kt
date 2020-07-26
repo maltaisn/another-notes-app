@@ -324,12 +324,7 @@ class EditViewModel @Inject constructor(
         }
 
         changeListItems { list ->
-            val iterator = list.iterator()
-            for (item in iterator) {
-                if (item is EditItemItem && item.checked) {
-                    iterator.remove()
-                }
-            }
+            list.removeAll { it is EditItemItem && it.checked }
         }
     }
 

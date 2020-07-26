@@ -61,10 +61,11 @@ abstract class NoteViewModel(
             // Update selected notes.
             val selectedBefore = selectedNotes.size
             _selectedNotes.clear()
-            value.asSequence()
-                .filterIsInstance<NoteItem>()
-                .filter { it.checked }
-                .mapTo(_selectedNotes) { it.note }
+            for (item in value) {
+                if (item is NoteItem && item.checked) {
+                    _selectedNotes += item.note
+                }
+            }
 
             updateNoteSelection()
             if (selectedNotes.size != selectedBefore) {
@@ -217,10 +218,7 @@ abstract class NoteViewModel(
     }
 
     fun shareSelectedNote() {
-        if (selectedNotes.isEmpty()) {
-            return
-        }
-        val note = selectedNotes.first()
+        val note = selectedNotes.firstOrNull() ?: return
         _shareEvent.send(ShareData(note.title, note.asText()))
     }
 

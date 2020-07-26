@@ -72,17 +72,12 @@ class SearchViewModel @AssistedInject constructor(
     }
 
     override val selectedNoteStatus: NoteStatus?
-        get() {
-            // If a single note is active in selection, treat all as active.
-            // Otherwise all notes are archived. Deleted notes are never shown in search.
-            if (selectedNotes.isEmpty()) {
-                return null
-            }
-            return if (selectedNotes.any { it.status == NoteStatus.ACTIVE }) {
-                NoteStatus.ACTIVE
-            } else {
-                NoteStatus.ARCHIVED
-            }
+        // If a single note is active in selection, treat all as active.
+        // Otherwise all notes are archived. Deleted notes are never shown in search.
+        get() = when {
+            selectedNotes.isEmpty() -> null
+            selectedNotes.any { it.status == NoteStatus.ACTIVE } -> NoteStatus.ACTIVE
+            else -> NoteStatus.ARCHIVED
         }
 
     override val isNoteSwipeEnabled = false

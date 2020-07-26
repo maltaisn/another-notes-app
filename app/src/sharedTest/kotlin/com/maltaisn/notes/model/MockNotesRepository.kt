@@ -102,9 +102,7 @@ class MockNotesRepository : NotesRepository {
             // Sort by last modified, then by ID.
             val sorted = notes.values.sortedWith(
                 compareByDescending<Note> { it.lastModifiedDate }.thenBy { it.id })
-            emit(sorted.mapNotNull { note ->
-                note.takeIf { note.status == status }
-            })
+            emit(sorted.filter { it.status == status })
         }
     }
 
