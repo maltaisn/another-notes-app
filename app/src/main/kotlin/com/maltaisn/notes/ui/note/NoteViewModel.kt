@@ -21,6 +21,7 @@ import com.maltaisn.notes.model.NotesRepository
 import com.maltaisn.notes.model.PrefsManager
 import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.model.entity.NoteStatus
+import com.maltaisn.notes.model.entity.PinnedStatus
 import com.maltaisn.notes.ui.Event
 import com.maltaisn.notes.ui.ShareData
 import com.maltaisn.notes.ui.StatusChange
@@ -44,14 +45,29 @@ abstract class NoteViewModel(
         set(value) {
             field = value
             _noteItems.value = value
+
             _placeholderData.value = if (value.isEmpty()) {
                 updatePlaceholder()
             } else {
                 null
             }
+
+            // Update selected notes.
+            val selectedBefore = selectedNotes.size
+            _selectedNotes.clear()
+            value.asSequence()
+                    .filterIsInstance<NoteItem>()
+                    .filter { it.checked }
+                    .mapTo(_selectedNotes) { it.note }
+
+            updateNoteSelection()
+            if (selectedNotes.size != selectedBefore) {
+                saveNoteSelectionState()
+            }
         }
 
-    protected val selectedNotes = mutableSetOf<Note>()
+    private val _selectedNotes = mutableSetOf<Note>()
+    protected val selectedNotes: Set<Note> get() = _selectedNotes
 
     /**
      * Implementation should return the "global" status of the selected notes.
@@ -105,7 +121,7 @@ abstract class NoteViewModel(
     protected open suspend fun restoreState() {
         // Restore saved selected notes
         val selectedIds = savedStateHandle.get<List<Long>>(KEY_SELECTED_IDS) ?: return
-        selectedNotes += selectedIds.mapNotNull { notesRepository.getById(it) }
+        _selectedNotes += selectedIds.mapNotNull { notesRepository.getById(it) }
         updateNoteSelection()
     }
 
@@ -121,6 +137,26 @@ abstract class NoteViewModel(
 
     fun selectAll() {
         setAllSelected(true)
+    }
+
+    fun togglePin() {
+        // If one note in selection isn't pinned, pin all. If all are pinned, unpin all.
+        viewModelScope.launch {
+            val date = Date()
+            val newPinned = if (selectedNotes.any { it.pinned == PinnedStatus.UNPINNED }) {
+                PinnedStatus.PINNED
+            } else {
+                PinnedStatus.UNPINNED
+            }
+            val newNotes = selectedNotes.mapNotNull { note ->
+                if (note.pinned != PinnedStatus.CANT_PIN && note.pinned != newPinned) {
+                    note.copy(pinned = newPinned, lastModifiedDate = date)
+                } else {
+                    null
+                }
+            }
+            notesRepository.updateNotes(newNotes)
+        }
     }
 
     fun moveSelectedNotes() {
@@ -183,26 +219,12 @@ abstract class NoteViewModel(
             return
         }
 
-        val selectedBefore = selectedNotes.size
-        val newList = listItems.toMutableList()
-        for ((i, item) in listItems.withIndex()) {
-            if (item is NoteItem && item.checked != selected) {
-                newList[i] = item.copy(checked = selected)
-                if (selected) {
-                    selectedNotes += item.note
+        changeListItems {
+            for ((i, item) in it.withIndex()) {
+                if (item is NoteItem && item.checked != selected) {
+                    it[i] = item.copy(checked = selected)
                 }
             }
-        }
-
-        if (!selected) {
-            selectedNotes.clear()
-        }
-
-        if (selectedBefore != selectedNotes.size) {
-            // If selection changed, update list and counter.
-            listItems = newList
-            updateNoteSelection()
-            saveNoteSelectionState()
         }
     }
 
@@ -212,8 +234,17 @@ abstract class NoteViewModel(
     }
 
     /** Update current selection live data to reflect current selection. */
-    protected fun updateNoteSelection() {
-        _currentSelection.value = NoteSelection(selectedNotes.size, selectedNoteStatus)
+    private fun updateNoteSelection() {
+        // If no pinnable (active) notes are selected, selection is unpinnable.
+        // If at least one unpinned note is selected, selection is unpinned.
+        // Otherwise selection is pinned.
+        val pinned = when {
+            selectedNotes.none { it.status == NoteStatus.ACTIVE } -> PinnedStatus.CANT_PIN
+            selectedNotes.any { it.pinned == PinnedStatus.UNPINNED } -> PinnedStatus.UNPINNED
+            else -> PinnedStatus.PINNED
+        }
+
+        _currentSelection.value = NoteSelection(selectedNotes.size, selectedNoteStatus, pinned)
     }
 
     /** Save [selectedNotes] to [savedStateHandle]. */
@@ -223,18 +254,19 @@ abstract class NoteViewModel(
 
     /** Change the status of [notes] to [newStatus]. */
     protected fun changeNotesStatus(notes: Set<Note>, newStatus: NoteStatus) {
-        if (notes.isEmpty()) {
-            return
+        val oldNotes = notes
+                .filter { it.status != newStatus }
+                .ifEmpty { return }
+
+        val date = Date()
+        val newNotes = oldNotes.map { note ->
+            note.copy(status = newStatus,
+                    lastModifiedDate = date,
+                    pinned = if (newStatus == NoteStatus.ACTIVE) PinnedStatus.UNPINNED else PinnedStatus.CANT_PIN)
         }
 
         // Update the status in database
         viewModelScope.launch {
-            val date = Date()
-            val oldNotes = notes.toList()
-            val newNotes = oldNotes.map { note ->
-                note.copy(status = newStatus,
-                        lastModifiedDate = date)
-            }
             notesRepository.updateNotes(newNotes)
 
             // Show status change message.
@@ -245,10 +277,8 @@ abstract class NoteViewModel(
 
     /** Change the status of selected notes to [newStatus], and clear selection. */
     private fun changeSelectedNotesStatus(newStatus: NoteStatus) {
-        if (selectedNotes.isNotEmpty()) {
-            changeNotesStatus(selectedNotes, newStatus)
-            clearSelection()
-        }
+        changeNotesStatus(selectedNotes, newStatus)
+        clearSelection()
     }
 
     override fun onNoteItemClicked(item: NoteItem, pos: Int) {
@@ -266,16 +296,10 @@ abstract class NoteViewModel(
     }
 
     private fun toggleItemChecked(item: NoteItem, pos: Int) {
-        val checked = !item.checked
-        if (checked) {
-            selectedNotes += item.note
-        } else {
-            selectedNotes -= item.note
+        // Set the item as checked and update the list.
+        changeListItems {
+            it[pos] = item.copy(checked = !item.checked)
         }
-        updateNoteSelection()
-        saveNoteSelectionState()
-
-        changeListItems { it[pos] = item.copy(checked = checked) }
     }
 
     override fun onMessageItemDismissed(item: MessageItem, pos: Int) {
@@ -294,7 +318,7 @@ abstract class NoteViewModel(
         listItems = newList
     }
 
-    data class NoteSelection(val count: Int, val status: NoteStatus?)
+    data class NoteSelection(val count: Int, val status: NoteStatus?, val pinned: PinnedStatus)
 
     companion object {
         private const val KEY_SELECTED_IDS = "selected_ids"

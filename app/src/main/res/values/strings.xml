@@ -34,10 +34,7 @@
     <string name="action_keep">Keep</string>
     <string name="action_layout_grid">View as grid</string>
     <string name="action_layout_list">View as list</string>
-    <string name="action_password_change_short">Change</string>
-    <string name="action_password_forgot">Forgot password</string>
-    <string name="action_password_reset_short">Reset</string>
-    <string name="action_resend_verification">Resend verification</string>
+    <string name="action_pin">Pin</string>
     <string name="action_restore">Restore</string>
     <string name="action_search">Search</string>
     <string name="action_select_all">Select all</string>
@@ -49,11 +46,15 @@
     <string name="action_unarchive">Unarchive</string>
     <string name="action_uncheck_all">Uncheck all items</string>
     <string name="action_undo">Undo</string>
+    <string name="action_unpin">Unpin</string>
 
     <!-- Home -->
     <string name="note_location_active">Notes</string>
     <string name="note_location_archived">Archived</string>
     <string name="note_location_deleted">Deleted</string>
+
+    <string name="note_pinned">Pinned</string>
+    <string name="note_not_pinned">Others</string>
 
     <string name="note_placeholder_active">You don\'t have any notes.\nClick on the + to add one.</string>
     <string name="note_placeholder_archived">No archived notes</string>

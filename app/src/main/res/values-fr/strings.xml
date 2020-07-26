@@ -34,10 +34,7 @@
     <string name="action_keep">Garder</string>
     <string name="action_layout_grid">Affichage grille</string>
     <string name="action_layout_list">Affichage liste</string>
-    <string name="action_password_change_short">Changer</string>
-    <string name="action_password_forgot">Mot de passe oublié</string>
-    <string name="action_password_reset_short">Réinitialiser</string>
-    <string name="action_resend_verification">Renvoyer la vérification</string>
+    <string name="action_pin">Épingler</string>
     <string name="action_restore">Restaurer</string>
     <string name="action_search">Rechercher</string>
     <string name="action_select_all">Sélectionner tout</string>
@@ -49,11 +46,15 @@
     <string name="action_unarchive">Désarchiver</string>
     <string name="action_uncheck_all">Décocher tous les éléments</string>
     <string name="action_undo">Annuler</string>
+    <string name="action_unpin">Désépingler</string>
 
     <!-- Home -->
     <string name="note_location_active">Notes</string>
     <string name="note_location_archived">Archive</string>
     <string name="note_location_deleted">Corbeille</string>
+
+    <string name="note_pinned">Épinglées</string>
+    <string name="note_not_pinned">Autres</string>
 
     <string name="note_placeholder_active">Vous n\'avez aucune note.\nCliquez sur le + pour en ajouter.</string>
     <string name="note_placeholder_archived">Aucune note archivée</string>
@@ -73,8 +74,8 @@
     <string name="search_empty_placeholder">Aucune note trouvée pour cette recherche.</string>
 
     <!-- Edit -->
-    <string name="edit_add_title">Ajouter une note</string>
-    <string name="edit_change_title">Modifier une note</string>
+    <string name="edit_add_title">Ajouter</string>
+    <string name="edit_change_title">Modifier</string>
     <string name="edit_hint_note_title">Titre</string>
     <string name="edit_hint_note_content">Note</string>
     <string name="edit_hint_note_item">Nouvel élément</string>

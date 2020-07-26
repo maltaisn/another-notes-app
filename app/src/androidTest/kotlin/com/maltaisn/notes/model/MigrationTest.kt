@@ -16,6 +16,7 @@
 
 package com.maltaisn.notes.model
 
+import androidx.room.Room
 import androidx.room.testing.MigrationTestHelper
 import androidx.sqlite.db.framework.FrameworkSQLiteOpenHelperFactory
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -24,6 +25,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.io.IOException
+import kotlin.test.assertEquals
 
 
 @RunWith(AndroidJUnit4::class)
@@ -40,6 +42,50 @@ class MigrationTest {
         // No data changes, schema is validated by helper.
         helper.createDatabase(DB_NAME, 1)
         helper.runMigrationsAndValidate(DB_NAME, 2, true, NotesDatabase.MIGRATION_1_2)
+    }
+
+    @Test
+    @Throws(IOException::class)
+    fun migrate2To3() {
+        // Test that pinned default value is `false`.
+        helper.createDatabase(DB_NAME, 2).apply {
+            execSQL("""
+                INSERT INTO notes (id, type, title, content, metadata, added_date, modified_date, status) 
+                VALUES (1, 0, 'note1', 'content', '{"type":"blank"}', 1577836800000, 1577836800000, 0),
+                (2, 0, 'note2', 'content', '{"type":"blank"}', 1577836800000, 1577836800000, 1)
+                """.trimIndent())
+            close()
+        }
+        val db = helper.runMigrationsAndValidate(DB_NAME, 3, true, NotesDatabase.MIGRATION_2_3)
+
+        val cursor = db.query("SELECT pinned FROM notes")
+        cursor.moveToFirst()
+        assertEquals(1, cursor.getInt(0))
+        cursor.moveToNext()
+        assertEquals(0, cursor.getInt(0))
+        cursor.close()
+
+        db.close()
+    }
+
+    @Test
+    @Throws(IOException::class)
+    fun migrateAll() {
+        // Create earliest version of the database.
+        helper.createDatabase(DB_NAME, 1).apply {
+            close()
+        }
+
+        // Open latest version of the database. Room will validate the schema once all migrations execute.
+        Room.databaseBuilder(
+                InstrumentationRegistry.getInstrumentation().targetContext,
+                NotesDatabase::class.java,
+                DB_NAME
+        ).addMigrations(*NotesDatabase.ALL_MIGRATIONS)
+                .build().apply {
+                    openHelper.writableDatabase
+                    close()
+                }
     }
 
     companion object {

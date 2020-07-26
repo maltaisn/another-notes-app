@@ -25,11 +25,13 @@ import com.maltaisn.notes.model.MockNotesRepository
 import com.maltaisn.notes.model.PrefsManager
 import com.maltaisn.notes.model.entity.NoteStatus
 import com.maltaisn.notes.model.entity.NoteType
+import com.maltaisn.notes.model.entity.PinnedStatus
 import com.maltaisn.notes.testNote
 import com.maltaisn.notes.ui.ShareData
 import com.maltaisn.notes.ui.StatusChange
 import com.maltaisn.notes.ui.assertLiveDataEventSent
 import com.maltaisn.notes.ui.getOrAwaitValue
+import com.maltaisn.notes.ui.note.NoteViewModel.NoteSelection
 import com.maltaisn.notes.ui.note.adapter.NoteItem
 import com.maltaisn.notes.ui.note.adapter.NoteListLayoutMode
 import com.nhaarman.mockitokotlin2.doReturn
@@ -67,6 +69,8 @@ class NoteViewModelTest {
                 added = Date(10), modified = Date(11)))
         notesRepo.addNote(testNote(id = 3, status = NoteStatus.DELETED,
                 added = Date(10), modified = Date(10)))
+        notesRepo.addNote(testNote(id = 4, status = NoteStatus.ACTIVE,
+                added = Date(10), modified = Date(10), pinned = PinnedStatus.PINNED))
 
         prefs = mock {
             on { listLayoutMode } doReturn NoteListLayoutMode.GRID
@@ -86,14 +90,14 @@ class NoteViewModelTest {
 
         var listItems = viewModel.noteItems.getOrAwaitValue()
         assertTrue(listItems.all { (it as NoteItem).checked })
-        assertEquals(NoteViewModel.NoteSelection(3, NoteStatus.ACTIVE),
+        assertEquals(NoteSelection(4, NoteStatus.ACTIVE, PinnedStatus.UNPINNED),
                 viewModel.currentSelection.getOrAwaitValue())
 
         viewModel.clearSelection()
 
         listItems = viewModel.noteItems.getOrAwaitValue()
         assertTrue(listItems.none { (it as NoteItem).checked })
-        assertEquals(NoteViewModel.NoteSelection(0, null),
+        assertEquals(NoteSelection(0, null, PinnedStatus.CANT_PIN),
                 viewModel.currentSelection.getOrAwaitValue())
     }
 
@@ -101,12 +105,12 @@ class NoteViewModelTest {
     fun `should toggle selection on note on long click`() = mainCoroutineRule.runBlockingTest {
         viewModel.onNoteItemLongClicked(viewModel.getNoteItemAt(0), 0)
         assertTrue(viewModel.getNoteItemAt(0).checked)
-        assertEquals(NoteViewModel.NoteSelection(1, NoteStatus.ACTIVE),
+        assertEquals(NoteSelection(1, NoteStatus.ACTIVE, PinnedStatus.UNPINNED),
                 viewModel.currentSelection.getOrAwaitValue())
 
         viewModel.onNoteItemLongClicked(viewModel.getNoteItemAt(0), 0)
         assertFalse(viewModel.getNoteItemAt(0).checked)
-        assertEquals(NoteViewModel.NoteSelection(0, null),
+        assertEquals(NoteSelection(0, null, PinnedStatus.CANT_PIN),
                 viewModel.currentSelection.getOrAwaitValue())
     }
 
@@ -230,6 +234,50 @@ class NoteViewModelTest {
         assertEquals(TestNoteViewModel.PLACEHOLDER_DATA, viewModel.placeholderData.getOrAwaitValue())
     }
 
+    @Test
+    fun `should consider selection as pinned (only pinned active)`() = mainCoroutineRule.runBlockingTest {
+        viewModel.onNoteItemLongClicked(viewModel.getNoteItemAt(3), 3)
+        assertEquals(NoteSelection(1, NoteStatus.ACTIVE, PinnedStatus.PINNED),
+                viewModel.currentSelection.getOrAwaitValue())
+    }
+
+    @Test
+    fun `should consider selection as not pinned (only unpinned active)`() = mainCoroutineRule.runBlockingTest {
+        viewModel.onNoteItemLongClicked(viewModel.getNoteItemAt(0), 0)
+        assertEquals(NoteSelection(1, NoteStatus.ACTIVE, PinnedStatus.UNPINNED),
+                viewModel.currentSelection.getOrAwaitValue())
+    }
+
+    @Test
+    fun `should consider selection as not pinned (unpinned active + pinned active)`() = mainCoroutineRule.runBlockingTest {
+        viewModel.onNoteItemLongClicked(viewModel.getNoteItemAt(0), 0)
+        viewModel.onNoteItemLongClicked(viewModel.getNoteItemAt(3), 3)
+        assertEquals(NoteSelection(2, NoteStatus.ACTIVE, PinnedStatus.UNPINNED),
+                viewModel.currentSelection.getOrAwaitValue())
+    }
+
+    @Test
+    fun `should consider selection as can't pin (only archived)`() = mainCoroutineRule.runBlockingTest {
+        viewModel.onNoteItemLongClicked(viewModel.getNoteItemAt(1), 1)
+        assertEquals(NoteSelection(1, NoteStatus.ARCHIVED, PinnedStatus.CANT_PIN),
+                viewModel.currentSelection.getOrAwaitValue())
+    }
+
+    @Test
+    fun `should consider selection as not pinned (unpinned active + archived)`() = mainCoroutineRule.runBlockingTest {
+        viewModel.onNoteItemLongClicked(viewModel.getNoteItemAt(0), 0)
+        viewModel.onNoteItemLongClicked(viewModel.getNoteItemAt(1), 1)
+        assertEquals(NoteSelection(2, NoteStatus.ACTIVE, PinnedStatus.UNPINNED),
+                viewModel.currentSelection.getOrAwaitValue())
+    }
+
+    @Test
+    fun `should consider selection as pinned (pinned active + archived)`() = mainCoroutineRule.runBlockingTest {
+        viewModel.onNoteItemLongClicked(viewModel.getNoteItemAt(1), 1)
+        viewModel.onNoteItemLongClicked(viewModel.getNoteItemAt(3), 3)
+        assertEquals(NoteSelection(2, NoteStatus.ACTIVE, PinnedStatus.PINNED),
+                viewModel.currentSelection.getOrAwaitValue())
+    }
 
     private class TestNoteViewModel(
             notesRepo: MockNotesRepository,
@@ -249,7 +297,7 @@ class NoteViewModelTest {
             viewModelScope.launch {
                 notesRepo.getAll().collect { notes ->
                     listItems = notes.map { note ->
-                        NoteItem(note.id, note, false, emptyList(), emptyList())
+                        NoteItem(note.id, note)
                     }
                 }
             }

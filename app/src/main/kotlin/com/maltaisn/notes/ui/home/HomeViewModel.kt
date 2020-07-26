@@ -25,16 +25,14 @@ import com.maltaisn.notes.model.PrefsManager
 import com.maltaisn.notes.model.converter.NoteStatusConverter
 import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.model.entity.NoteStatus
+import com.maltaisn.notes.model.entity.PinnedStatus
 import com.maltaisn.notes.sync.R
 import com.maltaisn.notes.ui.AssistedSavedStateViewModelFactory
 import com.maltaisn.notes.ui.Event
 import com.maltaisn.notes.ui.note.NoteViewModel
 import com.maltaisn.notes.ui.note.PlaceholderData
 import com.maltaisn.notes.ui.note.SwipeAction
-import com.maltaisn.notes.ui.note.adapter.MessageItem
-import com.maltaisn.notes.ui.note.adapter.NoteAdapter
-import com.maltaisn.notes.ui.note.adapter.NoteItem
-import com.maltaisn.notes.ui.note.adapter.NoteListLayoutMode
+import com.maltaisn.notes.ui.note.adapter.*
 import com.maltaisn.notes.ui.send
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
@@ -90,7 +88,11 @@ class HomeViewModel @AssistedInject constructor(
         // Update note items live data when database flow emits a list.
         noteListJob = viewModelScope.launch {
             notesRepository.getNotesByStatus(status).collect { notes ->
-                createListItems(status, notes)
+                listItems = when (status) {
+                    NoteStatus.ACTIVE -> createActiveListItems(notes)
+                    NoteStatus.ARCHIVED -> createArchivedListItems(notes)
+                    NoteStatus.DELETED -> createDeletedListItems(notes)
+                }
                 yield()
             }
         }
@@ -148,24 +150,52 @@ class HomeViewModel @AssistedInject constructor(
         })
     }
 
-    private fun createListItems(status: NoteStatus, notes: List<Note>) {
-        listItems = buildList {
-            if (status == NoteStatus.DELETED && notes.isNotEmpty()) {
-                // If needed, add reminder that notes get auto-deleted when in trash.
-                if (System.currentTimeMillis() - prefs.lastTrashReminderTime >
-                        PrefsManager.TRASH_REMINDER_DELAY.toLongMilliseconds()) {
-                    this += MessageItem(TRASH_REMINDER_ITEM_ID,
-                            R.string.trash_reminder_message,
-                            listOf(PrefsManager.TRASH_AUTO_DELETE_DELAY.inDays.toInt()))
-                }
-            }
-
-            // Add note items
+    private fun createActiveListItems(notes: List<Note>): List<NoteListItem> = buildList {
+        // If there's at least one pinned note, add pinned header.
+        if (notes.isNotEmpty() && notes.first().pinned == PinnedStatus.PINNED) {
+            this += PINNED_HEADER_ITEM
             for (note in notes) {
-                val checked = isNoteSelected(note)
-                this += NoteItem(note.id, note, checked, emptyList(), emptyList())
+                if (note.pinned != PinnedStatus.PINNED) {
+                    break
+                }
+                addNoteItem(note)
+            }
+            if (this.size <= notes.size) {
+                // Add another header for other notes if there's at least one not pinned.
+                this += NOT_PINNED_HEADER_ITEM
             }
         }
+
+        for (note in notes) {
+            if (note.pinned == PinnedStatus.PINNED) continue
+            addNoteItem(note)
+        }
+    }
+
+    private fun createArchivedListItems(notes: List<Note>): List<NoteListItem> = buildList {
+        for (note in notes) {
+            addNoteItem(note)
+        }
+    }
+
+    private fun createDeletedListItems(notes: List<Note>): List<NoteListItem> = buildList {
+        // If needed, add reminder that notes get auto-deleted when in trash.
+        if (notes.isNotEmpty() &&
+                System.currentTimeMillis() - prefs.lastTrashReminderTime >
+                PrefsManager.TRASH_REMINDER_DELAY.toLongMilliseconds()) {
+            this += MessageItem(TRASH_REMINDER_ITEM_ID,
+                    R.string.trash_reminder_message,
+                    listOf(PrefsManager.TRASH_AUTO_DELETE_DELAY.inDays.toInt()))
+        }
+
+        for (note in notes) {
+            addNoteItem(note)
+        }
+    }
+
+    private fun MutableList<NoteListItem>.addNoteItem(note: Note) {
+        val checked = isNoteSelected(note)
+        this += NoteItem(note.id, note, checked)
     }
 
     override fun updatePlaceholder() = when (noteStatus.value!!) {
@@ -181,6 +211,9 @@ class HomeViewModel @AssistedInject constructor(
 
     companion object {
         private const val TRASH_REMINDER_ITEM_ID = -1L
+
+        val PINNED_HEADER_ITEM = HeaderItem(-2L, R.string.note_pinned)
+        val NOT_PINNED_HEADER_ITEM = HeaderItem(-3L, R.string.note_not_pinned)
 
         private const val KEY_NOTE_STATUS = "note_status"
     }

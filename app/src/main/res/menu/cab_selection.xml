@@ -21,6 +21,15 @@
     >
 
     <item
+        android:id="@+id/item_pin"
+        android:icon="@null"
+        android:title="@null"
+        android:showAsAction="always"
+        tools:icon="@drawable/ic_pin"
+        tools:title="@string/action_pin"
+        />
+
+    <item
         android:id="@+id/item_move"
         android:icon="@null"
         android:title="@null"

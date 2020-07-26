@@ -39,6 +39,15 @@
         />
 
     <item
+        android:id="@+id/item_pin"
+        android:title="@null"
+        android:icon="@null"
+        app:showAsAction="ifRoom"
+        tools:icon="@drawable/ic_pin"
+        tools:title="@string/action_pin"
+        />
+
+    <item
         android:id="@+id/item_share"
         android:icon="@drawable/ic_share"
         android:title="@string/action_share"

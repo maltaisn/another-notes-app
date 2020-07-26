@@ -84,8 +84,12 @@ class MockNotesRepository : NotesRepository {
     }
 
     override suspend fun deleteNote(note: Note) {
-        notes.remove(note.id)
-        changeChannel.sendBlocking(Unit)
+        deleteNote(note.id)
+    }
+
+    suspend fun deleteNote(id: Long) {
+        notes -= id
+        changeChannel.send(Unit)
     }
 
     override suspend fun deleteNotes(notes: List<Note>) {
@@ -129,7 +133,7 @@ class MockNotesRepository : NotesRepository {
         notes.entries.removeIf { (_, note) ->
             note.status == NoteStatus.DELETED
         }
-        changeChannel.sendBlocking(Unit)
+        changeChannel.send(Unit)
     }
 
     override suspend fun deleteOldNotesInTrash() {
@@ -138,7 +142,7 @@ class MockNotesRepository : NotesRepository {
                     (System.currentTimeMillis() - note.lastModifiedDate.time) >
                     PrefsManager.TRASH_AUTO_DELETE_DELAY.toLongMilliseconds()
         }
-        changeChannel.sendBlocking(Unit)
+        changeChannel.send(Unit)
     }
 
     override suspend fun getJsonData(): String {
@@ -151,7 +155,7 @@ class MockNotesRepository : NotesRepository {
     override suspend fun clearAllData() {
         notes.clear()
         lastId = 0
-        changeChannel.sendBlocking(Unit)
+        changeChannel.send(Unit)
     }
 
     fun getAll() = flow {

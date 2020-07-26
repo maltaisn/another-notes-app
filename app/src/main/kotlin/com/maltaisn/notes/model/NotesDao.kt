@@ -64,10 +64,10 @@ interface NotesDao {
     suspend fun getById(id: Long): Note?
 
     /**
-     * Get all notes with a [status], sorted by last modified date.
+     * Get all notes with a [status], sorted by last modified date, with pinned notes first.
      * This is used to display notes for each status.
      */
-    @Query("SELECT * FROM notes WHERE status == :status ORDER BY modified_date DESC")
+    @Query("SELECT * FROM notes WHERE status == :status ORDER BY pinned DESC, modified_date DESC, id")
     fun getByStatus(status: NoteStatus): Flow<List<Note>>
 
     /**

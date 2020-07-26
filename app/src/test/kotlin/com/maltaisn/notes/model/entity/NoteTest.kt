@@ -21,6 +21,7 @@ import com.maltaisn.notes.model.converter.DateTimeConverter
 import com.maltaisn.notes.testNote
 import org.junit.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
@@ -53,6 +54,23 @@ class NoteTest {
         testNote(type = NoteType.TEXT,
                 added = DateTimeConverter.toDate("2020-01-01T00:00:00.000Z"),
                 modified = DateTimeConverter.toDate("2019-12-31T23:59:59.999Z"))
+    }
+
+    @Test
+    fun `should fail to create unpinnable active note`() {
+        assertFailsWith<IllegalArgumentException> {
+            testNote(status = NoteStatus.ACTIVE, pinned = PinnedStatus.CANT_PIN)
+        }
+    }
+
+    @Test
+    fun `should fail to create pinnable archived and deleted note`() {
+        assertFailsWith<IllegalArgumentException> {
+            testNote(status = NoteStatus.ARCHIVED, pinned = PinnedStatus.PINNED)
+        }
+        assertFailsWith<IllegalArgumentException> {
+            testNote(status = NoteStatus.DELETED, pinned = PinnedStatus.UNPINNED)
+        }
     }
 
     @Test

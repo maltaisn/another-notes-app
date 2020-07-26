@@ -21,6 +21,7 @@ import com.maltaisn.notes.MainCoroutineRule
 import com.maltaisn.notes.assertNoteEquals
 import com.maltaisn.notes.listNote
 import com.maltaisn.notes.model.MockNotesRepository
+import com.maltaisn.notes.model.PrefsManager
 import com.maltaisn.notes.model.converter.DateTimeConverter
 import com.maltaisn.notes.model.entity.ListNoteItem
 import com.maltaisn.notes.model.entity.Note
@@ -36,6 +37,7 @@ import com.maltaisn.notes.ui.edit.adapter.EditItemAddItem
 import com.maltaisn.notes.ui.edit.adapter.EditItemItem
 import com.maltaisn.notes.ui.edit.adapter.EditTitleItem
 import com.maltaisn.notes.ui.getOrAwaitValue
+import com.nhaarman.mockitokotlin2.mock
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Before
 import org.junit.Rule
@@ -51,6 +53,7 @@ class EditViewModelTest {
 
     private lateinit var viewModel: EditViewModel
     private lateinit var notesRepo: MockNotesRepository
+    private lateinit var prefs: PrefsManager
 
     @get:Rule
     var mainCoroutineRule = MainCoroutineRule()
@@ -62,6 +65,7 @@ class EditViewModelTest {
     @Before
     fun before() {
         notesRepo = MockNotesRepository()
+        prefs = mock()
 
         // Sample active notes
         notesRepo.addNote(testNote(id = 1, title = "title",
@@ -89,7 +93,7 @@ class EditViewModelTest {
         notesRepo.addNote(testNote(id = 6, title = "title",
                 content = "content", status = NoteStatus.ARCHIVED))
 
-        viewModel = EditViewModel(notesRepo)
+        viewModel = EditViewModel(notesRepo, prefs)
     }
 
     @Test

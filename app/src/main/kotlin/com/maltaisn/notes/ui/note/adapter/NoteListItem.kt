@@ -26,9 +26,13 @@ sealed class NoteListItem(open val id: Long) {
     abstract val type: Int
 }
 
-data class NoteItem(override val id: Long, val note: Note, val checked: Boolean,
-                    val titleHighlights: List<IntRange>,
-                    val contentHighlights: List<IntRange>) : NoteListItem(id) {
+data class NoteItem(
+        override val id: Long,
+        val note: Note,
+        val checked: Boolean = false,
+        val titleHighlights: List<IntRange> = emptyList(),
+        val contentHighlights: List<IntRange> = emptyList()
+) : NoteListItem(id) {
     override val type: Int
         get() = when (note.type) {
             NoteType.TEXT -> NoteAdapter.VIEW_TYPE_TEXT_NOTE
@@ -43,7 +47,7 @@ data class HeaderItem(override val id: Long, @StringRes val title: Int) : NoteLi
 }
 
 data class MessageItem(override val id: Long, @StringRes @PluralsRes val message: Int,
-                  val args: List<Any>) : NoteListItem(id) {
+                       val args: List<Any>) : NoteListItem(id) {
     override val type: Int
         get() = NoteAdapter.VIEW_TYPE_MESSAGE
 }

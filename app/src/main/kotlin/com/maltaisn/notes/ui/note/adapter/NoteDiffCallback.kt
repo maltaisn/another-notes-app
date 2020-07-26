@@ -46,6 +46,7 @@ class NoteListDiffCallback : DiffUtil.ItemCallback<NoteListItem>() {
                 val newNote = new.note
                 new.checked == old.checked
                         && newNote.status == oldNote.status
+                        && newNote.pinned == oldNote.pinned
                         && newNote.title == oldNote.title
                         && newNote.content == oldNote.content
                         && newNote.metadata == oldNote.metadata

@@ -22,10 +22,12 @@ import com.maltaisn.notes.MainCoroutineRule
 import com.maltaisn.notes.model.MockNotesRepository
 import com.maltaisn.notes.model.PrefsManager
 import com.maltaisn.notes.model.entity.NoteStatus
+import com.maltaisn.notes.model.entity.PinnedStatus
 import com.maltaisn.notes.sync.R
 import com.maltaisn.notes.testNote
 import com.maltaisn.notes.ui.getOrAwaitValue
 import com.maltaisn.notes.ui.note.NoteViewModel
+import com.maltaisn.notes.ui.note.NoteViewModel.NoteSelection
 import com.maltaisn.notes.ui.note.adapter.HeaderItem
 import com.maltaisn.notes.ui.note.adapter.NoteItem
 import com.maltaisn.notes.ui.note.adapter.NoteListLayoutMode
@@ -105,15 +107,15 @@ class SearchViewModelTest {
     fun `should consider selection as active (only active selected)`() = mainCoroutineRule.runBlockingTest {
         searchNotesAndWait("3")
         viewModel.onNoteItemLongClicked(getNoteItemAt(0), 0)
-        assertEquals(NoteViewModel.NoteSelection(1, NoteStatus.ACTIVE),
+        assertEquals(NoteViewModel.NoteSelection(1, NoteStatus.ACTIVE, PinnedStatus.UNPINNED),
                 viewModel.currentSelection.getOrAwaitValue())
     }
 
     @Test
-    fun `should consider selection as archived (only active archived)`() = mainCoroutineRule.runBlockingTest {
+    fun `should consider selection as archived (only archived selected)`() = mainCoroutineRule.runBlockingTest {
         searchNotesAndWait("3")
         viewModel.onNoteItemLongClicked(getNoteItemAt(2), 2)
-        assertEquals(NoteViewModel.NoteSelection(1, NoteStatus.ARCHIVED),
+        assertEquals(NoteSelection(1, NoteStatus.ARCHIVED, PinnedStatus.CANT_PIN),
                 viewModel.currentSelection.getOrAwaitValue())
     }
 
@@ -122,7 +124,7 @@ class SearchViewModelTest {
         searchNotesAndWait("3")
         viewModel.onNoteItemLongClicked(getNoteItemAt(0), 0)
         viewModel.onNoteItemLongClicked(getNoteItemAt(2), 2)
-        assertEquals(NoteViewModel.NoteSelection(2, NoteStatus.ACTIVE),
+        assertEquals(NoteSelection(2, NoteStatus.ACTIVE, PinnedStatus.UNPINNED),
                 viewModel.currentSelection.getOrAwaitValue())
     }
 

@@ -26,6 +26,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.google.android.material.snackbar.Snackbar
 import com.maltaisn.notes.model.entity.NoteStatus
+import com.maltaisn.notes.model.entity.PinnedStatus
 import com.maltaisn.notes.navigateSafe
 import com.maltaisn.notes.sync.NavGraphDirections
 import com.maltaisn.notes.sync.R
@@ -111,6 +112,24 @@ abstract class NoteFragment : Fragment(), ActionMode.Callback, ConfirmDialog.Cal
                 menu.findItem(R.id.item_share).isVisible = singleSelection
                 menu.findItem(R.id.item_copy).isVisible = singleSelection
 
+                // Pin item
+                val pinItem = it.menu.findItem(R.id.item_pin)
+                when (selection.pinned) {
+                    PinnedStatus.PINNED -> {
+                        pinItem.isVisible = true
+                        pinItem.setIcon(R.drawable.ic_pin_outline)
+                        pinItem.setTitle(R.string.action_unpin)
+                    }
+                    PinnedStatus.UNPINNED -> {
+                        pinItem.isVisible = true
+                        pinItem.setIcon(R.drawable.ic_pin)
+                        pinItem.setTitle(R.string.action_pin)
+                    }
+                    PinnedStatus.CANT_PIN -> {
+                        pinItem.isVisible = false
+                    }
+                }
+
                 // Update move items depending on status
                 val moveItem = menu.findItem(R.id.item_move)
                 val deleteItem = menu.findItem(R.id.item_delete)
@@ -188,6 +207,7 @@ abstract class NoteFragment : Fragment(), ActionMode.Callback, ConfirmDialog.Cal
 
     override fun onActionItemClicked(mode: ActionMode, item: MenuItem): Boolean {
         when (item.itemId) {
+            R.id.item_pin -> viewModel.togglePin()
             R.id.item_move -> viewModel.moveSelectedNotes()
             R.id.item_select_all -> viewModel.selectAll()
             R.id.item_share -> viewModel.shareSelectedNote()

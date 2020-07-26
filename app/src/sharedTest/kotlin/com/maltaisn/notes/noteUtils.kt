@@ -30,8 +30,9 @@ fun testNote(
         metadata: NoteMetadata = BlankNoteMetadata,
         added: Date = Date(),
         modified: Date = Date(),
-        status: NoteStatus = NoteStatus.ACTIVE
-) = Note(id, type, title, content, metadata, added, modified, status)
+        status: NoteStatus = NoteStatus.ACTIVE,
+        pinned: PinnedStatus = if (status == NoteStatus.ACTIVE) PinnedStatus.UNPINNED else PinnedStatus.CANT_PIN
+) = Note(id, type, title, content, metadata, added, modified, status, pinned)
 
 fun listNote(
         items: List<ListNoteItem>,
@@ -39,9 +40,10 @@ fun listNote(
         title: String = "note",
         added: Date = Date(),
         modified: Date = Date(),
-        status: NoteStatus = NoteStatus.ACTIVE
+        status: NoteStatus = NoteStatus.ACTIVE,
+        pinned: PinnedStatus = if (status == NoteStatus.ACTIVE) PinnedStatus.UNPINNED else PinnedStatus.CANT_PIN
 ) = Note(id, NoteType.LIST, title, items.joinToString("\n") { it.content },
-        ListNoteMetadata(items.map { it.checked }), added, modified, status)
+        ListNoteMetadata(items.map { it.checked }), added, modified, status, pinned)
 
 
 fun assertNoteEquals(expected: Note, actual: Note,

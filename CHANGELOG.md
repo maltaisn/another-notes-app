@@ -1,9 +1,12 @@
 ## v1.2.0
+- Added ability to pin active notes, showing them first in the list.
 - Added customizable swipe action in main screen.
 - Added option to strikethrough checked items.
 - Checked items text now changes color.
 - Fixed auto-correction not enabled in text fields.
 - Fixed formatting not removed when pasting text.
+- Fixed move action not changed for a selected archived item after undoing archive action through the Snackbar,
+in search fragment.
 
 ## v1.1.0
 - Removed synchronization feature.

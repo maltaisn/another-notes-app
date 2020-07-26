@@ -36,6 +36,7 @@ import com.maltaisn.notes.hideKeyboard
 import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.model.entity.NoteStatus
 import com.maltaisn.notes.model.entity.NoteType
+import com.maltaisn.notes.model.entity.PinnedStatus
 import com.maltaisn.notes.showKeyboard
 import com.maltaisn.notes.sync.R
 import com.maltaisn.notes.sync.databinding.FragmentEditBinding
@@ -103,6 +104,7 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener, ConfirmDialog.
         val toolbarMenu = toolbar.menu
         val typeItem = toolbarMenu.findItem(R.id.item_type)
         val moveItem = toolbarMenu.findItem(R.id.item_move)
+        val pinItem = toolbarMenu.findItem(R.id.item_pin)
         val shareItem = toolbarMenu.findItem(R.id.item_share)
         val uncheckAllItem = toolbarMenu.findItem(R.id.item_uncheck_all)
         val deleteCheckedItem = toolbarMenu.findItem(R.id.item_delete_checked)
@@ -143,6 +145,24 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener, ConfirmDialog.
                 } else {
                     R.string.action_delete
                 })
+            }
+        })
+
+        viewModel.notePinned.observe(viewLifecycleOwner, Observer { pinned ->
+            when (pinned) {
+                PinnedStatus.PINNED -> {
+                    pinItem.isVisible = true
+                    pinItem.setTitle(R.string.action_unpin)
+                    pinItem.setIcon(R.drawable.ic_pin_outline)
+                }
+                PinnedStatus.UNPINNED -> {
+                    pinItem.isVisible = true
+                    pinItem.setTitle(R.string.action_pin)
+                    pinItem.setIcon(R.drawable.ic_pin)
+                }
+                PinnedStatus.CANT_PIN, null -> {
+                    pinItem.isVisible = false
+                }
             }
         })
 
@@ -226,6 +246,7 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener, ConfirmDialog.
         when (item.itemId) {
             R.id.item_type -> viewModel.toggleNoteType()
             R.id.item_move -> viewModel.moveNoteAndExit()
+            R.id.item_pin -> viewModel.togglePin()
             R.id.item_share -> viewModel.shareNote()
             R.id.item_uncheck_all -> {
                 viewModel.uncheckAllItems()

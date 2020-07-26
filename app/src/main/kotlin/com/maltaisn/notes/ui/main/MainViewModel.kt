@@ -21,10 +21,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.maltaisn.notes.model.NotesRepository
-import com.maltaisn.notes.model.entity.BlankNoteMetadata
-import com.maltaisn.notes.model.entity.Note
-import com.maltaisn.notes.model.entity.NoteStatus
-import com.maltaisn.notes.model.entity.NoteType
+import com.maltaisn.notes.model.entity.*
 import com.maltaisn.notes.ui.Event
 import com.maltaisn.notes.ui.send
 import kotlinx.coroutines.delay
@@ -64,7 +61,7 @@ class MainViewModel @Inject constructor(
         viewModelScope.launch {
             val date = Date()
             val note = Note(Note.NO_ID, NoteType.TEXT,
-                    title, content, BlankNoteMetadata, date, date, NoteStatus.ACTIVE)
+                    title, content, BlankNoteMetadata, date, date, NoteStatus.ACTIVE, PinnedStatus.UNPINNED)
             val id = notesRepository.insertNote(note)
             _editNoteEvent.send(id)
         }

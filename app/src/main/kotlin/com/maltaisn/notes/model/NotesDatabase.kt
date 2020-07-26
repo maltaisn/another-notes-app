@@ -21,10 +21,7 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
-import com.maltaisn.notes.model.converter.DateTimeConverter
-import com.maltaisn.notes.model.converter.NoteMetadataConverter
-import com.maltaisn.notes.model.converter.NoteStatusConverter
-import com.maltaisn.notes.model.converter.NoteTypeConverter
+import com.maltaisn.notes.model.converter.*
 import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.model.entity.NoteFts
 
@@ -34,9 +31,9 @@ import com.maltaisn.notes.model.entity.NoteFts
             Note::class,
             NoteFts::class
         ],
-        version = 2)
+        version = 3)
 @TypeConverters(DateTimeConverter::class, NoteTypeConverter::class,
-        NoteStatusConverter::class, NoteMetadataConverter::class)
+        NoteStatusConverter::class, NoteMetadataConverter::class, PinnedStatusConverter::class)
 abstract class NotesDatabase : RoomDatabase() {
 
     abstract fun notesDao(): NotesDao
@@ -59,5 +56,20 @@ abstract class NotesDatabase : RoomDatabase() {
                 }
             }
         }
+
+        val MIGRATION_2_3 = object : Migration(2, 3) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                // - Add pinned column to notes table. 'unpinned' for active notes, 'can't pin' for others.
+                database.apply {
+                    execSQL("ALTER TABLE notes ADD COLUMN pinned INTEGER NOT NULL DEFAULT 0")
+                    execSQL("UPDATE notes SET pinned = 1 WHERE status == 0")
+                }
+            }
+        }
+
+        val ALL_MIGRATIONS = arrayOf(
+                MIGRATION_1_2,
+                MIGRATION_2_3
+        )
     }
 }

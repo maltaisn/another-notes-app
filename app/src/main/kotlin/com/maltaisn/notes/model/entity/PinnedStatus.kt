@@ -14,27 +14,14 @@
  * limitations under the License.
  */
 
-package com.maltaisn.notes.di
-
-import android.content.Context
-import androidx.room.Room
-import com.maltaisn.notes.model.NotesDatabase
-import dagger.Module
-import dagger.Provides
-import javax.inject.Singleton
+package com.maltaisn.notes.model.entity
 
 
-@Module
-object DatabaseModule {
-
-    @Provides
-    @Singleton
-    fun providesDatabase(context: Context) = Room.databaseBuilder(context,
-            NotesDatabase::class.java, "notes_db")
-            .addMigrations(*NotesDatabase.ALL_MIGRATIONS)
-            .build()
-
-    @Provides
-    fun providesNotesDao(database: NotesDatabase) = database.notesDao()
-
+/**
+ * Describes how a note or a group of notes are pinned.
+ */
+enum class PinnedStatus(val value: Int) {
+    CANT_PIN(0),
+    UNPINNED(1),
+    PINNED(2)
 }

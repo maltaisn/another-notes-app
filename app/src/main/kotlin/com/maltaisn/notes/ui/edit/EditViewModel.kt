@@ -49,7 +49,12 @@ class EditViewModel @Inject constructor(
      * Status of the note being edited. This is separate from [note] so that
      * note status can be updated from this in [updateNote].
      */
-    private var status = NoteStatus.ACTIVE
+    private var status = note.status
+
+    /**
+     * Whether the note being edited is pinned or not.
+     */
+    private var pinned = note.pinned
 
     /**
      * The currently displayed list items created in [createListItems].
@@ -73,6 +78,10 @@ class EditViewModel @Inject constructor(
     private val _noteStatus = MutableLiveData<NoteStatus?>()
     val noteStatus: LiveData<NoteStatus?>
         get() = _noteStatus
+
+    private val _notePinned = MutableLiveData<PinnedStatus>()
+    val notePinned: LiveData<PinnedStatus>
+        get() = _notePinned
 
     private val _editItems = MutableLiveData<List<EditListItem>>()
     val editItems: LiveData<List<EditListItem>>
@@ -133,9 +142,11 @@ class EditViewModel @Inject constructor(
             }
             this@EditViewModel.note = note
             status = note.status
+            pinned = note.pinned
 
             _noteType.value = note.type
             _noteStatus.value = status
+            _notePinned.value = pinned
 
             createListItems()
         }
@@ -197,6 +208,15 @@ class EditViewModel @Inject constructor(
         createListItems()
     }
 
+    fun togglePin() {
+        pinned = when (pinned) {
+            PinnedStatus.PINNED -> PinnedStatus.UNPINNED
+            PinnedStatus.UNPINNED -> PinnedStatus.PINNED
+            PinnedStatus.CANT_PIN -> error("Can't pin")
+        }
+        _notePinned.value = pinned
+    }
+
     fun convertToText(keepCheckedItems: Boolean) {
         note = note.asTextNote(keepCheckedItems)
         _noteType.value = NoteType.TEXT
@@ -214,14 +234,16 @@ class EditViewModel @Inject constructor(
     }
 
     fun restoreNoteAndEdit() {
-        note = note.copy(status = NoteStatus.ACTIVE)
+        note = note.copy(status = NoteStatus.ACTIVE, pinned = PinnedStatus.UNPINNED)
         status = note.status
+        pinned = note.pinned
 
         // Recreate list items so that they are editable.
         createListItems()
 
         _messageEvent.send(EditMessage.RESTORED_NOTE)
         _noteStatus.value = status
+        _notePinned.value = pinned
     }
 
     fun copyNote(untitledName: String, copySuffix: String) {
@@ -300,6 +322,7 @@ class EditViewModel @Inject constructor(
             // If note is blank, it will be discarded on exit anyway, so don't change it.
             val oldNote = note
             status = newStatus
+            pinned = if (status == NoteStatus.ACTIVE) PinnedStatus.UNPINNED else PinnedStatus.CANT_PIN
             save()
 
             // Show status change message.
@@ -330,8 +353,8 @@ class EditViewModel @Inject constructor(
                 metadata = ListNoteMetadata(items.map { it.checked })
             }
         }
-        note = Note(note.id, note.type, title, content, metadata,
-                note.addedDate, note.lastModifiedDate, status)
+        note = note.copy(title = title, content = content,
+                metadata = metadata, status = status, pinned = pinned)
     }
 
     /**
@@ -491,7 +514,7 @@ class EditViewModel @Inject constructor(
 
     companion object {
         private val BLANK_NOTE = Note(Note.NO_ID, NoteType.TEXT, "", "",
-                BlankNoteMetadata, Date(0), Date(0), NoteStatus.ACTIVE)
+                BlankNoteMetadata, Date(0), Date(0), NoteStatus.ACTIVE, PinnedStatus.UNPINNED)
     }
 
 }

@@ -23,6 +23,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.maltaisn.notes.model.converter.DateTimeConverter
 import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.model.entity.NoteStatus
+import com.maltaisn.notes.model.entity.PinnedStatus
 import com.maltaisn.notes.testNote
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
@@ -30,6 +31,7 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import java.util.*
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
@@ -87,12 +89,21 @@ class NotesDaoTest {
 
     @Test
     fun getByStatusTest() = runBlocking {
-        val time = DateTimeConverter.toDate("2020-01-01T00:00:00.000Z")
+        // Add 5 notes for each status, ordered by descending last modified time. Also add a pinned active note first.
+        // Then compare these notes with the result of the database query.
+        val baseDate = DateTimeConverter.toDate("2020-01-01T00:00:00.000Z")
         val activeNotes = mutableListOf<Note>()
-        var id = 1L
+
+        val pinnedNote = testNote(id = 1, status = NoteStatus.ACTIVE, added = baseDate,
+                modified = baseDate, pinned = PinnedStatus.PINNED)
+        activeNotes += pinnedNote
+        notesDao.insert(pinnedNote)
+
+        var id = 2L
         repeat(5) {
             for (status in NoteStatus.values()) {
-                val note = testNote(id = id, status = status, added = time, modified = time)
+                val date = Date(baseDate.time - it * 1000)
+                val note = testNote(id = id, status = status, added = date, modified = date)
                 notesDao.insert(note)
                 if (status == NoteStatus.ACTIVE) {
                     activeNotes += note

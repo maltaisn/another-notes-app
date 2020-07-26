@@ -15,17 +15,14 @@
  */
 
 @file:UseSerializers(DateTimeConverter::class, NoteTypeConverter::class,
-        NoteStatusConverter::class, NoteMetadataConverter::class)
+        NoteStatusConverter::class, NoteMetadataConverter::class, PinnedStatusConverter::class)
 
 package com.maltaisn.notes.model.entity
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.maltaisn.notes.model.converter.DateTimeConverter
-import com.maltaisn.notes.model.converter.NoteMetadataConverter
-import com.maltaisn.notes.model.converter.NoteStatusConverter
-import com.maltaisn.notes.model.converter.NoteTypeConverter
+import com.maltaisn.notes.model.converter.*
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.UseSerializers
@@ -91,7 +88,16 @@ data class Note(
          */
         @ColumnInfo(name = "status")
         @SerialName("status")
-        val status: NoteStatus
+        val status: NoteStatus,
+
+        /**
+         * Describes how the note is pinned.
+         * Notes with [status] set to [NoteStatus.ACTIVE] should be pinned or unpinned.
+         * Other notes should be set to [PinnedStatus.CANT_PIN].
+         */
+        @ColumnInfo(name = "pinned")
+        @SerialName("pinned")
+        val pinned: PinnedStatus
 ) {
 
     init {
@@ -103,6 +109,13 @@ data class Note(
 
         require(addedDate.time <= lastModifiedDate.time) {
             "Note added date must be before or on last modified date."
+        }
+
+        require(status != NoteStatus.ACTIVE || pinned != PinnedStatus.CANT_PIN) {
+            "Active note must be pinnable."
+        }
+        require(status == NoteStatus.ACTIVE || pinned == PinnedStatus.CANT_PIN) {
+            "Archived or deleted note must not be pinnable."
         }
     }
 
@@ -164,8 +177,7 @@ data class Note(
                     }
                 }
             }
-            Note(id, NoteType.TEXT, title, content, BlankNoteMetadata,
-                    addedDate, lastModifiedDate, status)
+            copy(type = NoteType.TEXT, content = content, metadata = BlankNoteMetadata)
         }
     }
 
@@ -193,8 +205,7 @@ data class Note(
                 this.content
             }
             val metadata = ListNoteMetadata(List(lines.size) { false })
-            Note(id, NoteType.LIST, title, content, metadata,
-                    addedDate, lastModifiedDate, status)
+            copy(type = NoteType.LIST, content = content, metadata = metadata)
         }
     }
 

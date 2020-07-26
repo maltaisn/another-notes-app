@@ -97,7 +97,7 @@ class SearchViewModel @AssistedInject constructor(
             for (note in notes) {
                 // If this is the first archived note, add a header before it.
                 if (!addedArchivedHeader && note.status == NoteStatus.ARCHIVED) {
-                    this += HeaderItem(ARCHIVED_HEADER_ITEM_ID, R.string.note_location_archived)
+                    this += ARCHIVED_HEADER_ITEM
                     addedArchivedHeader = true
                 }
 
@@ -120,7 +120,7 @@ class SearchViewModel @AssistedInject constructor(
     }
 
     companion object {
-        private const val ARCHIVED_HEADER_ITEM_ID = -1L
+        val ARCHIVED_HEADER_ITEM = HeaderItem(-1, R.string.note_location_archived)
     }
 
 }
