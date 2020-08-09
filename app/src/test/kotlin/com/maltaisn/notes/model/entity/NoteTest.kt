@@ -19,6 +19,8 @@ package com.maltaisn.notes.model.entity
 import com.maltaisn.notes.listNote
 import com.maltaisn.notes.model.converter.DateTimeConverter
 import com.maltaisn.notes.testNote
+import com.maltaisn.recurpicker.Recurrence
+import com.maltaisn.recurpicker.RecurrenceFinder
 import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -79,6 +81,15 @@ class NoteTest {
         }
         assertFailsWith<IllegalArgumentException> {
             testNote(status = NoteStatus.DELETED, pinned = PinnedStatus.UNPINNED)
+        }
+    }
+
+    @Test
+    fun `should fail to create deleted note with reminder`() {
+        assertFailsWith<IllegalArgumentException> {
+            testNote(status = NoteStatus.DELETED, reminder = Reminder.create(
+                DateTimeConverter.toDate("2020-07-29T00:00:00.000Z"),
+                Recurrence.DOES_NOT_REPEAT, RecurrenceFinder()))
         }
     }
 

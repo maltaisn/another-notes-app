@@ -26,6 +26,7 @@ import com.maltaisn.notes.model.entity.NoteMetadata
 import com.maltaisn.notes.model.entity.NoteStatus
 import com.maltaisn.notes.model.entity.NoteType
 import com.maltaisn.notes.model.entity.PinnedStatus
+import com.maltaisn.notes.model.entity.Reminder
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import java.util.Date
@@ -39,8 +40,9 @@ fun testNote(
     added: Date = Date(),
     modified: Date = Date(),
     status: NoteStatus = NoteStatus.ACTIVE,
-    pinned: PinnedStatus = defaultPinnedStatusForStatus(status)
-) = Note(id, type, title, content, metadata, added, modified, status, pinned)
+    pinned: PinnedStatus = defaultPinnedStatusForStatus(status),
+    reminder: Reminder? = null
+) = Note(id, type, title, content, metadata, added, modified, status, pinned, reminder)
 
 fun listNote(
     items: List<ListNoteItem>,
@@ -49,9 +51,10 @@ fun listNote(
     added: Date = Date(),
     modified: Date = Date(),
     status: NoteStatus = NoteStatus.ACTIVE,
-    pinned: PinnedStatus = defaultPinnedStatusForStatus(status)
+    pinned: PinnedStatus = defaultPinnedStatusForStatus(status),
+    reminder: Reminder? = null
 ) = Note(id, NoteType.LIST, title, items.joinToString("\n") { it.content },
-    ListNoteMetadata(items.map { it.checked }), added, modified, status, pinned)
+    ListNoteMetadata(items.map { it.checked }), added, modified, status, pinned, reminder)
 
 fun assertNoteEquals(
     expected: Note,

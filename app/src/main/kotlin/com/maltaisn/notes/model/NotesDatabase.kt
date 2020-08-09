@@ -26,6 +26,7 @@ import com.maltaisn.notes.model.converter.NoteMetadataConverter
 import com.maltaisn.notes.model.converter.NoteStatusConverter
 import com.maltaisn.notes.model.converter.NoteTypeConverter
 import com.maltaisn.notes.model.converter.PinnedStatusConverter
+import com.maltaisn.notes.model.converter.RecurrenceConverter
 import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.model.entity.NoteFts
 
@@ -35,8 +36,14 @@ import com.maltaisn.notes.model.entity.NoteFts
         NoteFts::class
     ],
     version = 3)
-@TypeConverters(DateTimeConverter::class, NoteTypeConverter::class,
-    NoteStatusConverter::class, NoteMetadataConverter::class, PinnedStatusConverter::class)
+@TypeConverters(
+    DateTimeConverter::class,
+    NoteTypeConverter::class,
+    NoteStatusConverter::class,
+    NoteMetadataConverter::class,
+    PinnedStatusConverter::class,
+    RecurrenceConverter::class
+)
 abstract class NotesDatabase : RoomDatabase() {
 
     abstract fun notesDao(): NotesDao
@@ -52,13 +59,12 @@ abstract class NotesDatabase : RoomDatabase() {
                 // - UUID flag on notes (unique ID across devices)
                 database.apply {
                     execSQL("DROP TABLE deleted_notes")
-                    execSQL("CREATE TABLE notes_temp (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
-                            "type INTEGER NOT NULL, title TEXT NOT NULL, content TEXT NOT NULL, " +
-                            "metadata TEXT NOT NULL, added_date INTEGER NOT NULL, modified_date INTEGER NOT NULL, " +
-                            "status INTEGER NOT NULL)")
-                    execSQL("INSERT INTO notes_temp (id, type, title, content, metadata, added_date, modified_date, " +
-                            "status) SELECT id, type, title, content, metadata, added_date, modified_date, status " +
-                            "FROM notes")
+                    execSQL("""CREATE TABLE notes_temp (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, 
+                        type INTEGER NOT NULL, title TEXT NOT NULL, content TEXT NOT NULL, metadata TEXT NOT NULL, 
+                        added_date INTEGER NOT NULL, modified_date INTEGER NOT NULL, status INTEGER NOT NULL)""")
+                    execSQL("""INSERT INTO notes_temp (id, type, title, content, metadata, added_date, 
+                        modified_date, status) SELECT id, type, title, content, metadata, added_date,
+                        modified_date, status FROM notes""")
                     execSQL("DROP TABLE notes")
                     execSQL("ALTER TABLE notes_temp RENAME TO notes")
                 }
@@ -67,10 +73,17 @@ abstract class NotesDatabase : RoomDatabase() {
 
         val MIGRATION_2_3 = object : Migration(2, 3) {
             override fun migrate(database: SupportSQLiteDatabase) {
-                // - Add pinned column to notes table. 'unpinned' for active notes, 'can't pin' for others.
                 database.apply {
+                    // Add pinned column to notes table. 'unpinned' for active notes, 'can't pin' for others.
                     execSQL("ALTER TABLE notes ADD COLUMN pinned INTEGER NOT NULL DEFAULT 0")
                     execSQL("UPDATE notes SET pinned = 1 WHERE status == 0")
+
+                    // Add reminder columns, all set to `null` by default.
+                    execSQL("ALTER TABLE notes ADD COLUMN reminder_start INTEGER")
+                    execSQL("ALTER TABLE notes ADD COLUMN reminder_recurrence TEXT")
+                    execSQL("ALTER TABLE notes ADD COLUMN reminder_next INTEGER")
+                    execSQL("ALTER TABLE notes ADD COLUMN reminder_count INTEGER")
+                    execSQL("ALTER TABLE notes ADD COLUMN reminder_done INTEGER")
                 }
             }
         }

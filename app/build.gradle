@@ -110,6 +110,7 @@ dependencies {
     implementation "androidx.preference:preference:$preferenceVersion"
     implementation "com.google.android.material:material:$materialVersion"
     implementation "com.google.android.gms:play-services-oss-licenses:$ossLicensesVersion"
+    implementation "com.maltaisn:recurpicker:$recurpickerVersion"
 
     // Kotlin
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion"

@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 3,
-    "identityHash": "09e4537b90c45489fbe971907b60fbde",
+    "identityHash": "4b142ad8ec00e055c377c74981e3ad21",
     "entities": [
       {
         "tableName": "notes",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `type` INTEGER NOT NULL, `title` TEXT NOT NULL, `content` TEXT NOT NULL, `metadata` TEXT NOT NULL, `added_date` INTEGER NOT NULL, `modified_date` INTEGER NOT NULL, `status` INTEGER NOT NULL, `pinned` INTEGER NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `type` INTEGER NOT NULL, `title` TEXT NOT NULL, `content` TEXT NOT NULL, `metadata` TEXT NOT NULL, `added_date` INTEGER NOT NULL, `modified_date` INTEGER NOT NULL, `status` INTEGER NOT NULL, `pinned` INTEGER NOT NULL, `reminder_start` INTEGER, `reminder_recurrence` TEXT, `reminder_next` INTEGER, `reminder_count` INTEGER, `reminder_done` INTEGER)",
         "fields": [
           {
             "fieldPath": "id",
@@ -61,6 +61,36 @@
             "columnName": "pinned",
             "affinity": "INTEGER",
             "notNull": true
+          },
+          {
+            "fieldPath": "reminder.start",
+            "columnName": "reminder_start",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "reminder.recurrence",
+            "columnName": "reminder_recurrence",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "reminder.next",
+            "columnName": "reminder_next",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "reminder.count",
+            "columnName": "reminder_count",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "reminder.done",
+            "columnName": "reminder_done",
+            "affinity": "INTEGER",
+            "notNull": false
           }
         ],
         "primaryKey": {
@@ -117,7 +147,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '09e4537b90c45489fbe971907b60fbde')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '4b142ad8ec00e055c377c74981e3ad21')"
     ]
   }
 }

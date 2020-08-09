@@ -20,6 +20,7 @@
 package com.maltaisn.notes.model.entity
 
 import androidx.room.ColumnInfo
+import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.maltaisn.notes.model.converter.DateTimeConverter
@@ -100,7 +101,13 @@ data class Note(
      */
     @ColumnInfo(name = "pinned")
     @SerialName("pinned")
-    val pinned: PinnedStatus
+    val pinned: PinnedStatus,
+
+    /**
+     * The note reminder, or `null` if none is set.
+     */
+    @Embedded(prefix = "reminder_")
+    val reminder: Reminder?
 ) {
 
     init {
@@ -119,6 +126,10 @@ data class Note(
         }
         require(status == NoteStatus.ACTIVE || pinned == PinnedStatus.CANT_PIN) {
             "Archived or deleted note must not be pinnable."
+        }
+
+        require(status != NoteStatus.DELETED || reminder ==  null) {
+            "Deleted note cannot have a reminder."
         }
     }
 

@@ -70,7 +70,8 @@ class MainViewModel @Inject constructor(
                 date,
                 date,
                 NoteStatus.ACTIVE,
-                PinnedStatus.UNPINNED)
+                PinnedStatus.UNPINNED,
+                null)
             val id = notesRepository.insertNote(note)
             _editNoteEvent.send(id)
         }

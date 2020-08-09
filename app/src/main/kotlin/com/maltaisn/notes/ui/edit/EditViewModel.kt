@@ -529,7 +529,7 @@ class EditViewModel @Inject constructor(
 
     companion object {
         private val BLANK_NOTE = Note(Note.NO_ID, NoteType.TEXT, "", "",
-            BlankNoteMetadata, Date(0), Date(0), NoteStatus.ACTIVE, PinnedStatus.UNPINNED)
+            BlankNoteMetadata, Date(0), Date(0), NoteStatus.ACTIVE, PinnedStatus.UNPINNED, null)
 
         /** Minimum items needed for dragging. (title + 2 items + add new) */
         private const val MIN_DRAG_ITEMS = 4
