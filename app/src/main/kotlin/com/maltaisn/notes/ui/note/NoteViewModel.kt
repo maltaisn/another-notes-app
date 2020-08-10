@@ -254,12 +254,16 @@ abstract class NoteViewModel(
             else -> PinnedStatus.PINNED
         }
 
-        _currentSelection.value = NoteSelection(selectedNotes.size, selectedNoteStatus, pinned)
+        // If any note has a reminder, consider whole selection has a reminder,
+        // so the single note reminder can be deleted.
+        val hasReminder = selectedNotes.any { it.reminder != null }
+
+        _currentSelection.value = NoteSelection(selectedNotes.size, selectedNoteStatus, pinned, hasReminder)
     }
 
     /** Save [selectedNotes] to [savedStateHandle]. */
     private fun saveNoteSelectionState() {
-        savedStateHandle.set(KEY_SELECTED_IDS, selectedNotes.mapTo(ArrayList<Long>()) { it.id })
+        savedStateHandle.set(KEY_SELECTED_IDS, selectedNotes.mapTo(ArrayList()) { it.id })
     }
 
     /** Change the status of [notes] to [newStatus]. */
@@ -330,7 +334,12 @@ abstract class NoteViewModel(
         listItems = newList
     }
 
-    data class NoteSelection(val count: Int, val status: NoteStatus?, val pinned: PinnedStatus)
+    data class NoteSelection(
+        val count: Int,
+        val status: NoteStatus?,
+        val pinned: PinnedStatus,
+        val hasReminder: Boolean
+    )
 
     companion object {
         private const val KEY_SELECTED_IDS = "selected_ids"

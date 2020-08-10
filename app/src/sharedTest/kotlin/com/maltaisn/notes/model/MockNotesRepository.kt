@@ -48,6 +48,12 @@ class MockNotesRepository : NotesRepository {
     var lastAddedNote: Note? = null
         private set
 
+    /**
+     * Number of notes in database.
+     */
+    val size: Int
+        get() = notes.size
+
     private val changeChannel = ConflatedBroadcastChannel(Unit)
 
     fun addNote(note: Note): Long {

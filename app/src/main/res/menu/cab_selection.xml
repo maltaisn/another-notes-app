@@ -30,9 +30,17 @@
         />
 
     <item
+        android:id="@+id/item_reminder"
+        android:icon="@drawable/ic_alarm"
+        android:showAsAction="ifRoom"
+        android:title="@null"
+        tools:title="@string/action_reminder_add"
+        />
+
+    <item
         android:id="@+id/item_move"
         android:icon="@null"
-        android:showAsAction="always"
+        android:showAsAction="ifRoom"
         android:title="@null"
         tools:icon="@drawable/ic_archive"
         tools:title="@string/action_archive"

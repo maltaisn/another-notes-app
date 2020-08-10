@@ -48,6 +48,14 @@
         />
 
     <item
+        android:id="@+id/item_reminder"
+        android:icon="@drawable/ic_alarm"
+        android:title="@null"
+        app:showAsAction="ifRoom"
+        tools:title="@string/action_reminder_add"
+        />
+
+    <item
         android:id="@+id/item_share"
         android:icon="@drawable/ic_share"
         android:title="@string/action_share"

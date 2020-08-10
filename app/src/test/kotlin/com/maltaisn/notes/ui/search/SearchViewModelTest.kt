@@ -107,7 +107,7 @@ class SearchViewModelTest {
         mainCoroutineRule.runBlockingTest {
             searchNotesAndWait("3")
             viewModel.onNoteItemLongClicked(getNoteItemAt(0), 0)
-            assertEquals(NoteViewModel.NoteSelection(1, NoteStatus.ACTIVE, PinnedStatus.UNPINNED),
+            assertEquals(NoteViewModel.NoteSelection(1, NoteStatus.ACTIVE, PinnedStatus.UNPINNED, false),
                 viewModel.currentSelection.getOrAwaitValue())
         }
 
@@ -116,7 +116,7 @@ class SearchViewModelTest {
         mainCoroutineRule.runBlockingTest {
             searchNotesAndWait("3")
             viewModel.onNoteItemLongClicked(getNoteItemAt(2), 2)
-            assertEquals(NoteSelection(1, NoteStatus.ARCHIVED, PinnedStatus.CANT_PIN),
+            assertEquals(NoteSelection(1, NoteStatus.ARCHIVED, PinnedStatus.CANT_PIN, false),
                 viewModel.currentSelection.getOrAwaitValue())
         }
 
@@ -126,7 +126,7 @@ class SearchViewModelTest {
             searchNotesAndWait("3")
             viewModel.onNoteItemLongClicked(getNoteItemAt(0), 0)
             viewModel.onNoteItemLongClicked(getNoteItemAt(2), 2)
-            assertEquals(NoteSelection(2, NoteStatus.ACTIVE, PinnedStatus.UNPINNED),
+            assertEquals(NoteSelection(2, NoteStatus.ACTIVE, PinnedStatus.UNPINNED, false),
                 viewModel.currentSelection.getOrAwaitValue())
         }
 

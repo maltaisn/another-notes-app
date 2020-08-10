@@ -27,6 +27,8 @@ import com.maltaisn.notes.model.entity.ListNoteItem
 import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.model.entity.NoteStatus
 import com.maltaisn.notes.model.entity.NoteType
+import com.maltaisn.notes.model.entity.PinnedStatus
+import com.maltaisn.notes.model.entity.Reminder
 import com.maltaisn.notes.testNote
 import com.maltaisn.notes.ui.ShareData
 import com.maltaisn.notes.ui.StatusChange
@@ -77,7 +79,8 @@ class EditViewModelTest {
         notesRepo.addNote(listNote(listOf(
             ListNoteItem("item 1", false),
             ListNoteItem("item 2", false)
-        ), id = 3, title = "title", status = NoteStatus.ACTIVE))
+        ), id = 3, title = "title", status = NoteStatus.ACTIVE, pinned = PinnedStatus.PINNED,
+            reminder = Reminder(Date(10), null, Date(10), 1, false)))
 
         // Sample deleted notes
         notesRepo.addNote(testNote(id = 4, title = "title",
@@ -138,33 +141,31 @@ class EditViewModelTest {
     }
 
     @Test
-    fun `should open existing text note in trash, not editable`() =
-        mainCoroutineRule.runBlockingTest {
-            viewModel.start(4)
+    fun `should open existing text note in trash, not editable`() = mainCoroutineRule.runBlockingTest {
+        viewModel.start(4)
 
-            assertEquals(viewModel.noteStatus.getOrAwaitValue(), NoteStatus.DELETED)
-            assertEquals(viewModel.noteType.getOrAwaitValue(), NoteType.TEXT)
+        assertEquals(viewModel.noteStatus.getOrAwaitValue(), NoteStatus.DELETED)
+        assertEquals(viewModel.noteType.getOrAwaitValue(), NoteType.TEXT)
 
-            assertEquals(listOf(
-                EditTitleItem(DefaultEditableText("title"), false),
-                EditContentItem(DefaultEditableText("content"), false)
-            ), viewModel.editItems.getOrAwaitValue())
-        }
+        assertEquals(listOf(
+            EditTitleItem(DefaultEditableText("title"), false),
+            EditContentItem(DefaultEditableText("content"), false)
+        ), viewModel.editItems.getOrAwaitValue())
+    }
 
     @Test
-    fun `should open existing list note in trash, not editable`() =
-        mainCoroutineRule.runBlockingTest {
-            viewModel.start(5)
+    fun `should open existing list note in trash, not editable`() = mainCoroutineRule.runBlockingTest {
+        viewModel.start(5)
 
-            assertEquals(NoteStatus.DELETED, viewModel.noteStatus.getOrAwaitValue())
-            assertEquals(NoteType.LIST, viewModel.noteType.getOrAwaitValue())
+        assertEquals(NoteStatus.DELETED, viewModel.noteStatus.getOrAwaitValue())
+        assertEquals(NoteType.LIST, viewModel.noteType.getOrAwaitValue())
 
-            assertEquals(listOf(
-                EditTitleItem(DefaultEditableText("title"), false),
-                EditItemItem(DefaultEditableText("item 1"), checked = true, editable = false),
-                EditItemItem(DefaultEditableText("item 2"), checked = false, editable = false)
-            ), viewModel.editItems.getOrAwaitValue())
-        }
+        assertEquals(listOf(
+            EditTitleItem(DefaultEditableText("title"), false),
+            EditItemItem(DefaultEditableText("item 1"), checked = true, editable = false),
+            EditItemItem(DefaultEditableText("item 2"), checked = false, editable = false)
+        ), viewModel.editItems.getOrAwaitValue())
+    }
 
     @Test
     fun `should save changed text note`() = mainCoroutineRule.runBlockingTest {
@@ -230,16 +231,15 @@ class EditViewModelTest {
     }
 
     @Test
-    fun `should convert list note without checked items to text note`() =
-        mainCoroutineRule.runBlockingTest {
-            viewModel.start(3)
-            viewModel.toggleNoteType()
+    fun `should convert list note without checked items to text note`() = mainCoroutineRule.runBlockingTest {
+        viewModel.start(3)
+        viewModel.toggleNoteType()
 
-            assertEquals(listOf(
-                EditTitleItem(DefaultEditableText("title"), true),
-                EditContentItem(DefaultEditableText("- item 1\n- item 2"), true)
-            ), viewModel.editItems.getOrAwaitValue())
-        }
+        assertEquals(listOf(
+            EditTitleItem(DefaultEditableText("title"), true),
+            EditContentItem(DefaultEditableText("- item 1\n- item 2"), true)
+        ), viewModel.editItems.getOrAwaitValue())
+    }
 
     @Test
     fun `should ask user to delete items before converting list note with checked items`() =
@@ -251,28 +251,26 @@ class EditViewModelTest {
         }
 
     @Test
-    fun `should convert list note to text note deleting checked items`() =
-        mainCoroutineRule.runBlockingTest {
-            viewModel.start(2)
-            viewModel.convertToText(false)
+    fun `should convert list note to text note deleting checked items`() = mainCoroutineRule.runBlockingTest {
+        viewModel.start(2)
+        viewModel.convertToText(false)
 
-            assertEquals(listOf(
-                EditTitleItem(DefaultEditableText("title"), true),
-                EditContentItem(DefaultEditableText("- item 2"), true)
-            ), viewModel.editItems.getOrAwaitValue())
-        }
+        assertEquals(listOf(
+            EditTitleItem(DefaultEditableText("title"), true),
+            EditContentItem(DefaultEditableText("- item 2"), true)
+        ), viewModel.editItems.getOrAwaitValue())
+    }
 
     @Test
-    fun `should convert list note to text note keeping checked items`() =
-        mainCoroutineRule.runBlockingTest {
-            viewModel.start(2)
-            viewModel.convertToText(true)
+    fun `should convert list note to text note keeping checked items`() = mainCoroutineRule.runBlockingTest {
+        viewModel.start(2)
+        viewModel.convertToText(true)
 
-            assertEquals(listOf(
-                EditTitleItem(DefaultEditableText("title"), true),
-                EditContentItem(DefaultEditableText("- item 1\n- item 2"), true)
-            ), viewModel.editItems.getOrAwaitValue())
-        }
+        assertEquals(listOf(
+            EditTitleItem(DefaultEditableText("title"), true),
+            EditContentItem(DefaultEditableText("- item 1\n- item 2"), true)
+        ), viewModel.editItems.getOrAwaitValue())
+    }
 
     @Test
     fun `should move active note to archive`() = mainCoroutineRule.runBlockingTest {
@@ -456,18 +454,17 @@ class EditViewModelTest {
     }
 
     @Test
-    fun `should not delete checked items in deleted list note`() =
-        mainCoroutineRule.runBlockingTest {
-            viewModel.start(5)
-            viewModel.deleteCheckedItems()
+    fun `should not delete checked items in deleted list note`() = mainCoroutineRule.runBlockingTest {
+        viewModel.start(5)
+        viewModel.deleteCheckedItems()
 
-            assertEquals(listOf(
-                EditTitleItem(DefaultEditableText("title"), false),
-                EditItemItem(DefaultEditableText("item 1"), checked = true, editable = false),
-                EditItemItem(DefaultEditableText("item 2"), checked = false, editable = false)
-            ), viewModel.editItems.getOrAwaitValue())
-            assertLiveDataEventSent(viewModel.messageEvent, EditMessage.CANT_EDIT_IN_TRASH)
-        }
+        assertEquals(listOf(
+            EditTitleItem(DefaultEditableText("title"), false),
+            EditItemItem(DefaultEditableText("item 1"), checked = true, editable = false),
+            EditItemItem(DefaultEditableText("item 2"), checked = false, editable = false)
+        ), viewModel.editItems.getOrAwaitValue())
+        assertLiveDataEventSent(viewModel.messageEvent, EditMessage.CANT_EDIT_IN_TRASH)
+    }
 
     @Test
     fun `should split list note item on new line`() = mainCoroutineRule.runBlockingTest {
@@ -490,61 +487,58 @@ class EditViewModelTest {
     }
 
     @Test
-    fun `should split list note item in multiple items on paste`() =
-        mainCoroutineRule.runBlockingTest {
-            viewModel.start(2)
+    fun `should split list note item in multiple items on paste`() = mainCoroutineRule.runBlockingTest {
+        viewModel.start(2)
 
-            val item = viewModel.editItems.getOrAwaitValue()[1] as EditItemItem
-            item.content.append("\nnew item first\nnew item second")
+        val item = viewModel.editItems.getOrAwaitValue()[1] as EditItemItem
+        item.content.append("\nnew item first\nnew item second")
 
-            viewModel.onNoteItemChanged(item, 1, true)
+        viewModel.onNoteItemChanged(item, 1, true)
 
-            assertEquals(listOf(
-                EditTitleItem(DefaultEditableText("title"), true),
-                EditItemItem(DefaultEditableText("item 1"), checked = true, editable = true),
-                EditItemItem(DefaultEditableText("new item first"),
-                    checked = false,
-                    editable = true),
-                EditItemItem(DefaultEditableText("new item second"),
-                    checked = false,
-                    editable = true),
-                EditItemItem(DefaultEditableText("item 2"), checked = false, editable = true),
-                EditItemAddItem
-            ), viewModel.editItems.getOrAwaitValue())
-            assertLiveDataEventSent(viewModel.focusEvent,
-                EditViewModel.FocusChange(3, 15, false))
-        }
-
-    @Test
-    fun `should merge list note item with previous on backspace`() =
-        mainCoroutineRule.runBlockingTest {
-            viewModel.start(2)
-            val item = viewModel.editItems.getOrAwaitValue()[2] as EditItemItem
-            viewModel.onNoteItemBackspacePressed(item, 2)
-
-            assertEquals(listOf(
-                EditTitleItem(DefaultEditableText("title"), true),
-                EditItemItem(DefaultEditableText("item 1item 2"), checked = true, editable = true),
-                EditItemAddItem
-            ), viewModel.editItems.getOrAwaitValue())
-            assertLiveDataEventSent(viewModel.focusEvent,
-                EditViewModel.FocusChange(1, 6, true))
-        }
+        assertEquals(listOf(
+            EditTitleItem(DefaultEditableText("title"), true),
+            EditItemItem(DefaultEditableText("item 1"), checked = true, editable = true),
+            EditItemItem(DefaultEditableText("new item first"),
+                checked = false,
+                editable = true),
+            EditItemItem(DefaultEditableText("new item second"),
+                checked = false,
+                editable = true),
+            EditItemItem(DefaultEditableText("item 2"), checked = false, editable = true),
+            EditItemAddItem
+        ), viewModel.editItems.getOrAwaitValue())
+        assertLiveDataEventSent(viewModel.focusEvent,
+            EditViewModel.FocusChange(3, 15, false))
+    }
 
     @Test
-    fun `should do nothing with note first item on backspace`() =
-        mainCoroutineRule.runBlockingTest {
-            viewModel.start(2)
-            val item = viewModel.editItems.getOrAwaitValue()[1] as EditItemItem
-            viewModel.onNoteItemBackspacePressed(item, 1)
+    fun `should merge list note item with previous on backspace`() = mainCoroutineRule.runBlockingTest {
+        viewModel.start(2)
+        val item = viewModel.editItems.getOrAwaitValue()[2] as EditItemItem
+        viewModel.onNoteItemBackspacePressed(item, 2)
 
-            assertEquals(listOf(
-                EditTitleItem(DefaultEditableText("title"), true),
-                EditItemItem(DefaultEditableText("item 1"), checked = true, editable = true),
-                EditItemItem(DefaultEditableText("item 2"), checked = false, editable = true),
-                EditItemAddItem
-            ), viewModel.editItems.getOrAwaitValue())
-        }
+        assertEquals(listOf(
+            EditTitleItem(DefaultEditableText("title"), true),
+            EditItemItem(DefaultEditableText("item 1item 2"), checked = true, editable = true),
+            EditItemAddItem
+        ), viewModel.editItems.getOrAwaitValue())
+        assertLiveDataEventSent(viewModel.focusEvent,
+            EditViewModel.FocusChange(1, 6, true))
+    }
+
+    @Test
+    fun `should do nothing with note first item on backspace`() = mainCoroutineRule.runBlockingTest {
+        viewModel.start(2)
+        val item = viewModel.editItems.getOrAwaitValue()[1] as EditItemItem
+        viewModel.onNoteItemBackspacePressed(item, 1)
+
+        assertEquals(listOf(
+            EditTitleItem(DefaultEditableText("title"), true),
+            EditItemItem(DefaultEditableText("item 1"), checked = true, editable = true),
+            EditItemItem(DefaultEditableText("item 2"), checked = false, editable = true),
+            EditItemAddItem
+        ), viewModel.editItems.getOrAwaitValue())
+    }
 
     @Test
     fun `should delete list note item and focus previous`() = mainCoroutineRule.runBlockingTest {
@@ -591,13 +585,12 @@ class EditViewModelTest {
     }
 
     @Test
-    fun `should show can't edit message on try to edit in trash`() =
-        mainCoroutineRule.runBlockingTest {
-            viewModel.start(5)
-            viewModel.onNoteClickedToEdit()
+    fun `should show can't edit message on try to edit in trash`() = mainCoroutineRule.runBlockingTest {
+        viewModel.start(5)
+        viewModel.onNoteClickedToEdit()
 
-            assertLiveDataEventSent(viewModel.messageEvent, EditMessage.CANT_EDIT_IN_TRASH)
-        }
+        assertLiveDataEventSent(viewModel.messageEvent, EditMessage.CANT_EDIT_IN_TRASH)
+    }
 
     @Test
     fun `should allow note drag`() = mainCoroutineRule.runBlockingTest {
@@ -627,5 +620,35 @@ class EditViewModelTest {
             ListNoteItem("item 2", false),
             ListNoteItem("item 1", true)
         ), notesRepo.lastAddedNote!!.listItems)
+    }
+
+    @Test
+    fun `should set correct pinned status (unpinned)`() = mainCoroutineRule.runBlockingTest {
+        viewModel.start(1)
+        assertEquals(PinnedStatus.UNPINNED, viewModel.notePinned.getOrAwaitValue())
+    }
+
+    @Test
+    fun `should set correct pinned status (pinned)`() = mainCoroutineRule.runBlockingTest {
+        viewModel.start(3)
+        assertEquals(PinnedStatus.PINNED, viewModel.notePinned.getOrAwaitValue())
+    }
+
+    @Test
+    fun `should set correct pinned status (can't pin)`() = mainCoroutineRule.runBlockingTest {
+        viewModel.start(4)
+        assertEquals(PinnedStatus.CANT_PIN, viewModel.notePinned.getOrAwaitValue())
+    }
+
+    @Test
+    fun `should set correct reminder (no reminder)`() = mainCoroutineRule.runBlockingTest {
+        viewModel.start(1)
+        assertNull(viewModel.noteReminder.getOrAwaitValue())
+    }
+
+    @Test
+    fun `should set correct reminder (has reminder)`() = mainCoroutineRule.runBlockingTest {
+        viewModel.start(3)
+        assertEquals(notesRepo.getById(3)!!.reminder, viewModel.noteReminder.getOrAwaitValue())
     }
 }

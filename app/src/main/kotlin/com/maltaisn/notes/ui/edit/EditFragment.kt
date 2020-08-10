@@ -37,6 +37,7 @@ import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.model.entity.NoteStatus
 import com.maltaisn.notes.model.entity.NoteType
 import com.maltaisn.notes.model.entity.PinnedStatus
+import com.maltaisn.notes.model.entity.Reminder
 import com.maltaisn.notes.showKeyboard
 import com.maltaisn.notes.sync.R
 import com.maltaisn.notes.sync.databinding.FragmentEditBinding
@@ -125,13 +126,13 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener, ConfirmDialog.
             updateItemsForPinnedStatus(pinned ?: return@Observer)
         })
 
+        viewModel.noteReminder.observe(viewLifecycleOwner, ::updateItemsForReminder)
+
         viewModel.noteType.observe(viewLifecycleOwner, Observer { type ->
             updateItemsForNoteType(type ?: return@Observer)
         })
 
-        viewModel.editItems.observe(viewLifecycleOwner, Observer { items ->
-            adapter.submitList(items)
-        })
+        viewModel.editItems.observe(viewLifecycleOwner, adapter::submitList)
 
         viewModel.focusEvent.observe(viewLifecycleOwner, EventObserver { focus ->
             adapter.setItemFocus(focus)
@@ -225,6 +226,14 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener, ConfirmDialog.
                 item.isVisible = false
             }
         }
+    }
+
+    private fun updateItemsForReminder(reminder: Reminder?) {
+        binding.toolbar.menu.findItem(R.id.item_reminder).setTitle(if (reminder != null) {
+            R.string.action_reminder_edit
+        } else {
+            R.string.action_reminder_add
+        })
     }
 
     private fun updateItemsForNoteType(type: NoteType) {

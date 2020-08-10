@@ -153,7 +153,7 @@ abstract class NoteFragment : Fragment(), ActionMode.Callback, ConfirmDialog.Cal
             menu.findItem(R.id.item_copy).isVisible = singleSelection
 
             // Pin item
-            val pinItem = it.menu.findItem(R.id.item_pin)
+            val pinItem = menu.findItem(R.id.item_pin)
             when (selection.pinned) {
                 PinnedStatus.PINNED -> {
                     pinItem.isVisible = true
@@ -169,6 +169,14 @@ abstract class NoteFragment : Fragment(), ActionMode.Callback, ConfirmDialog.Cal
                     pinItem.isVisible = false
                 }
             }
+
+            // Reminder item
+            val reminderItem = menu.findItem(R.id.item_reminder)
+            reminderItem.setTitle(if (selection.hasReminder) {
+                R.string.action_reminder_edit
+            } else {
+                R.string.action_reminder_add
+            })
 
             // Update move items depending on status
             val moveItem = menu.findItem(R.id.item_move)

@@ -29,6 +29,7 @@ import com.maltaisn.notes.model.entity.NoteMetadata
 import com.maltaisn.notes.model.entity.NoteStatus
 import com.maltaisn.notes.model.entity.NoteType
 import com.maltaisn.notes.model.entity.PinnedStatus
+import com.maltaisn.notes.model.entity.Reminder
 import com.maltaisn.notes.ui.Event
 import com.maltaisn.notes.ui.ShareData
 import com.maltaisn.notes.ui.StatusChange
@@ -69,6 +70,11 @@ class EditViewModel @Inject constructor(
     private var pinned = note.pinned
 
     /**
+     * The reminder set on the note, or `null` if none is set.
+     */
+    private var reminder: Reminder? = null
+
+    /**
      * The currently displayed list items created in [createListItems].
      */
     private var listItems = emptyList<EditListItem>()
@@ -93,6 +99,10 @@ class EditViewModel @Inject constructor(
     private val _notePinned = MutableLiveData<PinnedStatus?>()
     val notePinned: LiveData<PinnedStatus?>
         get() = _notePinned
+
+    private val _noteReminder = MutableLiveData<Reminder?>()
+    val noteReminder: LiveData<Reminder?>
+        get() = _noteReminder
 
     private val _editItems = MutableLiveData<List<EditListItem>>()
     val editItems: LiveData<List<EditListItem>>
@@ -152,10 +162,12 @@ class EditViewModel @Inject constructor(
             this@EditViewModel.note = note
             status = note.status
             pinned = note.pinned
+            reminder = note.reminder
 
             _noteType.value = note.type
             _noteStatus.value = status
             _notePinned.value = pinned
+            _noteReminder.value = reminder
 
             createListItems()
         }
@@ -224,6 +236,11 @@ class EditViewModel @Inject constructor(
             PinnedStatus.CANT_PIN -> error("Can't pin")
         }
         _notePinned.value = pinned
+    }
+
+    fun updateReminder(reminder: Reminder?) {
+        this.reminder = reminder
+        _noteReminder.value = reminder
     }
 
     fun convertToText(keepCheckedItems: Boolean) {
@@ -368,7 +385,7 @@ class EditViewModel @Inject constructor(
             }
         }
         note = note.copy(title = title, content = content,
-            metadata = metadata, status = status, pinned = pinned)
+            metadata = metadata, status = status, pinned = pinned, reminder = reminder)
     }
 
     /**
