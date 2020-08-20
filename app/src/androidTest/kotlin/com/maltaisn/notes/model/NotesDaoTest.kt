@@ -20,7 +20,7 @@ import android.content.Context
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.maltaisn.notes.model.converter.DateTimeConverter
+import com.maltaisn.notes.dateFor
 import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.model.entity.NoteStatus
 import com.maltaisn.notes.model.entity.PinnedStatus
@@ -90,7 +90,7 @@ class NotesDaoTest {
     fun getByStatusTest() = runBlocking {
         // Add 5 notes for each status, ordered by descending last modified time. Also add a pinned active note first.
         // Then compare these notes with the result of the database query.
-        val baseDate = DateTimeConverter.toDate("2020-01-01T00:00:00.000Z")
+        val baseDate = dateFor("2020-01-01T00:00:00.000Z")
         val activeNotes = mutableListOf<Note>()
 
         val pinnedNote = testNote(id = 1, status = NoteStatus.ACTIVE, added = baseDate,
@@ -129,14 +129,13 @@ class NotesDaoTest {
             "2020-01-01T00:00:00.000Z",
             "2020-01-02T00:00:00.000Z")
         val notes = dates.mapIndexed { i, dateStr ->
-            val date = DateTimeConverter.toDate(dateStr)
+            val date = dateFor(dateStr)
             testNote(id = i + 1L, added = date, modified = date,
                 status = NoteStatus.DELETED)
         }
         notesDao.insertAll(notes)
 
-        val queryNotes = notesDao.getByStatusAndDate(NoteStatus.DELETED,
-            DateTimeConverter.toDate("2020-01-01T00:00:00.000Z"))
+        val queryNotes = notesDao.getByStatusAndDate(NoteStatus.DELETED, dateFor("2020-01-01T00:00:00.000Z"))
         assertEquals(notes.subList(0, 4).toSet(), queryNotes.toSet())
     }
 

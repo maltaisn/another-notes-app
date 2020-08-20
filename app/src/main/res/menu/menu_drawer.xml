@@ -18,7 +18,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <group
-        android:id="@+id/group_note_location"
+        android:id="@+id/group_main_notes"
         android:checkableBehavior="single"
         >
 
@@ -28,6 +28,17 @@
             android:icon="@drawable/ic_text"
             android:title="@string/note_location_active"
             />
+
+        <item
+            android:id="@+id/item_reminders"
+            android:icon="@drawable/ic_alarm"
+            android:title="@string/note_reminders"
+            />
+
+    </group>
+
+    <group
+        android:id="@+id/group_other_notes">
 
         <item
             android:id="@+id/item_location_archived"

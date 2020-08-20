@@ -21,6 +21,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.maltaisn.notes.model.NotesRepository
+import com.maltaisn.notes.model.entity.Reminder
 import com.maltaisn.notes.sync.R
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -44,6 +45,10 @@ class SharedViewModel @Inject constructor(
     val statusChangeEvent: LiveData<Event<StatusChange>>
         get() = _statusChangeEvent
 
+    private val _reminderChangeEvent = MutableLiveData<Event<Reminder?>>()
+    val reminderChangeEvent: LiveData<Event<Reminder?>>
+        get() = _reminderChangeEvent
+
     fun onBlankNoteDiscarded() {
         // Not shown from EditFragment so that FAB is pushed up.
         _messageEvent.send(R.string.edit_message_blank_note_discarded)
@@ -60,5 +65,9 @@ class SharedViewModel @Inject constructor(
             notesRepository.updateNotes(change.oldNotes)
         }
         lastStatusChange = null
+    }
+
+    fun onReminderChange(reminder: Reminder?) {
+        _reminderChangeEvent.send(reminder)
     }
 }

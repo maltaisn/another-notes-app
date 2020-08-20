@@ -38,14 +38,16 @@ import com.maltaisn.notes.model.entity.NoteStatus
 import com.maltaisn.notes.model.entity.NoteType
 import com.maltaisn.notes.model.entity.PinnedStatus
 import com.maltaisn.notes.model.entity.Reminder
+import com.maltaisn.notes.navigateSafe
 import com.maltaisn.notes.showKeyboard
+import com.maltaisn.notes.sync.NavGraphDirections
 import com.maltaisn.notes.sync.R
 import com.maltaisn.notes.sync.databinding.FragmentEditBinding
 import com.maltaisn.notes.ui.EventObserver
 import com.maltaisn.notes.ui.SharedViewModel
-import com.maltaisn.notes.ui.activityViewModel
 import com.maltaisn.notes.ui.common.ConfirmDialog
 import com.maltaisn.notes.ui.edit.adapter.EditAdapter
+import com.maltaisn.notes.ui.navGraphViewModel
 import com.maltaisn.notes.ui.startSharingData
 import com.maltaisn.notes.ui.viewModel
 import javax.inject.Inject
@@ -59,7 +61,7 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener, ConfirmDialog.
 
     @Inject
     lateinit var sharedViewModelProvider: Provider<SharedViewModel>
-    private val sharedViewModel by activityViewModel { sharedViewModelProvider.get() }
+    private val sharedViewModel by navGraphViewModel(R.id.nav_graph) { sharedViewModelProvider.get() }
 
     private val args: EditFragmentArgs by navArgs()
 
@@ -118,6 +120,8 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener, ConfirmDialog.
 
     @SuppressLint("WrongConstant")
     private fun setupViewModelObservers(adapter: EditAdapter) {
+        val navController = findNavController()
+
         viewModel.noteStatus.observe(viewLifecycleOwner, Observer { status ->
             updateItemsForNoteStatus(status ?: return@Observer)
         })
@@ -175,8 +179,16 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener, ConfirmDialog.
             ).show(childFragmentManager, REMOVE_CHECKED_CONFIRM_DIALOG_TAG)
         })
 
+        viewModel.showReminderDialogEvent.observe(viewLifecycleOwner, EventObserver { noteId ->
+            navController.navigateSafe(NavGraphDirections.actionReminder(longArrayOf(noteId)))
+        })
+
+        sharedViewModel.reminderChangeEvent.observe(viewLifecycleOwner, EventObserver { reminder ->
+            viewModel.onReminderChange(reminder)
+        })
+
         viewModel.exitEvent.observe(viewLifecycleOwner, EventObserver {
-            findNavController().popBackStack()
+            navController.popBackStack()
         })
     }
 
@@ -271,6 +283,7 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener, ConfirmDialog.
             R.id.item_type -> viewModel.toggleNoteType()
             R.id.item_move -> viewModel.moveNoteAndExit()
             R.id.item_pin -> viewModel.togglePin()
+            R.id.item_reminder -> viewModel.changeReminder()
             R.id.item_share -> viewModel.shareNote()
             R.id.item_uncheck_all -> {
                 viewModel.uncheckAllItems()

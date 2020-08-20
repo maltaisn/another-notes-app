@@ -38,7 +38,6 @@ class MainActivity : AppCompatActivity() {
 
     @Inject
     lateinit var viewModelProvider: Provider<MainViewModel>
-
     private val viewModel by viewModel { viewModelProvider.get() }
 
     lateinit var drawerLayout: DrawerLayout

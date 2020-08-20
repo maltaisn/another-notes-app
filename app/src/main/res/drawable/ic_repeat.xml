@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><!--
+<!--
   Copyright 2020 Nicolas Maltais
 
   Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,13 +14,16 @@
   limitations under the License.
   -->
 
-<resources>
-
-    <dimen name="edit_dragged_item_elevation">2dp</dimen>
-
-    <integer name="note_list_layout_span_count">1</integer>
-    <integer name="note_grid_layout_span_count">2</integer>
-
-    <dimen name="reminder_dialog_max_width">500dp</dimen>
-
-</resources>
+<vector
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24"
+    android:tint="?colorControlNormal"
+    >
+    <path
+        android:fillColor="#FF000000"
+        android:pathData="M17.65,6.35C16.2,4.9 14.21,4 12,4A8,8 0,0 0,4 12A8,8 0,0 0,12 20C15.73,20 18.84,17.45 19.73,14H17.65C16.83,16.33 14.61,18 12,18A6,6 0,0 1,6 12A6,6 0,0 1,12 6C13.66,6 15.14,6.69 16.22,7.78L13,11H20V4L17.65,6.35Z"
+        />
+</vector>

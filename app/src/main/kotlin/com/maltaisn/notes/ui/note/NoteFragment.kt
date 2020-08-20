@@ -39,8 +39,8 @@ import com.maltaisn.notes.sync.databinding.FragmentNoteBinding
 import com.maltaisn.notes.ui.EventObserver
 import com.maltaisn.notes.ui.SharedViewModel
 import com.maltaisn.notes.ui.StatusChange
-import com.maltaisn.notes.ui.activityViewModel
 import com.maltaisn.notes.ui.common.ConfirmDialog
+import com.maltaisn.notes.ui.navGraphViewModel
 import com.maltaisn.notes.ui.note.adapter.NoteAdapter
 import com.maltaisn.notes.ui.note.adapter.NoteListLayoutMode
 import com.maltaisn.notes.ui.startSharingData
@@ -55,8 +55,7 @@ abstract class NoteFragment : Fragment(), ActionMode.Callback, ConfirmDialog.Cal
 
     @Inject
     lateinit var sharedViewModelProvider: Provider<SharedViewModel>
-
-    private val sharedViewModel by activityViewModel { sharedViewModelProvider.get() }
+    private val sharedViewModel by navGraphViewModel(R.id.nav_graph) { sharedViewModelProvider.get() }
 
     protected abstract val viewModel: NoteViewModel
 
@@ -84,6 +83,8 @@ abstract class NoteFragment : Fragment(), ActionMode.Callback, ConfirmDialog.Cal
     }
 
     private fun setupViewModelObservers(adapter: NoteAdapter, layoutManager: StaggeredGridLayoutManager) {
+        val navController = findNavController()
+
         viewModel.noteItems.observe(viewLifecycleOwner, Observer { items ->
             adapter.submitList(items)
         })
@@ -97,7 +98,7 @@ abstract class NoteFragment : Fragment(), ActionMode.Callback, ConfirmDialog.Cal
         })
 
         viewModel.editItemEvent.observe(viewLifecycleOwner, EventObserver { noteId ->
-            findNavController().navigateSafe(NavGraphDirections.actionEditNote(noteId))
+            navController.navigateSafe(NavGraphDirections.actionEditNote(noteId))
         })
 
         viewModel.currentSelection.observe(viewLifecycleOwner, Observer { selection ->
@@ -119,6 +120,10 @@ abstract class NoteFragment : Fragment(), ActionMode.Callback, ConfirmDialog.Cal
                 binding.placeholderImv.setImageResource(data.iconId)
                 binding.placeholderTxv.setText(data.messageId)
             }
+        })
+
+        viewModel.showReminderDialogEvent.observe(viewLifecycleOwner, EventObserver {
+            navController.navigateSafe(NavGraphDirections.actionReminder(it.toLongArray()))
         })
 
         viewModel.showDeleteConfirmEvent.observe(viewLifecycleOwner, EventObserver {
@@ -237,6 +242,7 @@ abstract class NoteFragment : Fragment(), ActionMode.Callback, ConfirmDialog.Cal
     override fun onActionItemClicked(mode: ActionMode, item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.item_pin -> viewModel.togglePin()
+            R.id.item_reminder -> viewModel.createReminder()
             R.id.item_move -> viewModel.moveSelectedNotes()
             R.id.item_select_all -> viewModel.selectAll()
             R.id.item_share -> viewModel.shareSelectedNote()

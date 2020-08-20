@@ -19,10 +19,10 @@ package com.maltaisn.notes.ui.edit
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.maltaisn.notes.MainCoroutineRule
 import com.maltaisn.notes.assertNoteEquals
+import com.maltaisn.notes.dateFor
 import com.maltaisn.notes.listNote
 import com.maltaisn.notes.model.MockNotesRepository
 import com.maltaisn.notes.model.PrefsManager
-import com.maltaisn.notes.model.converter.DateTimeConverter
 import com.maltaisn.notes.model.entity.ListNoteItem
 import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.model.entity.NoteStatus
@@ -70,8 +70,8 @@ class EditViewModelTest {
         // Sample active notes
         notesRepo.addNote(testNote(id = 1, title = "title",
             content = "content", status = NoteStatus.ACTIVE,
-            added = DateTimeConverter.toDate("2018-01-01T00:00:00.000Z"),
-            modified = DateTimeConverter.toDate("2019-01-01T00:00:00.000Z")))
+            added = dateFor("2018-01-01T00:00:00.000Z"),
+            modified = dateFor("2019-01-01T00:00:00.000Z")))
         notesRepo.addNote(listNote(listOf(
             ListNoteItem("item 1", true),
             ListNoteItem("item 2", false)
@@ -214,7 +214,7 @@ class EditViewModelTest {
         viewModel.exit()
 
         assertNull(notesRepo.getById(notesRepo.lastId))
-        assertLiveDataEventSent(viewModel.exitEvent, Unit)
+        assertLiveDataEventSent(viewModel.exitEvent)
         assertLiveDataEventSent(viewModel.messageEvent, EditMessage.BLANK_NOTE_DISCARDED)
     }
 
@@ -247,7 +247,7 @@ class EditViewModelTest {
             viewModel.start(2)
             viewModel.toggleNoteType()
 
-            assertLiveDataEventSent(viewModel.showRemoveCheckedConfirmEvent, Unit)
+            assertLiveDataEventSent(viewModel.showRemoveCheckedConfirmEvent)
         }
 
     @Test
@@ -281,11 +281,11 @@ class EditViewModelTest {
 
         assertNoteEquals(testNote(
             title = "title", content = "content", status = NoteStatus.ARCHIVED,
-            added = DateTimeConverter.toDate("2018-01-01T00:00:00.000Z"),
+            added = dateFor("2018-01-01T00:00:00.000Z"),
             modified = Date()), notesRepo.getById(1)!!)
         assertLiveDataEventSent(viewModel.statusChangeEvent,
             StatusChange(listOf(oldNote), NoteStatus.ACTIVE, NoteStatus.ARCHIVED))
-        assertLiveDataEventSent(viewModel.exitEvent, Unit)
+        assertLiveDataEventSent(viewModel.exitEvent)
     }
 
     @Test
@@ -300,7 +300,7 @@ class EditViewModelTest {
             added = oldNote.addedDate, modified = Date()), notesRepo.getById(6)!!)
         assertLiveDataEventSent(viewModel.statusChangeEvent,
             StatusChange(listOf(oldNote), NoteStatus.ARCHIVED, NoteStatus.ACTIVE))
-        assertLiveDataEventSent(viewModel.exitEvent, Unit)
+        assertLiveDataEventSent(viewModel.exitEvent)
     }
 
     @Test
@@ -315,7 +315,7 @@ class EditViewModelTest {
             added = oldNote.addedDate, modified = Date()), notesRepo.getById(4)!!)
         assertLiveDataEventSent(viewModel.statusChangeEvent,
             StatusChange(listOf(oldNote), NoteStatus.DELETED, NoteStatus.ACTIVE))
-        assertLiveDataEventSent(viewModel.exitEvent, Unit)
+        assertLiveDataEventSent(viewModel.exitEvent)
     }
 
     @Test
@@ -395,7 +395,7 @@ class EditViewModelTest {
             lastModifiedDate = Date()))
         assertLiveDataEventSent(viewModel.statusChangeEvent,
             StatusChange(listOf(oldNote), NoteStatus.ARCHIVED, NoteStatus.DELETED))
-        assertLiveDataEventSent(viewModel.exitEvent, Unit)
+        assertLiveDataEventSent(viewModel.exitEvent)
     }
 
     @Test
@@ -403,7 +403,7 @@ class EditViewModelTest {
         viewModel.start(4)
         viewModel.deleteNote()
 
-        assertLiveDataEventSent(viewModel.showDeleteConfirmEvent, Unit)
+        assertLiveDataEventSent(viewModel.showDeleteConfirmEvent)
     }
 
     @Test
@@ -412,7 +412,7 @@ class EditViewModelTest {
         viewModel.deleteNoteForeverAndExit()
 
         assertNull(notesRepo.getById(4))
-        assertLiveDataEventSent(viewModel.exitEvent, Unit)
+        assertLiveDataEventSent(viewModel.exitEvent)
     }
 
     @Test

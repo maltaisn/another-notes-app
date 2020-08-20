@@ -14,7 +14,7 @@
   limitations under the License.
   -->
 
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
     <style name="NoteListItemCardStyle">
         <item name="android:background">?colorOnSurface</item>
@@ -61,6 +61,25 @@
 
     <style name="ActionModeTitleStyle" parent="TextAppearance.AppCompat.Widget.ActionMode.Title">
         <item name="android:textColor">?colorControlNormal</item>
+    </style>
+
+    <style name="BoxInputLayoutStyle" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="boxBackgroundColor" tools:ignore="PrivateResource">@color/mtrl_filled_background_color</item>
+        <item name="boxStrokeWidth">0dp</item>
+        <item name="boxStrokeWidthFocused">0dp</item>
+        <item name="hintEnabled">false</item>
+    </style>
+
+    <style name="BoxInputStyle">
+        <item name="android:textAppearance">?textAppearanceBody1</item>
+        <item name="android:gravity">center</item>
+        <item name="boxStrokeColor">@null</item>
+        <item name="android:paddingTop">12dp</item>
+        <item name="android:paddingBottom">12dp</item>
+        <item name="android:cursorVisible">false</item>
+        <item name="android:focusable">false</item>
+        <item name="android:focusableInTouchMode">false</item>
+        <item name="android:inputType">none|textNoSuggestions</item>
     </style>
 
 </resources>

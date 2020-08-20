@@ -202,7 +202,7 @@ class HomeViewModelTest {
     @Test
     fun `should show empty trash confirm`() = mainCoroutineRule.runBlockingTest {
         viewModel.emptyTrashPre()
-        assertLiveDataEventSent(viewModel.showEmptyTrashDialogEvent, Unit)
+        assertLiveDataEventSent(viewModel.showEmptyTrashDialogEvent)
     }
 
     @Test

@@ -16,8 +16,8 @@
 
 package com.maltaisn.notes.model.entity
 
+import com.maltaisn.notes.dateFor
 import com.maltaisn.notes.listNote
-import com.maltaisn.notes.model.converter.DateTimeConverter
 import com.maltaisn.notes.testNote
 import com.maltaisn.recurpicker.Recurrence
 import com.maltaisn.recurpicker.RecurrenceFinder
@@ -62,8 +62,8 @@ class NoteTest {
     fun `should fail to create note with added date after last modified`() {
         assertFailsWith<IllegalArgumentException> {
             testNote(type = NoteType.TEXT,
-                added = DateTimeConverter.toDate("2020-01-01T00:00:00.000Z"),
-                modified = DateTimeConverter.toDate("2019-12-31T23:59:59.999Z"))
+                added = dateFor("2020-01-01T00:00:00.000Z"),
+                modified = dateFor("2019-12-31T23:59:59.999Z"))
         }
     }
 
@@ -88,7 +88,7 @@ class NoteTest {
     fun `should fail to create deleted note with reminder`() {
         assertFailsWith<IllegalArgumentException> {
             testNote(status = NoteStatus.DELETED, reminder = Reminder.create(
-                DateTimeConverter.toDate("2020-07-29T00:00:00.000Z"),
+                dateFor("2020-07-29T00:00:00.000Z"),
                 Recurrence.DOES_NOT_REPEAT, RecurrenceFinder()))
         }
     }

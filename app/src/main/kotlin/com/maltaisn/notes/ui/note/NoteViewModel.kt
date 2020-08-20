@@ -110,6 +110,10 @@ abstract class NoteViewModel(
     val placeholderData: LiveData<PlaceholderData?>
         get() = _placeholderData
 
+    private val _showReminderDialogEvent = MutableLiveData<Event<List<Long>>>()
+    val showReminderDialogEvent: LiveData<Event<List<Long>>>
+        get() = _showReminderDialogEvent
+
     private val _showDeletedForeverConfirmEvent = MutableLiveData<Event<Unit>>()
     val showDeleteConfirmEvent: LiveData<Event<Unit>>
         get() = _showDeletedForeverConfirmEvent
@@ -162,6 +166,10 @@ abstract class NoteViewModel(
             }
             notesRepository.updateNotes(newNotes)
         }
+    }
+
+    fun createReminder() {
+        _showReminderDialogEvent.send(selectedNotes.map { it.id })
     }
 
     fun toggleListLayoutMode() {

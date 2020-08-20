@@ -18,12 +18,23 @@ package com.maltaisn.notes
 
 import androidx.navigation.NavController
 import androidx.navigation.NavDirections
+import androidx.navigation.NavGraph
 
+/**
+ * Navigate safely to another destination with [directions]. If the action is marked as single top,
+ * this will prevent adding the same destination to the backstack more than once.
+ */
 fun NavController.navigateSafe(directions: NavDirections) {
-    try {
-        this.navigate(directions)
-    } catch (e: IllegalArgumentException) {
-        // "navigation destination ___ is unknown to this NavController".
-        // This happens if user presses two buttons at the same time for example.
+    // Get action by ID. If action doesn't exist, return.
+    val action = (currentDestination ?: graph).getAction(directions.actionId) ?: return
+    var destId = action.destinationId
+    val dest = graph.findNode(destId)
+    if (dest is NavGraph) {
+        // Action destination is a nested graph, which isn't a real destination.
+        // The real destination is the start destination of that graph so resolve it.
+        destId = dest.startDestination
+    }
+    if (currentDestination?.id != destId) {
+        navigate(directions)
     }
 }

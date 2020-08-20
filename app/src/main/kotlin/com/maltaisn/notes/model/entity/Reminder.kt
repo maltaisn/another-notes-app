@@ -109,7 +109,8 @@ data class Reminder(
             val date = if (recurrence == null) {
                 start
             } else {
-                Date(recurrenceFinder.find(recurrence, start.time, 1).first())
+                Date(recurrenceFinder.find(recurrence, start.time, 1).firstOrNull()
+                    ?: throw IllegalArgumentException("Recurring reminder has no events."))
             }
             return Reminder(start, recurrence, date, 1, false)
         }

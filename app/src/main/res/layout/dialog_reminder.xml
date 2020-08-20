@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  Copyright 2020 Nicolas Maltais
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  -->
+
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingTop="8dp"
+    >
+
+    <ImageView
+        android:id="@+id/date_imv"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        app:layout_constraintBottom_toBottomOf="@id/date_foreground_view"
+        app:layout_constraintStart_toStartOf="@id/date_foreground_view"
+        app:layout_constraintTop_toTopOf="@id/date_foreground_view"
+        android:layout_marginStart="16dp"
+        android:src="@drawable/ic_calendar"
+        android:importantForAccessibility="no"
+        />
+
+    <TextView
+        android:id="@+id/date_label_txv"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="@id/date_foreground_view"
+        app:layout_constraintEnd_toStartOf="@id/date_input_layout"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/date_foreground_view"
+        android:layout_marginStart="56dp"
+        android:layout_marginEnd="16dp"
+        android:text="@string/reminder_date"
+        android:textAppearance="?textAppearanceBody1"
+        />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/date_input_layout"
+        style="@style/BoxInputLayoutStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="@id/date_foreground_view"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="4dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="16dp"
+        android:paddingTop="4dp"
+        android:paddingBottom="4dp"
+        >
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/date_input"
+            style="@style/BoxInputStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="29 Dec. 2020"
+            />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <View
+        android:id="@+id/date_foreground_view"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="@id/date_input_layout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/date_input_layout"
+        android:background="?selectableItemBackground"
+        android:clickable="true"
+        android:focusable="true"
+        />
+
+    <ImageView
+        android:id="@+id/time_imv"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        app:layout_constraintBottom_toBottomOf="@id/time_foreground_view"
+        app:layout_constraintStart_toStartOf="@id/time_foreground_view"
+        app:layout_constraintTop_toTopOf="@id/time_foreground_view"
+        android:layout_marginStart="16dp"
+        android:src="@drawable/ic_clock_outline"
+        android:importantForAccessibility="no"
+        />
+
+    <TextView
+        android:id="@+id/time_label_txv"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@id/invalid_time_txv"
+        app:layout_constraintEnd_toStartOf="@id/time_input_layout"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/time_foreground_view"
+        app:layout_constraintVertical_chainStyle="packed"
+        android:layout_marginStart="56dp"
+        android:layout_marginEnd="16dp"
+        android:text="@string/reminder_time"
+        android:textAppearance="?textAppearanceBody1"
+        />
+
+    <TextView
+        android:id="@+id/invalid_time_txv"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="@id/time_foreground_view"
+        app:layout_constraintEnd_toStartOf="@id/time_input_layout"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/time_label_txv"
+        android:layout_marginTop="4dp"
+        android:layout_marginStart="56dp"
+        android:layout_marginEnd="16dp"
+        android:textAppearance="?textAppearanceCaption"
+        android:textColor="?colorError"
+        android:text="@string/reminder_invalid_time"
+        android:visibility="gone"
+        tools:visibility="visible"
+        />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/time_input_layout"
+        style="@style/BoxInputLayoutStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="@id/time_foreground_view"
+        app:layout_constraintTop_toBottomOf="@id/date_foreground_view"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="16dp"
+        android:paddingTop="4dp"
+        android:paddingBottom="4dp"
+        >
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/time_input"
+            style="@style/BoxInputStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minWidth="80dp"
+            tools:text="19:11"
+            />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <View
+        android:id="@+id/time_foreground_view"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="@id/time_input_layout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/time_input_layout"
+        android:background="?selectableItemBackground"
+        android:clickable="true"
+        android:focusable="true"
+        />
+
+    <ImageView
+        android:id="@+id/recurrence_imv"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        app:layout_constraintBottom_toBottomOf="@id/recurrence_foreground_view"
+        app:layout_constraintStart_toStartOf="@id/recurrence_foreground_view"
+        app:layout_constraintTop_toTopOf="@id/recurrence_foreground_view"
+        android:layout_marginStart="16dp"
+        android:src="@drawable/ic_repeat"
+        android:importantForAccessibility="no"
+        />
+
+    <TextView
+        android:id="@+id/recurrence_txv"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="@id/recurrence_foreground_view"
+        app:layout_constraintStart_toStartOf="@id/recurrence_foreground_view"
+        app:layout_constraintTop_toBottomOf="@id/time_input_layout"
+        android:layout_marginTop="4dp"
+        android:layout_marginStart="56dp"
+        android:layout_marginEnd="16dp"
+        android:paddingTop="12dp"
+        android:paddingBottom="12dp"
+        android:textAppearance="?textAppearanceBody1"
+        tools:text="Does not repeat"
+        />
+
+    <View
+        android:id="@+id/recurrence_foreground_view"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="@id/recurrence_txv"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/recurrence_txv"
+        android:background="?selectableItemBackground"
+        android:clickable="true"
+        android:focusable="true"
+        />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

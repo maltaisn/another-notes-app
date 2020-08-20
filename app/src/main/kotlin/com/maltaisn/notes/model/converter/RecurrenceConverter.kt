@@ -33,16 +33,16 @@ object RecurrenceConverter : KSerializer<Recurrence> {
 
     @TypeConverter
     @JvmStatic
-    fun toRecurrence(rrule: String) = rruleFormatter.parse(rrule)
+    fun toRecurrence(rrule: String?) = rrule?.let { rruleFormatter.parse(it) }
 
     @TypeConverter
     @JvmStatic
-    fun toRRule(recurrence: Recurrence) = rruleFormatter.format(recurrence)
+    fun toRRule(recurrence: Recurrence?) = recurrence?.let { rruleFormatter.format(it) }
 
     override val descriptor = PrimitiveDescriptor("Recurrence", PrimitiveKind.STRING)
 
     override fun serialize(encoder: Encoder, value: Recurrence) =
-        encoder.encodeString(toRRule(value))
+        encoder.encodeString(toRRule(value)!!)
 
-    override fun deserialize(decoder: Decoder) = toRecurrence(decoder.decodeString())
+    override fun deserialize(decoder: Decoder) = toRecurrence(decoder.decodeString())!!
 }

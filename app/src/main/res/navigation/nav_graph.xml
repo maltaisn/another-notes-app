@@ -66,4 +66,62 @@
         app:destination="@id/fragment_edit"
         />
 
+    <navigation
+        android:id="@+id/nav_graph_reminder"
+        app:startDestination="@id/dialog_reminder"
+        >
+
+        <dialog
+            android:id="@+id/dialog_reminder"
+            android:name="com.maltaisn.notes.ui.reminder.ReminderDialog"
+            tools:layout="@layout/dialog_reminder"
+            >
+            <argument
+                android:name="noteIds"
+                app:argType="long[]"
+                />
+            <action
+                android:id="@+id/action_reminder_date"
+                app:destination="@id/dialog_reminder_date"
+                />
+            <action
+                android:id="@+id/action_reminder_time"
+                app:destination="@id/dialog_reminder_time"
+                />
+        </dialog>
+
+        <dialog
+            android:id="@+id/dialog_reminder_date"
+            android:name="com.maltaisn.notes.ui.reminder.ReminderDateDialog"
+            tools:layout="@layout/dialog_reminder_date"
+            >
+            <argument
+                android:name="date"
+                app:argType="long"
+                />
+        </dialog>
+
+        <dialog
+            android:id="@+id/dialog_reminder_time"
+            android:name="com.maltaisn.notes.ui.reminder.ReminderTimeDialog"
+            tools:layout="@layout/dialog_reminder_time"
+            >
+            <argument
+                android:name="date"
+                app:argType="long"
+                />
+        </dialog>
+
+    </navigation>
+
+    <action
+        android:id="@+id/action_reminder"
+        app:destination="@id/nav_graph_reminder"
+        >
+        <argument
+            android:name="noteIds"
+            app:argType="long[]"
+            />
+    </action>
+
 </navigation>

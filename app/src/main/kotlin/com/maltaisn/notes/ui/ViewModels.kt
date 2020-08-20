@@ -18,6 +18,7 @@ package com.maltaisn.notes.ui
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.annotation.IdRes
 import androidx.annotation.MainThread
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.AbstractSavedStateViewModelFactory
@@ -25,6 +26,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelLazy
 import androidx.lifecycle.ViewModelStoreOwner
+import androidx.navigation.fragment.findNavController
 import androidx.savedstate.SavedStateRegistryOwner
 import kotlin.reflect.KClass
 
@@ -49,14 +51,18 @@ inline fun <reified VM : ViewModel> Fragment.viewModel(
 )
 
 @MainThread
-inline fun <reified VM : ViewModel> Fragment.activityViewModel(
+inline fun <reified VM : ViewModel> Fragment.navGraphViewModel(
+    @IdRes navGraphId: Int,
     noinline provider: (SavedStateHandle) -> VM
-) = createLazyViewModel(
-    viewModelClass = VM::class,
-    savedStateRegistryOwnerProducer = { requireActivity() },
-    viewModelStoreOwnerProducer = { requireActivity() },
-    viewModelProvider = provider
-)
+): Lazy<VM> {
+    val backStackEntry by lazy { findNavController().getBackStackEntry(navGraphId) }
+    return createLazyViewModel(
+        viewModelClass = VM::class,
+        savedStateRegistryOwnerProducer = { backStackEntry },
+        viewModelStoreOwnerProducer = { backStackEntry },
+        viewModelProvider = provider
+    )
+}
 
 fun <VM : ViewModel> createLazyViewModel(
     viewModelClass: KClass<VM>,

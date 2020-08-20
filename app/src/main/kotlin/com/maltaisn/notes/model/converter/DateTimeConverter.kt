@@ -54,13 +54,10 @@ object DateTimeConverter : KSerializer<Date> {
     @JvmStatic
     fun toLong(date: Date) = date.time
 
-    // This is only used for testing
-    fun toDate(str: String) = dateFormat.parse(str)!!
-
     override val descriptor = PrimitiveDescriptor("Date", PrimitiveKind.STRING)
 
     override fun serialize(encoder: Encoder, value: Date) =
         encoder.encodeString(dateFormat.format(value))
 
-    override fun deserialize(decoder: Decoder) = toDate(decoder.decodeString())
+    override fun deserialize(decoder: Decoder) = dateFormat.parse(decoder.decodeString())!!
 }

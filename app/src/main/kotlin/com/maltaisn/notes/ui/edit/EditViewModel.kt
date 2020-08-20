@@ -132,6 +132,10 @@ class EditViewModel @Inject constructor(
     val showRemoveCheckedConfirmEvent: LiveData<Event<Unit>>
         get() = _showRemoveCheckedConfirmEvent
 
+    private val _showReminderDialogEvent = MutableLiveData<Event<Long>>()
+    val showReminderDialogEvent: LiveData<Event<Long>>
+        get() = _showReminderDialogEvent
+
     private val _exitEvent = MutableLiveData<Event<Unit>>()
     val exitEvent: LiveData<Event<Unit>>
         get() = _exitEvent
@@ -238,7 +242,11 @@ class EditViewModel @Inject constructor(
         _notePinned.value = pinned
     }
 
-    fun updateReminder(reminder: Reminder?) {
+    fun changeReminder() {
+        _showReminderDialogEvent.send(note.id)
+    }
+
+    fun onReminderChange(reminder: Reminder?) {
         this.reminder = reminder
         _noteReminder.value = reminder
     }

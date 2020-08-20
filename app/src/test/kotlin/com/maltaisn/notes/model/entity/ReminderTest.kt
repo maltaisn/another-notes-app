@@ -16,7 +16,7 @@
 
 package com.maltaisn.notes.model.entity
 
-import com.maltaisn.notes.model.converter.DateTimeConverter
+import com.maltaisn.notes.dateFor
 import com.maltaisn.recurpicker.Recurrence
 import com.maltaisn.recurpicker.RecurrenceFinder
 import org.junit.Test
@@ -35,44 +35,44 @@ class ReminderTest {
 
     @Test
     fun `should create reminder with next date set (same as start date)`() {
-        val reminder = Reminder.create(DateTimeConverter.toDate("2020-07-29T00:00:00.000Z"),
+        val reminder = Reminder.create(dateFor("2020-07-29T00:00:00.000Z"),
             Recurrence(Recurrence.Period.DAILY), finder)
-        assertEquals(DateTimeConverter.toDate("2020-07-29T00:00:00.000Z"), reminder.next)
+        assertEquals(dateFor("2020-07-29T00:00:00.000Z"), reminder.next)
         assertFalse(reminder.done)
     }
 
     @Test
     fun `should create reminder with next date set (different than start date)`() {
-        val reminder = Reminder.create(DateTimeConverter.toDate("2020-07-29T00:00:00.000Z"),
+        val reminder = Reminder.create(dateFor("2020-07-29T00:00:00.000Z"),
             Recurrence(Recurrence.Period.WEEKLY) {
                 setDaysOfWeek(Recurrence.THURSDAY)
             }, finder)
-        assertEquals(DateTimeConverter.toDate("2020-07-30T00:00:00.000Z"), reminder.next)
+        assertEquals(dateFor("2020-07-30T00:00:00.000Z"), reminder.next)
         assertFalse(reminder.done)
     }
 
     @Test
     fun `should fail to create recurring reminder with count less than 1`() {
         assertFailsWith<IllegalArgumentException> {
-            Reminder(DateTimeConverter.toDate("2020-07-29T00:00:00.000Z"), Recurrence(Recurrence.Period.DAILY),
-                DateTimeConverter.toDate("2020-07-29T00:00:00.000Z"), 0, false)
+            Reminder(dateFor("2020-07-29T00:00:00.000Z"), Recurrence(Recurrence.Period.DAILY),
+                dateFor("2020-07-29T00:00:00.000Z"), 0, false)
         }
     }
 
     @Test
     fun `should fail to create non-recurring reminder with count not equal to 1`() {
         assertFailsWith<IllegalArgumentException> {
-            Reminder(DateTimeConverter.toDate("2020-07-29T00:00:00.000Z"), null,
-                DateTimeConverter.toDate("2020-07-29T00:00:00.000Z"), 12, false)
+            Reminder(dateFor("2020-07-29T00:00:00.000Z"), null,
+                dateFor("2020-07-29T00:00:00.000Z"), 12, false)
         }
     }
 
     @Test
     fun `should find next reminder`() {
         val recurrence = Recurrence(Recurrence.Period.DAILY)
-        val reminder = Reminder.create(DateTimeConverter.toDate("2020-07-29T00:00:00.000Z"), recurrence, finder)
-        assertEquals(Reminder(DateTimeConverter.toDate("2020-07-29T00:00:00.000Z"), recurrence,
-            DateTimeConverter.toDate("2020-07-30T00:00:00.000Z"), 2, false),
+        val reminder = Reminder.create(dateFor("2020-07-29T00:00:00.000Z"), recurrence, finder)
+        assertEquals(Reminder(dateFor("2020-07-29T00:00:00.000Z"), recurrence,
+            dateFor("2020-07-30T00:00:00.000Z"), 2, false),
             reminder.findNextReminder(finder))
         assertFalse(reminder.done)
     }
@@ -80,42 +80,52 @@ class ReminderTest {
     @Test
     fun `should find next reminder (recurrence is done)`() {
         val recurrence = Recurrence.DOES_NOT_REPEAT
-        val reminder = Reminder.create(DateTimeConverter.toDate("2020-07-29T00:00:00.000Z"), recurrence, finder)
+        val reminder = Reminder.create(dateFor("2020-07-29T00:00:00.000Z"), recurrence, finder)
         assertSame(reminder, reminder.findNextReminder(finder))
         assertFalse(reminder.done)
     }
 
     @Test
     fun `should postpone reminder`() {
-        val reminder = Reminder.create(DateTimeConverter.toDate("2020-07-29T00:00:00.000Z"), null, finder)
-        assertEquals(Reminder(DateTimeConverter.toDate("2020-07-29T00:00:00.000Z"), null,
-            DateTimeConverter.toDate("2020-07-30T00:00:00.000Z"), 1, false),
-            reminder.postponeTo(DateTimeConverter.toDate("2020-07-30T00:00:00.000Z")))
+        val reminder = Reminder.create(dateFor("2020-07-29T00:00:00.000Z"), null, finder)
+        assertEquals(Reminder(dateFor("2020-07-29T00:00:00.000Z"), null,
+            dateFor("2020-07-30T00:00:00.000Z"), 1, false),
+            reminder.postponeTo(dateFor("2020-07-30T00:00:00.000Z")))
     }
 
     @Test
     fun `should fail to postpone recurring reminder`() {
         val recurrence = Recurrence(Recurrence.Period.DAILY)
-        val reminder = Reminder.create(DateTimeConverter.toDate("2020-07-29T00:00:00.000Z"), recurrence, finder)
+        val reminder = Reminder.create(dateFor("2020-07-29T00:00:00.000Z"), recurrence, finder)
         assertFailsWith<IllegalArgumentException> {
-            reminder.postponeTo(DateTimeConverter.toDate("2020-07-30T00:00:00.000Z"))
+            reminder.postponeTo(dateFor("2020-07-30T00:00:00.000Z"))
         }
     }
 
     @Test
     fun `should fail to postpone reminder marked as done`() {
-        val reminder = Reminder.create(DateTimeConverter.toDate("2020-07-29T00:00:00.000Z"), null, finder)
+        val reminder = Reminder.create(dateFor("2020-07-29T00:00:00.000Z"), null, finder)
             .markAsDone()
         assertFailsWith<IllegalArgumentException> {
-            reminder.postponeTo(DateTimeConverter.toDate("2020-07-30T00:00:00.000Z"))
+            reminder.postponeTo(dateFor("2020-07-30T00:00:00.000Z"))
         }
     }
 
     @Test
     fun `should mark reminder as done`() {
-        val reminder = Reminder.create(DateTimeConverter.toDate("2020-07-29T00:00:00.000Z"), null, finder)
+        val reminder = Reminder.create(dateFor("2020-07-29T00:00:00.000Z"), null, finder)
         assertFalse(reminder.done)
         val doneReminder = reminder.markAsDone()
         assertTrue(doneReminder.done)
+    }
+
+    @Test
+    fun `should fail to create recurring reminder with no events`() {
+        val recurrence = Recurrence(Recurrence.Period.DAILY) {
+            endDate = dateFor("2020-01-01T00:00:00.000Z").time
+        }
+        assertFailsWith<IllegalArgumentException> {
+            Reminder.create(dateFor("2020-07-29T00:00:00.000Z"), recurrence, finder)
+        }
     }
 }

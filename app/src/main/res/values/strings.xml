@@ -34,6 +34,8 @@
     <string name="action_keep">Keep</string>
     <string name="action_layout_grid">View as grid</string>
     <string name="action_layout_list">View as list</string>
+    <string name="action_mark_as_done">Mark as done</string>
+    <string name="action_ok">OK</string>
     <string name="action_pin">Pin</string>
     <string name="action_reminder_add">Add reminder</string>
     <string name="action_reminder_edit">Edit reminder</string>
@@ -105,6 +107,16 @@
     <string name="edit_copy_untitled_name">Untitled</string>
 
     <string name="edit_convert_keep_checked">Remove checked items?</string>
+
+    <!-- Reminder -->
+    <string name="note_reminders">Reminders</string>
+    <string name="reminder_upcoming">Upcoming</string>
+    <string name="reminder_today">Today</string>
+    <string name="reminder_overdue">Overdue</string>
+    <string name="reminder_all_day">All day</string>
+    <string name="reminder_date">Date</string>
+    <string name="reminder_time">Time</string>
+    <string name="reminder_invalid_time">This time has already passed.</string>
 
     <!-- Settings -->
     <string name="pref_group_appearance">Appearance</string>

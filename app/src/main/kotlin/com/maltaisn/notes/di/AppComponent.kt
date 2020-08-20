@@ -21,6 +21,9 @@ import com.maltaisn.notes.App
 import com.maltaisn.notes.ui.edit.EditFragment
 import com.maltaisn.notes.ui.home.HomeFragment
 import com.maltaisn.notes.ui.main.MainActivity
+import com.maltaisn.notes.ui.reminder.ReminderDateDialog
+import com.maltaisn.notes.ui.reminder.ReminderDialog
+import com.maltaisn.notes.ui.reminder.ReminderTimeDialog
 import com.maltaisn.notes.ui.search.SearchFragment
 import com.maltaisn.notes.ui.settings.SettingsFragment
 import dagger.BindsInstance
@@ -39,6 +42,9 @@ interface AppComponent {
     fun inject(fragment: SearchFragment)
     fun inject(fragment: EditFragment)
     fun inject(fragment: SettingsFragment)
+    fun inject(dialog: ReminderDialog)
+    fun inject(dialog: ReminderDateDialog)
+    fun inject(dialog: ReminderTimeDialog)
 
     @Component.Factory
     interface Factory {

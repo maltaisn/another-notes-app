@@ -205,7 +205,7 @@ class NoteViewModelTest {
         viewModel.deleteSelectedNotesPre()
 
         assertNotNull(notesRepo.getById(3))
-        assertLiveDataEventSent(viewModel.showDeleteConfirmEvent, Unit)
+        assertLiveDataEventSent(viewModel.showDeleteConfirmEvent)
     }
 
     @Test

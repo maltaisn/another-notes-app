@@ -75,3 +75,5 @@ fun <T> assertLiveDataEventSent(liveData: LiveData<Event<T>>, expected: T?) {
     assertFalse(event.hasBeenHandled)
     assertEquals(event.requireUnhandledContent(), expected)
 }
+
+fun assertLiveDataEventSent(liveData: LiveData<Event<Unit>>) = assertLiveDataEventSent(liveData, Unit)
