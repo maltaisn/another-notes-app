@@ -103,16 +103,26 @@ data class Reminder(
      */
     fun markAsDone() = copy(done = true)
 
+    class InvalidReminderException(message: String) : IllegalArgumentException(message)
+
     companion object {
 
+        /**
+         * Create a new reminder on a [start] date with an optional [recurrence].
+         * @param recurrenceFinder Used to find the first occurence of the reminder.
+         *
+         * @throws InvalidReminderException Thrown if reminder has no events.
+         * This can happen for some recurring reminders.
+         */
         fun create(start: Date, recurrence: Recurrence?, recurrenceFinder: RecurrenceFinder): Reminder {
-            val date = if (recurrence == null) {
+            val recur = recurrence.takeIf { it != Recurrence.DOES_NOT_REPEAT }
+            val date = if (recur == null) {
                 start
             } else {
-                Date(recurrenceFinder.find(recurrence, start.time, 1).firstOrNull()
-                    ?: throw IllegalArgumentException("Recurring reminder has no events."))
+                Date(recurrenceFinder.find(recur, start.time, 1).firstOrNull()
+                    ?: throw InvalidReminderException("Recurring reminder has no events."))
             }
-            return Reminder(start, recurrence, date, 1, false)
+            return Reminder(start, recur, date, 1, false)
         }
     }
 }

@@ -39,6 +39,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
 import kotlin.test.assertNotEquals
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class ReminderViewModelTest {
@@ -283,9 +284,23 @@ class ReminderViewModelTest {
     }
 
     @Test
+    fun `should not create reminder with no events`() = mainCoroutineRule.runBlockingTest {
+        viewModel.start(listOf(1))
+        viewModel.changeDate(2100, Calendar.JANUARY, 1) // Friday
+        viewModel.changeRecurrence(Recurrence(Recurrence.Period.WEEKLY) {
+            setDaysOfWeek(Recurrence.THURSDAY)
+            endDate = dateFor("2100-01-01").time
+        })
+        viewModel.createReminder()
+
+        assertNull(notesRepo.getById(1)!!.reminder)
+    }
+
+    @Test
     fun `should delete reminder`() = mainCoroutineRule.runBlockingTest {
         viewModel.start(listOf(1))
         viewModel.deleteReminder()
+        assertNull(notesRepo.getById(1)!!.reminder)
         assertLiveDataEventSent(viewModel.reminderChangeEvent, null)
         assertLiveDataEventSent(viewModel.dismissEvent)
     }

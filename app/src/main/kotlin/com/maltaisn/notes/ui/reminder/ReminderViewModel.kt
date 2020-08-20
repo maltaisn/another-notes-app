@@ -207,9 +207,14 @@ class ReminderViewModel @AssistedInject constructor(
     fun createReminder() {
         checkIfTimeIsValid()
         if (invalidTime.value == false) {
+            val reminder = try {
+                Reminder.create(Date(date), recurrence, RecurrenceFinder())
+            } catch (e: Reminder.InvalidReminderException) {
+                // Reminder has no events, so don't set a reminder.
+                null
+            }
             viewModelScope.launch {
-                val recurrence = recurrence.takeIf { it != Recurrence.DOES_NOT_REPEAT }
-                changeReminder(Reminder.create(Date(date), recurrence, RecurrenceFinder()))
+                changeReminder(reminder)
                 dismiss()
             }
         }

@@ -24,6 +24,7 @@ import java.util.TimeZone
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
+import kotlin.test.assertNull
 import kotlin.test.assertSame
 import kotlin.test.assertTrue
 
@@ -31,6 +32,13 @@ class ReminderTest {
 
     private val finder = RecurrenceFinder().apply {
         timeZone = TimeZone.getTimeZone("GMT")
+    }
+
+    @Test
+    fun `should create reminder with no recurrence`() {
+        val reminder = Reminder.create(dateFor("2020-07-29T00:00:00.000Z"),
+            Recurrence.DOES_NOT_REPEAT, finder)
+        assertNull(reminder.recurrence)
     }
 
     @Test
@@ -124,7 +132,7 @@ class ReminderTest {
         val recurrence = Recurrence(Recurrence.Period.DAILY) {
             endDate = dateFor("2020-01-01T00:00:00.000Z").time
         }
-        assertFailsWith<IllegalArgumentException> {
+        assertFailsWith<Reminder.InvalidReminderException> {
             Reminder.create(dateFor("2020-07-29T00:00:00.000Z"), recurrence, finder)
         }
     }
