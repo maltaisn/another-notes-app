@@ -23,6 +23,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.buildJsonObject
 import java.util.Date
 import javax.inject.Inject
 
@@ -68,11 +69,13 @@ class DefaultNotesRepository @Inject constructor(
     }
 
     override suspend fun getJsonData(): String {
-        val notesList = notesDao.getAll()
-        val notesJson = JsonObject(notesList.associate { note ->
-            note.id.toString() to json.toJson(Note.serializer(), note)
-        })
-        return json.stringify(JsonObject.serializer(), notesJson)
+        val notes = notesDao.getAll()
+        val notesJson = buildJsonObject {
+            for (note in notes) {
+                put(note.id.toString(), json.encodeToJsonElement(Note.serializer(), note))
+            }
+        }
+        return json.encodeToString(JsonObject.serializer(), notesJson)
     }
 
     override suspend fun clearAllData() {

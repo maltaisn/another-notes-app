@@ -26,7 +26,6 @@ import com.maltaisn.notes.model.entity.PinnedStatus
 import com.maltaisn.notes.sync.R
 import com.maltaisn.notes.testNote
 import com.maltaisn.notes.ui.getOrAwaitValue
-import com.maltaisn.notes.ui.note.NoteViewModel
 import com.maltaisn.notes.ui.note.NoteViewModel.NoteSelection
 import com.maltaisn.notes.ui.note.adapter.HeaderItem
 import com.maltaisn.notes.ui.note.adapter.NoteItem
@@ -107,7 +106,7 @@ class SearchViewModelTest {
         mainCoroutineRule.runBlockingTest {
             searchNotesAndWait("3")
             viewModel.onNoteItemLongClicked(getNoteItemAt(0), 0)
-            assertEquals(NoteViewModel.NoteSelection(1, NoteStatus.ACTIVE, PinnedStatus.UNPINNED, false),
+            assertEquals(NoteSelection(1, NoteStatus.ACTIVE, PinnedStatus.UNPINNED, false),
                 viewModel.currentSelection.getOrAwaitValue())
         }
 

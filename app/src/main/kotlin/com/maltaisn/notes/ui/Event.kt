@@ -16,6 +16,8 @@
 
 package com.maltaisn.notes.ui
 
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 
@@ -51,6 +53,10 @@ class EventObserver<T>(private val onEventUnhandledContent: (T) -> Unit) : Obser
             onEventUnhandledContent(event.requireUnhandledContent())
         }
     }
+}
+
+fun <T> LiveData<Event<T>>.observeEvent(owner: LifecycleOwner, observer: (T) -> Unit) {
+    this.observe(owner, EventObserver(observer))
 }
 
 fun <T> MutableLiveData<Event<T>>.send(value: T) {

@@ -26,7 +26,6 @@ import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonConfiguration
 
 @AssistedModule
 @Module(includes = [
@@ -46,6 +45,6 @@ abstract class AppModule {
 
         @get:Provides
         val json
-            get() = Json(JsonConfiguration.Stable)
+            get() = Json {}
     }
 }

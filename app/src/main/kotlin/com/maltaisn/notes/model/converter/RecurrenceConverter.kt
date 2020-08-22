@@ -19,12 +19,12 @@ package com.maltaisn.notes.model.converter
 import androidx.room.TypeConverter
 import com.maltaisn.recurpicker.Recurrence
 import com.maltaisn.recurpicker.format.RRuleFormatter
-import kotlinx.serialization.Decoder
-import kotlinx.serialization.Encoder
 import kotlinx.serialization.KSerializer
-import kotlinx.serialization.PrimitiveDescriptor
-import kotlinx.serialization.PrimitiveKind
 import kotlinx.serialization.Serializer
+import kotlinx.serialization.descriptors.PrimitiveKind
+import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
+import kotlinx.serialization.encoding.Decoder
+import kotlinx.serialization.encoding.Encoder
 
 @Serializer(forClass = Recurrence::class)
 object RecurrenceConverter : KSerializer<Recurrence> {
@@ -39,7 +39,7 @@ object RecurrenceConverter : KSerializer<Recurrence> {
     @JvmStatic
     fun toRRule(recurrence: Recurrence?) = recurrence?.let { rruleFormatter.format(it) }
 
-    override val descriptor = PrimitiveDescriptor("Recurrence", PrimitiveKind.STRING)
+    override val descriptor = PrimitiveSerialDescriptor("Recurrence", PrimitiveKind.STRING)
 
     override fun serialize(encoder: Encoder, value: Recurrence) =
         encoder.encodeString(toRRule(value)!!)

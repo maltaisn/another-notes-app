@@ -31,7 +31,7 @@ object SearchQueryCleaner {
     fun clean(query: String) = buildString {
         var inQuotes = false
         var inSearchTerm = false
-        loop@ for (c in query) {
+        for (c in query) {
             when (c) {
                 '"' -> {
                     inQuotes = !inQuotes
@@ -41,7 +41,7 @@ object SearchQueryCleaner {
                 '^', ':', '*', '(', ')', '\\' -> {
                     // Disable column start, column name separator, wildcard,
                     // boolean operators grouping parenthesis, escapes.
-                    continue@loop
+                    continue
                 }
                 ' ', ',', ';' -> {
                     // Last search term has ended, add wildcard and separator

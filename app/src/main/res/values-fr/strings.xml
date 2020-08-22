@@ -40,9 +40,6 @@
     <string name="action_select_all">Sélectionner tout</string>
     <string name="action_settings">Paramètres</string>
     <string name="action_share">Partager</string>
-    <string name="action_sign_in">Connexion</string>
-    <string name="action_sign_out">Déconnexion</string>
-    <string name="action_sign_up">Inscription</string>
     <string name="action_unarchive">Désarchiver</string>
     <string name="action_uncheck_all">Décocher tous les éléments</string>
     <string name="action_undo">Annuler</string>

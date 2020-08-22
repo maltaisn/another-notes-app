@@ -23,7 +23,6 @@ import android.view.View
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
@@ -33,11 +32,11 @@ import com.maltaisn.notes.navigateSafe
 import com.maltaisn.notes.sync.BuildConfig
 import com.maltaisn.notes.sync.NavGraphDirections
 import com.maltaisn.notes.sync.R
-import com.maltaisn.notes.ui.EventObserver
 import com.maltaisn.notes.ui.common.ConfirmDialog
 import com.maltaisn.notes.ui.main.MainActivity
 import com.maltaisn.notes.ui.note.NoteFragment
 import com.maltaisn.notes.ui.note.adapter.NoteListLayoutMode
+import com.maltaisn.notes.ui.observeEvent
 import com.maltaisn.notes.ui.viewModel
 import javax.inject.Inject
 
@@ -91,30 +90,30 @@ class HomeFragment : NoteFragment(), Toolbar.OnMenuItemClickListener,
     }
 
     private fun setupViewModelObservers() {
-        viewModel.noteStatus.observe(viewLifecycleOwner, Observer { status ->
+        viewModel.noteStatus.observe(viewLifecycleOwner) { status ->
             updateToolbarForNoteStatus(status)
             updateFabForNoteStatus(status)
-        })
+        }
 
-        viewModel.currentSelection.observe(viewLifecycleOwner, Observer { selection ->
+        viewModel.currentSelection.observe(viewLifecycleOwner) { selection ->
             if (selection.count != 0) {
                 // Lock drawer when user just selected a first note.
                 drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED,
                     GravityCompat.START)
             }
-        })
+        }
 
-        viewModel.messageEvent.observe(viewLifecycleOwner, EventObserver { messageId ->
+        viewModel.messageEvent.observeEvent(viewLifecycleOwner) { messageId ->
             Snackbar.make(requireView(), messageId, Snackbar.LENGTH_SHORT).show()
-        })
+        }
 
-        viewModel.listLayoutMode.observe(viewLifecycleOwner, Observer { mode ->
-            updateListLayoutItemForMode(mode ?: return@Observer)
-        })
+        viewModel.listLayoutMode.observe(viewLifecycleOwner) { mode ->
+            updateListLayoutItemForMode(mode ?: return@observe)
+        }
 
-        viewModel.showEmptyTrashDialogEvent.observe(viewLifecycleOwner, EventObserver {
+        viewModel.showEmptyTrashDialogEvent.observeEvent(viewLifecycleOwner) {
             showEmptyTrashConfirmDialog()
-        })
+        }
     }
 
     private fun updateToolbarForNoteStatus(status: NoteStatus) {

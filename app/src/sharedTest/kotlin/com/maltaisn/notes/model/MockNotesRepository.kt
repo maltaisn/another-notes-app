@@ -24,8 +24,8 @@ import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonConfiguration
 import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.buildJsonObject
 
 /**
  * Implementation of the notes repository that stores data itself instead of relying on DAOs.
@@ -35,7 +35,7 @@ import kotlinx.serialization.json.JsonObject
  */
 class MockNotesRepository : NotesRepository {
 
-    private val json = Json(JsonConfiguration.Stable)
+    private val json = Json {}
 
     private val notes = mutableMapOf<Long, Note>()
 
@@ -112,7 +112,7 @@ class MockNotesRepository : NotesRepository {
         }
     }
 
-    override fun searchNotes(query: String) = flow<List<Note>> {
+    override fun searchNotes(query: String) = flow {
         val queryNoFtsSyntax = query.replace("[*\"-]".toRegex(), "")
         if (queryNoFtsSyntax.isEmpty()) {
             emit(emptyList())
@@ -147,10 +147,12 @@ class MockNotesRepository : NotesRepository {
     }
 
     override suspend fun getJsonData(): String {
-        val notesJson = JsonObject(notes.values.associate { note ->
-            note.id.toString() to json.toJson(Note.serializer(), note)
-        })
-        return json.stringify(JsonObject.serializer(), notesJson)
+        val notesJson = buildJsonObject {
+            for ((id, note) in notes) {
+                put(id.toString(), json.encodeToJsonElement(Note.serializer(), note))
+            }
+        }
+        return json.encodeToString(JsonObject.serializer(), notesJson)
     }
 
     override suspend fun clearAllData() {

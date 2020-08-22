@@ -26,7 +26,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.google.android.material.snackbar.Snackbar
@@ -36,13 +35,13 @@ import com.maltaisn.notes.navigateSafe
 import com.maltaisn.notes.sync.NavGraphDirections
 import com.maltaisn.notes.sync.R
 import com.maltaisn.notes.sync.databinding.FragmentNoteBinding
-import com.maltaisn.notes.ui.EventObserver
 import com.maltaisn.notes.ui.SharedViewModel
 import com.maltaisn.notes.ui.StatusChange
 import com.maltaisn.notes.ui.common.ConfirmDialog
 import com.maltaisn.notes.ui.navGraphViewModel
 import com.maltaisn.notes.ui.note.adapter.NoteAdapter
 import com.maltaisn.notes.ui.note.adapter.NoteListLayoutMode
+import com.maltaisn.notes.ui.observeEvent
 import com.maltaisn.notes.ui.startSharingData
 import java.text.NumberFormat
 import javax.inject.Inject
@@ -85,57 +84,57 @@ abstract class NoteFragment : Fragment(), ActionMode.Callback, ConfirmDialog.Cal
     private fun setupViewModelObservers(adapter: NoteAdapter, layoutManager: StaggeredGridLayoutManager) {
         val navController = findNavController()
 
-        viewModel.noteItems.observe(viewLifecycleOwner, Observer { items ->
+        viewModel.noteItems.observe(viewLifecycleOwner) { items ->
             adapter.submitList(items)
-        })
+        }
 
-        viewModel.listLayoutMode.observe(viewLifecycleOwner, Observer { mode ->
+        viewModel.listLayoutMode.observe(viewLifecycleOwner) { mode ->
             layoutManager.spanCount = resources.getInteger(when (mode!!) {
                 NoteListLayoutMode.LIST -> R.integer.note_list_layout_span_count
                 NoteListLayoutMode.GRID -> R.integer.note_grid_layout_span_count
             })
             adapter.listLayoutMode = mode
-        })
+        }
 
-        viewModel.editItemEvent.observe(viewLifecycleOwner, EventObserver { noteId ->
+        viewModel.editItemEvent.observeEvent(viewLifecycleOwner) { noteId ->
             navController.navigateSafe(NavGraphDirections.actionEditNote(noteId))
-        })
+        }
 
-        viewModel.currentSelection.observe(viewLifecycleOwner, Observer { selection ->
+        viewModel.currentSelection.observe(viewLifecycleOwner) { selection ->
             updateActionModeForSelection(selection)
             updateItemsForSelection(selection)
-        })
+        }
 
-        viewModel.shareEvent.observe(viewLifecycleOwner, EventObserver { data ->
+        viewModel.shareEvent.observeEvent(viewLifecycleOwner) { data ->
             startSharingData(data)
-        })
+        }
 
-        viewModel.statusChangeEvent.observe(viewLifecycleOwner, EventObserver { statusChange ->
+        viewModel.statusChangeEvent.observeEvent(viewLifecycleOwner) { statusChange ->
             sharedViewModel.onStatusChange(statusChange)
-        })
+        }
 
-        viewModel.placeholderData.observe(viewLifecycleOwner, Observer { data ->
+        viewModel.placeholderData.observe(viewLifecycleOwner) { data ->
             binding.placeholderGroup.isVisible = data != null
             if (data != null) {
                 binding.placeholderImv.setImageResource(data.iconId)
                 binding.placeholderTxv.setText(data.messageId)
             }
-        })
+        }
 
-        viewModel.showReminderDialogEvent.observe(viewLifecycleOwner, EventObserver {
+        viewModel.showReminderDialogEvent.observeEvent(viewLifecycleOwner) {
             navController.navigateSafe(NavGraphDirections.actionReminder(it.toLongArray()))
-        })
+        }
 
-        viewModel.showDeleteConfirmEvent.observe(viewLifecycleOwner, EventObserver {
+        viewModel.showDeleteConfirmEvent.observeEvent(viewLifecycleOwner) {
             showDeleteConfirmDialog()
-        })
+        }
 
-        sharedViewModel.messageEvent.observe(viewLifecycleOwner, EventObserver { messageId ->
+        sharedViewModel.messageEvent.observeEvent(viewLifecycleOwner) { messageId ->
             Snackbar.make(requireView(), messageId, Snackbar.LENGTH_SHORT).show()
-        })
-        sharedViewModel.statusChangeEvent.observe(viewLifecycleOwner, EventObserver { statusChange ->
+        }
+        sharedViewModel.statusChangeEvent.observeEvent(viewLifecycleOwner) { statusChange ->
             showMessageForStatusChange(statusChange)
-        })
+        }
     }
 
     private fun updateActionModeForSelection(selection: NoteViewModel.NoteSelection) {

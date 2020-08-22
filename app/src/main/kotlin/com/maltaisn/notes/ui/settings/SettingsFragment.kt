@@ -31,8 +31,8 @@ import com.maltaisn.notes.sync.BuildConfig
 import com.maltaisn.notes.sync.R
 import com.maltaisn.notes.sync.databinding.FragmentSettingsBinding
 import com.maltaisn.notes.ui.AppTheme
-import com.maltaisn.notes.ui.EventObserver
 import com.maltaisn.notes.ui.common.ConfirmDialog
+import com.maltaisn.notes.ui.observeEvent
 import com.maltaisn.notes.ui.viewModel
 import javax.inject.Inject
 import javax.inject.Provider
@@ -61,11 +61,11 @@ class SettingsFragment : PreferenceFragmentCompat(), ConfirmDialog.Callback {
     }
 
     private fun setupViewModelObservers() {
-        viewModel.messageEvent.observe(viewLifecycleOwner, EventObserver { messageId ->
+        viewModel.messageEvent.observeEvent(viewLifecycleOwner) { messageId ->
             Snackbar.make(requireView(), messageId, Snackbar.LENGTH_SHORT).show()
-        })
+        }
 
-        viewModel.exportDataEvent.observe(viewLifecycleOwner, EventObserver { data ->
+        viewModel.exportDataEvent.observeEvent(viewLifecycleOwner) { data ->
             val title = getString(R.string.pref_data_export_title)
             val intent = Intent(Intent.ACTION_SEND)
             intent.type = "application/json"
@@ -73,7 +73,7 @@ class SettingsFragment : PreferenceFragmentCompat(), ConfirmDialog.Callback {
             intent.putExtra(Intent.EXTRA_TITLE, title)
             intent.putExtra(Intent.EXTRA_TEXT, data)
             startActivity(Intent.createChooser(intent, null))
-        })
+        }
     }
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
@@ -99,8 +99,8 @@ class SettingsFragment : PreferenceFragmentCompat(), ConfirmDialog.Callback {
             true
         }
 
-        requirePreference<Preference>(PrefsManager.VIEW_LICENSES)
-            .intent = Intent(requireActivity(), OssLicensesMenuActivity::class.java)
+        requirePreference<Preference>(PrefsManager.VIEW_LICENSES).intent =
+            Intent(requireActivity(), OssLicensesMenuActivity::class.java)
         OssLicensesMenuActivity.setActivityTitle(getString(R.string.pref_about_view_licenses))
 
         // Set version name as summary text for version preference

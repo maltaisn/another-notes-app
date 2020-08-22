@@ -21,8 +21,8 @@ import androidx.navigation.NavDirections
 import androidx.navigation.NavGraph
 
 /**
- * Navigate safely to another destination with [directions]. If the action is marked as single top,
- * this will prevent adding the same destination to the backstack more than once.
+ * Navigate safely to another destination with [directions], the action must be registered on current destination.
+ * This will also prevent adding the same destination to the backstack more than once.
  */
 fun NavController.navigateSafe(directions: NavDirections) {
     // Get action by ID. If action doesn't exist, return.

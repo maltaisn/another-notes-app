@@ -18,14 +18,13 @@ package com.maltaisn.notes.model.converter
 
 import androidx.room.TypeConverter
 import com.maltaisn.notes.model.entity.NoteMetadata
-import kotlinx.serialization.Decoder
-import kotlinx.serialization.Encoder
 import kotlinx.serialization.KSerializer
-import kotlinx.serialization.PrimitiveDescriptor
-import kotlinx.serialization.PrimitiveKind
 import kotlinx.serialization.Serializer
+import kotlinx.serialization.descriptors.PrimitiveKind
+import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
+import kotlinx.serialization.encoding.Decoder
+import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonConfiguration
 
 /**
  * Converter used to store instances of [NoteMetadata] in the database and to serialize them.
@@ -35,17 +34,17 @@ import kotlinx.serialization.json.JsonConfiguration
 @Serializer(forClass = NoteMetadata::class)
 object NoteMetadataConverter : KSerializer<NoteMetadata> {
 
-    private val json = Json(JsonConfiguration.Stable)
+    private val json = Json {}
 
     @TypeConverter
     @JvmStatic
-    fun toMetadata(str: String) = json.parse(NoteMetadata.serializer(), str)
+    fun toMetadata(str: String) = json.decodeFromString(NoteMetadata.serializer(), str)
 
     @TypeConverter
     @JvmStatic
-    fun toString(metadata: NoteMetadata) = json.stringify(NoteMetadata.serializer(), metadata)
+    fun toString(metadata: NoteMetadata) = json.encodeToString(NoteMetadata.serializer(), metadata)
 
-    override val descriptor = PrimitiveDescriptor("NoteMetadata", PrimitiveKind.STRING)
+    override val descriptor = PrimitiveSerialDescriptor("NoteMetadata", PrimitiveKind.STRING)
 
     override fun serialize(encoder: Encoder, value: NoteMetadata) =
         encoder.encodeString(toString(value))

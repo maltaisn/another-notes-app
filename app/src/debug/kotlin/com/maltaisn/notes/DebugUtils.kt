@@ -48,8 +48,7 @@ object DebugUtils {
                 val size = (1..10).random()
                 content = buildString {
                     repeat(size) {
-                        append(getRandomString(16..128))
-                        append('\n')
+                        appendLine(getRandomString(16..128))
                     }
                     deleteCharAt(lastIndex)
                 }

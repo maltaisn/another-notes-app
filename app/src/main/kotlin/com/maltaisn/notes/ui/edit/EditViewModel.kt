@@ -530,7 +530,7 @@ class EditViewModel @Inject constructor(
 
     /**
      * The default class used for editable item text, backed by StringBuilder.
-     * When items are bound by the adapter, this is changed to [AndroidEditableText] instead.
+     * When items are bound by the adapter, this is changed to AndroidEditableText instead.
      * The default implementation is only used temporarily (before item is bound) and for testing.
      */
     class DefaultEditableText(text: CharSequence = "") : EditableText {

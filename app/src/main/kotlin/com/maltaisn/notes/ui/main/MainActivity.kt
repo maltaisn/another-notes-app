@@ -29,7 +29,7 @@ import com.maltaisn.notes.navigateSafe
 import com.maltaisn.notes.sync.NavGraphDirections
 import com.maltaisn.notes.sync.R
 import com.maltaisn.notes.sync.databinding.ActivityMainBinding
-import com.maltaisn.notes.ui.EventObserver
+import com.maltaisn.notes.ui.observeEvent
 import com.maltaisn.notes.ui.viewModel
 import javax.inject.Inject
 import javax.inject.Provider
@@ -82,9 +82,9 @@ class MainActivity : AppCompatActivity() {
         }
 
         // Observers
-        viewModel.editItemEvent.observe(this, EventObserver { noteId ->
+        viewModel.editItemEvent.observeEvent(this) { noteId ->
             navController.navigateSafe(NavGraphDirections.actionEditNote(noteId))
-        })
+        }
     }
 
     override fun onBackPressed() {

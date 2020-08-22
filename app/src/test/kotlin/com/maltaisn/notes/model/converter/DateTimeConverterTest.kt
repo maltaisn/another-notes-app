@@ -20,7 +20,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonConfiguration
 import org.junit.Test
 import java.util.Date
 import kotlin.test.assertEquals
@@ -28,7 +27,7 @@ import kotlin.test.assertNotSame
 
 class DateTimeConverterTest {
 
-    private val json = Json(JsonConfiguration.Stable)
+    private val json = Json {}
 
     @Test
     fun `should convert date to string`() {
@@ -44,13 +43,13 @@ class DateTimeConverterTest {
     @Test
     fun `should convert date to json literal`() {
         assertEquals("\"2020-04-18T17:14:31.650Z\"",
-            json.stringify(DateTimeConverter, Date(1587230071650)))
+            json.encodeToString(DateTimeConverter, Date(1587230071650)))
     }
 
     @Test
     fun `should convert json literal to date`() {
         assertEquals(Date(1587230071650),
-            json.parse(DateTimeConverter, "\"2020-04-18T17:14:31.650Z\""))
+            json.decodeFromString(DateTimeConverter, "\"2020-04-18T17:14:31.650Z\""))
     }
 
     @Test

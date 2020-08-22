@@ -138,7 +138,7 @@ class ReminderViewModel @AssistedInject constructor(
         }
     }
 
-    fun dismiss() {
+    private fun dismiss() {
         noteIds = emptyList()
         _dismissEvent.send()
     }

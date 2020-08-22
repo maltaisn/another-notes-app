@@ -55,19 +55,6 @@ fun <T> LiveData<T>.getOrAwaitValue(time: Duration = 1.seconds): T {
 }
 
 /**
- * Observes a [LiveData] until the `block` is done executing.
- */
-fun <T> LiveData<T>.observeForTesting(block: () -> Unit) {
-    val observer = Observer<T> {}
-    try {
-        observeForever(observer)
-        block()
-    } finally {
-        removeObserver(observer)
-    }
-}
-
-/**
  * Asserts the value of a [LiveData] [Event] or waits for it to have one, with a timeout.
  */
 fun <T> assertLiveDataEventSent(liveData: LiveData<Event<T>>, expected: T?) {

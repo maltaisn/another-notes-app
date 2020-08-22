@@ -93,7 +93,6 @@
         <dialog
             android:id="@+id/dialog_reminder_date"
             android:name="com.maltaisn.notes.ui.reminder.ReminderDateDialog"
-            tools:layout="@layout/dialog_reminder_date"
             >
             <argument
                 android:name="date"
@@ -104,7 +103,6 @@
         <dialog
             android:id="@+id/dialog_reminder_time"
             android:name="com.maltaisn.notes.ui.reminder.ReminderTimeDialog"
-            tools:layout="@layout/dialog_reminder_time"
             >
             <argument
                 android:name="date"

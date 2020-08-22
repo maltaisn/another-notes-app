@@ -43,11 +43,11 @@ import com.maltaisn.notes.showKeyboard
 import com.maltaisn.notes.sync.NavGraphDirections
 import com.maltaisn.notes.sync.R
 import com.maltaisn.notes.sync.databinding.FragmentEditBinding
-import com.maltaisn.notes.ui.EventObserver
 import com.maltaisn.notes.ui.SharedViewModel
 import com.maltaisn.notes.ui.common.ConfirmDialog
 import com.maltaisn.notes.ui.edit.adapter.EditAdapter
 import com.maltaisn.notes.ui.navGraphViewModel
+import com.maltaisn.notes.ui.observeEvent
 import com.maltaisn.notes.ui.startSharingData
 import com.maltaisn.notes.ui.viewModel
 import javax.inject.Inject
@@ -132,64 +132,64 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener, ConfirmDialog.
 
         viewModel.noteReminder.observe(viewLifecycleOwner, ::updateItemsForReminder)
 
-        viewModel.noteType.observe(viewLifecycleOwner, Observer { type ->
-            updateItemsForNoteType(type ?: return@Observer)
-        })
+        viewModel.noteType.observe(viewLifecycleOwner) { type ->
+            updateItemsForNoteType(type ?: return@observe)
+        }
 
         viewModel.editItems.observe(viewLifecycleOwner, adapter::submitList)
 
-        viewModel.focusEvent.observe(viewLifecycleOwner, EventObserver { focus ->
+        viewModel.focusEvent.observeEvent(viewLifecycleOwner) { focus ->
             adapter.setItemFocus(focus)
-        })
+        }
 
         val restoreNoteSnackbar by lazy {
             Snackbar.make(requireView(), R.string.edit_in_trash_message, CANT_EDIT_SNACKBAR_DURATION)
                 .setAction(R.string.action_restore) { viewModel.restoreNoteAndEdit() }
         }
-        viewModel.messageEvent.observe(viewLifecycleOwner, EventObserver { message ->
+        viewModel.messageEvent.observeEvent(viewLifecycleOwner) { message ->
             when (message) {
                 EditMessage.BLANK_NOTE_DISCARDED -> sharedViewModel.onBlankNoteDiscarded()
                 EditMessage.RESTORED_NOTE -> Snackbar.make(requireView(), resources.getQuantityText(
                     R.plurals.edit_message_move_restore, 1), Snackbar.LENGTH_SHORT).show()
                 EditMessage.CANT_EDIT_IN_TRASH -> restoreNoteSnackbar.show()
             }
-        })
+        }
 
-        viewModel.statusChangeEvent.observe(viewLifecycleOwner, EventObserver { statusChange ->
+        viewModel.statusChangeEvent.observeEvent(viewLifecycleOwner) { statusChange ->
             sharedViewModel.onStatusChange(statusChange)
-        })
+        }
 
-        viewModel.shareEvent.observe(viewLifecycleOwner, EventObserver { data ->
+        viewModel.shareEvent.observeEvent(viewLifecycleOwner) { data ->
             startSharingData(data)
-        })
+        }
 
-        viewModel.showDeleteConfirmEvent.observe(viewLifecycleOwner, EventObserver {
+        viewModel.showDeleteConfirmEvent.observeEvent(viewLifecycleOwner) {
             ConfirmDialog.newInstance(
                 title = R.string.action_delete_forever,
                 message = R.string.trash_delete_message,
                 btnPositive = R.string.action_delete
             ).show(childFragmentManager, DELETE_CONFIRM_DIALOG_TAG)
-        })
+        }
 
-        viewModel.showRemoveCheckedConfirmEvent.observe(viewLifecycleOwner, EventObserver {
+        viewModel.showRemoveCheckedConfirmEvent.observeEvent(viewLifecycleOwner) {
             ConfirmDialog.newInstance(
                 title = R.string.edit_convert_keep_checked,
                 btnPositive = R.string.action_delete,
                 btnNegative = R.string.action_keep
             ).show(childFragmentManager, REMOVE_CHECKED_CONFIRM_DIALOG_TAG)
-        })
+        }
 
-        viewModel.showReminderDialogEvent.observe(viewLifecycleOwner, EventObserver { noteId ->
+        viewModel.showReminderDialogEvent.observeEvent(viewLifecycleOwner) { noteId ->
             navController.navigateSafe(NavGraphDirections.actionReminder(longArrayOf(noteId)))
-        })
+        }
 
-        sharedViewModel.reminderChangeEvent.observe(viewLifecycleOwner, EventObserver { reminder ->
+        sharedViewModel.reminderChangeEvent.observeEvent(viewLifecycleOwner) { reminder ->
             viewModel.onReminderChange(reminder)
-        })
+        }
 
-        viewModel.exitEvent.observe(viewLifecycleOwner, EventObserver {
+        viewModel.exitEvent.observeEvent(viewLifecycleOwner) {
             navController.popBackStack()
-        })
+        }
     }
 
     private fun updateItemsForNoteStatus(status: NoteStatus) {

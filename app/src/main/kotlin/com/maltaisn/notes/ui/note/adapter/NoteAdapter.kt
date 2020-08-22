@@ -30,7 +30,6 @@ import com.maltaisn.notes.sync.databinding.ItemMessageBinding
 import com.maltaisn.notes.sync.databinding.ItemNoteListBinding
 import com.maltaisn.notes.sync.databinding.ItemNoteListItemBinding
 import com.maltaisn.notes.sync.databinding.ItemNoteTextBinding
-import java.util.LinkedList
 
 class NoteAdapter(val context: Context, val callback: Callback) :
     ListAdapter<NoteListItem, RecyclerView.ViewHolder>(NoteListDiffCallback()) {
@@ -41,7 +40,7 @@ class NoteAdapter(val context: Context, val callback: Callback) :
      * When list note items are recycled, view holders are added back to the pool.
      * **Should only be accessed on main thread.**
      */
-    private val listNoteItemsPool = LinkedList<ListNoteItemViewHolder>()
+    private val listNoteItemsPool = ArrayDeque<ListNoteItemViewHolder>()
 
     var listLayoutMode = NoteListLayoutMode.LIST
         set(value) {
@@ -111,7 +110,7 @@ class NoteAdapter(val context: Context, val callback: Callback) :
     @SuppressLint("InflateParams")
     fun obtainListNoteItemViewHolder(): ListNoteItemViewHolder =
         if (listNoteItemsPool.isNotEmpty()) {
-            listNoteItemsPool.pop()
+            listNoteItemsPool.removeLast()
         } else {
             ListNoteItemViewHolder(ItemNoteListItemBinding.inflate(
                 LayoutInflater.from(context), null, false))

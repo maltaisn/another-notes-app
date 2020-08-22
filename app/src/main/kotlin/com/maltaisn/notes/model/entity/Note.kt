@@ -182,8 +182,7 @@ data class Note(
                         if (keepCheckedItems || !item.checked) {
                             append(DEFAULT_BULLET_CHAR)
                             append(' ')
-                            append(item.content)
-                            append('\n')
+                            appendLine(item.content)
                         }
                     }
                     if (length > 0) {
@@ -209,8 +208,7 @@ data class Note(
                 // All lines start with a bullet point, remove them.
                 buildString {
                     for (line in lines) {
-                        append(line.substring(1).trim())
-                        append('\n')
+                        appendLine(line.substring(1).trim())
                     }
                     deleteCharAt(lastIndex)
                 }
@@ -230,8 +228,7 @@ data class Note(
         val textNote = asTextNote(true)
         return buildString {
             if (title.isNotBlank()) {
-                append(textNote.title)
-                append('\n')
+                appendLine(textNote.title)
             }
             append(textNote.content)
         }

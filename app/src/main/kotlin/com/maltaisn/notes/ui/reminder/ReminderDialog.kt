@@ -33,9 +33,9 @@ import com.maltaisn.notes.navigateSafe
 import com.maltaisn.notes.setMaxWidth
 import com.maltaisn.notes.sync.R
 import com.maltaisn.notes.sync.databinding.DialogReminderBinding
-import com.maltaisn.notes.ui.EventObserver
 import com.maltaisn.notes.ui.SharedViewModel
 import com.maltaisn.notes.ui.navGraphViewModel
+import com.maltaisn.notes.ui.observeEvent
 import com.maltaisn.recurpicker.Recurrence
 import com.maltaisn.recurpicker.RecurrencePickerSettings
 import com.maltaisn.recurpicker.format.RecurrenceFormatter
@@ -51,11 +51,11 @@ class ReminderDialog : DialogFragment(), RecurrenceListCallback, RecurrencePicke
 
     @Inject
     lateinit var sharedViewModelProvider: Provider<SharedViewModel>
-    val sharedViewModel by navGraphViewModel(R.id.nav_graph) { sharedViewModelProvider.get() }
+    private val sharedViewModel by navGraphViewModel(R.id.nav_graph) { sharedViewModelProvider.get() }
 
     @Inject
     lateinit var viewModelFactory: ReminderViewModel.Factory
-    val viewModel by navGraphViewModel(R.id.nav_graph_reminder) { viewModelFactory.create(it) }
+    private val viewModel by navGraphViewModel(R.id.nav_graph_reminder) { viewModelFactory.create(it) }
 
     private val args: ReminderDialogArgs by navArgs()
 
@@ -113,43 +113,43 @@ class ReminderDialog : DialogFragment(), RecurrenceListCallback, RecurrencePicke
                 details.recurrence, details.date)
         })
 
-        viewModel.invalidTime.observe(this, Observer { invalid ->
+        viewModel.invalidTime.observe(this) { invalid ->
             binding.invalidTimeTxv.isVisible = invalid
-        })
+        }
 
-        viewModel.showDateDialogEvent.observe(this, EventObserver { date ->
+        viewModel.showDateDialogEvent.observeEvent(this) { date ->
             findNavController().navigateSafe(ReminderDialogDirections.actionReminderDate(date))
-        })
+        }
 
-        viewModel.showTimeDialogEvent.observe(this, EventObserver { date ->
+        viewModel.showTimeDialogEvent.observeEvent(this) { date ->
             findNavController().navigateSafe(ReminderDialogDirections.actionReminderTime(date))
-        })
+        }
 
-        viewModel.showRecurrenceListDialogEvent.observe(this, EventObserver { details ->
+        viewModel.showRecurrenceListDialogEvent.observeEvent(this) { details ->
             if (RECURRENCE_LIST_DIALOG_TAG !in childFragmentManager) {
                 RecurrenceListDialog.newInstance(RecurrencePickerSettings()).apply {
                     startDate = details.date
                     selectedRecurrence = details.recurrence
                 }.show(childFragmentManager, RECURRENCE_LIST_DIALOG_TAG)
             }
-        })
+        }
 
-        viewModel.showRecurrencePickerDialogEvent.observe(this, EventObserver { details ->
+        viewModel.showRecurrencePickerDialogEvent.observeEvent(this) { details ->
             if (RECURRENCE_PICKER_DIALOG_TAG !in childFragmentManager) {
                 RecurrencePickerDialog.newInstance(RecurrencePickerSettings()).apply {
                     startDate = details.date
                     selectedRecurrence = details.recurrence
                 }.show(childFragmentManager, RECURRENCE_PICKER_DIALOG_TAG)
             }
-        })
+        }
 
-        viewModel.reminderChangeEvent.observe(this, EventObserver { reminder ->
+        viewModel.reminderChangeEvent.observeEvent(this) { reminder ->
             sharedViewModel.onReminderChange(reminder)
-        })
+        }
 
-        viewModel.dismissEvent.observe(this, EventObserver {
+        viewModel.dismissEvent.observeEvent(this) {
             dismiss()
-        })
+        }
     }
 
     private fun onDialogShown(dialog: AlertDialog) {
@@ -157,18 +157,18 @@ class ReminderDialog : DialogFragment(), RecurrenceListCallback, RecurrencePicke
         okBtn.setOnClickListener {
             viewModel.createReminder()
         }
-        viewModel.invalidTime.observe(this, Observer { invalid ->
+        viewModel.invalidTime.observe(this) { invalid ->
             okBtn.isEnabled = !invalid
-        })
+        }
         val deleteBtn = dialog.getButton(DialogInterface.BUTTON_NEUTRAL)
         deleteBtn.setText(R.string.action_delete)
         deleteBtn.setOnClickListener {
             viewModel.deleteReminder()
         }
-        viewModel.isEditingReminder.observe(this, Observer { editing ->
+        viewModel.isEditingReminder.observe(this) { editing ->
             dialog.setTitle(if (editing) R.string.action_reminder_edit else R.string.action_reminder_add)
             deleteBtn.isVisible = editing
-        })
+        }
     }
 
     override fun onRecurrenceCustomClicked() {
