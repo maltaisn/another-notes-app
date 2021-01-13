@@ -11,7 +11,7 @@ plugins {
 }
 
 android {
-    compileSdkVersion 29
+    compileSdkVersion 30
     buildToolsVersion "29.0.3"
 
     def schemasLocation = "$projectDir/schemas"
@@ -21,7 +21,7 @@ android {
         // there was a sync flavor. Package can't be changed on Play Store so it was kept.
         applicationId "com.maltaisn.notes.sync"
         minSdkVersion 21
-        targetSdkVersion 29
+        targetSdkVersion 30
         versionCode appVersion.split(/\./).collect { it.padLeft(2, "0") }.sum().toInteger()
         versionName appVersion
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -76,7 +76,7 @@ android {
 
     buildTypes {
         debug {
-
+            applicationIdSuffix ".debug"
         }
         release {
             minifyEnabled true
@@ -118,7 +118,7 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion"
-    implementation "org.jetbrains.kotlinx:kotlinx-serialization-core:$serializationVersion"
+    implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:$serializationVersion"
 
     // Dagger
     implementation "com.google.dagger:dagger:$daggerVersion"
@@ -137,9 +137,7 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-viewmodel-savedstate:$lifecycleVersion"
 
     // Navigation component
-    implementation "androidx.navigation:navigation-ui:$navVersion"
     implementation "androidx.navigation:navigation-ui-ktx:$navVersion"
-    implementation "androidx.navigation:navigation-fragment:$navVersion"
     implementation "androidx.navigation:navigation-fragment-ktx:$navVersion"
 
     // Debug
@@ -157,11 +155,9 @@ dependencies {
     testImplementation "androidx.test:rules:$androidxTestRulesVersion"
 
     // Dependencies for android tests
-    androidTestImplementation "androidx.test:runner:1.2.0"
-    androidTestImplementation "androidx.test.ext:junit:1.1.1"
-    androidTestImplementation "androidx.test:core:$androidxTestCoreVersion"
-    androidTestImplementation "androidx.test:core-ktx:$androidxTestCoreKtxVersion"
+    androidTestImplementation "androidx.test:runner:$androidxTestRunnerVersion"
     androidTestImplementation "androidx.test.ext:junit-ktx:$androidxTestExtVersion"
+    androidTestImplementation "androidx.test:core-ktx:$androidxTestCoreKtxVersion"
     androidTestImplementation "androidx.test:rules:$androidxTestRulesVersion"
     androidTestImplementation "org.jetbrains.kotlin:kotlin-test:$kotlinVersion"
     androidTestImplementation "org.jetbrains.kotlin:kotlin-test-junit:$kotlinVersion"
