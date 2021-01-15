@@ -27,6 +27,7 @@ import com.maltaisn.notes.App
 import com.maltaisn.notes.model.NotesRepository
 import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.sync.R
+import com.maltaisn.notes.ui.main.MainActivity
 import com.maltaisn.recurpicker.RecurrenceFinder
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -89,11 +90,19 @@ class AlarmReceiver : BroadcastReceiver() {
 
                 // Show notification
                 withContext(Dispatchers.Main) {
+                    val notifIntent = Intent(context, MainActivity::class.java).apply {
+                        action = MainActivity.INTENT_ACTION_EDIT
+                        putExtra(MainActivity.INTENT_EDIT_NOTE_ID, id)
+                        // Add clear top/single top flags otherwise action won't work if
+                        // main activity is already launched.
+                        addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+                    }
                     val notification = NotificationCompat.Builder(
                         context, App.NOTIFICATION_CHANNEL_ID)
                         .setSmallIcon(R.drawable.ic_alarm)
                         .setContentTitle(note.title)
                         .setContentText(note.content)
+                        .setContentIntent(PendingIntent.getActivity(context, 0, notifIntent, 0))
                         .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                         .build()
                     NotificationManagerCompat.from(context).notify(note.id.toInt(), notification)

@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Nicolas Maltais
+ * Copyright 2021 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -75,6 +75,10 @@ class MainViewModel @Inject constructor(
             val id = notesRepository.insertNote(note)
             _editNoteEvent.send(id)
         }
+    }
+
+    fun editNote(id: Long) {
+        _editNoteEvent.send(id)
     }
 
     companion object {

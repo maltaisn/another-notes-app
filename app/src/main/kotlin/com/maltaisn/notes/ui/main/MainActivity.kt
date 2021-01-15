@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Nicolas Maltais
+ * Copyright 2021 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import com.google.android.material.navigation.NavigationView
 import com.maltaisn.notes.App
+import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.navigateSafe
 import com.maltaisn.notes.sync.NavGraphDirections
 import com.maltaisn.notes.sync.R
@@ -69,15 +70,24 @@ class MainActivity : AppCompatActivity() {
 
         // Check if activity was opened with a send intent
         val intent = intent
-        if (intent?.action == Intent.ACTION_SEND && intent.type == "text/plain" &&
-            !intent.getBooleanExtra(KEY_INTENT_HANDLED, false)
-        ) {
-            val title = intent.getStringExtra(Intent.EXTRA_TITLE)
-                ?: intent.getStringExtra(Intent.EXTRA_SUBJECT) ?: ""
-            val content = intent.getStringExtra(Intent.EXTRA_TEXT) ?: ""
-            viewModel.addIntentNote(title, content)
+        if (!intent.getBooleanExtra(KEY_INTENT_HANDLED, false)) {
+            when (intent.action) {
+                Intent.ACTION_SEND -> {
+                    // Plain text was shared to app, create new note for it
+                    if (intent.type == "text/plain") {
+                        val title = intent.getStringExtra(Intent.EXTRA_TITLE)
+                            ?: intent.getStringExtra(Intent.EXTRA_SUBJECT) ?: ""
+                        val content = intent.getStringExtra(Intent.EXTRA_TEXT) ?: ""
+                        viewModel.addIntentNote(title, content)
+                    }
+                }
+                INTENT_ACTION_EDIT -> {
+                    // Intent to edit a specific note. This is used by reminder notification.
+                    viewModel.editNote(intent.getLongExtra(INTENT_EDIT_NOTE_ID, Note.NO_ID))
+                }
+            }
 
-            // Mark intent as handled or it will be handled again when activity restarts.
+            // Mark intent as handled or it will be handled again if activity restarts.
             intent.putExtra(KEY_INTENT_HANDLED, true)
         }
 
@@ -102,5 +112,8 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
         private const val KEY_INTENT_HANDLED = "intent_handled"
+
+        const val INTENT_ACTION_EDIT = "com.maltaisn.notes.edit"
+        const val INTENT_EDIT_NOTE_ID = "noteId"
     }
 }
