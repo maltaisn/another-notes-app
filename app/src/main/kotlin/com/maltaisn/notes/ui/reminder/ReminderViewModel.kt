@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Nicolas Maltais
+ * Copyright 2021 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -73,8 +73,8 @@ class ReminderViewModel @AssistedInject constructor(
     val showRecurrencePickerDialogEvent: LiveData<Event<ReminderDetails>>
         get() = _showRecurrencePickerDialogEvent
 
-    private val _reminderChangeEvent = MutableLiveData<Event<Reminder?>>()
-    val reminderChangeEvent: LiveData<Event<Reminder?>>
+    private val _reminderChangeEvent = MutableLiveData<Event<ReminderChange>>()
+    val reminderChangeEvent: LiveData<Event<ReminderChange>>
         get() = _reminderChangeEvent
 
     private val _dismissEvent = MutableLiveData<Event<Unit>>()
@@ -238,7 +238,7 @@ class ReminderViewModel @AssistedInject constructor(
             }
         }
         notesRepository.updateNotes(newNotes)
-        _reminderChangeEvent.send(reminder)
+        _reminderChangeEvent.send(ReminderChange(reminder, noteIds))
     }
 
     private fun checkIfTimeIsValid() {
@@ -255,6 +255,8 @@ class ReminderViewModel @AssistedInject constructor(
     }
 
     data class ReminderDetails(val date: Long, val recurrence: Recurrence)
+
+    data class ReminderChange(val reminder: Reminder?, val noteIds: List<Long>)
 
     @AssistedInject.Factory
     interface Factory : AssistedSavedStateViewModelFactory<ReminderViewModel> {

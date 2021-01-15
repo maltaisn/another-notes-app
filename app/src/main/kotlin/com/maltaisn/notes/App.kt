@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Nicolas Maltais
+ * Copyright 2021 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,9 +17,13 @@
 package com.maltaisn.notes
 
 import android.app.Application
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.os.Build
 import androidx.appcompat.app.AppCompatDelegate
 import com.maltaisn.notes.di.DaggerAppComponent
 import com.maltaisn.notes.model.PrefsManager
+import com.maltaisn.notes.sync.R
 import com.maltaisn.notes.ui.AppTheme
 import javax.inject.Inject
 
@@ -40,6 +44,8 @@ class App : Application() {
         // Set default preference values
         prefs.setDefaults(this)
         updateTheme(prefs.theme)
+
+        createNotificationChannel()
     }
 
     fun updateTheme(theme: AppTheme) {
@@ -49,4 +55,22 @@ class App : Application() {
             AppTheme.SYSTEM -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
         })
     }
+
+    private fun createNotificationChannel() {
+        // https://developer.android.com/training/notify-user/build-notification#Priority
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val notificationManager: NotificationManager =
+                getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+            val channel = NotificationChannel(NOTIFICATION_CHANNEL_ID,
+                getString(R.string.reminder_notif_channel_title),
+                NotificationManager.IMPORTANCE_DEFAULT)
+            channel.description = getString(R.string.reminder_notif_channel_descr)
+            notificationManager.createNotificationChannel(channel)
+        }
+    }
+
+    companion object {
+        const val NOTIFICATION_CHANNEL_ID = "reminders"
+    }
+
 }

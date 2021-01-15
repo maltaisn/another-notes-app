@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Nicolas Maltais
+ * Copyright 2021 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,6 +55,8 @@ class DefaultNotesRepository @Inject constructor(
     override suspend fun getById(id: Long) = notesDao.getById(id)
 
     override fun getNotesByStatus(status: NoteStatus) = notesDao.getByStatus(status)
+
+    override suspend fun getNotesWithReminder() = notesDao.getAllWithReminder()
 
     override fun searchNotes(query: String) = notesDao.search(query)
 

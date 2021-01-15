@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?><!--
-  Copyright 2020 Nicolas Maltais
+  Copyright 2021 Nicolas Maltais
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -19,6 +19,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.maltaisn.notes.sync"
     >
+
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
 
     <application
         android:name="com.maltaisn.notes.App"
@@ -54,6 +56,14 @@
             android:name="com.google.android.gms.oss.licenses.OssLicensesActivity"
             android:theme="@style/AppTheme.DayNight.DarkActionBar"
             />
+
+        <receiver
+            android:name="com.maltaisn.notes.receiver.AlarmReceiver"
+            >
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

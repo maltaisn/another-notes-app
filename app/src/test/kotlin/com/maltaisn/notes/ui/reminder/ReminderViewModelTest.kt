@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Nicolas Maltais
+ * Copyright 2021 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -95,7 +95,8 @@ class ReminderViewModelTest {
         // Values set should be the same as the reminder used by the note.
         val reminder = notesRepo.getById(1)!!.reminder!!
         val details = viewModel.details.getOrAwaitValue()
-        assertEquals(ReminderViewModel.ReminderDetails(reminder.start.time, reminder.recurrence!!), details)
+        assertEquals(ReminderViewModel.ReminderDetails(reminder.start.time, reminder.recurrence!!),
+            details)
     }
 
     @Test
@@ -130,7 +131,8 @@ class ReminderViewModelTest {
         viewModel.start(listOf(1))
         viewModel.onRecurrenceClicked()
         val reminder = notesRepo.getById(1)!!.reminder!!
-        val details = viewModel.showRecurrenceListDialogEvent.getOrAwaitValue().requireUnhandledContent()
+        val details =
+            viewModel.showRecurrenceListDialogEvent.getOrAwaitValue().requireUnhandledContent()
         assertOnSameDay(reminder.start.time, details.date)
         assertEquals(reminder.recurrence, details.recurrence)
     }
@@ -164,54 +166,67 @@ class ReminderViewModelTest {
     }
 
     @Test
-    fun `should update reminder details when changing recurrence`() = mainCoroutineRule.runBlockingTest {
-        viewModel.start(listOf(2))
-        viewModel.changeRecurrence(Recurrence(Recurrence.Period.DAILY))
-        val details = viewModel.details.getOrAwaitValue()
-        assertEquals(Recurrence(Recurrence.Period.DAILY), details.recurrence)
-    }
+    fun `should update reminder details when changing recurrence`() =
+        mainCoroutineRule.runBlockingTest {
+            viewModel.start(listOf(2))
+            viewModel.changeRecurrence(Recurrence(Recurrence.Period.DAILY))
+            val details = viewModel.details.getOrAwaitValue()
+            assertEquals(Recurrence(Recurrence.Period.DAILY), details.recurrence)
+        }
 
     @Test
-    fun `should be invalid time if start date time is before now (yesterday)`() = mainCoroutineRule.runBlockingTest {
-        viewModel.start(listOf(3))
+    fun `should be invalid time if start date time is before now (yesterday)`() =
+        mainCoroutineRule.runBlockingTest {
+            viewModel.start(listOf(3))
 
-        val calendar = Calendar.getInstance()
-        calendar.add(Calendar.DATE, -1)
-        viewModel.changeDate(calendar[Calendar.YEAR], calendar[Calendar.MONTH], calendar[Calendar.DATE])
-        assertTrue(viewModel.invalidTime.getOrAwaitValue())
-        viewModel.changeTime(23, 59)
-        assertTrue(viewModel.invalidTime.getOrAwaitValue())
-    }
-
-    @Test
-    fun `should be invalid time if start date time is before now (today)`() = mainCoroutineRule.runBlockingTest {
-        viewModel.start(listOf(3))
-
-        val calendar = Calendar.getInstance()
-        viewModel.changeDate(calendar[Calendar.YEAR], calendar[Calendar.MONTH], calendar[Calendar.DATE])
-        viewModel.changeTime(0, 0)
-        assertTrue(viewModel.invalidTime.getOrAwaitValue())
-    }
+            val calendar = Calendar.getInstance()
+            calendar.add(Calendar.DATE, -1)
+            viewModel.changeDate(calendar[Calendar.YEAR],
+                calendar[Calendar.MONTH],
+                calendar[Calendar.DATE])
+            assertTrue(viewModel.invalidTime.getOrAwaitValue())
+            viewModel.changeTime(23, 59)
+            assertTrue(viewModel.invalidTime.getOrAwaitValue())
+        }
 
     @Test
-    fun `should be valid time if start date time is after now (today)`() = mainCoroutineRule.runBlockingTest {
-        viewModel.start(listOf(3))
-        val calendar = Calendar.getInstance()
-        viewModel.changeDate(calendar[Calendar.YEAR], calendar[Calendar.MONTH], calendar[Calendar.DATE])
-        viewModel.changeTime(23, 59)
-        assertFalse(viewModel.invalidTime.getOrAwaitValue())
-    }
+    fun `should be invalid time if start date time is before now (today)`() =
+        mainCoroutineRule.runBlockingTest {
+            viewModel.start(listOf(3))
+
+            val calendar = Calendar.getInstance()
+            viewModel.changeDate(calendar[Calendar.YEAR],
+                calendar[Calendar.MONTH],
+                calendar[Calendar.DATE])
+            viewModel.changeTime(0, 0)
+            assertTrue(viewModel.invalidTime.getOrAwaitValue())
+        }
 
     @Test
-    fun `should be valid time if start date time is after now (tomorrow)`() = mainCoroutineRule.runBlockingTest {
-        viewModel.start(listOf(3))
-        val calendar = Calendar.getInstance()
-        calendar.add(Calendar.DATE, 1)
-        viewModel.changeDate(calendar[Calendar.YEAR], calendar[Calendar.MONTH], calendar[Calendar.DATE])
-        assertFalse(viewModel.invalidTime.getOrAwaitValue())
-        viewModel.changeTime(0, 0)
-        assertFalse(viewModel.invalidTime.getOrAwaitValue())
-    }
+    fun `should be valid time if start date time is after now (today)`() =
+        mainCoroutineRule.runBlockingTest {
+            viewModel.start(listOf(3))
+            val calendar = Calendar.getInstance()
+            viewModel.changeDate(calendar[Calendar.YEAR],
+                calendar[Calendar.MONTH],
+                calendar[Calendar.DATE])
+            viewModel.changeTime(23, 59)
+            assertFalse(viewModel.invalidTime.getOrAwaitValue())
+        }
+
+    @Test
+    fun `should be valid time if start date time is after now (tomorrow)`() =
+        mainCoroutineRule.runBlockingTest {
+            viewModel.start(listOf(3))
+            val calendar = Calendar.getInstance()
+            calendar.add(Calendar.DATE, 1)
+            viewModel.changeDate(calendar[Calendar.YEAR],
+                calendar[Calendar.MONTH],
+                calendar[Calendar.DATE])
+            assertFalse(viewModel.invalidTime.getOrAwaitValue())
+            viewModel.changeTime(0, 0)
+            assertFalse(viewModel.invalidTime.getOrAwaitValue())
+        }
 
     @Test
     fun `should be valid time by default`() = mainCoroutineRule.runBlockingTest {
@@ -231,16 +246,17 @@ class ReminderViewModelTest {
     }
 
     @Test
-    fun `should not remove end date if start date is set on same day`() = mainCoroutineRule.runBlockingTest {
-        viewModel.start(listOf(2))
-        val recurrence = Recurrence(Recurrence.Period.DAILY) {
-            endDate = dateFor("2020-08-16").time
+    fun `should not remove end date if start date is set on same day`() =
+        mainCoroutineRule.runBlockingTest {
+            viewModel.start(listOf(2))
+            val recurrence = Recurrence(Recurrence.Period.DAILY) {
+                endDate = dateFor("2020-08-16").time
+            }
+            viewModel.changeRecurrence(recurrence)
+            viewModel.changeDate(2020, Calendar.AUGUST, 16)
+            val details = viewModel.details.getOrAwaitValue()
+            assertEquals(recurrence, details.recurrence)
         }
-        viewModel.changeRecurrence(recurrence)
-        viewModel.changeDate(2020, Calendar.AUGUST, 16)
-        val details = viewModel.details.getOrAwaitValue()
-        assertEquals(recurrence, details.recurrence)
-    }
 
     @Test
     fun `should change monthly recurrence on last day if start date not on last day`() =
@@ -266,7 +282,8 @@ class ReminderViewModelTest {
         val reminder = Reminder.create(dateFor("9999-01-01T03:14:00.000"),
             Recurrence(Recurrence.Period.WEEKLY), RecurrenceFinder())
         val note = notesRepo.getById(3)!!
-        assertLiveDataEventSent(viewModel.reminderChangeEvent, reminder)
+        assertLiveDataEventSent(viewModel.reminderChangeEvent,
+            ReminderViewModel.ReminderChange(reminder, listOf(3)))
         assertLiveDataEventSent(viewModel.dismissEvent)
         assertEquals(note.reminder, reminder)
         assertNotEquals(note.lastModifiedDate, Date(10))
@@ -301,7 +318,8 @@ class ReminderViewModelTest {
         viewModel.start(listOf(1))
         viewModel.deleteReminder()
         assertNull(notesRepo.getById(1)!!.reminder)
-        assertLiveDataEventSent(viewModel.reminderChangeEvent, null)
+        assertLiveDataEventSent(viewModel.reminderChangeEvent,
+            ReminderViewModel.ReminderChange(null, listOf(1)))
         assertLiveDataEventSent(viewModel.dismissEvent)
     }
 

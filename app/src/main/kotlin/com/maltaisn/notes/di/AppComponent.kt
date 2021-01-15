@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Nicolas Maltais
+ * Copyright 2021 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package com.maltaisn.notes.di
 
 import android.content.Context
 import com.maltaisn.notes.App
+import com.maltaisn.notes.receiver.AlarmReceiver
 import com.maltaisn.notes.ui.edit.EditFragment
 import com.maltaisn.notes.ui.home.HomeFragment
 import com.maltaisn.notes.ui.main.MainActivity
@@ -45,6 +46,7 @@ interface AppComponent {
     fun inject(dialog: ReminderDialog)
     fun inject(dialog: ReminderDateDialog)
     fun inject(dialog: ReminderTimeDialog)
+    fun inject(receiver: AlarmReceiver)
 
     @Component.Factory
     interface Factory {

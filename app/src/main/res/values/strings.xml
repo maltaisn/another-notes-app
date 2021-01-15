@@ -1,5 +1,5 @@
 <!--
-  Copyright 2020 Nicolas Maltais
+  Copyright 2021 Nicolas Maltais
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -114,6 +114,8 @@
     <string name="reminder_date">Date</string>
     <string name="reminder_time">Time</string>
     <string name="reminder_invalid_time">This time has already passed.</string>
+    <string name="reminder_notif_channel_title">Reminders</string>
+    <string name="reminder_notif_channel_descr">Reminders set on notes</string>
 
     <!-- Settings -->
     <string name="pref_group_appearance">Appearance</string>

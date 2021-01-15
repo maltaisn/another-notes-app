@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Nicolas Maltais
+ * Copyright 2021 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -80,6 +80,13 @@ interface NotesDao {
      */
     @Query("SELECT * FROM notes WHERE status == :status AND modified_date < :minDate")
     suspend fun getByStatusAndDate(status: NoteStatus, minDate: Date): List<Note>
+
+    /**
+     * Get all notes with a reminder set.
+     * Used for updating alarms on boot.
+     */
+    @Query("SELECT * FROM notes WHERE reminder_start != NULL")
+    suspend fun getAllWithReminder(): List<Note>
 
     /**
      * Search active and archived notes for a [query] using full-text search,
