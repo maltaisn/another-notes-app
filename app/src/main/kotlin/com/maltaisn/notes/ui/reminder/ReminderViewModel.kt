@@ -22,6 +22,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.maltaisn.notes.model.NotesRepository
+import com.maltaisn.notes.model.ReminderAlarmManager
 import com.maltaisn.notes.model.entity.Reminder
 import com.maltaisn.notes.ui.AssistedSavedStateViewModelFactory
 import com.maltaisn.notes.ui.Event
@@ -36,7 +37,8 @@ import java.util.Date
 
 class ReminderViewModel @AssistedInject constructor(
     @Assisted private val savedStateHandle: SavedStateHandle,
-    private val notesRepository: NotesRepository
+    private val notesRepository: NotesRepository,
+    private val reminderAlarmManager: ReminderAlarmManager
 ) : ViewModel() {
 
     private val calendar = Calendar.getInstance()
@@ -73,8 +75,8 @@ class ReminderViewModel @AssistedInject constructor(
     val showRecurrencePickerDialogEvent: LiveData<Event<ReminderDetails>>
         get() = _showRecurrencePickerDialogEvent
 
-    private val _reminderChangeEvent = MutableLiveData<Event<ReminderChange>>()
-    val reminderChangeEvent: LiveData<Event<ReminderChange>>
+    private val _reminderChangeEvent = MutableLiveData<Event<Reminder?>>()
+    val reminderChangeEvent: LiveData<Event<Reminder?>>
         get() = _reminderChangeEvent
 
     private val _dismissEvent = MutableLiveData<Event<Unit>>()
@@ -161,7 +163,9 @@ class ReminderViewModel @AssistedInject constructor(
 
     private fun updateRecurrenceForDate() {
         // Set to repeat on last day of the month but start date isn't on the last day.
-        if (recurrence.byMonthDay == -1 && calendar[Calendar.DATE] != calendar.getActualMaximum(Calendar.MONTH)) {
+        if (recurrence.byMonthDay == -1 &&
+            calendar[Calendar.DATE] != calendar.getActualMaximum(Calendar.MONTH)
+        ) {
             recurrence = Recurrence(recurrence) { dayInMonth = 0 }
         }
 
@@ -228,6 +232,7 @@ class ReminderViewModel @AssistedInject constructor(
     }
 
     private suspend fun changeReminder(reminder: Reminder?) {
+        // Update notes in database
         val date = Date()
         val newNotes = noteIds.mapNotNull { id ->
             val oldNote = notesRepository.getById(id)!!
@@ -238,7 +243,13 @@ class ReminderViewModel @AssistedInject constructor(
             }
         }
         notesRepository.updateNotes(newNotes)
-        _reminderChangeEvent.send(ReminderChange(reminder, noteIds))
+
+        // Update alarms
+        for (note in newNotes) {
+            reminderAlarmManager.setNoteReminderAlarm(note)
+        }
+
+        _reminderChangeEvent.send(reminder)
     }
 
     private fun checkIfTimeIsValid() {
@@ -255,8 +266,6 @@ class ReminderViewModel @AssistedInject constructor(
     }
 
     data class ReminderDetails(val date: Long, val recurrence: Recurrence)
-
-    data class ReminderChange(val reminder: Reminder?, val noteIds: List<Long>)
 
     @AssistedInject.Factory
     interface Factory : AssistedSavedStateViewModelFactory<ReminderViewModel> {

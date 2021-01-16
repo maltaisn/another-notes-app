@@ -21,6 +21,7 @@ import androidx.lifecycle.SavedStateHandle
 import com.maltaisn.notes.MainCoroutineRule
 import com.maltaisn.notes.dateFor
 import com.maltaisn.notes.model.MockNotesRepository
+import com.maltaisn.notes.model.ReminderAlarmManager
 import com.maltaisn.notes.model.entity.Reminder
 import com.maltaisn.notes.testNote
 import com.maltaisn.notes.ui.assertLiveDataEventSent
@@ -47,6 +48,7 @@ class ReminderViewModelTest {
     private lateinit var viewModel: ReminderViewModel
 
     private lateinit var notesRepo: MockNotesRepository
+    private lateinit var alarmCallback: MockAlarmCallback
 
     @get:Rule
     var mainCoroutineRule = MainCoroutineRule()
@@ -65,7 +67,12 @@ class ReminderViewModelTest {
             dateFor("2020-08-15T00:00:00.000"), 1, false)))
         notesRepo.addNote(testNote(id = 3, added = Date(10), modified = Date(10)))
 
-        viewModel = ReminderViewModel(SavedStateHandle(), notesRepo)
+        alarmCallback = MockAlarmCallback()
+        alarmCallback.alarms[1] = dateFor("2020-08-15T00:00:00.000").time
+        alarmCallback.alarms[2] = dateFor("2020-08-15T00:00:00.000").time
+
+        viewModel = ReminderViewModel(SavedStateHandle(), notesRepo,
+            ReminderAlarmManager(notesRepo, alarmCallback))
     }
 
     @Test
@@ -108,8 +115,6 @@ class ReminderViewModelTest {
 
     @Test
     fun `should show date dialog with correct date`() = mainCoroutineRule.runBlockingTest {
-        val yesterday = Calendar.getInstance().apply { add(Calendar.DATE, -1) }.timeInMillis
-
         viewModel.start(listOf(1))
         viewModel.onDateClicked()
 
@@ -282,11 +287,11 @@ class ReminderViewModelTest {
         val reminder = Reminder.create(dateFor("9999-01-01T03:14:00.000"),
             Recurrence(Recurrence.Period.WEEKLY), RecurrenceFinder())
         val note = notesRepo.getById(3)!!
-        assertLiveDataEventSent(viewModel.reminderChangeEvent,
-            ReminderViewModel.ReminderChange(reminder, listOf(3)))
+        assertLiveDataEventSent(viewModel.reminderChangeEvent, reminder)
         assertLiveDataEventSent(viewModel.dismissEvent)
         assertEquals(note.reminder, reminder)
         assertNotEquals(note.lastModifiedDate, Date(10))
+        assertEquals(dateFor("9999-01-01T03:14:00.000").time, alarmCallback.alarms[3])
     }
 
     @Test
@@ -298,6 +303,8 @@ class ReminderViewModelTest {
 
         val reminder = Reminder.create(dateFor("9999-01-01T03:14:00.000"), null, RecurrenceFinder())
         assertEquals(notesRepo.getById(3)!!.reminder, reminder)
+        assertLiveDataEventSent(viewModel.reminderChangeEvent, reminder)
+        assertEquals(dateFor("9999-01-01T03:14:00.000").time, alarmCallback.alarms[3])
     }
 
     @Test
@@ -310,7 +317,9 @@ class ReminderViewModelTest {
         })
         viewModel.createReminder()
 
+        assertLiveDataEventSent(viewModel.reminderChangeEvent, null)
         assertNull(notesRepo.getById(1)!!.reminder)
+        assertNull(alarmCallback.alarms[1])
     }
 
     @Test
@@ -318,9 +327,9 @@ class ReminderViewModelTest {
         viewModel.start(listOf(1))
         viewModel.deleteReminder()
         assertNull(notesRepo.getById(1)!!.reminder)
-        assertLiveDataEventSent(viewModel.reminderChangeEvent,
-            ReminderViewModel.ReminderChange(null, listOf(1)))
+        assertLiveDataEventSent(viewModel.reminderChangeEvent, null)
         assertLiveDataEventSent(viewModel.dismissEvent)
+        assertNull(alarmCallback.alarms[1])
     }
 
     private fun assertOnSameDay(expected: Long, actual: Long) {

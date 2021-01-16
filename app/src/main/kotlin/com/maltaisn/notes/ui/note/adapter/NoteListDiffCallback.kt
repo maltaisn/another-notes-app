@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Nicolas Maltais
+ * Copyright 2021 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,6 +49,7 @@ class NoteListDiffCallback : DiffUtil.ItemCallback<NoteListItem>() {
                         newNote.title == oldNote.title &&
                         newNote.content == oldNote.content &&
                         newNote.metadata == oldNote.metadata &&
+                        newNote.reminder == oldNote.reminder &&
                         new.titleHighlights == old.titleHighlights &&
                         new.contentHighlights == old.contentHighlights
             }

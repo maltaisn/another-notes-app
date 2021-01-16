@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Nicolas Maltais
+ * Copyright 2021 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -224,10 +224,10 @@ data class Note(
     /**
      * Convert this note to text, including both the title and the content.
      */
-    fun asText(): String {
+    fun asText(includeTitle: Boolean = true): String {
         val textNote = asTextNote(true)
         return buildString {
-            if (title.isNotBlank()) {
+            if (includeTitle && title.isNotBlank()) {
                 appendLine(textNote.title)
             }
             append(textNote.content)

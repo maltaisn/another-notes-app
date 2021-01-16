@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Nicolas Maltais
+ * Copyright 2021 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,8 @@ import android.content.SharedPreferences
 import androidx.preference.PreferenceManager
 import com.maltaisn.notes.model.DefaultNotesRepository
 import com.maltaisn.notes.model.NotesRepository
+import com.maltaisn.notes.model.ReminderAlarmCallback
+import com.maltaisn.notes.receiver.ReceiverAlarmCallback
 import com.squareup.inject.assisted.dagger2.AssistedModule
 import dagger.Binds
 import dagger.Module
@@ -36,7 +38,10 @@ import kotlinx.serialization.json.Json
 abstract class AppModule {
 
     @get:Binds
-    abstract val DefaultNotesRepository.bind: NotesRepository
+    abstract val DefaultNotesRepository.bindRepository: NotesRepository
+
+    @get:Binds
+    abstract val ReceiverAlarmCallback.bindAlarmCallback: ReminderAlarmCallback
 
     companion object {
         @Provides

@@ -20,6 +20,9 @@
     package="com.maltaisn.notes.sync"
     >
 
+    <!-- Used by reminder notification to vibrate -->
+    <uses-permission android:name="android.permission.VIBRATE"/>
+    <!-- Used to set all alarm intents again on boot -->
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
 
     <application
@@ -59,8 +62,11 @@
 
         <receiver
             android:name="com.maltaisn.notes.receiver.AlarmReceiver"
+            android:exported="false"
             >
             <intent-filter>
+                <action android:name="com.maltaisn.notes.reminder.alarm"/>
+                <action android:name="com.maltaisn.notes.reminder.markDone"/>
                 <action android:name="android.intent.action.BOOT_COMPLETED"/>
             </intent-filter>
         </receiver>

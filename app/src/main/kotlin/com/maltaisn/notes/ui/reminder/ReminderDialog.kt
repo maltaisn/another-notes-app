@@ -16,12 +16,8 @@
 
 package com.maltaisn.notes.ui.reminder
 
-import android.app.AlarmManager
 import android.app.Dialog
-import android.app.PendingIntent
-import android.content.Context
 import android.content.DialogInterface
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import androidx.appcompat.app.AlertDialog
@@ -34,7 +30,6 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.maltaisn.notes.App
 import com.maltaisn.notes.contains
 import com.maltaisn.notes.navigateSafe
-import com.maltaisn.notes.receiver.AlarmReceiver
 import com.maltaisn.notes.setMaxWidth
 import com.maltaisn.notes.sync.R
 import com.maltaisn.notes.sync.databinding.DialogReminderBinding
@@ -148,9 +143,8 @@ class ReminderDialog : DialogFragment(), RecurrenceListCallback, RecurrencePicke
             }
         }
 
-        viewModel.reminderChangeEvent.observeEvent(this) { change ->
-            sharedViewModel.onReminderChange(change.reminder)
-            updateAlarmsForChange(change)
+        viewModel.reminderChangeEvent.observeEvent(this) { reminder ->
+            sharedViewModel.onReminderChange(reminder)
         }
 
         viewModel.dismissEvent.observeEvent(this) {
@@ -174,28 +168,6 @@ class ReminderDialog : DialogFragment(), RecurrenceListCallback, RecurrencePicke
         viewModel.isEditingReminder.observe(this) { editing ->
             dialog.setTitle(if (editing) R.string.action_reminder_edit else R.string.action_reminder_add)
             deleteBtn.isVisible = editing
-        }
-    }
-
-    private fun updateAlarmsForChange(change: ReminderViewModel.ReminderChange) {
-        val context = requireContext()
-        val alarmManager = context.getSystemService(Context.ALARM_SERVICE)
-                as? AlarmManager ?: return
-        for (id in change.noteIds) {
-            // Make alarm intent
-            val receiverIntent = Intent(context, AlarmReceiver::class.java)
-            receiverIntent.putExtra(AlarmReceiver.EXTRA_NOTE_ID, id)
-            val alarmIntent = PendingIntent.getBroadcast(context,
-                id.toInt(), receiverIntent, 0)
-
-            if (change.reminder != null) {
-                // Set new alarm
-                alarmManager.setExact(AlarmManager.RTC_WAKEUP,
-                    change.reminder.next.time, alarmIntent)
-            } else {
-                // Remove previous alarm
-                alarmIntent.cancel()
-            }
         }
     }
 

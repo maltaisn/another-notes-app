@@ -27,6 +27,7 @@ import com.google.android.material.navigation.NavigationView
 import com.maltaisn.notes.App
 import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.navigateSafe
+import com.maltaisn.notes.receiver.AlarmReceiver
 import com.maltaisn.notes.sync.NavGraphDirections
 import com.maltaisn.notes.sync.R
 import com.maltaisn.notes.sync.databinding.ActivityMainBinding
@@ -83,7 +84,7 @@ class MainActivity : AppCompatActivity() {
                 }
                 INTENT_ACTION_EDIT -> {
                     // Intent to edit a specific note. This is used by reminder notification.
-                    viewModel.editNote(intent.getLongExtra(INTENT_EDIT_NOTE_ID, Note.NO_ID))
+                    viewModel.editNote(intent.getLongExtra(AlarmReceiver.EXTRA_NOTE_ID, Note.NO_ID))
                 }
             }
 
@@ -113,7 +114,6 @@ class MainActivity : AppCompatActivity() {
     companion object {
         private const val KEY_INTENT_HANDLED = "intent_handled"
 
-        const val INTENT_ACTION_EDIT = "com.maltaisn.notes.edit"
-        const val INTENT_EDIT_NOTE_ID = "noteId"
+        const val INTENT_ACTION_EDIT = "com.maltaisn.notes.reminder.edit"
     }
 }

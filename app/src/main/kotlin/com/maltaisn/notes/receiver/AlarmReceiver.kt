@@ -16,29 +16,32 @@
 
 package com.maltaisn.notes.receiver
 
-import android.app.AlarmManager
+import android.app.Notification
 import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.maltaisn.notes.App
 import com.maltaisn.notes.model.NotesRepository
+import com.maltaisn.notes.model.ReminderAlarmManager
 import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.sync.R
 import com.maltaisn.notes.ui.main.MainActivity
-import com.maltaisn.recurpicker.RecurrenceFinder
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.util.Date
 import javax.inject.Inject
 
 class AlarmReceiver : BroadcastReceiver() {
 
     private val coroutineScope = CoroutineScope(Dispatchers.Default)
+
+    @Inject
+    lateinit var reminderAlarmManager: ReminderAlarmManager
 
     @Inject
     lateinit var notesRepository: NotesRepository
@@ -48,81 +51,71 @@ class AlarmReceiver : BroadcastReceiver() {
 
         (context.applicationContext as App).appComponent.inject(this)
 
-        val recurrenceFinder = RecurrenceFinder()
-
-        if (intent.action != null) {
-            if (intent.action.equals(Intent.ACTION_BOOT_COMPLETED, ignoreCase = true)) {
-                // Device booted, set all alarms again.
-                coroutineScope.launch {
-                    val date = Date()
-                    val updatedNotes = mutableListOf<Note>()
-                    for (note in notesRepository.getNotesWithReminder()) {
-                        var reminder = note.reminder!!
-
-                        if (reminder.next.before(date)) {
-                            // Reminder happened while device was shutdown, skip.
-                            val nextReminder = reminder.findNextReminder(recurrenceFinder)
-                            if (nextReminder !== reminder) {
-                                // Recurring reminder, update note.
-                                updatedNotes += note.copy(reminder = nextReminder)
-                                reminder = nextReminder
-                            }
-                        }
-
-                        setNoteReminderAlarm(context, note)
-                    }
-
-                    notesRepository.updateNotes(updatedNotes)
-                }
-            }
-
-        } else {
-            coroutineScope.launch {
-                val id = intent.getLongExtra(EXTRA_NOTE_ID, Note.NO_ID)
-                val note = notesRepository.getById(id) ?: return@launch
-
-                // Update note in database if reminder is recurring
-                val nextReminder = note.reminder?.findNextReminder(recurrenceFinder)
-                if (nextReminder != null && nextReminder !== note.reminder) {
-                    notesRepository.updateNote(note.copy(reminder = nextReminder))
-                    setNoteReminderAlarm(context, note)
-                }
-
-                // Show notification
-                withContext(Dispatchers.Main) {
-                    val notifIntent = Intent(context, MainActivity::class.java).apply {
-                        action = MainActivity.INTENT_ACTION_EDIT
-                        putExtra(MainActivity.INTENT_EDIT_NOTE_ID, id)
-                        // Add clear top/single top flags otherwise action won't work if
-                        // main activity is already launched.
-                        addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
-                    }
-                    val notification = NotificationCompat.Builder(
-                        context, App.NOTIFICATION_CHANNEL_ID)
-                        .setSmallIcon(R.drawable.ic_alarm)
-                        .setContentTitle(note.title)
-                        .setContentText(note.content)
-                        .setContentIntent(PendingIntent.getActivity(context, 0, notifIntent, 0))
-                        .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-                        .build()
-                    NotificationManagerCompat.from(context).notify(note.id.toInt(), notification)
-                }
+        coroutineScope.launch {
+            val noteId = intent.getLongExtra(EXTRA_NOTE_ID, Note.NO_ID)
+            when (intent.action) {
+                Intent.ACTION_BOOT_COMPLETED -> reminderAlarmManager.updateAllAlarms()
+                ACTION_ALARM -> showNotificationForReminder(context, noteId)
+                ACTION_MARK_DONE -> markReminderAsDone(context, noteId)
             }
         }
     }
 
-    private fun setNoteReminderAlarm(context: Context, note: Note) {
-        val date = (note.reminder?.next ?: return).time
-        val alarmManager = context.getSystemService(Context.ALARM_SERVICE)
-                as? AlarmManager ?: return
-        val receiverIntent = Intent(context, AlarmReceiver::class.java)
-        receiverIntent.putExtra(EXTRA_NOTE_ID, note.id)
-        val alarmIntent = PendingIntent.getBroadcast(context,
-            note.id.toInt(), receiverIntent, 0)
-        alarmManager.setExact(AlarmManager.RTC_WAKEUP, date, alarmIntent)
+    /**
+     * Receiver was called for reminder alarm, show a notification with the note title and content.
+     * Clicking the notification opens the app to edit/view it.
+     * Two action buttons can be clicked: mark as done and postpone.
+     */
+    private suspend fun showNotificationForReminder(context: Context, noteId: Long) {
+        val note = notesRepository.getById(noteId) ?: return
+
+        reminderAlarmManager.setNextNoteReminderAlarm(noteId)
+
+        // Show notification
+        withContext(Dispatchers.Main) {
+            // Clear top/single top flags otherwise actions won't work if
+            // main activity is already launched.
+            val activityFlags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+
+            val notifIntent = Intent(context, MainActivity::class.java).apply {
+                action = MainActivity.INTENT_ACTION_EDIT
+                putExtra(EXTRA_NOTE_ID, noteId)
+                addFlags(activityFlags)
+            }
+            val markDoneIntent = Intent(context, AlarmReceiver::class.java).apply {
+                action = ACTION_MARK_DONE
+                putExtra(EXTRA_NOTE_ID, noteId)
+                addFlags(activityFlags)
+            }
+
+            val notification = NotificationCompat.Builder(context, App.NOTIFICATION_CHANNEL_ID)
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setDefaults(Notification.DEFAULT_ALL)
+                .setSmallIcon(R.drawable.ic_alarm)
+                .setContentTitle(note.title)
+                .setContentText(note.asText(includeTitle = false))
+                .setContentIntent(PendingIntent.getActivity(context, 0, notifIntent, 0))
+                .addAction(R.drawable.ic_check, context.getString(R.string.action_mark_as_done),
+                    PendingIntent.getBroadcast(context, 0, markDoneIntent, 0))
+                .setAutoCancel(true)
+                .build()
+            NotificationManagerCompat.from(context).notify(note.id.toInt(), notification)
+        }
+    }
+    
+    private suspend fun markReminderAsDone(context: Context, noteId: Long) {
+        Log.d("test", "mark as done")
+        reminderAlarmManager.markReminderAsDone(noteId)
+
+        withContext(Dispatchers.Main) {
+            NotificationManagerCompat.from(context).cancel(noteId.toInt())
+        }
     }
 
     companion object {
+        const val ACTION_ALARM = "com.maltaisn.notes.reminder.alarm"
+        const val ACTION_MARK_DONE = "com.maltaisn.notes.reminder.markDone"
+
         const val EXTRA_NOTE_ID = "noteId"
     }
 
