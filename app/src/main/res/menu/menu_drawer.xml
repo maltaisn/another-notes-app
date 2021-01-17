@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?><!--
-  Copyright 2020 Nicolas Maltais
+  Copyright 2021 Nicolas Maltais
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -19,20 +19,21 @@
 
     <group
         android:id="@+id/group_main_notes"
-        android:checkableBehavior="single"
         >
 
         <item
             android:id="@+id/item_location_active"
-            android:checked="true"
             android:icon="@drawable/ic_text"
             android:title="@string/note_location_active"
+            android:checkable="true"
+            android:checked="true"
             />
 
         <item
             android:id="@+id/item_reminders"
             android:icon="@drawable/ic_alarm"
             android:title="@string/note_reminders"
+            android:checkable="true"
             />
 
     </group>
@@ -44,12 +45,14 @@
             android:id="@+id/item_location_archived"
             android:icon="@drawable/ic_archive"
             android:title="@string/note_location_archived"
+            android:checkable="true"
             />
 
         <item
             android:id="@+id/item_location_deleted"
             android:icon="@drawable/ic_delete"
             android:title="@string/note_location_deleted"
+            android:checkable="true"
             />
 
     </group>

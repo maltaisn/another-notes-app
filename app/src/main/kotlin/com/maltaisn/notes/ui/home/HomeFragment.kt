@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Nicolas Maltais
+ * Copyright 2021 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -177,6 +177,10 @@ class HomeFragment : NoteFragment(), Toolbar.OnMenuItemClickListener,
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
+        if (item.isCheckable) {
+            // There are items in two separate group, so checking must be handled manually.
+            navView.setCheckedItem(item)
+        }
         when (item.itemId) {
             R.id.item_location_active -> viewModel.setNoteStatus(NoteStatus.ACTIVE)
             R.id.item_location_archived -> viewModel.setNoteStatus(NoteStatus.ARCHIVED)
