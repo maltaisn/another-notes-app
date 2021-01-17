@@ -79,6 +79,7 @@
             android:layout_width="wrap_content"
             android:layout_marginBottom="8dp"
             tools:text="Today, 14:30"
+            tools:chipIcon="@drawable/ic_alarm"
             tools:visibility="visible"
             />
 

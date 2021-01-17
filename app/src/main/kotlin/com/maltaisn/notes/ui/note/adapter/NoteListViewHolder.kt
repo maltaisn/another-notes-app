@@ -70,6 +70,8 @@ abstract class NoteViewHolder(itemView: View) :
             )
             reminderChip.strikethroughText = note.reminder.done
             reminderChip.isEnabled = !note.reminder.done
+            reminderChip.setChipIconResource(if (note.reminder.recurrence != null)
+                R.drawable.ic_repeat else R.drawable.ic_alarm)
         }
     }
 }
