@@ -86,18 +86,21 @@ class ReminderViewModelTest {
     fun `should start with single note without reminder`() = mainCoroutineRule.runBlockingTest {
         viewModel.start(listOf(3))
         assertFalse(viewModel.isEditingReminder.getOrAwaitValue())
+        assertFalse(viewModel.isDeleteBtnVisible.getOrAwaitValue())
     }
 
     @Test
     fun `should start with multiple notes`() = mainCoroutineRule.runBlockingTest {
         viewModel.start(listOf(1, 3))
         assertFalse(viewModel.isEditingReminder.getOrAwaitValue())
+        assertTrue(viewModel.isDeleteBtnVisible.getOrAwaitValue())
     }
 
     @Test
     fun `should edit single note with reminder`() = mainCoroutineRule.runBlockingTest {
         viewModel.start(listOf(1))
         assertTrue(viewModel.isEditingReminder.getOrAwaitValue())
+        assertTrue(viewModel.isDeleteBtnVisible.getOrAwaitValue())
 
         // Values set should be the same as the reminder used by the note.
         val reminder = notesRepo.getById(1)!!.reminder!!

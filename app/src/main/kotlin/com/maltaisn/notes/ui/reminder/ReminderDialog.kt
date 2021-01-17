@@ -167,7 +167,9 @@ class ReminderDialog : DialogFragment(), RecurrenceListCallback, RecurrencePicke
         }
         viewModel.isEditingReminder.observe(this) { editing ->
             dialog.setTitle(if (editing) R.string.action_reminder_edit else R.string.action_reminder_add)
-            deleteBtn.isVisible = editing
+        }
+        viewModel.isDeleteBtnVisible.observe(this) { visible ->
+            deleteBtn.isVisible = visible
         }
     }
 

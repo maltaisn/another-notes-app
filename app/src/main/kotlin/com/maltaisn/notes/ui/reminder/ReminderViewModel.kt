@@ -59,6 +59,10 @@ class ReminderViewModel @AssistedInject constructor(
     val isEditingReminder: LiveData<Boolean>
         get() = _isEditingReminder
 
+    private val _isDeleteBtnVisible = MutableLiveData<Boolean>()
+    val isDeleteBtnVisible: LiveData<Boolean>
+        get() = _isDeleteBtnVisible
+
     private val _showDateDialogEvent = MutableLiveData<Event<Long>>()
     val showDateDialogEvent: LiveData<Event<Long>>
         get() = _showDateDialogEvent
@@ -113,6 +117,16 @@ class ReminderViewModel @AssistedInject constructor(
             }
 
             _isEditingReminder.value = reminder != null
+
+            // Delete button is visible if any of the notes have a reminder
+            _isDeleteBtnVisible.value = false
+            for (noteId in noteIds) {
+                val note = notesRepository.getById(noteId) ?: continue
+                if (note.reminder != null) {
+                    _isDeleteBtnVisible.value = true
+                    break
+                }
+            }
 
             if (reminder != null) {
                 date = reminder.start.time
