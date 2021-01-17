@@ -16,6 +16,7 @@
 
 package com.maltaisn.notes.model.entity
 
+import com.maltaisn.notes.assertNoteEquals
 import com.maltaisn.notes.dateFor
 import com.maltaisn.notes.listNote
 import com.maltaisn.notes.testNote
@@ -128,7 +129,7 @@ class NoteTest {
         val listNote = listNote(listOf(
             ListNoteItem("0", false),
             ListNoteItem("1", false)))
-        assertEquals(listNote, textNote.asListNote())
+        assertNoteEquals(listNote, textNote.asListNote(), ignoreId = true)
     }
 
     @Test
@@ -138,7 +139,7 @@ class NoteTest {
             ListNoteItem("0", false),
             ListNoteItem("1", false),
             ListNoteItem("2", false)))
-        assertEquals(listNote, textNote.asListNote())
+        assertNoteEquals(listNote, textNote.asListNote(), ignoreId = false)
     }
 
     @Test
@@ -147,7 +148,7 @@ class NoteTest {
             ListNoteItem("    ", false),
             ListNoteItem("", true)))
         val textNote = testNote(content = "")
-        assertEquals(textNote, listNote.asTextNote(true))
+        assertNoteEquals(textNote, listNote.asTextNote(true), ignoreId = false)
     }
 
     @Test
@@ -156,14 +157,14 @@ class NoteTest {
             ListNoteItem("0", false),
             ListNoteItem("1", false)))
         val textNote = testNote(content = "- 0\n- 1")
-        assertEquals(textNote, listNote.asTextNote(true))
+        assertNoteEquals(textNote, listNote.asTextNote(true), ignoreId = false)
     }
 
     @Test
     fun `should convert empty text note to list`() {
         val textNote = testNote(content = "")
         val listNote = listNote(listOf(ListNoteItem("", false)))
-        assertEquals(listNote, textNote.asListNote())
+        assertNoteEquals(listNote, textNote.asListNote(), ignoreId = false)
     }
 
     @Test
@@ -173,7 +174,7 @@ class NoteTest {
             ListNoteItem("", false),
             ListNoteItem("    ", false)))
         val textNote = testNote(content = "")
-        assertEquals(textNote, listNote.asTextNote(true))
+        assertNoteEquals(textNote, listNote.asTextNote(true), ignoreId = false)
     }
 
     @Test
@@ -183,7 +184,7 @@ class NoteTest {
             ListNoteItem("item 2", true),
             ListNoteItem("item 3", false)))
         val textNote = testNote(content = "- item 3")
-        assertEquals(textNote, listNote.asTextNote(false))
+        assertNoteEquals(textNote, listNote.asTextNote(false), ignoreId = false)
     }
 
     @Test
@@ -191,7 +192,7 @@ class NoteTest {
         val listNote = listNote(listOf(
             ListNoteItem("item 1", true)))
         val textNote = testNote(content = "")
-        assertEquals(textNote, listNote.asTextNote(false))
+        assertNoteEquals(textNote, listNote.asTextNote(false), ignoreId = false)
     }
 
     @Test
