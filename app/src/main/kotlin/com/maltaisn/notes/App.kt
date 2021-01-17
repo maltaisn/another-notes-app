@@ -63,7 +63,7 @@ class App : Application() {
                 getSystemService(NOTIFICATION_SERVICE) as NotificationManager
             val channel = NotificationChannel(NOTIFICATION_CHANNEL_ID,
                 getString(R.string.reminder_notif_channel_title),
-                NotificationManager.IMPORTANCE_DEFAULT)
+                NotificationManager.IMPORTANCE_HIGH)
             channel.description = getString(R.string.reminder_notif_channel_descr)
             notificationManager.createNotificationChannel(channel)
         }

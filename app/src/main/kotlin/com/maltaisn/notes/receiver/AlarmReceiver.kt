@@ -16,7 +16,6 @@
 
 package com.maltaisn.notes.receiver
 
-import android.app.Notification
 import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -89,14 +88,13 @@ class AlarmReceiver : BroadcastReceiver() {
             }
 
             val notification = NotificationCompat.Builder(context, App.NOTIFICATION_CHANNEL_ID)
-                .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .setDefaults(Notification.DEFAULT_ALL)
+                .setPriority(NotificationCompat.PRIORITY_MAX)
                 .setSmallIcon(R.drawable.ic_alarm)
                 .setContentTitle(note.title)
                 .setContentText(note.asText(includeTitle = false))
                 .setContentIntent(PendingIntent.getActivity(context, 0, notifIntent, 0))
                 .addAction(R.drawable.ic_check, context.getString(R.string.action_mark_as_done),
-                    PendingIntent.getBroadcast(context, 0, markDoneIntent, 0))
+                    PendingIntent.getBroadcast(context, 0, markDoneIntent, PendingIntent.FLAG_UPDATE_CURRENT))
                 .setAutoCancel(true)
                 .build()
             NotificationManagerCompat.from(context).notify(note.id.toInt(), notification)
