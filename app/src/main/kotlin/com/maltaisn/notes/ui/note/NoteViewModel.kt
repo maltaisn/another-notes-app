@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Nicolas Maltais
+ * Copyright 2021 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -283,7 +283,8 @@ abstract class NoteViewModel(
         val date = Date()
         val newNotes = oldNotes.map { note ->
             note.copy(status = newStatus, lastModifiedDate = date,
-                pinned = if (newStatus == NoteStatus.ACTIVE) PinnedStatus.UNPINNED else PinnedStatus.CANT_PIN)
+                pinned = if (newStatus == NoteStatus.ACTIVE) PinnedStatus.UNPINNED else PinnedStatus.CANT_PIN,
+                reminder = note.reminder.takeIf { newStatus != NoteStatus.DELETED })
         }
 
         // Update the status in database

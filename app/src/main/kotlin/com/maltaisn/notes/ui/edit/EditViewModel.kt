@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Nicolas Maltais
+ * Copyright 2021 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -362,6 +362,7 @@ class EditViewModel @Inject constructor(
             status = newStatus
             pinned =
                 if (status == NoteStatus.ACTIVE) PinnedStatus.UNPINNED else PinnedStatus.CANT_PIN
+            reminder = reminder.takeIf { newStatus != NoteStatus.DELETED }
             save()
 
             // Show status change message.

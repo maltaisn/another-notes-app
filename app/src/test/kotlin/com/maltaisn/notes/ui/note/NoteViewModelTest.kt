@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Nicolas Maltais
+ * Copyright 2021 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -184,6 +184,19 @@ class NoteViewModelTest {
         viewModel.deleteSelectedNotesPre()
 
         assertEquals(NoteStatus.DELETED, notesRepo.getById(1)!!.status)
+        assertLiveDataEventSent(viewModel.statusChangeEvent, StatusChange(
+            listOf(oldNote), NoteStatus.ACTIVE, NoteStatus.DELETED))
+    }
+
+    @Test
+    fun `should delete active note with reminder`() = mainCoroutineRule.runBlockingTest {
+        val oldNote = notesRepo.getById(5)!!
+        viewModel.onNoteItemLongClicked(viewModel.getNoteItemAt(4), 4)
+        viewModel.deleteSelectedNotesPre()
+
+        val newNote = notesRepo.getById(5)!!
+        assertEquals(NoteStatus.DELETED, newNote.status)
+        assertNull(newNote.reminder)
         assertLiveDataEventSent(viewModel.statusChangeEvent, StatusChange(
             listOf(oldNote), NoteStatus.ACTIVE, NoteStatus.DELETED))
     }

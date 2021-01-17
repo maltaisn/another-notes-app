@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Nicolas Maltais
+ * Copyright 2021 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -399,6 +399,19 @@ class EditViewModelTest {
     }
 
     @Test
+    fun `should delete note with reminder`() = mainCoroutineRule.runBlockingTest {
+        val oldNote = notesRepo.getById(3)!!
+        viewModel.start(3)
+        viewModel.deleteNote()
+
+        assertNoteEquals(notesRepo.getById(3)!!, oldNote.copy(status = NoteStatus.DELETED,
+            lastModifiedDate = Date(), reminder = null, pinned = PinnedStatus.CANT_PIN))
+        assertLiveDataEventSent(viewModel.statusChangeEvent,
+            StatusChange(listOf(oldNote), NoteStatus.ACTIVE, NoteStatus.DELETED))
+        assertLiveDataEventSent(viewModel.exitEvent)
+    }
+
+    @Test
     fun `should ask confirmation when deleting deleted note`() = mainCoroutineRule.runBlockingTest {
         viewModel.start(4)
         viewModel.deleteNote()
@@ -651,4 +664,7 @@ class EditViewModelTest {
         viewModel.start(3)
         assertEquals(notesRepo.getById(3)!!.reminder, viewModel.noteReminder.getOrAwaitValue())
     }
+
+
+
 }
