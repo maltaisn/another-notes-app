@@ -20,7 +20,6 @@ import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.maltaisn.notes.App
@@ -89,7 +88,7 @@ class AlarmReceiver : BroadcastReceiver() {
 
             val notification = NotificationCompat.Builder(context, App.NOTIFICATION_CHANNEL_ID)
                 .setPriority(NotificationCompat.PRIORITY_MAX)
-                .setSmallIcon(R.drawable.ic_alarm)
+                .setSmallIcon(R.drawable.ic_pen)
                 .setContentTitle(note.title)
                 .setContentText(note.asText(includeTitle = false))
                 .setContentIntent(PendingIntent.getActivity(context, 0, notifIntent, 0))
@@ -102,9 +101,7 @@ class AlarmReceiver : BroadcastReceiver() {
     }
     
     private suspend fun markReminderAsDone(context: Context, noteId: Long) {
-        Log.d("test", "mark as done")
         reminderAlarmManager.markReminderAsDone(noteId)
-
         withContext(Dispatchers.Main) {
             NotificationManagerCompat.from(context).cancel(noteId.toInt())
         }
