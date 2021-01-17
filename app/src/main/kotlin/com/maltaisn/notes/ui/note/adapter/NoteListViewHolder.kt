@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Nicolas Maltais
+ * Copyright 2021 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,14 @@
 
 package com.maltaisn.notes.ui.note.adapter
 
+import android.text.format.DateUtils
 import android.view.View
 import android.widget.TextView
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.google.android.material.card.MaterialCardView
+import com.google.android.material.chip.Chip
 import com.maltaisn.notes.model.entity.ListNoteItem
 import com.maltaisn.notes.model.entity.NoteType
 import com.maltaisn.notes.strikethroughText
@@ -39,11 +41,14 @@ abstract class NoteViewHolder(itemView: View) :
 
     protected abstract val cardView: MaterialCardView
     protected abstract val titleTxv: TextView
+    protected abstract val reminderChip: Chip
 
     open fun bind(adapter: NoteAdapter, item: NoteItem) {
-        titleTxv.text = HighlightHelper.getHighlightedText(item.note.title, item.titleHighlights,
+        val note = item.note
+
+        titleTxv.text = HighlightHelper.getHighlightedText(note.title, item.titleHighlights,
             adapter.highlightBackgroundColor, adapter.highlightForegroundColor)
-        titleTxv.isVisible = item.note.title.isNotBlank()
+        titleTxv.isVisible = note.title.isNotBlank()
 
         cardView.isChecked = item.checked
         cardView.setOnClickListener {
@@ -53,6 +58,19 @@ abstract class NoteViewHolder(itemView: View) :
             adapter.callback.onNoteItemLongClicked(item, adapterPosition)
             true
         }
+
+        reminderChip.isVisible = note.reminder != null
+        if (note.reminder != null) {
+            reminderChip.text = DateUtils.getRelativeDateTimeString(
+                reminderChip.context,
+                note.reminder.next.time,
+                DateUtils.MINUTE_IN_MILLIS,
+                DateUtils.WEEK_IN_MILLIS,
+                DateUtils.FORMAT_SHOW_DATE or DateUtils.FORMAT_SHOW_TIME or DateUtils.FORMAT_ABBREV_RELATIVE
+            )
+            reminderChip.strikethroughText = note.reminder.done
+            reminderChip.isEnabled = !note.reminder.done
+        }
     }
 }
 
@@ -61,6 +79,7 @@ class TextNoteViewHolder(private val binding: ItemNoteTextBinding) :
 
     override val cardView = binding.cardView
     override val titleTxv = binding.titleTxv
+    override val reminderChip = binding.reminderChip
 
     override fun bind(adapter: NoteAdapter, item: NoteItem) {
         super.bind(adapter, item)
@@ -78,6 +97,7 @@ class ListNoteViewHolder(private val binding: ItemNoteListBinding) : NoteViewHol
 
     override val cardView = binding.cardView
     override val titleTxv = binding.titleTxv
+    override val reminderChip = binding.reminderChip
 
     private val itemViewHolders = mutableListOf<ListNoteItemViewHolder>()
 
@@ -91,7 +111,7 @@ class ListNoteViewHolder(private val binding: ItemNoteListBinding) : NoteViewHol
         val itemsLayout = binding.itemsLayout
         itemsLayout.isVisible = noteItems.isNotEmpty()
 
-        // Add the first fewitems in list note using view holders in pool.
+        // Add the first few items in list note using view holders in pool.
         val maxItems = adapter.listLayoutMode.maxListItems
         val itemHighlights = HighlightHelper.splitListNoteHighlightsByItem(noteItems, item.contentHighlights)
         for (i in 0 until min(maxItems, noteItems.size)) {
@@ -118,7 +138,7 @@ class ListNoteViewHolder(private val binding: ItemNoteListBinding) : NoteViewHol
     fun unbind(): List<ListNoteItemViewHolder> {
         // Free view holders used by the item.
         val viewHolders = itemViewHolders.toList()
-        binding.itemsLayout.removeAllViews()
+        binding.itemsLayout.removeViews(0, binding.itemsLayout.childCount - 1)
         itemViewHolders.clear()
 
         return viewHolders

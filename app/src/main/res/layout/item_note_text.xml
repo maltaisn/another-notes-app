@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?><!--
-  Copyright 2020 Nicolas Maltais
+  Copyright 2021 Nicolas Maltais
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -37,7 +37,7 @@
             android:id="@+id/title_txv"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingBottom="8dp"
+            android:layout_marginBottom="8dp"
             android:ellipsize="end"
             android:maxLines="2"
             android:textAppearance="?textAppearanceSubtitle1"
@@ -49,12 +49,22 @@
             android:id="@+id/content_txv"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingBottom="8dp"
+            android:layout_marginBottom="8dp"
             android:ellipsize="end"
             android:maxLines="5"
             android:textAppearance="?textAppearanceBody2"
             android:textColor="@color/material_on_background_emphasis_medium"
             tools:text="Mauris rutrum massa placerat felis pharetra tristique. Nulla sed urna a dui vehicula euismod. Aenean sit amet velit feugiat, aliquet leo sed, sodales risus. Donec non justo et nisi lobortis sodales sed eget erat. Donec ac libero ut enim porta porta id at sem. Aliquam erat volutpat. In eu turpis quis eros posuere porta."
+            tools:visibility="visible"
+            />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/reminder_chip"
+            style="@style/NoteReminderChipStyle"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:layout_marginBottom="8dp"
+            tools:text="Today, 14:30"
             tools:visibility="visible"
             />
 

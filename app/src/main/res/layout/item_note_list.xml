@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?><!--
-  Copyright 2020 Nicolas Maltais
+  Copyright 2021 Nicolas Maltais
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -27,8 +27,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:paddingTop="8dp"
-        android:paddingBottom="16dp"
+        android:paddingTop="16dp"
+        android:paddingBottom="8dp"
         android:paddingStart="16dp"
         android:paddingEnd="16dp"
         >
@@ -37,7 +37,7 @@
             android:id="@+id/title_txv"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
             android:ellipsize="end"
             android:maxLines="2"
             android:textAppearance="?textAppearanceSubtitle1"
@@ -50,21 +50,36 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:layout_marginTop="8dp"
-            tools:visibility="gone"
-            />
+            android:layout_marginBottom="8dp"
+            tools:visibility="visible">
 
-        <TextView
-            android:id="@+id/info_txv"
-            android:layout_width="match_parent"
+<!--            <include layout="@layout/item_note_list_item"/>-->
+<!--            <include layout="@layout/item_note_list_item"/>-->
+<!--            <include layout="@layout/item_note_list_item"/>-->
+
+            <TextView
+                android:id="@+id/info_txv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:layout_marginStart="24dp"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textAppearance="?textAppearanceCaption"
+                tools:text="+ 12 list items"
+                tools:visibility="visible"
+                />
+
+        </LinearLayout>
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/reminder_chip"
+            style="@style/NoteReminderChipStyle"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:layout_marginStart="24dp"
-            android:ellipsize="end"
-            android:maxLines="1"
-            android:textAppearance="?textAppearanceCaption"
-            android:visibility="gone"
-            tools:text="+ 12 list items"
+            android:layout_width="wrap_content"
+            android:layout_marginBottom="8dp"
+            tools:text="Today, 14:30"
+            tools:visibility="visible"
             />
 
     </LinearLayout>
