@@ -111,7 +111,6 @@
     <string name="reminder_upcoming">Upcoming</string>
     <string name="reminder_today">Today</string>
     <string name="reminder_overdue">Overdue</string>
-    <string name="reminder_all_day">All day</string>
     <string name="reminder_date">Date</string>
     <string name="reminder_time">Time</string>
     <string name="reminder_invalid_time">This time has already passed.</string>

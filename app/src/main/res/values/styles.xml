@@ -38,6 +38,7 @@
         <item name="android:clickable">false</item>
         <item name="android:focusable">false</item>
         <item name="android:textAppearance">?textAppearanceCaption</item>
+        <item name="android:textSize">11sp</item>
         <item name="android:ellipsize">end</item>
         <item name="chipBackgroundColor">@null</item>
         <item name="chipStartPadding">8dp</item>

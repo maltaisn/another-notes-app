@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Nicolas Maltais
+ * Copyright 2021 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,7 +40,7 @@ import com.maltaisn.notes.model.entity.PinnedStatus
 import com.maltaisn.notes.model.entity.Reminder
 import com.maltaisn.notes.navigateSafe
 import com.maltaisn.notes.showKeyboard
-import com.maltaisn.notes.sync.NavGraphDirections
+import com.maltaisn.notes.sync.NavGraphMainDirections
 import com.maltaisn.notes.sync.R
 import com.maltaisn.notes.sync.databinding.FragmentEditBinding
 import com.maltaisn.notes.ui.SharedViewModel
@@ -61,7 +61,7 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener, ConfirmDialog.
 
     @Inject
     lateinit var sharedViewModelProvider: Provider<SharedViewModel>
-    private val sharedViewModel by navGraphViewModel(R.id.nav_graph) { sharedViewModelProvider.get() }
+    private val sharedViewModel by navGraphViewModel(R.id.nav_graph_main) { sharedViewModelProvider.get() }
 
     private val args: EditFragmentArgs by navArgs()
 
@@ -180,7 +180,7 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener, ConfirmDialog.
         }
 
         viewModel.showReminderDialogEvent.observeEvent(viewLifecycleOwner) { noteId ->
-            navController.navigateSafe(NavGraphDirections.actionReminder(longArrayOf(noteId)))
+            navController.navigateSafe(NavGraphMainDirections.actionReminder(longArrayOf(noteId)))
         }
 
         sharedViewModel.reminderChangeEvent.observeEvent(viewLifecycleOwner) { reminder ->

@@ -30,7 +30,7 @@ import com.maltaisn.notes.App
 import com.maltaisn.notes.model.entity.NoteStatus
 import com.maltaisn.notes.navigateSafe
 import com.maltaisn.notes.sync.BuildConfig
-import com.maltaisn.notes.sync.NavGraphDirections
+import com.maltaisn.notes.sync.NavGraphMainDirections
 import com.maltaisn.notes.sync.R
 import com.maltaisn.notes.ui.common.ConfirmDialog
 import com.maltaisn.notes.ui.main.MainActivity
@@ -83,7 +83,7 @@ class HomeFragment : NoteFragment(), Toolbar.OnMenuItemClickListener,
 
         // Floating action button
         binding.fab.setOnClickListener {
-            findNavController().navigateSafe(NavGraphDirections.actionEditNote())
+            findNavController().navigateSafe(NavGraphMainDirections.actionEditNote())
         }
 
         setupViewModelObservers()

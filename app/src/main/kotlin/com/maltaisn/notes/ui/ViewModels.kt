@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Nicolas Maltais
+ * Copyright 2021 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,8 +26,10 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelLazy
 import androidx.lifecycle.ViewModelStoreOwner
+import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.savedstate.SavedStateRegistryOwner
+import com.maltaisn.notes.sync.R
 import kotlin.reflect.KClass
 
 @MainThread
@@ -56,6 +58,21 @@ inline fun <reified VM : ViewModel> Fragment.navGraphViewModel(
     noinline provider: (SavedStateHandle) -> VM
 ): Lazy<VM> {
     val backStackEntry by lazy { findNavController().getBackStackEntry(navGraphId) }
+    return createLazyViewModel(
+        viewModelClass = VM::class,
+        savedStateRegistryOwnerProducer = { backStackEntry },
+        viewModelStoreOwnerProducer = { backStackEntry },
+        viewModelProvider = provider
+    )
+}
+
+@MainThread
+inline fun <reified VM : ViewModel> ComponentActivity.navGraphViewModel(
+    @IdRes navGraphId: Int,
+    @IdRes navHostId: Int = R.id.nav_host_fragment,
+    noinline provider: (SavedStateHandle) -> VM
+): Lazy<VM> {
+    val backStackEntry by lazy { findNavController(navHostId).getBackStackEntry(navGraphId) }
     return createLazyViewModel(
         viewModelClass = VM::class,
         savedStateRegistryOwnerProducer = { backStackEntry },

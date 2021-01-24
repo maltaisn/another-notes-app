@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Nicolas Maltais
+ * Copyright 2021 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.maltaisn.notes.model.entity.NoteStatus
 import com.maltaisn.notes.model.entity.PinnedStatus
 import com.maltaisn.notes.navigateSafe
-import com.maltaisn.notes.sync.NavGraphDirections
+import com.maltaisn.notes.sync.NavGraphMainDirections
 import com.maltaisn.notes.sync.R
 import com.maltaisn.notes.sync.databinding.FragmentNoteBinding
 import com.maltaisn.notes.ui.SharedViewModel
@@ -54,7 +54,7 @@ abstract class NoteFragment : Fragment(), ActionMode.Callback, ConfirmDialog.Cal
 
     @Inject
     lateinit var sharedViewModelProvider: Provider<SharedViewModel>
-    private val sharedViewModel by navGraphViewModel(R.id.nav_graph) { sharedViewModelProvider.get() }
+    private val sharedViewModel by navGraphViewModel(R.id.nav_graph_main) { sharedViewModelProvider.get() }
 
     protected abstract val viewModel: NoteViewModel
 
@@ -97,7 +97,7 @@ abstract class NoteFragment : Fragment(), ActionMode.Callback, ConfirmDialog.Cal
         }
 
         viewModel.editItemEvent.observeEvent(viewLifecycleOwner) { noteId ->
-            navController.navigateSafe(NavGraphDirections.actionEditNote(noteId))
+            navController.navigateSafe(NavGraphMainDirections.actionEditNote(noteId))
         }
 
         viewModel.currentSelection.observe(viewLifecycleOwner) { selection ->
@@ -122,7 +122,7 @@ abstract class NoteFragment : Fragment(), ActionMode.Callback, ConfirmDialog.Cal
         }
 
         viewModel.showReminderDialogEvent.observeEvent(viewLifecycleOwner) {
-            navController.navigateSafe(NavGraphDirections.actionReminder(it.toLongArray()))
+            navController.navigateSafe(NavGraphMainDirections.actionReminder(it.toLongArray()))
         }
 
         viewModel.showDeleteConfirmEvent.observeEvent(viewLifecycleOwner) {

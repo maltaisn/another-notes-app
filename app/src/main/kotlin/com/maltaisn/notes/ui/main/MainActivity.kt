@@ -28,7 +28,7 @@ import com.maltaisn.notes.App
 import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.navigateSafe
 import com.maltaisn.notes.receiver.AlarmReceiver
-import com.maltaisn.notes.sync.NavGraphDirections
+import com.maltaisn.notes.sync.NavGraphMainDirections
 import com.maltaisn.notes.sync.R
 import com.maltaisn.notes.sync.databinding.ActivityMainBinding
 import com.maltaisn.notes.ui.observeEvent
@@ -94,7 +94,7 @@ class MainActivity : AppCompatActivity() {
 
         // Observers
         viewModel.editItemEvent.observeEvent(this) { noteId ->
-            navController.navigateSafe(NavGraphDirections.actionEditNote(noteId))
+            navController.navigateSafe(NavGraphMainDirections.actionEditNote(noteId))
         }
     }
 

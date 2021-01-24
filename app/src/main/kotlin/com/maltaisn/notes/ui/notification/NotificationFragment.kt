@@ -14,20 +14,13 @@
  * limitations under the License.
  */
 
-package com.maltaisn.notes.ui.reminder
+package com.maltaisn.notes.ui.notification
 
-import com.maltaisn.notes.model.ReminderAlarmCallback
+import androidx.fragment.app.Fragment
 
-class MockAlarmCallback : ReminderAlarmCallback {
-
-    val alarms = mutableMapOf<Long, Long>()
-
-    override fun addAlarm(noteId: Long, time: Long) {
-        alarms[noteId] = time
-    }
-
-    override fun removeAlarm(noteId: Long) {
-        alarms -= noteId
-    }
-
-}
+/**
+ * Empty fragment, needed for the start destination used by the navigation component
+ * in [NotificationActivity]. The activity is invisible itself so this fragment has no content.
+ * (only dialogs are shown from the activity)
+ */
+class NotificationFragment : Fragment()

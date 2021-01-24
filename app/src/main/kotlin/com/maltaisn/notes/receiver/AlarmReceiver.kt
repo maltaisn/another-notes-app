@@ -28,6 +28,7 @@ import com.maltaisn.notes.model.ReminderAlarmManager
 import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.sync.R
 import com.maltaisn.notes.ui.main.MainActivity
+import com.maltaisn.notes.ui.notification.NotificationActivity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -75,28 +76,43 @@ class AlarmReceiver : BroadcastReceiver() {
             // main activity is already launched.
             val activityFlags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
 
+            val builder = NotificationCompat.Builder(context, App.NOTIFICATION_CHANNEL_ID)
+                .setPriority(NotificationCompat.PRIORITY_MAX)
+                .setSmallIcon(R.drawable.ic_pen)
+                .setContentTitle(note.title)
+                .setContentText(note.asText(includeTitle = false))
+                .setAutoCancel(true)
+
+            // Edit/view main action
             val notifIntent = Intent(context, MainActivity::class.java).apply {
                 action = MainActivity.INTENT_ACTION_EDIT
                 putExtra(EXTRA_NOTE_ID, noteId)
                 addFlags(activityFlags)
             }
+            builder.setContentIntent(PendingIntent.getActivity(context, 0, notifIntent, 0))
+
+            // Mark done action
             val markDoneIntent = Intent(context, AlarmReceiver::class.java).apply {
                 action = ACTION_MARK_DONE
                 putExtra(EXTRA_NOTE_ID, noteId)
                 addFlags(activityFlags)
             }
+            builder.addAction(R.drawable.ic_check, context.getString(R.string.action_mark_as_done),
+                PendingIntent.getBroadcast(context, 0, markDoneIntent,
+                    PendingIntent.FLAG_UPDATE_CURRENT))
 
-            val notification = NotificationCompat.Builder(context, App.NOTIFICATION_CHANNEL_ID)
-                .setPriority(NotificationCompat.PRIORITY_MAX)
-                .setSmallIcon(R.drawable.ic_pen)
-                .setContentTitle(note.title)
-                .setContentText(note.asText(includeTitle = false))
-                .setContentIntent(PendingIntent.getActivity(context, 0, notifIntent, 0))
-                .addAction(R.drawable.ic_check, context.getString(R.string.action_mark_as_done),
-                    PendingIntent.getBroadcast(context, 0, markDoneIntent, PendingIntent.FLAG_UPDATE_CURRENT))
-                .setAutoCancel(true)
-                .build()
-            NotificationManagerCompat.from(context).notify(note.id.toInt(), notification)
+            // Postpone action only if not recurring.
+            if (note.reminder?.recurrence == null) {
+                val postponeIntent = Intent(context, NotificationActivity::class.java).apply {
+                    action = NotificationActivity.INTENT_ACTION_POSTPONE
+                    putExtra(EXTRA_NOTE_ID, noteId)
+                }
+                builder.addAction(R.drawable.ic_calendar,
+                    context.getString(R.string.action_postpone),
+                    PendingIntent.getActivity(context, 0, postponeIntent, 0))
+            }
+
+            NotificationManagerCompat.from(context).notify(note.id.toInt(), builder.build())
         }
     }
     
@@ -109,9 +125,9 @@ class AlarmReceiver : BroadcastReceiver() {
 
     companion object {
         const val ACTION_ALARM = "com.maltaisn.notes.reminder.alarm"
-        const val ACTION_MARK_DONE = "com.maltaisn.notes.reminder.markDone"
+        const val ACTION_MARK_DONE = "com.maltaisn.notes.reminder.markdone"
 
-        const val EXTRA_NOTE_ID = "noteId"
+        const val EXTRA_NOTE_ID = "note_id"
     }
 
 }
