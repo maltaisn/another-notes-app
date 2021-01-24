@@ -247,11 +247,11 @@ class ReminderViewModel @AssistedInject constructor(
 
     private suspend fun changeReminder(reminder: Reminder?) {
         // Update notes in database
-        val date = Date()
+        // Note: changing reminder doesn't change the last modified date.
         val newNotes = noteIds.mapNotNull { id ->
             val oldNote = notesRepository.getById(id)!!
             if (oldNote.reminder != reminder) {
-                oldNote.copy(reminder = reminder, lastModifiedDate = date)
+                oldNote.copy(reminder = reminder)
             } else {
                 null
             }
