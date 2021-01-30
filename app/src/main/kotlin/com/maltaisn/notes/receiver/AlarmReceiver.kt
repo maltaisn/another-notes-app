@@ -68,7 +68,7 @@ class AlarmReceiver : BroadcastReceiver() {
     private suspend fun showNotificationForReminder(context: Context, noteId: Long) {
         val note = notesRepository.getById(noteId) ?: return
 
-        reminderAlarmManager.setNextNoteReminderAlarm(noteId)
+        reminderAlarmManager.setNextNoteReminderAlarm(note)
 
         // Show notification
         withContext(Dispatchers.Main) {
@@ -91,18 +91,19 @@ class AlarmReceiver : BroadcastReceiver() {
             }
             builder.setContentIntent(PendingIntent.getActivity(context, 0, notifIntent, 0))
 
-            // Mark done action
-            val markDoneIntent = Intent(context, AlarmReceiver::class.java).apply {
-                action = ACTION_MARK_DONE
-                putExtra(EXTRA_NOTE_ID, noteId)
-                addFlags(activityFlags)
-            }
-            builder.addAction(R.drawable.ic_check, context.getString(R.string.action_mark_as_done),
-                PendingIntent.getBroadcast(context, 0, markDoneIntent,
-                    PendingIntent.FLAG_UPDATE_CURRENT))
-
-            // Postpone action only if not recurring.
+            // Add actions for non-recurring reminders
             if (note.reminder?.recurrence == null) {
+                // Mark done action
+                val markDoneIntent = Intent(context, AlarmReceiver::class.java).apply {
+                    action = ACTION_MARK_DONE
+                    putExtra(EXTRA_NOTE_ID, noteId)
+                    addFlags(activityFlags)
+                }
+                builder.addAction(R.drawable.ic_check, context.getString(R.string.action_mark_as_done),
+                    PendingIntent.getBroadcast(context, 0, markDoneIntent,
+                        PendingIntent.FLAG_UPDATE_CURRENT))
+
+                // Postpone action only if not recurring.
                 val postponeIntent = Intent(context, NotificationActivity::class.java).apply {
                     action = NotificationActivity.INTENT_ACTION_POSTPONE
                     putExtra(EXTRA_NOTE_ID, noteId)

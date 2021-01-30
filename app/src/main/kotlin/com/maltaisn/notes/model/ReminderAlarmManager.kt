@@ -18,6 +18,7 @@ package com.maltaisn.notes.model
 
 import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.recurpicker.RecurrenceFinder
+import kotlinx.coroutines.flow.first
 import java.util.Date
 import javax.inject.Inject
 
@@ -31,7 +32,8 @@ class ReminderAlarmManager @Inject constructor(
     suspend fun updateAllAlarms() {
         val now = Date()
         val notesToUpdate = mutableListOf<Note>()
-        for (note in notesRepository.getNotesWithReminder()) {
+        val notes = notesRepository.getNotesWithReminder().first()
+        for (note in notes) {
             var reminder = note.reminder!!
 
             // For recurring reminders, skip all past events and
@@ -69,9 +71,7 @@ class ReminderAlarmManager @Inject constructor(
         }
     }
 
-    suspend fun setNextNoteReminderAlarm(noteId: Long) {
-        val note = notesRepository.getById(noteId) ?: return
-
+    suspend fun setNextNoteReminderAlarm(note: Note) {
         // Update note in database if reminder is recurring
         val nextReminder = note.reminder?.findNextReminder(recurrenceFinder)
         if (nextReminder != null && nextReminder !== note.reminder) {
@@ -83,6 +83,10 @@ class ReminderAlarmManager @Inject constructor(
     suspend fun markReminderAsDone(noteId: Long) {
         val note = notesRepository.getById(noteId) ?: return
         notesRepository.updateNote(note.copy(reminder = note.reminder?.markAsDone()))
+    }
+
+    fun removeAlarm(noteId: Long) {
+        alarmCallback.removeAlarm(noteId)
     }
 
 }

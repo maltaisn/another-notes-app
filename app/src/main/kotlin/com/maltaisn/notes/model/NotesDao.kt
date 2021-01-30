@@ -82,18 +82,11 @@ interface NotesDao {
     suspend fun getByStatusAndDate(status: NoteStatus, minDate: Date): List<Note>
 
     /**
-     * Get all notes with a reminder set.
-     * Used for updating alarms on boot.
-     */
-    @Query("SELECT * FROM notes WHERE reminder_start IS NOT NULL")
-    suspend fun getAllWithReminder(): List<Note>
-
-    /**
      * Get all notes with a reminder set and reminder not done, sorted by ascending date.
-     * Used for reminder fragment.
+     * Used for reminders screen and for adding alarms back on boot.
      */
     @Query("SELECT * FROM notes WHERE reminder_start IS NOT NULL AND NOT reminder_done ORDER BY reminder_next ASC")
-    fun getAllWithReminderSorted(): Flow<List<Note>>
+    fun getAllWithReminder(): Flow<List<Note>>
 
     /**
      * Search active and archived notes for a [query] using full-text search,

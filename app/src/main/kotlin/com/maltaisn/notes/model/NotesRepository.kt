@@ -30,9 +30,7 @@ interface NotesRepository {
 
     suspend fun getById(id: Long): Note?
 
-    suspend fun getNotesWithReminder(): List<Note>
-    fun getNotesWithReminderSorted(): Flow<List<Note>>
-
+    fun getNotesWithReminder(): Flow<List<Note>>
     fun getNotesByStatus(status: NoteStatus): Flow<List<Note>>
     fun searchNotes(query: String): Flow<List<Note>>
 

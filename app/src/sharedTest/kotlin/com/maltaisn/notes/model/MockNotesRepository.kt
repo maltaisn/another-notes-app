@@ -103,11 +103,7 @@ class MockNotesRepository : NotesRepository {
 
     override suspend fun getById(id: Long) = notes[id]
 
-    override suspend fun getNotesWithReminder(): List<Note> {
-        return notes.values.filter { it.reminder != null }
-    }
-
-    override fun getNotesWithReminderSorted() = flow {
+    override fun getNotesWithReminder() = flow {
         changeChannel.asFlow().collect {
             val notes = notes.values.filterTo(mutableListOf()) { it.reminder?.done == false }
             notes.sortBy { it.reminder!!.next.time }
