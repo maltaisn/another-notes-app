@@ -116,6 +116,7 @@
     <string name="reminder_invalid_time">This time has already passed.</string>
     <string name="reminder_notif_channel_title">Reminders</string>
     <string name="reminder_notif_channel_descr">Reminders set on notes</string>
+    <string name="reminder_empty_placeholder">No reminders set</string>
 
     <!-- Settings -->
     <string name="pref_group_appearance">Appearance</string>

@@ -16,21 +16,14 @@
 
 package com.maltaisn.notes.ui.home
 
-import com.maltaisn.notes.DebugUtils
-import com.maltaisn.notes.model.NotesRepository
-import javax.inject.Inject
+import com.maltaisn.notes.model.entity.NoteStatus
 
-class DebugBuildTypeBehavior @Inject constructor(
-    private val notesRepository: NotesRepository
-) : BuildTypeBehavior {
-
-    override suspend fun doExtraAction(viewModel: HomeViewModel) {
-        // Add a few random notes of the currently selected status.
-        val status = viewModel.destination.value?.noteStatus
-        if (status != null) {
-            repeat(3) {
-                notesRepository.insertNote(DebugUtils.getRandomNote(status))
-            }
-        }
-    }
+/**
+ * Different destinations within the [HomeFragment].
+ */
+enum class HomeDestination(val noteStatus: NoteStatus?) {
+    ACTIVE(NoteStatus.ACTIVE),
+    ARCHIVED(NoteStatus.ARCHIVED),
+    DELETED(NoteStatus.DELETED),
+    REMINDERS(null)
 }

@@ -17,23 +17,19 @@
 package com.maltaisn.notes.ui.home
 
 import android.os.Bundle
-import android.view.ActionMode
 import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
-import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
 import com.maltaisn.notes.App
-import com.maltaisn.notes.model.entity.NoteStatus
 import com.maltaisn.notes.navigateSafe
 import com.maltaisn.notes.sync.BuildConfig
 import com.maltaisn.notes.sync.NavGraphMainDirections
 import com.maltaisn.notes.sync.R
 import com.maltaisn.notes.ui.common.ConfirmDialog
-import com.maltaisn.notes.ui.main.MainActivity
 import com.maltaisn.notes.ui.note.NoteFragment
 import com.maltaisn.notes.ui.note.adapter.NoteListLayoutMode
 import com.maltaisn.notes.ui.observeEvent
@@ -50,9 +46,6 @@ class HomeFragment : NoteFragment(), Toolbar.OnMenuItemClickListener,
     lateinit var viewModelFactory: HomeViewModel.Factory
     override val viewModel by viewModel { viewModelFactory.create(it) }
 
-    private lateinit var drawerLayout: DrawerLayout
-    private lateinit var navView: NavigationView
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         (requireContext().applicationContext as App).appComponent.inject(this)
@@ -60,12 +53,6 @@ class HomeFragment : NoteFragment(), Toolbar.OnMenuItemClickListener,
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        // Drawer
-        val activity = requireActivity() as MainActivity
-        drawerLayout = activity.drawerLayout
-        navView = activity.navigationView
-        navView.setNavigationItemSelectedListener(this)
 
         // Toolbar
         binding.toolbar.apply {
@@ -90,17 +77,9 @@ class HomeFragment : NoteFragment(), Toolbar.OnMenuItemClickListener,
     }
 
     private fun setupViewModelObservers() {
-        viewModel.noteStatus.observe(viewLifecycleOwner) { status ->
-            updateToolbarForNoteStatus(status)
-            updateFabForNoteStatus(status)
-        }
-
-        viewModel.currentSelection.observe(viewLifecycleOwner) { selection ->
-            if (selection.count != 0) {
-                // Lock drawer when user just selected a first note.
-                drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED,
-                    GravityCompat.START)
-            }
+        viewModel.destination.observe(viewLifecycleOwner) { destination ->
+            updateToolbarForDestination(destination)
+            updateFabForDestination(destination)
         }
 
         viewModel.messageEvent.observeEvent(viewLifecycleOwner) { messageId ->
@@ -116,21 +95,23 @@ class HomeFragment : NoteFragment(), Toolbar.OnMenuItemClickListener,
         }
     }
 
-    private fun updateToolbarForNoteStatus(status: NoteStatus) {
+    private fun updateToolbarForDestination(destination: HomeDestination) {
         // Show "Empty recycle bin" toolbar option
-        binding.toolbar.menu.findItem(R.id.item_empty_trash).isVisible = status == NoteStatus.DELETED
+        binding.toolbar.menu.findItem(R.id.item_empty_trash).isVisible =
+            destination == HomeDestination.DELETED
 
         // Update toolbar title
-        binding.toolbar.setTitle(when (status) {
-            NoteStatus.ACTIVE -> R.string.note_location_active
-            NoteStatus.ARCHIVED -> R.string.note_location_archived
-            NoteStatus.DELETED -> R.string.note_location_deleted
+        binding.toolbar.setTitle(when (destination) {
+            HomeDestination.ACTIVE -> R.string.note_location_active
+            HomeDestination.ARCHIVED -> R.string.note_location_archived
+            HomeDestination.DELETED -> R.string.note_location_deleted
+            HomeDestination.REMINDERS -> R.string.note_reminders
         })
     }
 
-    private fun updateFabForNoteStatus(status: NoteStatus) {
+    private fun updateFabForDestination(destination: HomeDestination) {
         // Fab is only shown in active notes.
-        if (status == NoteStatus.ACTIVE) {
+        if (destination == HomeDestination.ACTIVE) {
             binding.fab.show()
         } else {
             binding.fab.hide()
@@ -159,11 +140,6 @@ class HomeFragment : NoteFragment(), Toolbar.OnMenuItemClickListener,
         ).show(childFragmentManager, EMPTY_TRASH_DIALOG_TAG)
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        navView.setNavigationItemSelectedListener(null)
-    }
-
     override fun onMenuItemClick(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.item_search -> findNavController().navigateSafe(
@@ -177,26 +153,19 @@ class HomeFragment : NoteFragment(), Toolbar.OnMenuItemClickListener,
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        if (item.isCheckable) {
-            // There are items in two separate group, so checking must be handled manually.
-            navView.setCheckedItem(item)
-        }
+        super.onNavigationItemSelected(item)
+
         when (item.itemId) {
-            R.id.item_location_active -> viewModel.setNoteStatus(NoteStatus.ACTIVE)
-            R.id.item_location_archived -> viewModel.setNoteStatus(NoteStatus.ARCHIVED)
-            R.id.item_location_deleted -> viewModel.setNoteStatus(NoteStatus.DELETED)
+            R.id.item_location_active -> viewModel.setDestination(HomeDestination.ACTIVE)
+            R.id.item_location_archived -> viewModel.setDestination(HomeDestination.ARCHIVED)
+            R.id.item_location_deleted -> viewModel.setDestination(HomeDestination.DELETED)
+            R.id.item_reminder_list -> viewModel.setDestination(HomeDestination.REMINDERS)
             R.id.item_settings -> findNavController().navigateSafe(
                 HomeFragmentDirections.actionHomeToSettings())
             else -> return false
         }
 
-        drawerLayout.closeDrawers()
         return true
-    }
-
-    override fun onDestroyActionMode(mode: ActionMode) {
-        super.onDestroyActionMode(mode)
-        drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED, GravityCompat.START)
     }
 
     override fun onDialogConfirmed(tag: String?) {

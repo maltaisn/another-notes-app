@@ -107,11 +107,21 @@ class MockNotesRepository : NotesRepository {
         return notes.values.filter { it.reminder != null }
     }
 
+    override fun getNotesWithReminderSorted() = flow {
+        changeChannel.asFlow().collect {
+            val notes = notes.values.filterTo(mutableListOf()) { it.reminder?.done == false }
+            notes.sortBy { it.reminder!!.next.time }
+            emit(notes)
+        }
+    }
+
     override fun getNotesByStatus(status: NoteStatus) = flow {
         changeChannel.asFlow().collect {
             // Sort by last modified, then by ID.
             val sorted = notes.values.sortedWith(
-                compareByDescending<Note> { it.lastModifiedDate }.thenBy { it.id })
+                compareByDescending<Note> { it.pinned }
+                    .thenByDescending { it.lastModifiedDate }
+                    .thenBy { it.id })
             emit(sorted.filter { it.status == status })
         }
     }

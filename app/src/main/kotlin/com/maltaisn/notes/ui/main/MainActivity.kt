@@ -61,13 +61,6 @@ class MainActivity : AppCompatActivity() {
         navigationView = binding.navigationView
 
         navController = findNavController(R.id.nav_host_fragment)
-        navController.addOnDestinationChangedListener { _, ds, _ ->
-            drawerLayout.setDrawerLockMode(if (ds.id == R.id.fragment_home) {
-                DrawerLayout.LOCK_MODE_UNLOCKED
-            } else {
-                DrawerLayout.LOCK_MODE_LOCKED_CLOSED
-            }, GravityCompat.START)
-        }
 
         // Check if activity was opened with a send intent
         val intent = intent

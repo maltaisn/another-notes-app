@@ -25,9 +25,11 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
 import com.maltaisn.notes.model.entity.NoteStatus
 import com.maltaisn.notes.model.entity.PinnedStatus
@@ -38,6 +40,7 @@ import com.maltaisn.notes.sync.databinding.FragmentNoteBinding
 import com.maltaisn.notes.ui.SharedViewModel
 import com.maltaisn.notes.ui.StatusChange
 import com.maltaisn.notes.ui.common.ConfirmDialog
+import com.maltaisn.notes.ui.main.MainActivity
 import com.maltaisn.notes.ui.navGraphViewModel
 import com.maltaisn.notes.ui.note.adapter.NoteAdapter
 import com.maltaisn.notes.ui.note.adapter.NoteListLayoutMode
@@ -50,7 +53,8 @@ import javax.inject.Provider
 /**
  * This fragment provides common code for home and search fragments.
  */
-abstract class NoteFragment : Fragment(), ActionMode.Callback, ConfirmDialog.Callback {
+abstract class NoteFragment : Fragment(), ActionMode.Callback, ConfirmDialog.Callback,
+    NavigationView.OnNavigationItemSelectedListener {
 
     @Inject
     lateinit var sharedViewModelProvider: Provider<SharedViewModel>
@@ -63,13 +67,27 @@ abstract class NoteFragment : Fragment(), ActionMode.Callback, ConfirmDialog.Cal
 
     private var actionMode: ActionMode? = null
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+    protected lateinit var drawerLayout: DrawerLayout
+    protected lateinit var navView: NavigationView
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
         _binding = FragmentNoteBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val context = requireContext()
+
+        // Drawer
+        val activity = requireActivity() as MainActivity
+        drawerLayout = activity.drawerLayout
+        drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
+        navView = activity.navigationView
+        navView.setNavigationItemSelectedListener(this)
 
         val rcv = binding.recyclerView
         rcv.setHasFixedSize(true)
@@ -81,7 +99,10 @@ abstract class NoteFragment : Fragment(), ActionMode.Callback, ConfirmDialog.Cal
         setupViewModelObservers(adapter, layoutManager)
     }
 
-    private fun setupViewModelObservers(adapter: NoteAdapter, layoutManager: StaggeredGridLayoutManager) {
+    private fun setupViewModelObservers(
+        adapter: NoteAdapter,
+        layoutManager: StaggeredGridLayoutManager
+    ) {
         val navController = findNavController()
 
         viewModel.noteItems.observe(viewLifecycleOwner) { items ->
@@ -103,6 +124,11 @@ abstract class NoteFragment : Fragment(), ActionMode.Callback, ConfirmDialog.Cal
         viewModel.currentSelection.observe(viewLifecycleOwner) { selection ->
             updateActionModeForSelection(selection)
             updateItemsForSelection(selection)
+
+            if (selection.count != 0) {
+                // Lock drawer when user just selected a first note.
+                drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
+            }
         }
 
         viewModel.shareEvent.observeEvent(viewLifecycleOwner) { data ->
@@ -238,6 +264,16 @@ abstract class NoteFragment : Fragment(), ActionMode.Callback, ConfirmDialog.Cal
         _binding = null
     }
 
+    override fun onNavigationItemSelected(item: MenuItem): Boolean {
+        if (item.isCheckable) {
+            // There are items in two separate group, so checking must be handled manually.
+            navView.setCheckedItem(item)
+        }
+
+        drawerLayout.closeDrawers()
+        return false
+    }
+
     override fun onActionItemClicked(mode: ActionMode, item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.item_pin -> viewModel.togglePin()
@@ -263,6 +299,8 @@ abstract class NoteFragment : Fragment(), ActionMode.Callback, ConfirmDialog.Cal
     override fun onDestroyActionMode(mode: ActionMode) {
         actionMode = null
         viewModel.clearSelection()
+
+        drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
     }
 
     override fun onDialogConfirmed(tag: String?) {
