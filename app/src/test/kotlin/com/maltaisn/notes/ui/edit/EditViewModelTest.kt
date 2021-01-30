@@ -23,6 +23,7 @@ import com.maltaisn.notes.dateFor
 import com.maltaisn.notes.listNote
 import com.maltaisn.notes.model.MockNotesRepository
 import com.maltaisn.notes.model.PrefsManager
+import com.maltaisn.notes.model.ReminderAlarmManager
 import com.maltaisn.notes.model.entity.ListNoteItem
 import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.model.entity.NoteStatus
@@ -30,6 +31,7 @@ import com.maltaisn.notes.model.entity.NoteType
 import com.maltaisn.notes.model.entity.PinnedStatus
 import com.maltaisn.notes.model.entity.Reminder
 import com.maltaisn.notes.testNote
+import com.maltaisn.notes.ui.MockAlarmCallback
 import com.maltaisn.notes.ui.ShareData
 import com.maltaisn.notes.ui.StatusChange
 import com.maltaisn.notes.ui.assertLiveDataEventSent
@@ -54,6 +56,7 @@ class EditViewModelTest {
 
     private lateinit var viewModel: EditViewModel
     private lateinit var notesRepo: MockNotesRepository
+    private lateinit var alarmCallback: MockAlarmCallback
     private lateinit var prefs: PrefsManager
 
     @get:Rule
@@ -94,7 +97,9 @@ class EditViewModelTest {
         notesRepo.addNote(testNote(id = 6, title = "title",
             content = "content", status = NoteStatus.ARCHIVED))
 
-        viewModel = EditViewModel(notesRepo, prefs)
+        alarmCallback = MockAlarmCallback()
+
+        viewModel = EditViewModel(notesRepo, prefs, ReminderAlarmManager(notesRepo, alarmCallback))
     }
 
     @Test
@@ -400,6 +405,7 @@ class EditViewModelTest {
 
     @Test
     fun `should delete note with reminder`() = mainCoroutineRule.runBlockingTest {
+        alarmCallback.addAlarm(3, 10)
         val oldNote = notesRepo.getById(3)!!
         viewModel.start(3)
         viewModel.deleteNote()
@@ -409,6 +415,7 @@ class EditViewModelTest {
         assertLiveDataEventSent(viewModel.statusChangeEvent,
             StatusChange(listOf(oldNote), NoteStatus.ACTIVE, NoteStatus.DELETED))
         assertLiveDataEventSent(viewModel.exitEvent)
+        assertNull(alarmCallback.alarms[3])
     }
 
     @Test

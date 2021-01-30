@@ -23,6 +23,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.maltaisn.notes.model.NotesRepository
 import com.maltaisn.notes.model.PrefsManager
+import com.maltaisn.notes.model.ReminderAlarmManager
 import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.model.entity.NoteStatus
 import com.maltaisn.notes.model.entity.PinnedStatus
@@ -44,7 +45,8 @@ import java.util.Date
 abstract class NoteViewModel(
     protected val savedStateHandle: SavedStateHandle,
     protected val notesRepository: NotesRepository,
-    protected val prefs: PrefsManager
+    protected val prefs: PrefsManager,
+    protected val reminderAlarmManager: ReminderAlarmManager,
 ) : ViewModel(), NoteAdapter.Callback {
 
     protected var listItems: List<NoteListItem> = emptyList()
@@ -281,10 +283,15 @@ abstract class NoteViewModel(
             .ifEmpty { return }
 
         val date = Date()
-        val newNotes = oldNotes.map { note ->
-            note.copy(status = newStatus, lastModifiedDate = date,
+        val newNotes = mutableListOf<Note>()
+        for (note in oldNotes) {
+            newNotes += note.copy(status = newStatus, lastModifiedDate = date,
                 pinned = if (newStatus == NoteStatus.ACTIVE) PinnedStatus.UNPINNED else PinnedStatus.CANT_PIN,
                 reminder = note.reminder.takeIf { newStatus != NoteStatus.DELETED })
+            if (newStatus == NoteStatus.DELETED && note.reminder != null) {
+                // Remove reminder alarm for deleted note.
+                reminderAlarmManager.removeAlarm(note.id)
+            }
         }
 
         // Update the status in database

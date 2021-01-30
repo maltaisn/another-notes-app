@@ -22,6 +22,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.maltaisn.notes.model.NotesRepository
 import com.maltaisn.notes.model.PrefsManager
+import com.maltaisn.notes.model.ReminderAlarmManager
 import com.maltaisn.notes.model.entity.BlankNoteMetadata
 import com.maltaisn.notes.model.entity.ListNoteMetadata
 import com.maltaisn.notes.model.entity.Note
@@ -49,7 +50,8 @@ import javax.inject.Inject
 
 class EditViewModel @Inject constructor(
     private val notesRepository: NotesRepository,
-    private val prefs: PrefsManager
+    private val prefs: PrefsManager,
+    private val alarmManager: ReminderAlarmManager,
 ) : ViewModel(), EditAdapter.Callback {
 
     /**
@@ -360,9 +362,16 @@ class EditViewModel @Inject constructor(
             // If note is blank, it will be discarded on exit anyway, so don't change it.
             val oldNote = note
             status = newStatus
-            pinned =
-                if (status == NoteStatus.ACTIVE) PinnedStatus.UNPINNED else PinnedStatus.CANT_PIN
-            reminder = reminder.takeIf { newStatus != NoteStatus.DELETED }
+            pinned = if (status == NoteStatus.ACTIVE) {
+                PinnedStatus.UNPINNED
+            } else {
+                PinnedStatus.CANT_PIN
+            }
+            if (newStatus == NoteStatus.DELETED && reminder != null) {
+                // Deleted note, remove reminder and alarm.
+                reminder = null
+                alarmManager.removeAlarm(note.id)
+            }
             save()
 
             // Show status change message.

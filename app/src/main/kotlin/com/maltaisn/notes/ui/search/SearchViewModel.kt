@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Nicolas Maltais
+ * Copyright 2021 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.maltaisn.notes.model.NotesRepository
 import com.maltaisn.notes.model.PrefsManager
+import com.maltaisn.notes.model.ReminderAlarmManager
 import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.model.entity.NoteStatus
 import com.maltaisn.notes.sync.R
@@ -40,8 +41,10 @@ import kotlinx.coroutines.launch
 class SearchViewModel @AssistedInject constructor(
     @Assisted savedStateHandle: SavedStateHandle,
     notesRepository: NotesRepository,
-    prefs: PrefsManager
-) : NoteViewModel(savedStateHandle, notesRepository, prefs), NoteAdapter.Callback {
+    prefs: PrefsManager,
+    reminderAlarmManager: ReminderAlarmManager
+) : NoteViewModel(savedStateHandle, notesRepository, prefs, reminderAlarmManager),
+    NoteAdapter.Callback {
 
     // No need to save this is a saved state handle, SearchView will
     // call query changed listener after it's been recreated.

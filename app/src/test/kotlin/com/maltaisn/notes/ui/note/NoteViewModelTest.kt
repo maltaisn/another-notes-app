@@ -23,11 +23,13 @@ import com.maltaisn.notes.MainCoroutineRule
 import com.maltaisn.notes.assertNoteEquals
 import com.maltaisn.notes.model.MockNotesRepository
 import com.maltaisn.notes.model.PrefsManager
+import com.maltaisn.notes.model.ReminderAlarmManager
 import com.maltaisn.notes.model.entity.NoteStatus
 import com.maltaisn.notes.model.entity.NoteType
 import com.maltaisn.notes.model.entity.PinnedStatus
 import com.maltaisn.notes.model.entity.Reminder
 import com.maltaisn.notes.testNote
+import com.maltaisn.notes.ui.MockAlarmCallback
 import com.maltaisn.notes.ui.ShareData
 import com.maltaisn.notes.ui.StatusChange
 import com.maltaisn.notes.ui.assertLiveDataEventSent
@@ -56,6 +58,8 @@ class NoteViewModelTest {
 
     private lateinit var notesRepo: MockNotesRepository
     private lateinit var prefs: PrefsManager
+
+    private lateinit var alarmCallback: MockAlarmCallback
 
     @get:Rule
     var mainCoroutineRule = MainCoroutineRule()
@@ -86,7 +90,10 @@ class NoteViewModelTest {
             on { listLayoutMode } doReturn NoteListLayoutMode.GRID
         }
 
-        viewModel = TestNoteViewModel(notesRepo, prefs)
+        alarmCallback = MockAlarmCallback()
+
+        viewModel = TestNoteViewModel(notesRepo, prefs,
+            ReminderAlarmManager(notesRepo, alarmCallback))
     }
 
     @Test
@@ -190,6 +197,7 @@ class NoteViewModelTest {
 
     @Test
     fun `should delete active note with reminder`() = mainCoroutineRule.runBlockingTest {
+        alarmCallback.addAlarm(5, 10)
         val oldNote = notesRepo.getById(5)!!
         viewModel.onNoteItemLongClicked(viewModel.getNoteItemAt(4), 4)
         viewModel.deleteSelectedNotesPre()
@@ -199,6 +207,7 @@ class NoteViewModelTest {
         assertNull(newNote.reminder)
         assertLiveDataEventSent(viewModel.statusChangeEvent, StatusChange(
             listOf(oldNote), NoteStatus.ACTIVE, NoteStatus.DELETED))
+        assertNull(alarmCallback.alarms[5])
     }
 
     @Test
@@ -314,8 +323,9 @@ class NoteViewModelTest {
 
     private class TestNoteViewModel(
         notesRepo: MockNotesRepository,
-        prefs: PrefsManager
-    ) : NoteViewModel(SavedStateHandle(), notesRepo, prefs) {
+        prefs: PrefsManager,
+        reminderAlarmManager: ReminderAlarmManager,
+    ) : NoteViewModel(SavedStateHandle(), notesRepo, prefs, reminderAlarmManager) {
 
         override val selectedNoteStatus: NoteStatus?
             get() = when {

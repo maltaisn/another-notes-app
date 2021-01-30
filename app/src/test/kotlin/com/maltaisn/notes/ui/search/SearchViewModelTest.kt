@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Nicolas Maltais
+ * Copyright 2021 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,10 +21,12 @@ import androidx.lifecycle.SavedStateHandle
 import com.maltaisn.notes.MainCoroutineRule
 import com.maltaisn.notes.model.MockNotesRepository
 import com.maltaisn.notes.model.PrefsManager
+import com.maltaisn.notes.model.ReminderAlarmManager
 import com.maltaisn.notes.model.entity.NoteStatus
 import com.maltaisn.notes.model.entity.PinnedStatus
 import com.maltaisn.notes.sync.R
 import com.maltaisn.notes.testNote
+import com.maltaisn.notes.ui.MockAlarmCallback
 import com.maltaisn.notes.ui.getOrAwaitValue
 import com.maltaisn.notes.ui.note.NoteViewModel.NoteSelection
 import com.maltaisn.notes.ui.note.adapter.HeaderItem
@@ -63,7 +65,8 @@ class SearchViewModelTest {
             on { listLayoutMode } doReturn NoteListLayoutMode.LIST
         }
 
-        viewModel = SearchViewModel(SavedStateHandle(), notesRepo, prefs)
+        viewModel = SearchViewModel(SavedStateHandle(), notesRepo, prefs,
+            ReminderAlarmManager(notesRepo, MockAlarmCallback()))
     }
 
     @Test

@@ -22,6 +22,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.maltaisn.notes.model.NotesRepository
 import com.maltaisn.notes.model.PrefsManager
+import com.maltaisn.notes.model.ReminderAlarmManager
 import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.model.entity.NoteStatus
 import com.maltaisn.notes.model.entity.PinnedStatus
@@ -49,8 +50,10 @@ class HomeViewModel @AssistedInject constructor(
     @Assisted savedStateHandle: SavedStateHandle,
     notesRepository: NotesRepository,
     prefs: PrefsManager,
-    private val buildTypeBehavior: BuildTypeBehavior
-) : NoteViewModel(savedStateHandle, notesRepository, prefs), NoteAdapter.Callback {
+    reminderAlarmManager: ReminderAlarmManager,
+    private val buildTypeBehavior: BuildTypeBehavior,
+) : NoteViewModel(savedStateHandle, notesRepository, prefs, reminderAlarmManager),
+    NoteAdapter.Callback {
 
     private var noteListJob: Job? = null
 
@@ -92,7 +95,7 @@ class HomeViewModel @AssistedInject constructor(
             val noteStatus = destination.noteStatus
             if (noteStatus == null) {
                 // Reminders
-                notesRepository.getNotesWithReminderSorted().collect { notes ->
+                notesRepository.getNotesWithReminder().collect { notes ->
                     listItems = createRemindersListItems(notes)
                 }
             } else {
