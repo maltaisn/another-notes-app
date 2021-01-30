@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Nicolas Maltais
+ * Copyright 2021 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.maltaisn.notes.model.NotesRepository
+import com.maltaisn.notes.model.ReminderAlarmManager
+import com.maltaisn.notes.model.entity.NoteStatus
 import com.maltaisn.notes.model.entity.Reminder
 import com.maltaisn.notes.sync.R
 import kotlinx.coroutines.launch
@@ -30,7 +32,8 @@ import javax.inject.Inject
  * Shared view model used to send Snackbars from a fragment being popped from backstack.
  */
 class SharedViewModel @Inject constructor(
-    private val notesRepository: NotesRepository
+    private val notesRepository: NotesRepository,
+    private val reminderAlarmManager: ReminderAlarmManager,
 ) : ViewModel() {
 
     // No need to save this in saved state handle because Snackbar
@@ -64,6 +67,16 @@ class SharedViewModel @Inject constructor(
         viewModelScope.launch {
             notesRepository.updateNotes(change.oldNotes)
         }
+
+        if (change.newStatus == NoteStatus.DELETED) {
+            // Notes were deleted, removing any reminder alarm that had been set. Set them back.
+            for (note in change.oldNotes) {
+                if (note.reminder != null) {
+                    reminderAlarmManager.setNoteReminderAlarm(note)
+                }
+            }
+        }
+
         lastStatusChange = null
     }
 
