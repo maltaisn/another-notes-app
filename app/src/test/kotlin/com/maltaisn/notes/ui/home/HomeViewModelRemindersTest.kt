@@ -92,12 +92,12 @@ class HomeViewModelRemindersTest {
         mainCoroutineRule.runBlockingTest {
             assertEquals(listOf(
                 HomeViewModel.OVERDUE_HEADER_ITEM,
-                NoteItem(4, notesRepo.getById(4)!!),
-                NoteItem(1, notesRepo.getById(1)!!),
+                NoteItem(4, notesRepo.requireById(4)),
+                NoteItem(1, notesRepo.requireById(1)),
                 HomeViewModel.TODAY_HEADER_ITEM,
-                NoteItem(2, notesRepo.getById(2)!!),
+                NoteItem(2, notesRepo.requireById(2)),
                 HomeViewModel.UPCOMING_HEADER_ITEM,
-                NoteItem(3, notesRepo.getById(3)!!),
+                NoteItem(3, notesRepo.requireById(3)),
             ), viewModel.noteItems.getOrAwaitValue())
         }
 
@@ -111,8 +111,8 @@ class HomeViewModelRemindersTest {
 
         assertEquals(listOf(
             HomeViewModel.OVERDUE_HEADER_ITEM,
-            NoteItem(8, notesRepo.getById(8)!!),
-            NoteItem(4, notesRepo.getById(4)!!),
+            NoteItem(8, notesRepo.requireById(8)),
+            NoteItem(4, notesRepo.requireById(4)),
         ), viewModel.noteItems.getOrAwaitValue())
     }
 

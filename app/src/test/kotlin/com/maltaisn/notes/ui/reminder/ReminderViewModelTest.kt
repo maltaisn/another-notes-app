@@ -103,7 +103,7 @@ class ReminderViewModelTest {
         assertTrue(viewModel.isDeleteBtnVisible.getOrAwaitValue())
 
         // Values set should be the same as the reminder used by the note.
-        val reminder = notesRepo.getById(1)!!.reminder!!
+        val reminder = notesRepo.requireById(1).reminder!!
         val details = viewModel.details.getOrAwaitValue()
         assertEquals(ReminderViewModel.ReminderDetails(reminder.start.time, reminder.recurrence!!),
             details)
@@ -121,14 +121,14 @@ class ReminderViewModelTest {
         viewModel.start(listOf(1))
         viewModel.onDateClicked()
 
-        val reminder = notesRepo.getById(1)!!.reminder!!
+        val reminder = notesRepo.requireById(1).reminder!!
         val date = viewModel.showDateDialogEvent.getOrAwaitValue().requireUnhandledContent()
         assertOnSameDay(reminder.start.time, date)
     }
 
     @Test
     fun `should show time dialog`() = mainCoroutineRule.runBlockingTest {
-        val reminder = notesRepo.getById(1)!!.reminder!!
+        val reminder = notesRepo.requireById(1).reminder!!
         viewModel.start(listOf(1))
         viewModel.onTimeClicked()
         assertLiveDataEventSent(viewModel.showTimeDialogEvent, reminder.start.time)
@@ -138,7 +138,7 @@ class ReminderViewModelTest {
     fun `should show recurrence list dialog`() = mainCoroutineRule.runBlockingTest {
         viewModel.start(listOf(1))
         viewModel.onRecurrenceClicked()
-        val reminder = notesRepo.getById(1)!!.reminder!!
+        val reminder = notesRepo.requireById(1).reminder!!
         val details =
             viewModel.showRecurrenceListDialogEvent.getOrAwaitValue().requireUnhandledContent()
         assertOnSameDay(reminder.start.time, details.date)
@@ -149,7 +149,7 @@ class ReminderViewModelTest {
     fun `should show recurrence picker dialog`() = mainCoroutineRule.runBlockingTest {
         viewModel.start(listOf(1))
         viewModel.onRecurrenceCustomClicked()
-        val reminder = notesRepo.getById(1)!!.reminder!!
+        val reminder = notesRepo.requireById(1).reminder!!
         val details = viewModel.details.getOrAwaitValue()
         assertOnSameDay(reminder.start.time, details.date)
         assertEquals(reminder.recurrence, details.recurrence)
@@ -289,7 +289,7 @@ class ReminderViewModelTest {
 
         val reminder = Reminder.create(dateFor("9999-01-01T03:14:00.000"),
             Recurrence(Recurrence.Period.WEEKLY), RecurrenceFinder())
-        val note = notesRepo.getById(3)!!
+        val note = notesRepo.requireById(3)
         assertLiveDataEventSent(viewModel.reminderChangeEvent, reminder)
         assertLiveDataEventSent(viewModel.dismissEvent)
         assertEquals(note.reminder, reminder)
@@ -305,7 +305,7 @@ class ReminderViewModelTest {
         viewModel.createReminder()
 
         val reminder = Reminder.create(dateFor("9999-01-01T03:14:00.000"), null, RecurrenceFinder())
-        assertEquals(notesRepo.getById(3)!!.reminder, reminder)
+        assertEquals(notesRepo.requireById(3).reminder, reminder)
         assertLiveDataEventSent(viewModel.reminderChangeEvent, reminder)
         assertEquals(dateFor("9999-01-01T03:14:00.000").time, alarmCallback.alarms[3])
     }
@@ -321,7 +321,7 @@ class ReminderViewModelTest {
         viewModel.createReminder()
 
         assertLiveDataEventSent(viewModel.reminderChangeEvent, null)
-        assertNull(notesRepo.getById(1)!!.reminder)
+        assertNull(notesRepo.requireById(1).reminder)
         assertNull(alarmCallback.alarms[1])
     }
 
@@ -329,7 +329,7 @@ class ReminderViewModelTest {
     fun `should delete reminder`() = mainCoroutineRule.runBlockingTest {
         viewModel.start(listOf(1))
         viewModel.deleteReminder()
-        assertNull(notesRepo.getById(1)!!.reminder)
+        assertNull(notesRepo.requireById(1).reminder)
         assertLiveDataEventSent(viewModel.reminderChangeEvent, null)
         assertLiveDataEventSent(viewModel.dismissEvent)
         assertNull(alarmCallback.alarms[1])

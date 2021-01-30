@@ -174,7 +174,7 @@ class EditViewModelTest {
 
     @Test
     fun `should save changed text note`() = mainCoroutineRule.runBlockingTest {
-        val oldNote = notesRepo.getById(1)!!
+        val oldNote = notesRepo.requireById(1)
 
         viewModel.start(1)
         (viewModel.editItems.getOrAwaitValue()[0] as EditTitleItem).title.replaceAll("modified")
@@ -186,7 +186,7 @@ class EditViewModelTest {
 
     @Test
     fun `should save changed list note`() = mainCoroutineRule.runBlockingTest {
-        val oldNote = notesRepo.getById(2)!!
+        val oldNote = notesRepo.requireById(2)
 
         viewModel.start(2)
 
@@ -205,12 +205,12 @@ class EditViewModelTest {
 
     @Test
     fun `should not save unchanged note`() = mainCoroutineRule.runBlockingTest {
-        val note = notesRepo.getById(1)!!
+        val note = notesRepo.requireById(1)
 
         viewModel.start(1)
         viewModel.save()
 
-        assertNoteEquals(note, notesRepo.getById(1)!!)
+        assertNoteEquals(note, notesRepo.requireById(1))
     }
 
     @Test
@@ -279,7 +279,7 @@ class EditViewModelTest {
 
     @Test
     fun `should move active note to archive`() = mainCoroutineRule.runBlockingTest {
-        val oldNote = notesRepo.getById(1)!!
+        val oldNote = notesRepo.requireById(1)
 
         viewModel.start(1)
         viewModel.moveNoteAndExit()
@@ -287,7 +287,7 @@ class EditViewModelTest {
         assertNoteEquals(testNote(
             title = "title", content = "content", status = NoteStatus.ARCHIVED,
             added = dateFor("2018-01-01"),
-            modified = Date()), notesRepo.getById(1)!!)
+            modified = Date()), notesRepo.requireById(1))
         assertLiveDataEventSent(viewModel.statusChangeEvent,
             StatusChange(listOf(oldNote), NoteStatus.ACTIVE, NoteStatus.ARCHIVED))
         assertLiveDataEventSent(viewModel.exitEvent)
@@ -295,14 +295,14 @@ class EditViewModelTest {
 
     @Test
     fun `should move archived note to active`() = mainCoroutineRule.runBlockingTest {
-        val oldNote = notesRepo.getById(6)!!
+        val oldNote = notesRepo.requireById(6)
 
         viewModel.start(6)
         viewModel.moveNoteAndExit()
 
         assertNoteEquals(testNote(
             title = "title", content = "content", status = NoteStatus.ACTIVE,
-            added = oldNote.addedDate, modified = Date()), notesRepo.getById(6)!!)
+            added = oldNote.addedDate, modified = Date()), notesRepo.requireById(6))
         assertLiveDataEventSent(viewModel.statusChangeEvent,
             StatusChange(listOf(oldNote), NoteStatus.ARCHIVED, NoteStatus.ACTIVE))
         assertLiveDataEventSent(viewModel.exitEvent)
@@ -310,14 +310,14 @@ class EditViewModelTest {
 
     @Test
     fun `should move deleted note to active`() = mainCoroutineRule.runBlockingTest {
-        val oldNote = notesRepo.getById(4)!!
+        val oldNote = notesRepo.requireById(4)
 
         viewModel.start(4)
         viewModel.moveNoteAndExit()
 
         assertNoteEquals(testNote(
             title = "title", content = "content", status = NoteStatus.ACTIVE,
-            added = oldNote.addedDate, modified = Date()), notesRepo.getById(4)!!)
+            added = oldNote.addedDate, modified = Date()), notesRepo.requireById(4))
         assertLiveDataEventSent(viewModel.statusChangeEvent,
             StatusChange(listOf(oldNote), NoteStatus.DELETED, NoteStatus.ACTIVE))
         assertLiveDataEventSent(viewModel.exitEvent)
@@ -383,7 +383,7 @@ class EditViewModelTest {
 
     @Test
     fun `should share note text`() = mainCoroutineRule.runBlockingTest {
-        val note = notesRepo.getById(5)!!
+        val note = notesRepo.requireById(5)
         viewModel.start(5)
         viewModel.shareNote()
 
@@ -392,11 +392,11 @@ class EditViewModelTest {
 
     @Test
     fun `should delete note`() = mainCoroutineRule.runBlockingTest {
-        val oldNote = notesRepo.getById(6)!!
+        val oldNote = notesRepo.requireById(6)
         viewModel.start(6)
         viewModel.deleteNote()
 
-        assertNoteEquals(notesRepo.getById(6)!!, oldNote.copy(status = NoteStatus.DELETED,
+        assertNoteEquals(notesRepo.requireById(6), oldNote.copy(status = NoteStatus.DELETED,
             lastModifiedDate = Date()))
         assertLiveDataEventSent(viewModel.statusChangeEvent,
             StatusChange(listOf(oldNote), NoteStatus.ARCHIVED, NoteStatus.DELETED))
@@ -406,11 +406,11 @@ class EditViewModelTest {
     @Test
     fun `should delete note with reminder`() = mainCoroutineRule.runBlockingTest {
         alarmCallback.addAlarm(3, 10)
-        val oldNote = notesRepo.getById(3)!!
+        val oldNote = notesRepo.requireById(3)
         viewModel.start(3)
         viewModel.deleteNote()
 
-        assertNoteEquals(notesRepo.getById(3)!!, oldNote.copy(status = NoteStatus.DELETED,
+        assertNoteEquals(notesRepo.requireById(3), oldNote.copy(status = NoteStatus.DELETED,
             lastModifiedDate = Date(), reminder = null, pinned = PinnedStatus.CANT_PIN))
         assertLiveDataEventSent(viewModel.statusChangeEvent,
             StatusChange(listOf(oldNote), NoteStatus.ACTIVE, NoteStatus.DELETED))
@@ -669,7 +669,7 @@ class EditViewModelTest {
     @Test
     fun `should set correct reminder (has reminder)`() = mainCoroutineRule.runBlockingTest {
         viewModel.start(3)
-        assertEquals(notesRepo.getById(3)!!.reminder, viewModel.noteReminder.getOrAwaitValue())
+        assertEquals(notesRepo.requireById(3).reminder, viewModel.noteReminder.getOrAwaitValue())
     }
 
 

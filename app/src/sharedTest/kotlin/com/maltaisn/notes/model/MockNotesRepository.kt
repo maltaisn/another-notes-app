@@ -103,6 +103,10 @@ class MockNotesRepository : NotesRepository {
 
     override suspend fun getById(id: Long) = notes[id]
 
+    fun requireById(id: Long) = notes.getOrElse(id) {
+        error("No note with ID $id")
+    }
+
     override fun getNotesWithReminder() = flow {
         changeChannel.asFlow().collect {
             val notes = notes.values.filterTo(mutableListOf()) { it.reminder?.done == false }

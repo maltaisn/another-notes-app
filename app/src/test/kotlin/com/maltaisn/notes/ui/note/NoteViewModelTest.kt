@@ -153,44 +153,44 @@ class NoteViewModelTest {
 
     @Test
     fun `should move active note to archive`() = mainCoroutineRule.runBlockingTest {
-        val oldNote = notesRepo.getById(1)!!
+        val oldNote = notesRepo.requireById(1)
         viewModel.onNoteItemLongClicked(viewModel.getNoteItemAt(0), 0)
         viewModel.moveSelectedNotes()
 
-        assertEquals(NoteStatus.ARCHIVED, notesRepo.getById(1)!!.status)
+        assertEquals(NoteStatus.ARCHIVED, notesRepo.requireById(1).status)
         assertLiveDataEventSent(viewModel.statusChangeEvent, StatusChange(
             listOf(oldNote), NoteStatus.ACTIVE, NoteStatus.ARCHIVED))
     }
 
     @Test
     fun `should move archived note to active`() = mainCoroutineRule.runBlockingTest {
-        val oldNote = notesRepo.getById(2)!!
+        val oldNote = notesRepo.requireById(2)
         viewModel.onNoteItemLongClicked(viewModel.getNoteItemAt(1), 1)
         viewModel.moveSelectedNotes()
 
-        assertEquals(NoteStatus.ACTIVE, notesRepo.getById(2)!!.status)
+        assertEquals(NoteStatus.ACTIVE, notesRepo.requireById(2).status)
         assertLiveDataEventSent(viewModel.statusChangeEvent, StatusChange(
             listOf(oldNote), NoteStatus.ARCHIVED, NoteStatus.ACTIVE))
     }
 
     @Test
     fun `should move deleted note to active`() = mainCoroutineRule.runBlockingTest {
-        val oldNote = notesRepo.getById(3)!!
+        val oldNote = notesRepo.requireById(3)
         viewModel.onNoteItemLongClicked(viewModel.getNoteItemAt(2), 2)
         viewModel.moveSelectedNotes()
 
-        assertEquals(NoteStatus.ACTIVE, notesRepo.getById(3)!!.status)
+        assertEquals(NoteStatus.ACTIVE, notesRepo.requireById(3).status)
         assertLiveDataEventSent(viewModel.statusChangeEvent, StatusChange(
             listOf(oldNote), NoteStatus.DELETED, NoteStatus.ACTIVE))
     }
 
     @Test
     fun `should delete active note`() = mainCoroutineRule.runBlockingTest {
-        val oldNote = notesRepo.getById(1)!!
+        val oldNote = notesRepo.requireById(1)
         viewModel.onNoteItemLongClicked(viewModel.getNoteItemAt(0), 0)
         viewModel.deleteSelectedNotesPre()
 
-        assertEquals(NoteStatus.DELETED, notesRepo.getById(1)!!.status)
+        assertEquals(NoteStatus.DELETED, notesRepo.requireById(1).status)
         assertLiveDataEventSent(viewModel.statusChangeEvent, StatusChange(
             listOf(oldNote), NoteStatus.ACTIVE, NoteStatus.DELETED))
     }
@@ -198,11 +198,11 @@ class NoteViewModelTest {
     @Test
     fun `should delete active note with reminder`() = mainCoroutineRule.runBlockingTest {
         alarmCallback.addAlarm(5, 10)
-        val oldNote = notesRepo.getById(5)!!
+        val oldNote = notesRepo.requireById(5)
         viewModel.onNoteItemLongClicked(viewModel.getNoteItemAt(4), 4)
         viewModel.deleteSelectedNotesPre()
 
-        val newNote = notesRepo.getById(5)!!
+        val newNote = notesRepo.requireById(5)
         assertEquals(NoteStatus.DELETED, newNote.status)
         assertNull(newNote.reminder)
         assertLiveDataEventSent(viewModel.statusChangeEvent, StatusChange(
@@ -212,11 +212,11 @@ class NoteViewModelTest {
 
     @Test
     fun `should delete archived note`() = mainCoroutineRule.runBlockingTest {
-        val oldNote = notesRepo.getById(2)!!
+        val oldNote = notesRepo.requireById(2)
         viewModel.onNoteItemLongClicked(viewModel.getNoteItemAt(1), 1)
         viewModel.deleteSelectedNotesPre()
 
-        assertEquals(NoteStatus.DELETED, notesRepo.getById(2)!!.status)
+        assertEquals(NoteStatus.DELETED, notesRepo.requireById(2).status)
         assertLiveDataEventSent(viewModel.statusChangeEvent, StatusChange(
             listOf(oldNote), NoteStatus.ARCHIVED, NoteStatus.DELETED))
     }
@@ -250,7 +250,7 @@ class NoteViewModelTest {
 
     @Test
     fun `should share selected note`() = mainCoroutineRule.runBlockingTest {
-        val note = notesRepo.getById(1)!!
+        val note = notesRepo.requireById(1)
         viewModel.onNoteItemLongClicked(viewModel.getNoteItemAt(0), 0)
         viewModel.shareSelectedNote()
 
