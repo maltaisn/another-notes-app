@@ -63,7 +63,7 @@ class NoteTest {
     fun `should fail to create note with added date after last modified`() {
         assertFailsWith<IllegalArgumentException> {
             testNote(type = NoteType.TEXT,
-                added = dateFor("2020-01-01T00:00:00.000Z"),
+                added = dateFor("2020-01-01"),
                 modified = dateFor("2019-12-31T23:59:59.999Z"))
         }
     }
@@ -89,7 +89,7 @@ class NoteTest {
     fun `should fail to create deleted note with reminder`() {
         assertFailsWith<IllegalArgumentException> {
             testNote(status = NoteStatus.DELETED, reminder = Reminder.create(
-                dateFor("2020-07-29T00:00:00.000Z"),
+                dateFor("2020-07-29"),
                 Recurrence.DOES_NOT_REPEAT, RecurrenceFinder()))
         }
     }

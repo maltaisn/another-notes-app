@@ -70,8 +70,8 @@ class EditViewModelTest {
         // Sample active notes
         notesRepo.addNote(testNote(id = 1, title = "title",
             content = "content", status = NoteStatus.ACTIVE,
-            added = dateFor("2018-01-01T00:00:00.000Z"),
-            modified = dateFor("2019-01-01T00:00:00.000Z")))
+            added = dateFor("2018-01-01"),
+            modified = dateFor("2019-01-01")))
         notesRepo.addNote(listNote(listOf(
             ListNoteItem("item 1", true),
             ListNoteItem("item 2", false)
@@ -281,7 +281,7 @@ class EditViewModelTest {
 
         assertNoteEquals(testNote(
             title = "title", content = "content", status = NoteStatus.ARCHIVED,
-            added = dateFor("2018-01-01T00:00:00.000Z"),
+            added = dateFor("2018-01-01"),
             modified = Date()), notesRepo.getById(1)!!)
         assertLiveDataEventSent(viewModel.statusChangeEvent,
             StatusChange(listOf(oldNote), NoteStatus.ACTIVE, NoteStatus.ARCHIVED))
