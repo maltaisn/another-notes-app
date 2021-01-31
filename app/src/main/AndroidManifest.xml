@@ -49,6 +49,9 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <data android:mimeType="text/plain" />
             </intent-filter>
+            <intent-filter>
+                <action android:name="com.maltaisn.notes.EDIT" />
+            </intent-filter>
         </activity>
 
         <activity
@@ -57,7 +60,7 @@
             android:label="@string/app_name_short"
             >
             <intent-filter>
-                <action android:name="com.maltaisn.notes.reminder.postpone" />
+                <action android:name="com.maltaisn.notes.reminder.POSTPONE" />
             </intent-filter>
         </activity>
 
@@ -70,16 +73,18 @@
             android:theme="@style/AppTheme.DayNight.DarkActionBar"
             />
 
+        <!-- Receiver is always enabled, even when there is no reminders set.
+             This is for simplicity, shouldn't be a concern for battery life. -->
         <receiver
             android:name="com.maltaisn.notes.receiver.AlarmReceiver"
             android:enabled="true"
             android:exported="false"
             >
             <intent-filter>
-                <action android:name="com.maltaisn.notes.reminder.alarm"/>
-                <action android:name="com.maltaisn.notes.reminder.markDone"/>
-                <action android:name="android.intent.action.BOOT_COMPLETED"/>
-                <action android:name="android.intent.action.QUICKBOOT_POWERON"/>
+                <action android:name="com.maltaisn.notes.reminder.ALARM" />
+                <action android:name="com.maltaisn.notes.reminder.MARK_DONE" />
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
                 <!-- For HTC devices, apparently (https://stackoverflow.com/a/46294732/5288316) -->
                 <action android:name="com.htc.intent.action.QUICKBOOT_POWERON"/>
             </intent-filter>

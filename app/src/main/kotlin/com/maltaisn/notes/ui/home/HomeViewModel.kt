@@ -230,7 +230,7 @@ class HomeViewModel @AssistedInject constructor(
                 // Reminder is today but hasn't happened yet, add today header before it.
                 this += TODAY_HEADER_ITEM
                 addedTodayHeader = true
-            } else if (!addedUpcomingHeader && reminderTime > endOfToday) {
+            } else if (!addedUpcomingHeader && reminderTime >= endOfToday) {
                 // Reminder is after the end of today, add upcoming header before it.
                 this += UPCOMING_HEADER_ITEM
                 addedUpcomingHeader = true

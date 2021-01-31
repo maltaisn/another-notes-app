@@ -37,7 +37,7 @@ import javax.inject.Inject
 
 class AlarmReceiver : BroadcastReceiver() {
 
-    private val coroutineScope = CoroutineScope(Dispatchers.Default)
+    private val coroutineScope = CoroutineScope(Dispatchers.Main)
 
     @Inject
     lateinit var reminderAlarmManager: ReminderAlarmManager
@@ -70,51 +70,42 @@ class AlarmReceiver : BroadcastReceiver() {
 
         reminderAlarmManager.setNextNoteReminderAlarm(note)
 
-        // Show notification
-        withContext(Dispatchers.Main) {
-            // Clear top/single top flags otherwise actions won't work if
-            // main activity is already launched.
-            val activityFlags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+        val builder = NotificationCompat.Builder(context, App.NOTIFICATION_CHANNEL_ID)
+            .setPriority(NotificationCompat.PRIORITY_MAX)
+            .setSmallIcon(R.drawable.ic_pen)
+            .setContentTitle(note.title)
+            .setContentText(note.asText(includeTitle = false))
+            .setAutoCancel(true)
 
-            val builder = NotificationCompat.Builder(context, App.NOTIFICATION_CHANNEL_ID)
-                .setPriority(NotificationCompat.PRIORITY_MAX)
-                .setSmallIcon(R.drawable.ic_pen)
-                .setContentTitle(note.title)
-                .setContentText(note.asText(includeTitle = false))
-                .setAutoCancel(true)
-
-            // Edit/view main action
-            val notifIntent = Intent(context, MainActivity::class.java).apply {
-                action = MainActivity.INTENT_ACTION_EDIT
-                putExtra(EXTRA_NOTE_ID, noteId)
-                addFlags(activityFlags)
-            }
-            builder.setContentIntent(PendingIntent.getActivity(context, 0, notifIntent, 0))
-
-            // Add actions for non-recurring reminders
-            if (note.reminder?.recurrence == null) {
-                // Mark done action
-                val markDoneIntent = Intent(context, AlarmReceiver::class.java).apply {
-                    action = ACTION_MARK_DONE
-                    putExtra(EXTRA_NOTE_ID, noteId)
-                    addFlags(activityFlags)
-                }
-                builder.addAction(R.drawable.ic_check, context.getString(R.string.action_mark_as_done),
-                    PendingIntent.getBroadcast(context, 0, markDoneIntent,
-                        PendingIntent.FLAG_UPDATE_CURRENT))
-
-                // Postpone action only if not recurring.
-                val postponeIntent = Intent(context, NotificationActivity::class.java).apply {
-                    action = NotificationActivity.INTENT_ACTION_POSTPONE
-                    putExtra(EXTRA_NOTE_ID, noteId)
-                }
-                builder.addAction(R.drawable.ic_calendar,
-                    context.getString(R.string.action_postpone),
-                    PendingIntent.getActivity(context, 0, postponeIntent, 0))
-            }
-
-            NotificationManagerCompat.from(context).notify(note.id.toInt(), builder.build())
+        // Edit/view main action
+        val notifIntent = Intent(context, MainActivity::class.java).apply {
+            action = MainActivity.INTENT_ACTION_EDIT
+            putExtra(EXTRA_NOTE_ID, noteId)
         }
+        builder.setContentIntent(PendingIntent.getActivity(context, 0, notifIntent, 0))
+
+        // Add actions for non-recurring reminders
+        if (note.reminder?.recurrence == null) {
+            // Mark done action
+            val markDoneIntent = Intent(context, AlarmReceiver::class.java).apply {
+                action = ACTION_MARK_DONE
+                putExtra(EXTRA_NOTE_ID, noteId)
+            }
+            builder.addAction(R.drawable.ic_check, context.getString(R.string.action_mark_as_done),
+                PendingIntent.getBroadcast(context, 0, markDoneIntent,
+                    PendingIntent.FLAG_UPDATE_CURRENT))
+
+            // Postpone action only if not recurring.
+            val postponeIntent = Intent(context, NotificationActivity::class.java).apply {
+                action = NotificationActivity.INTENT_ACTION_POSTPONE
+                putExtra(EXTRA_NOTE_ID, noteId)
+            }
+            builder.addAction(R.drawable.ic_calendar,
+                context.getString(R.string.action_postpone),
+                PendingIntent.getActivity(context, 0, postponeIntent, 0))
+        }
+
+        NotificationManagerCompat.from(context).notify(noteId.toInt(), builder.build())
     }
     
     private suspend fun markReminderAsDone(context: Context, noteId: Long) {
@@ -125,10 +116,10 @@ class AlarmReceiver : BroadcastReceiver() {
     }
 
     companion object {
-        const val ACTION_ALARM = "com.maltaisn.notes.reminder.alarm"
-        const val ACTION_MARK_DONE = "com.maltaisn.notes.reminder.markdone"
+        const val ACTION_ALARM = "com.maltaisn.notes.reminder.ALARM"
+        const val ACTION_MARK_DONE = "com.maltaisn.notes.reminder.MARK_DONE"
 
-        const val EXTRA_NOTE_ID = "note_id"
+        const val EXTRA_NOTE_ID = "com.maltaisn.notes.reminder.NOTE_ID"
     }
 
 }

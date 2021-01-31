@@ -71,9 +71,9 @@ class NotificationActivity : AppCompatActivity() {
     }
 
     companion object {
-        private const val KEY_INTENT_HANDLED = "intent_handled"
+        private const val KEY_INTENT_HANDLED = "com.maltaisn.notes.INTENT_HANDLED"
 
-        const val INTENT_ACTION_POSTPONE = "com.maltaisn.notes.reminder.postpone"
+        const val INTENT_ACTION_POSTPONE = "com.maltaisn.notes.reminder.POSTPONE"
     }
 
 }
