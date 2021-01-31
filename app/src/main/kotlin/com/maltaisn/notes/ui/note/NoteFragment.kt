@@ -27,6 +27,8 @@ import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
+import androidx.navigation.NavController
+import androidx.navigation.NavDestination
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.google.android.material.navigation.NavigationView
@@ -54,7 +56,7 @@ import javax.inject.Provider
  * This fragment provides common code for home and search fragments.
  */
 abstract class NoteFragment : Fragment(), ActionMode.Callback, ConfirmDialog.Callback,
-    NavigationView.OnNavigationItemSelectedListener {
+    NavigationView.OnNavigationItemSelectedListener, NavController.OnDestinationChangedListener {
 
     @Inject
     lateinit var sharedViewModelProvider: Provider<SharedViewModel>
@@ -95,6 +97,8 @@ abstract class NoteFragment : Fragment(), ActionMode.Callback, ConfirmDialog.Cal
         val layoutManager = StaggeredGridLayoutManager(1, StaggeredGridLayoutManager.VERTICAL)
         rcv.adapter = adapter
         rcv.layoutManager = layoutManager
+
+        findNavController().addOnDestinationChangedListener(this)
 
         setupViewModelObservers(adapter, layoutManager)
     }
@@ -262,6 +266,7 @@ abstract class NoteFragment : Fragment(), ActionMode.Callback, ConfirmDialog.Cal
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+        findNavController().removeOnDestinationChangedListener(this)
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
@@ -301,6 +306,19 @@ abstract class NoteFragment : Fragment(), ActionMode.Callback, ConfirmDialog.Cal
         viewModel.clearSelection()
 
         drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
+    }
+
+    override fun onDestinationChanged(
+        controller: NavController,
+        destination: NavDestination,
+        arguments: Bundle?
+    ) {
+        if (destination.id == R.id.fragment_edit) {
+            // If notes are selected and action mode is shown, navigating to edit fragment
+            // with reminder notification or with share action won't dismiss the action mode.
+            // Must do it manually.
+            viewModel.clearSelection()
+        }
     }
 
     override fun onDialogConfirmed(tag: String?) {
