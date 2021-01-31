@@ -39,6 +39,7 @@
             android:name="com.maltaisn.notes.ui.main.MainActivity"
             android:theme="@style/AppTheme.DayNight.Launcher"
             android:label="@string/app_name_short"
+            android:launchMode="singleTask"
             >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

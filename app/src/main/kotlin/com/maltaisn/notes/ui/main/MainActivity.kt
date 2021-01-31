@@ -21,7 +21,6 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
-import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import com.google.android.material.navigation.NavigationView
 import com.maltaisn.notes.App
@@ -59,10 +58,20 @@ class MainActivity : AppCompatActivity() {
         drawerLayout = binding.drawerLayout
         navigationView = binding.navigationView
 
-        navController = findNavController(R.id.nav_host_fragment)
+        setupViewModelObservers()
+    }
+
+    private fun setupViewModelObservers() {
+        val navController = findNavController(R.id.nav_host_fragment)
+        viewModel.editItemEvent.observeEvent(this) { noteId ->
+            navController.navigateSafe(NavGraphMainDirections.actionEditNote(noteId))
+        }
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
 
         // Check if activity was opened with a send intent
-        val intent = intent
         if (!intent.getBooleanExtra(KEY_INTENT_HANDLED, false)) {
             when (intent.action) {
                 Intent.ACTION_SEND -> {
@@ -82,11 +91,6 @@ class MainActivity : AppCompatActivity() {
 
             // Mark intent as handled or it will be handled again if activity restarts.
             intent.putExtra(KEY_INTENT_HANDLED, true)
-        }
-
-        // Observers
-        viewModel.editItemEvent.observeEvent(this) { noteId ->
-            navController.navigateSafe(NavGraphMainDirections.actionEditNote(noteId))
         }
     }
 

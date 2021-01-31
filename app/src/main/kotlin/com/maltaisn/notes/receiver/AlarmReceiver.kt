@@ -73,6 +73,7 @@ class AlarmReceiver : BroadcastReceiver() {
         val builder = NotificationCompat.Builder(context, App.NOTIFICATION_CHANNEL_ID)
             .setPriority(NotificationCompat.PRIORITY_MAX)
             .setSmallIcon(R.drawable.ic_pen)
+            .setGroup(NOTIFICATION_GROUP)
             .setContentTitle(note.title)
             .setContentText(note.asText(includeTitle = false))
             .setAutoCancel(true)
@@ -92,7 +93,7 @@ class AlarmReceiver : BroadcastReceiver() {
                 putExtra(EXTRA_NOTE_ID, noteId)
             }
             builder.addAction(R.drawable.ic_check, context.getString(R.string.action_mark_as_done),
-                PendingIntent.getBroadcast(context, 0, markDoneIntent,
+                PendingIntent.getBroadcast(context, noteId.toInt(), markDoneIntent,
                     PendingIntent.FLAG_UPDATE_CURRENT))
 
             // Postpone action only if not recurring.
@@ -102,7 +103,8 @@ class AlarmReceiver : BroadcastReceiver() {
             }
             builder.addAction(R.drawable.ic_calendar,
                 context.getString(R.string.action_postpone),
-                PendingIntent.getActivity(context, 0, postponeIntent, 0))
+                PendingIntent.getActivity(context, noteId.toInt(), postponeIntent,
+                    PendingIntent.FLAG_UPDATE_CURRENT))
         }
 
         NotificationManagerCompat.from(context).notify(noteId.toInt(), builder.build())
@@ -120,6 +122,7 @@ class AlarmReceiver : BroadcastReceiver() {
         const val ACTION_MARK_DONE = "com.maltaisn.notes.reminder.MARK_DONE"
 
         const val EXTRA_NOTE_ID = "com.maltaisn.notes.reminder.NOTE_ID"
+        const val NOTIFICATION_GROUP = "com.maltaisn.notes.reminder.REMINDERS"
     }
 
 }

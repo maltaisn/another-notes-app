@@ -16,11 +16,14 @@
 
 package com.maltaisn.notes.ui.notification
 
+import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationManagerCompat
 import androidx.navigation.findNavController
 import com.maltaisn.notes.App
+import com.maltaisn.notes.TAG
 import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.navigateSafe
 import com.maltaisn.notes.receiver.AlarmReceiver
@@ -41,9 +44,14 @@ class NotificationActivity : AppCompatActivity() {
 
         setContentView(R.layout.activity_notification)
 
+        setupViewModelObservers()
+
+        handleIntent(intent)
+    }
+
+    private fun setupViewModelObservers() {
         val navController = findNavController(R.id.nav_host_fragment)
 
-        // Observers
         viewModel.showDateDialogEvent.observeEvent(this) { date ->
             navController.navigateSafe(NotificationFragmentDirections.actionReminderPostponeDate(date))
         }
@@ -53,13 +61,14 @@ class NotificationActivity : AppCompatActivity() {
         viewModel.exitEvent.observeEvent(this) {
             finish()
         }
+    }
 
-        // Use intent
-        val intent = intent
+    private fun handleIntent(intent: Intent) {
         if (!intent.getBooleanExtra(KEY_INTENT_HANDLED, false)) {
             when (intent.action) {
                 INTENT_ACTION_POSTPONE -> {
                     val noteId = intent.getLongExtra(AlarmReceiver.EXTRA_NOTE_ID, Note.NO_ID)
+                    Log.d(TAG, "note ID for postpone is $noteId")
                     NotificationManagerCompat.from(this).cancel(noteId.toInt())
                     viewModel.onPostponeClicked(noteId)
                 }
