@@ -44,7 +44,6 @@ class MainActivity : AppCompatActivity() {
 
     lateinit var drawerLayout: DrawerLayout
     lateinit var navigationView: NavigationView
-    private lateinit var navController: NavController
 
     private lateinit var binding: ActivityMainBinding
 
@@ -105,8 +104,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     companion object {
-        private const val KEY_INTENT_HANDLED = "intent_handled"
+        private const val KEY_INTENT_HANDLED = "com.maltaisn.notes.INTENT_HANDLED"
 
-        const val INTENT_ACTION_EDIT = "com.maltaisn.notes.reminder.edit"
+        const val INTENT_ACTION_EDIT = "com.maltaisn.notes.EDIT"
     }
 }

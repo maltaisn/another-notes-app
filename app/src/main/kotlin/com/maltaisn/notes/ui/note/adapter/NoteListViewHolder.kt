@@ -27,6 +27,7 @@ import com.google.android.material.chip.Chip
 import com.maltaisn.notes.model.entity.ListNoteItem
 import com.maltaisn.notes.model.entity.NoteType
 import com.maltaisn.notes.strikethroughText
+import com.maltaisn.notes.sync.BuildConfig
 import com.maltaisn.notes.sync.R
 import com.maltaisn.notes.sync.databinding.ItemHeaderBinding
 import com.maltaisn.notes.sync.databinding.ItemMessageBinding
@@ -46,9 +47,14 @@ abstract class NoteViewHolder(itemView: View) :
     open fun bind(adapter: NoteAdapter, item: NoteItem) {
         val note = item.note
 
-        titleTxv.text = HighlightHelper.getHighlightedText(note.title, item.titleHighlights,
+        var title = note.title
+        if (BuildConfig.DEBUG) {
+            title += " (${note.id})"
+        }
+
+        titleTxv.text = HighlightHelper.getHighlightedText(title, item.titleHighlights,
             adapter.highlightBackgroundColor, adapter.highlightForegroundColor)
-        titleTxv.isVisible = note.title.isNotBlank()
+        titleTxv.isVisible = title.isNotBlank()
 
         cardView.isChecked = item.checked
         cardView.setOnClickListener {
