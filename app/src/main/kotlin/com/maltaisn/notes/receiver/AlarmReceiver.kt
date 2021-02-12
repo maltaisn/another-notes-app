@@ -74,8 +74,8 @@ class AlarmReceiver : BroadcastReceiver() {
             .setPriority(NotificationCompat.PRIORITY_MAX)
             .setSmallIcon(R.drawable.ic_pen)
             .setGroup(NOTIFICATION_GROUP)
-            .setContentTitle(note.title)
-            .setContentText(note.asText(includeTitle = false))
+            .setContentTitle(note.title.ifBlank { null })
+            .setContentText(note.asText(includeTitle = false).ifBlank { null })
             .setAutoCancel(true)
 
         // Edit/view main action
