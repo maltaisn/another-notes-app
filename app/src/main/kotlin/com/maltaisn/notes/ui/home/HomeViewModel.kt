@@ -57,6 +57,8 @@ class HomeViewModel @AssistedInject constructor(
 
     private var noteListJob: Job? = null
 
+    private var batteryRestricted = false
+
     private val _destination = MutableLiveData<HomeDestination>()
     val destination: LiveData<HomeDestination>
         get() = _destination
@@ -125,6 +127,10 @@ class HomeViewModel @AssistedInject constructor(
         }
     }
 
+    fun notifyBatteryRestricted() {
+        batteryRestricted = true
+    }
+
     fun doExtraAction() {
         viewModelScope.launch {
             buildTypeBehavior.doExtraAction(this@HomeViewModel)
@@ -144,7 +150,11 @@ class HomeViewModel @AssistedInject constructor(
         }
 
     override fun onMessageItemDismissed(item: MessageItem, pos: Int) {
-        prefs.lastTrashReminderTime = System.currentTimeMillis()
+        val now = System.currentTimeMillis()
+        when (item.id) {
+            TRASH_REMINDER_ITEM_ID -> prefs.lastTrashReminderTime = now
+            BATTERY_RESTRICTED_ITEM_ID -> prefs.lastRestrictedBatteryReminderTime = now
+        }
 
         // Remove message item in list
         changeListItems { it.removeAt(pos) }
@@ -227,6 +237,15 @@ class HomeViewModel @AssistedInject constructor(
         val endOfToday = calendar.timeInMillis
         val now = System.currentTimeMillis()
 
+        // If needed, add reminder that notifications won't work properly if battery is restricted.
+        if (batteryRestricted && notes.isNotEmpty() &&
+            now - prefs.lastRestrictedBatteryReminderTime >
+            PrefsManager.RESTRICTED_BATTERY_REMINDER_DELAY.inMilliseconds
+        ) {
+            this += MessageItem(BATTERY_RESTRICTED_ITEM_ID,
+                R.string.reminder_restricted_battery)
+        }
+
         var addedOverdueHeader = false
         var addedTodayHeader = false
         var addedUpcomingHeader = false
@@ -276,6 +295,7 @@ class HomeViewModel @AssistedInject constructor(
 
     companion object {
         private const val TRASH_REMINDER_ITEM_ID = -1L
+        private const val BATTERY_RESTRICTED_ITEM_ID = -7L
 
         val PINNED_HEADER_ITEM = HeaderItem(-2, R.string.note_pinned)
         val NOT_PINNED_HEADER_ITEM = HeaderItem(-3, R.string.note_not_pinned)

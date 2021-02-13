@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Nicolas Maltais
+ * Copyright 2021 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -67,6 +67,10 @@ class PrefsManager @Inject constructor(
         get() = prefs.getLong(LAST_TRASH_REMIND_TIME, 0)
         set(value) = prefs.edit { putLong(LAST_TRASH_REMIND_TIME, value) }
 
+    var lastRestrictedBatteryReminderTime: Long
+        get() = prefs.getLong(LAST_RESTRICTED_BATTERY_REMIND_TIME, 0)
+        set(value) = prefs.edit { putLong(LAST_RESTRICTED_BATTERY_REMIND_TIME, value) }
+
     fun setDefaults(context: Context) {
         PreferenceManager.setDefaultValues(context, R.xml.prefs, false)
     }
@@ -84,6 +88,7 @@ class PrefsManager @Inject constructor(
         // Other keys
         private const val LIST_LAYOUT_MODE = "is_in_list_layout"
         private const val LAST_TRASH_REMIND_TIME = "last_deleted_remind_time"
+        private const val LAST_RESTRICTED_BATTERY_REMIND_TIME = "last_restricted_battery_remind_time"
 
         /**
          * Delay after which notes in trash are automatically deleted forever.
@@ -94,5 +99,11 @@ class PrefsManager @Inject constructor(
          * Required delay before showing the trash reminder delay after user dismisses it.
          */
         val TRASH_REMINDER_DELAY = 60.days
+
+        /**
+         * Required delay before showing a notice that restricted battery mode will impact
+         * reminders, after user dismisses it.
+         */
+        val RESTRICTED_BATTERY_REMINDER_DELAY = 60.days
     }
 }

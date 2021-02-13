@@ -16,6 +16,9 @@
 
 package com.maltaisn.notes.ui.home
 
+import android.app.ActivityManager
+import android.content.Context
+import android.os.Build
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
@@ -48,7 +51,18 @@ class HomeFragment : NoteFragment(), Toolbar.OnMenuItemClickListener,
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        (requireContext().applicationContext as App).appComponent.inject(this)
+
+        val context = requireContext()
+        (context.applicationContext as App).appComponent.inject(this)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            // Detect battery restriction as it affects reminder alarms.
+            val activityManager = context.getSystemService(Context.ACTIVITY_SERVICE)
+                    as? ActivityManager
+            if (activityManager?.isBackgroundRestricted == true) {
+                viewModel.notifyBatteryRestricted()
+            }
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

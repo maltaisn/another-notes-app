@@ -118,6 +118,8 @@
     <string name="reminder_notif_channel_title">Reminders</string>
     <string name="reminder_notif_channel_descr">Reminders set on notes</string>
     <string name="reminder_empty_placeholder">No reminders set</string>
+    <string name="reminder_restricted_battery">Reminder alarms may not work correctly because the
+    app has restricted battery usage. This can be changed in the app settings.</string>
 
     <!-- Settings -->
     <string name="pref_group_appearance">Appearance</string>

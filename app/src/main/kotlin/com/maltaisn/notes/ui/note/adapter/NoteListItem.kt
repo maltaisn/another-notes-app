@@ -54,7 +54,7 @@ data class HeaderItem(
 data class MessageItem(
     override val id: Long,
     @StringRes @PluralsRes val message: Int,
-    val args: List<Any>
+    val args: List<Any> = emptyList(),
 ) : NoteListItem() {
 
     override val type get() = ViewType.MESSAGE
