@@ -22,6 +22,7 @@ import android.widget.TextView
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import com.google.android.material.button.MaterialButton
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.chip.Chip
 import com.maltaisn.notes.model.entity.ListNoteItem
@@ -43,6 +44,7 @@ abstract class NoteViewHolder(itemView: View) :
     protected abstract val cardView: MaterialCardView
     protected abstract val titleTxv: TextView
     protected abstract val reminderChip: Chip
+    protected abstract val actionBtn: MaterialButton
 
     open fun bind(adapter: NoteAdapter, item: NoteItem) {
         val note = item.note
@@ -75,10 +77,26 @@ abstract class NoteViewHolder(itemView: View) :
                 DateUtils.FORMAT_SHOW_DATE or DateUtils.FORMAT_SHOW_TIME or DateUtils.FORMAT_ABBREV_RELATIVE
             )
             reminderChip.strikethroughText = note.reminder.done
-            reminderChip.isEnabled = !note.reminder.done
+            reminderChip.isActivated = !note.reminder.done
             reminderChip.setChipIconResource(if (note.reminder.recurrence != null)
                 R.drawable.ic_repeat else R.drawable.ic_alarm)
         }
+
+        val bottomPadding: Int
+        if (item.showMarkAsDone && !item.checked) {
+            actionBtn.isVisible = true
+            actionBtn.setIconResource(R.drawable.ic_check)
+            actionBtn.setText(R.string.action_mark_as_done)
+            actionBtn.setOnClickListener {
+                adapter.callback.onNoteActionButtonClicked(item, adapterPosition)
+            }
+            bottomPadding = R.dimen.note_bottom_padding_with_action
+        } else {
+            actionBtn.isVisible = false
+            bottomPadding = R.dimen.note_bottom_padding_no_action
+        }
+        cardView.setContentPadding(0, 0, 0,
+            cardView.context.resources.getDimensionPixelSize(bottomPadding))
     }
 }
 
@@ -88,6 +106,7 @@ class TextNoteViewHolder(private val binding: ItemNoteTextBinding) :
     override val cardView = binding.cardView
     override val titleTxv = binding.titleTxv
     override val reminderChip = binding.reminderChip
+    override val actionBtn = binding.actionBtn
 
     override fun bind(adapter: NoteAdapter, item: NoteItem) {
         super.bind(adapter, item)
@@ -106,6 +125,7 @@ class ListNoteViewHolder(private val binding: ItemNoteListBinding) : NoteViewHol
     override val cardView = binding.cardView
     override val titleTxv = binding.titleTxv
     override val reminderChip = binding.reminderChip
+    override val actionBtn = binding.actionBtn
 
     private val itemViewHolders = mutableListOf<ListNoteItemViewHolder>()
 

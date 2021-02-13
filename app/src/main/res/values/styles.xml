@@ -16,6 +16,13 @@
 
 <resources xmlns:tools="http://schemas.android.com/tools">
 
+    <style name="NoteTitleStyle">
+        <item name="android:ellipsize">end</item>
+        <item name="android:maxLines">2</item>
+        <item name="android:textAppearance">?textAppearanceSubtitle1</item>
+        <item name="android:textAlignment">viewStart</item>
+    </style>
+
     <style name="NoteListItemCardStyle">
         <item name="android:background">?colorOnSurface</item>
         <item name="android:foreground">?selectableItemBackground</item>
@@ -35,8 +42,7 @@
 
     <style name="NoteReminderChipStyle">
         <item name="android:textColor">@color/item_note_reminder_text_color</item>
-        <item name="android:clickable">false</item>
-        <item name="android:focusable">false</item>
+        <item name="android:foreground">@null</item>
         <item name="android:textAppearance">?textAppearanceCaption</item>
         <item name="android:textSize">11sp</item>
         <item name="android:ellipsize">end</item>
@@ -46,7 +52,17 @@
         <item name="chipStrokeColor">@color/item_note_reminder_stroke_color</item>
         <item name="chipStrokeWidth">0.7dp</item>
         <item name="chipIconSize">16dp</item>
+        <item name="chipIconTint">@color/item_edit_item_text_color</item>
         <item name="chipMinTouchTargetSize">0dp</item>
+    </style>
+
+    <style name="NoteActionButtonStyle" parent="Widget.MaterialComponents.Button.TextButton">
+        <item name="android:textColor">@color/material_on_surface_emphasis_medium</item>
+        <item name="android:textSize">12sp</item>
+        <item name="iconTint">@color/material_on_surface_emphasis_medium</item>
+        <item name="iconGravity">textStart</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
     </style>
 
     <style name="PlaceholderImageViewStyle">

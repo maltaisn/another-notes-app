@@ -92,13 +92,22 @@ class HomeViewModelRemindersTest {
         mainCoroutineRule.runBlockingTest {
             assertEquals(listOf(
                 HomeViewModel.OVERDUE_HEADER_ITEM,
-                NoteItem(4, notesRepo.requireById(4)),
-                NoteItem(1, notesRepo.requireById(1)),
+                NoteItem(4, notesRepo.requireById(4), showMarkAsDone = true),
+                NoteItem(1, notesRepo.requireById(1), showMarkAsDone = true),
                 HomeViewModel.TODAY_HEADER_ITEM,
                 NoteItem(2, notesRepo.requireById(2)),
                 HomeViewModel.UPCOMING_HEADER_ITEM,
                 NoteItem(3, notesRepo.requireById(3)),
             ), viewModel.noteItems.getOrAwaitValue())
+        }
+
+    @Test
+    fun `should mark reminder as done on action button click`() =
+        mainCoroutineRule.runBlockingTest {
+            val note = notesRepo.requireById(4)
+            viewModel.onNoteActionButtonClicked(NoteItem(4, note), 1)
+            assertEquals(note.copy(reminder = note.reminder?.markAsDone()),
+                notesRepo.requireById(4))
         }
 
     @Test

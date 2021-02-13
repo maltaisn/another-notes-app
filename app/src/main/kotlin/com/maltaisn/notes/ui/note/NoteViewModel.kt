@@ -335,6 +335,10 @@ abstract class NoteViewModel(
         // Do nothing.
     }
 
+    override fun onNoteActionButtonClicked(item: NoteItem, pos: Int) {
+        // Do nothing.
+    }
+
     override val isNoteSwipeEnabled = false
 
     override fun onNoteSwiped(pos: Int) {

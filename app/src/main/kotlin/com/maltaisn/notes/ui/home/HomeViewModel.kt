@@ -162,6 +162,15 @@ class HomeViewModel @AssistedInject constructor(
         })
     }
 
+    override fun onNoteActionButtonClicked(item: NoteItem, pos: Int) {
+        // Action button is only shown for "Mark as done" in Reminders screen.
+        // So mark reminder as done.
+        viewModelScope.launch {
+            val note = item.note
+            notesRepository.updateNote(note.copy(reminder = note.reminder?.markAsDone()))
+        }
+    }
+
     private fun createActiveListItems(notes: List<Note>): List<NoteListItem> = buildList {
         // If there's at least one pinned note, add pinned header.
         if (notes.isNotEmpty() && notes.first().pinned == PinnedStatus.PINNED) {
@@ -236,7 +245,9 @@ class HomeViewModel @AssistedInject constructor(
                 addedUpcomingHeader = true
             }
 
-            addNoteItem(note)
+            // Show "Mark as done" action button.
+            val checked = isNoteSelected(note)
+            this += NoteItem(note.id, note, checked, showMarkAsDone = reminderTime <= now)
         }
     }
 

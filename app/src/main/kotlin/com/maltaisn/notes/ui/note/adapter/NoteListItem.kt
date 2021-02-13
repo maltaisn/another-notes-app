@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Nicolas Maltais
+ * Copyright 2021 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,8 @@ data class NoteItem(
     val note: Note,
     val checked: Boolean = false,
     val titleHighlights: List<IntRange> = emptyList(),
-    val contentHighlights: List<IntRange> = emptyList()
+    val contentHighlights: List<IntRange> = emptyList(),
+    val showMarkAsDone: Boolean = false,
 ) : NoteListItem() {
 
     override val type: ViewType

@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Nicolas Maltais
+ * Copyright 2021 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -132,6 +132,9 @@ class NoteAdapter(val context: Context, val callback: Callback) :
 
         /** Called when a message [item] at [pos] is dismissed by clicking on close button. */
         fun onMessageItemDismissed(item: MessageItem, pos: Int)
+
+        /** Called when a note's action button is clicked. */
+        fun onNoteActionButtonClicked(item: NoteItem, pos: Int)
 
         /** Whether notes can be swiped in this list. */
         val isNoteSwipeEnabled: Boolean

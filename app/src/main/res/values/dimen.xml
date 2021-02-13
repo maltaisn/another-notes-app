@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?><!--
-  Copyright 2020 Nicolas Maltais
+  Copyright 2021 Nicolas Maltais
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -20,6 +20,9 @@
 
     <integer name="note_list_layout_span_count">1</integer>
     <integer name="note_grid_layout_span_count">2</integer>
+
+    <dimen name="note_bottom_padding_no_action">16dp</dimen>
+    <dimen name="note_bottom_padding_with_action">0dp</dimen>
 
     <dimen name="reminder_dialog_max_width">500dp</dimen>
 
