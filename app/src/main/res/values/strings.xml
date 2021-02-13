@@ -35,6 +35,7 @@
     <string name="action_layout_grid">View as grid</string>
     <string name="action_layout_list">View as list</string>
     <string name="action_mark_as_done">Mark as done</string>
+    <string name="action_none">None</string>
     <string name="action_ok">OK</string>
     <string name="action_pin">Pin</string>
     <string name="action_postpone">Postpone</string>

@@ -120,8 +120,8 @@ class HomeViewModelRemindersTest {
 
         assertEquals(listOf(
             HomeViewModel.OVERDUE_HEADER_ITEM,
-            NoteItem(8, notesRepo.requireById(8)),
-            NoteItem(4, notesRepo.requireById(4)),
+            NoteItem(8, notesRepo.requireById(8), showMarkAsDone = true),
+            NoteItem(4, notesRepo.requireById(4), showMarkAsDone = true),
         ), viewModel.noteItems.getOrAwaitValue())
     }
 

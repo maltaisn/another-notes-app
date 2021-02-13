@@ -194,6 +194,13 @@ class HomeViewModelTest {
     }
 
     @Test
+    fun `should not allow swiping if no action set`() = mainCoroutineRule.runBlockingTest {
+        viewModel.setDestination(HomeDestination.ACTIVE)
+        whenever(prefs.swipeAction) doReturn SwipeAction.NONE
+        assertFalse(viewModel.isNoteSwipeEnabled)
+    }
+
+    @Test
     fun `should change list layout mode`() = mainCoroutineRule.runBlockingTest {
         viewModel.toggleListLayoutMode()
 

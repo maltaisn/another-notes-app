@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Nicolas Maltais
+ * Copyright 2021 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,5 +24,6 @@ import com.maltaisn.notes.sync.R
  */
 enum class SwipeAction(val value: String) {
     ARCHIVE("archive"),
-    DELETE("delete")
+    DELETE("delete"),
+    NONE("none"),
 }

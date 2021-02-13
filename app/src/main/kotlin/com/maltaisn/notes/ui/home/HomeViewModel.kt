@@ -151,7 +151,8 @@ class HomeViewModel @AssistedInject constructor(
     }
 
     override val isNoteSwipeEnabled: Boolean
-        get() = destination.value == HomeDestination.ACTIVE && selectedNotes.isEmpty()
+        get() = destination.value == HomeDestination.ACTIVE && selectedNotes.isEmpty() &&
+                prefs.swipeAction != SwipeAction.NONE
 
     override fun onNoteSwiped(pos: Int) {
         // Archive note
@@ -159,6 +160,7 @@ class HomeViewModel @AssistedInject constructor(
         changeNotesStatus(setOf(note), when (prefs.swipeAction) {
             SwipeAction.ARCHIVE -> NoteStatus.ARCHIVED
             SwipeAction.DELETE -> NoteStatus.DELETED
+            SwipeAction.NONE -> return  // should not happen
         })
     }
 
