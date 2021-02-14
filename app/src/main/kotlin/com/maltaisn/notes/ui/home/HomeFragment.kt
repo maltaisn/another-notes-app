@@ -107,6 +107,11 @@ class HomeFragment : NoteFragment(), Toolbar.OnMenuItemClickListener,
         viewModel.showEmptyTrashDialogEvent.observeEvent(viewLifecycleOwner) {
             showEmptyTrashConfirmDialog()
         }
+
+        sharedViewModel.changeDestinationEvent.observeEvent(viewLifecycleOwner) { destination ->
+            viewModel.setDestination(destination)
+            checkNavigationItemForDestination(destination)
+        }
     }
 
     private fun updateToolbarForDestination(destination: HomeDestination) {
@@ -180,6 +185,15 @@ class HomeFragment : NoteFragment(), Toolbar.OnMenuItemClickListener,
         }
 
         return true
+    }
+
+    private fun checkNavigationItemForDestination(destination: HomeDestination) {
+        navView.setCheckedItem(when (destination) {
+            HomeDestination.ACTIVE -> R.id.item_location_active
+            HomeDestination.ARCHIVED -> R.id.item_location_archived
+            HomeDestination.DELETED -> R.id.item_location_deleted
+            HomeDestination.REMINDERS -> R.id.item_reminder_list
+        })
     }
 
     override fun onDialogConfirmed(tag: String?) {

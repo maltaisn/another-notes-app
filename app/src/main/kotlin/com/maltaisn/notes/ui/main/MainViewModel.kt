@@ -22,6 +22,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.maltaisn.notes.model.NotesRepository
 import com.maltaisn.notes.model.entity.BlankNoteMetadata
+import com.maltaisn.notes.model.entity.ListNoteMetadata
 import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.model.entity.NoteStatus
 import com.maltaisn.notes.model.entity.NoteType
@@ -58,15 +59,18 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    fun addIntentNote(title: String, content: String) {
+    fun createNote(type: NoteType, title: String = "", content: String = "") {
         // Add note to database, then edit it.
         viewModelScope.launch {
             val date = Date()
             val note = Note(Note.NO_ID,
-                NoteType.TEXT,
+                type,
                 title,
                 content,
-                BlankNoteMetadata,
+                when (type) {
+                    NoteType.TEXT -> BlankNoteMetadata
+                    NoteType.LIST -> ListNoteMetadata(List(content.lines().size) { false })
+                },
                 date,
                 date,
                 NoteStatus.ACTIVE,

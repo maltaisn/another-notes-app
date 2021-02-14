@@ -51,8 +51,15 @@
                 <data android:mimeType="text/plain" />
             </intent-filter>
             <intent-filter>
+                <action android:name="com.maltaisn.notes.CREATE" />
                 <action android:name="com.maltaisn.notes.EDIT" />
+                <action android:name="com.maltaisn.notes.SHOW_REMINDERS" />
             </intent-filter>
+
+            <meta-data
+                android:name="android.app.shortcuts"
+                android:resource="@xml/shortcuts"
+                />
         </activity>
 
         <activity

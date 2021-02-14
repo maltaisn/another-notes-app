@@ -51,6 +51,15 @@
     <string name="action_undo">Undo</string>
     <string name="action_unpin">Unpin</string>
 
+    <!-- Shortcuts -->
+    <!-- Note: normal length is ideally 25 chars or less, short is 10 chars or less. -->
+    <string name="shortcut_text_note">New text note</string>
+    <string name="shortcut_text_note_short">New text</string>
+    <string name="shortcut_list_note">New list note</string>
+    <string name="shortcut_list_note_short">New list</string>
+    <string name="shortcut_reminders">Reminders</string>
+    <string name="shortcut_reminders_short">Reminders</string>
+
     <!-- Home -->
     <string name="note_location_active">Notes</string>
     <string name="note_location_archived">Archived</string>

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  Copyright 2021 Nicolas Maltais
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  -->
+
+<shortcuts
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    >
+
+    <shortcut
+        android:shortcutId="create_text_note"
+        android:shortcutLongLabel="@string/shortcut_text_note"
+        android:shortcutShortLabel="@string/shortcut_text_note_short"
+        android:icon="@drawable/ic_shortcut_text"
+        android:enabled="true"
+        >
+        <intent
+            android:action="com.maltaisn.notes.CREATE"
+            android:targetClass="com.maltaisn.notes.ui.main.MainActivity"
+            android:targetPackage="com.maltaisn.notes.sync"
+            >
+            <extra
+                android:name="com.maltaisn.notes.NOTE_TYPE"
+                android:value="0"
+                />
+        </intent>
+    </shortcut>
+
+    <shortcut
+        android:shortcutId="create_list_note"
+        android:shortcutLongLabel="@string/shortcut_list_note"
+        android:shortcutShortLabel="@string/shortcut_list_note_short"
+        android:icon="@drawable/ic_shortcut_list"
+        android:enabled="true"
+        >
+        <intent
+            android:action="com.maltaisn.notes.CREATE"
+            android:targetClass="com.maltaisn.notes.ui.main.MainActivity"
+            android:targetPackage="com.maltaisn.notes.sync"
+            >
+            <extra
+                android:name="com.maltaisn.notes.NOTE_TYPE"
+                android:value="1"
+                />
+        </intent>
+    </shortcut>
+
+    <shortcut
+        android:shortcutId="show_reminders"
+        android:shortcutLongLabel="@string/shortcut_reminders"
+        android:shortcutShortLabel="@string/shortcut_reminders_short"
+        android:icon="@drawable/ic_shortcut_alarm"
+        android:enabled="true"
+        >
+        <intent
+            android:action="com.maltaisn.notes.SHOW_REMINDERS"
+            android:targetClass="com.maltaisn.notes.ui.main.MainActivity"
+            android:targetPackage="com.maltaisn.notes.sync"
+            />
+    </shortcut>
+
+</shortcuts>
