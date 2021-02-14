@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Nicolas Maltais
+ * Copyright 2021 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,10 +17,10 @@
 package com.maltaisn.notes.ui.edit.adapter
 
 import android.text.Editable
-import android.text.InputFilter
-import android.text.Spannable
+import android.text.TextWatcher
+import android.text.style.CharacterStyle
 import android.view.KeyEvent
-import androidx.core.text.clearSpans
+import androidx.core.text.getSpans
 import androidx.core.view.isInvisible
 import androidx.core.widget.doOnTextChanged
 import androidx.recyclerview.widget.RecyclerView
@@ -47,7 +47,7 @@ class EditTitleViewHolder(binding: ItemEditTitleBinding, callback: EditAdapter.C
         titleEdt.setOnClickListener {
             callback.onNoteClickedToEdit()
         }
-        titleEdt.filters = arrayOf(clearSpansInputFilter)
+        titleEdt.addTextChangedListener(clearSpansTextWatcher)
         titleEdt.setHorizontallyScrolling(false)
         titleEdt.maxLines = Integer.MAX_VALUE
     }
@@ -73,8 +73,8 @@ class EditContentViewHolder(binding: ItemEditContentBinding, callback: EditAdapt
     private val contentEdt = binding.contentEdt
 
     init {
-        contentEdt.filters = arrayOf(clearSpansInputFilter)
         contentEdt.addTextChangedListener(BulletTextWatcher())
+        contentEdt.addTextChangedListener(clearSpansTextWatcher)
         contentEdt.setOnClickListener {
             callback.onNoteClickedToEdit()
         }
@@ -112,7 +112,7 @@ class EditItemViewHolder(val binding: ItemEditItemBinding, callback: EditAdapter
             itemEdt.isActivated = !isChecked // Controls text color selector.
         }
 
-        itemEdt.filters = arrayOf(clearSpansInputFilter)
+        itemEdt.addTextChangedListener(clearSpansTextWatcher)
 
         itemEdt.doOnTextChanged { _, _, _, count ->
             // This is used to detect when user enters line breaks into the input, so the
@@ -196,12 +196,21 @@ private class AndroidEditableText(override val text: Editable) : EditableText {
     }
 }
 
-private val clearSpansInputFilter = InputFilter { source, start, end, _, _, _ ->
-    // Pasted text can often have foreign spans, for example when copying text from the browser.
-    // This filter removes all of them.
-    val filtered = source.subSequence(start, end)
-    if (filtered is Spannable) {
-        filtered.clearSpans()
+private val clearSpansTextWatcher = object : TextWatcher {
+    override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+        // nothing
     }
-    filtered
+
+    override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+        // nothing
+    }
+
+    override fun afterTextChanged(s: Editable?) {
+        if (s == null) return
+        // Might not remove all spans but will work for most of them.
+        val spansToRemove = s.getSpans<CharacterStyle>()
+        for (span in spansToRemove) {
+            s.removeSpan(span)
+        }
+    }
 }
