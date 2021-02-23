@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Nicolas Maltais
+ * Copyright 2021 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,10 +45,11 @@ class SwipeTouchHelperCallback(private val callback: NoteAdapter.Callback) : Ite
         actionState: Int,
         isCurrentlyActive: Boolean
     ) {
+        val dXabs = dX.absoluteValue
         val view = viewHolder.itemView
-        view.alpha = (1 - dX.absoluteValue / view.width * ITEM_SWIPE_OPACITY_FACTOR)
+        view.alpha = (1 - dXabs / view.width * ITEM_SWIPE_OPACITY_FACTOR)
             .coerceAtLeast(ITEM_SWIPE_OPACITY_MIN)
-        view.translationX = dX
+        view.translationX = if (dXabs < view.width * ITEM_SWIPE_THRESHOLD) 0f else dX
     }
 
     override fun clearView(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder) {
@@ -73,5 +74,8 @@ class SwipeTouchHelperCallback(private val callback: NoteAdapter.Callback) : Ite
 
         /** Minimum item opacity when swiping. */
         private const val ITEM_SWIPE_OPACITY_MIN = 0.1f
+
+        /** Minimum drag distance in percentage of item width to show swipe animation. */
+        private const val ITEM_SWIPE_THRESHOLD = 0.075f
     }
 }
