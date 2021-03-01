@@ -72,15 +72,6 @@
             </intent-filter>
         </activity>
 
-        <activity
-            android:name="com.google.android.gms.oss.licenses.OssLicensesMenuActivity"
-            android:theme="@style/AppTheme.DayNight.DarkActionBar"
-            />
-        <activity
-            android:name="com.google.android.gms.oss.licenses.OssLicensesActivity"
-            android:theme="@style/AppTheme.DayNight.DarkActionBar"
-            />
-
         <!-- Receiver is always enabled, even when there is no reminders set.
              This is for simplicity, shouldn't be a concern for battery life. -->
         <receiver

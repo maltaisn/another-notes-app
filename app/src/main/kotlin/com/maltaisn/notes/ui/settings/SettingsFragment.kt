@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Nicolas Maltais
+ * Copyright 2021 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,11 +19,11 @@ package com.maltaisn.notes.ui.settings
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import androidx.core.os.bundleOf
 import androidx.navigation.fragment.findNavController
 import androidx.preference.DropDownPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
-import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import com.google.android.material.snackbar.Snackbar
 import com.maltaisn.notes.App
 import com.maltaisn.notes.model.PrefsManager
@@ -34,6 +34,7 @@ import com.maltaisn.notes.ui.AppTheme
 import com.maltaisn.notes.ui.common.ConfirmDialog
 import com.maltaisn.notes.ui.observeEvent
 import com.maltaisn.notes.ui.viewModel
+import com.mikepenz.aboutlibraries.LibsBuilder
 import javax.inject.Inject
 import javax.inject.Provider
 
@@ -99,9 +100,17 @@ class SettingsFragment : PreferenceFragmentCompat(), ConfirmDialog.Callback {
             true
         }
 
-        requirePreference<Preference>(PrefsManager.VIEW_LICENSES).intent =
-            Intent(requireActivity(), OssLicensesMenuActivity::class.java)
-        OssLicensesMenuActivity.setActivityTitle(getString(R.string.pref_about_view_licenses))
+        requirePreference<Preference>(PrefsManager.VIEW_LICENSES).setOnPreferenceClickListener {
+            findNavController().navigate(R.id.action_about_libraries, bundleOf(
+                // Navigation component safe args seem to fail for cross module navigation.
+                // So pass the customization argument the old way.
+                "data" to LibsBuilder().apply {
+                    aboutShowIcon = false
+                    aboutShowVersion = false
+                }
+            ))
+            true
+        }
 
         // Set version name as summary text for version preference
         requirePreference<Preference>(PrefsManager.VERSION).summary = BuildConfig.VERSION_NAME
@@ -118,5 +127,6 @@ class SettingsFragment : PreferenceFragmentCompat(), ConfirmDialog.Callback {
 
     companion object {
         private const val CLEAR_DATA_DIALOG_TAG = "clear_data_dialog"
+        private const val LICENSES_DIALOG_TAG = "licenses_dialog"
     }
 }

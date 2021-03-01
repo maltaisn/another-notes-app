@@ -22,6 +22,8 @@
     app:startDestination="@id/fragment_home"
     >
 
+    <include app:graph="@navigation/aboutlibs_navigation" />
+
     <fragment
         android:id="@+id/fragment_home"
         android:name="com.maltaisn.notes.ui.home.HomeFragment"
@@ -59,7 +61,12 @@
         android:id="@+id/fragment_settings"
         android:name="com.maltaisn.notes.ui.settings.SettingsFragment"
         tools:layout="@layout/fragment_settings"
-        />
+        >
+        <action
+            android:id="@+id/action_about_libraries"
+            app:destination="@id/about_libraries"
+            />
+    </fragment>
 
     <action
         android:id="@+id/action_edit_note"

@@ -9,9 +9,9 @@ buildscript {
         classpath "org.jetbrains.kotlin:kotlin-serialization:$kotlinVersion"
         classpath "org.jetbrains.kotlin:kotlin-allopen:$kotlinVersion"
         classpath "androidx.navigation:navigation-safe-args-gradle-plugin:$navVersion"
-        classpath "com.google.android.gms:oss-licenses-plugin:$ossLicensesPluginVersion"
         classpath "com.github.triplet.gradle:play-publisher:$gppVersion"
         classpath "com.github.breadmoirai:github-release:$githubReleasePluginVersion"
+        classpath "com.mikepenz.aboutlibraries.plugin:aboutlibraries-plugin:$aboutLibrariesVersion"
     }
 }
 
