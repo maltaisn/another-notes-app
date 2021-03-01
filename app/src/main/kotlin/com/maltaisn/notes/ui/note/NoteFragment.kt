@@ -33,6 +33,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
+import com.maltaisn.notes.model.PrefsManager
 import com.maltaisn.notes.model.entity.NoteStatus
 import com.maltaisn.notes.model.entity.PinnedStatus
 import com.maltaisn.notes.navigateSafe
@@ -61,6 +62,9 @@ abstract class NoteFragment : Fragment(), ActionMode.Callback, ConfirmDialog.Cal
     @Inject
     lateinit var sharedViewModelProvider: Provider<SharedViewModel>
     val sharedViewModel by navGraphViewModel(R.id.nav_graph_main) { sharedViewModelProvider.get() }
+
+    @Inject
+    lateinit var prefsManager: PrefsManager
 
     protected abstract val viewModel: NoteViewModel
 
@@ -93,7 +97,7 @@ abstract class NoteFragment : Fragment(), ActionMode.Callback, ConfirmDialog.Cal
 
         val rcv = binding.recyclerView
         rcv.setHasFixedSize(true)
-        val adapter = NoteAdapter(context, viewModel)
+        val adapter = NoteAdapter(context, viewModel, prefsManager)
         val layoutManager = StaggeredGridLayoutManager(1, StaggeredGridLayoutManager.VERTICAL)
         rcv.adapter = adapter
         rcv.layoutManager = layoutManager

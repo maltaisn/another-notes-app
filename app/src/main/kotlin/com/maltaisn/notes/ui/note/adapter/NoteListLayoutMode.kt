@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Nicolas Maltais
+ * Copyright 2021 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,16 +17,9 @@
 package com.maltaisn.notes.ui.note.adapter
 
 /**
- * A list layout mode, with different appearance parameters.
- *
- * @property maxTextLines Maximum lines displayed for a text note.
- * @property maxListItems Maximum items displayed for a list note.
+ * A note list layout mode.
  */
-enum class NoteListLayoutMode(
-    val value: Int,
-    val maxTextLines: Int,
-    val maxListItems: Int
-) {
-    LIST(0, 5, 5),
-    GRID(1, 10, 10)
+enum class NoteListLayoutMode(val value: Int) {
+    LIST(0),
+    GRID(1)
 }

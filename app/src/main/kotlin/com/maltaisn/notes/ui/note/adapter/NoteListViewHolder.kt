@@ -116,7 +116,7 @@ class TextNoteViewHolder(private val binding: ItemNoteTextBinding) :
         contentTxv.isVisible = item.note.content.isNotBlank()
         contentTxv.text = HighlightHelper.getHighlightedText(item.note.content, item.contentHighlights,
             adapter.highlightBackgroundColor, adapter.highlightForegroundColor)
-        contentTxv.maxLines = adapter.listLayoutMode.maxTextLines
+        contentTxv.maxLines = adapter.getMaximumPreviewLines(NoteType.TEXT)
     }
 }
 
@@ -140,7 +140,7 @@ class ListNoteViewHolder(private val binding: ItemNoteListBinding) : NoteViewHol
         itemsLayout.isVisible = noteItems.isNotEmpty()
 
         // Add the first few items in list note using view holders in pool.
-        val maxItems = adapter.listLayoutMode.maxListItems
+        val maxItems = adapter.getMaximumPreviewLines(NoteType.LIST)
         val itemHighlights = HighlightHelper.splitListNoteHighlightsByItem(noteItems, item.contentHighlights)
         for (i in 0 until min(maxItems, noteItems.size)) {
             val noteItem = noteItems[i]

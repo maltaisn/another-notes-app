@@ -27,6 +27,7 @@ import androidx.preference.PreferenceFragmentCompat
 import com.google.android.material.snackbar.Snackbar
 import com.maltaisn.notes.App
 import com.maltaisn.notes.model.PrefsManager
+import com.maltaisn.notes.navigateSafe
 import com.maltaisn.notes.sync.BuildConfig
 import com.maltaisn.notes.sync.R
 import com.maltaisn.notes.sync.databinding.FragmentSettingsBinding
@@ -83,6 +84,12 @@ class SettingsFragment : PreferenceFragmentCompat(), ConfirmDialog.Callback {
         requirePreference<DropDownPreference>(PrefsManager.THEME).setOnPreferenceChangeListener { _, theme ->
             (requireContext().applicationContext as App)
                 .updateTheme(AppTheme.values().find { it.value == theme }!!)
+            true
+        }
+
+        requirePreference<Preference>(PrefsManager.PREVIEW_LINES).setOnPreferenceClickListener {
+            findNavController().navigateSafe(SettingsFragmentDirections.actionNestedSettings(
+                R.xml.prefs_preview_lines, R.string.pref_preview_lines))
             true
         }
 

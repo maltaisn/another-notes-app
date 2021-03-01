@@ -24,6 +24,8 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.maltaisn.notes.model.PrefsManager
+import com.maltaisn.notes.model.entity.NoteType
 import com.maltaisn.notes.sync.R
 import com.maltaisn.notes.sync.databinding.ItemHeaderBinding
 import com.maltaisn.notes.sync.databinding.ItemMessageBinding
@@ -31,8 +33,11 @@ import com.maltaisn.notes.sync.databinding.ItemNoteListBinding
 import com.maltaisn.notes.sync.databinding.ItemNoteListItemBinding
 import com.maltaisn.notes.sync.databinding.ItemNoteTextBinding
 
-class NoteAdapter(val context: Context, val callback: Callback) :
-    ListAdapter<NoteListItem, RecyclerView.ViewHolder>(NoteListDiffCallback()) {
+class NoteAdapter(
+    val context: Context,
+    val callback: Callback,
+    val prefsManager: PrefsManager
+) : ListAdapter<NoteListItem, RecyclerView.ViewHolder>(NoteListDiffCallback()) {
 
     /**
      * A pool of view holders for showing items of list notes.
@@ -115,6 +120,9 @@ class NoteAdapter(val context: Context, val callback: Callback) :
             ListNoteItemViewHolder(ItemNoteListItemBinding.inflate(
                 LayoutInflater.from(context), null, false))
         }
+
+    fun getMaximumPreviewLines(noteType: NoteType) =
+        prefsManager.getMaximumPreviewLines(listLayoutMode, noteType)
 
     enum class ViewType {
         MESSAGE,

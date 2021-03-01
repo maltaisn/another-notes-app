@@ -66,6 +66,25 @@
             android:id="@+id/action_about_libraries"
             app:destination="@id/about_libraries"
             />
+        <action
+            android:id="@+id/action_nested_settings"
+            app:destination="@id/fragment_settings_nested"
+            />
+    </fragment>
+
+    <fragment
+        android:id="@+id/fragment_settings_nested"
+        android:name="com.maltaisn.notes.ui.settings.NestedSettingsFragment"
+        tools:layout="@layout/fragment_settings"
+        >
+        <argument
+            android:name="prefsXml"
+            app:argType="integer"
+            />
+        <argument
+            android:name="prefsTitle"
+            app:argType="integer"
+            />
     </fragment>
 
     <action

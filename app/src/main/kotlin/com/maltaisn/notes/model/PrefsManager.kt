@@ -21,6 +21,7 @@ import android.content.SharedPreferences
 import androidx.core.content.edit
 import androidx.preference.PreferenceManager
 import com.maltaisn.notes.OpenForTesting
+import com.maltaisn.notes.model.entity.NoteType
 import com.maltaisn.notes.sync.R
 import com.maltaisn.notes.ui.AppTheme
 import com.maltaisn.notes.ui.note.SwipeAction
@@ -71,13 +72,37 @@ class PrefsManager @Inject constructor(
         get() = prefs.getLong(LAST_RESTRICTED_BATTERY_REMIND_TIME, 0)
         set(value) = prefs.edit { putLong(LAST_RESTRICTED_BATTERY_REMIND_TIME, value) }
 
+    fun getMaximumPreviewLines(layoutMode: NoteListLayoutMode, noteType: NoteType): Int {
+        val key = when (layoutMode) {
+            NoteListLayoutMode.LIST -> when (noteType) {
+                NoteType.TEXT -> PREVIEW_LINES_TEXT_LIST
+                NoteType.LIST -> PREVIEW_LINES_LIST_LIST
+            }
+            NoteListLayoutMode.GRID -> when (noteType) {
+                NoteType.TEXT -> PREVIEW_LINES_TEXT_GRID
+                NoteType.LIST -> PREVIEW_LINES_LIST_GRID
+            }
+        }
+        return prefs.getInt(key, 0)
+    }
+
     fun setDefaults(context: Context) {
-        PreferenceManager.setDefaultValues(context, R.xml.prefs, false)
+        for (prefsRes in PREFS_XML) {
+            // since there are multiple preferences files, readAgain must be true, otherwise
+            // the first call to setDefaultValues marks preferences as read, so subsequent calls
+            // will have no effect (or that's what I presumed at least, since it didn't work).
+            PreferenceManager.setDefaultValues(context, prefsRes, true)
+        }
     }
 
     companion object {
         // Settings keys
         const val THEME = "theme"
+        const val PREVIEW_LINES = "preview_lines"
+        const val PREVIEW_LINES_TEXT_LIST = "preview_lines_text_list"
+        const val PREVIEW_LINES_LIST_LIST = "preview_lines_list_list"
+        const val PREVIEW_LINES_TEXT_GRID = "preview_lines_text_grid"
+        const val PREVIEW_LINES_LIST_GRID = "preview_lines_list_grid"
         const val STRIKETHROUGH_CHECKED = "strikethrough_checked"
         const val SWIPE_ACTION = "swipe_action"
         const val EXPORT_DATA = "export_data"
@@ -89,6 +114,11 @@ class PrefsManager @Inject constructor(
         private const val LIST_LAYOUT_MODE = "is_in_list_layout"
         private const val LAST_TRASH_REMIND_TIME = "last_deleted_remind_time"
         private const val LAST_RESTRICTED_BATTERY_REMIND_TIME = "last_restricted_battery_remind_time"
+
+        private val PREFS_XML = listOf(
+            R.xml.prefs,
+            R.xml.prefs_preview_lines,
+        )
 
         /**
          * Delay after which notes in trash are automatically deleted forever.
