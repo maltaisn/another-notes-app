@@ -42,7 +42,9 @@
 
     <style name="NoteReminderChipStyle">
         <item name="android:textColor">@color/item_note_reminder_text_color</item>
-        <item name="android:foreground">@null</item>
+        <item name="android:focusable">false</item>
+        <item name="android:clickable">false</item>
+        <item name="rippleColor">@android:color/transparent</item>
         <item name="android:textAppearance">?textAppearanceCaption</item>
         <item name="android:textSize">11sp</item>
         <item name="android:ellipsize">end</item>
