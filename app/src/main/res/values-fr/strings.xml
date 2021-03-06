@@ -1,5 +1,5 @@
 <!--
-  Copyright 2020 Nicolas Maltais
+  Copyright 2021 Nicolas Maltais
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -32,9 +32,15 @@
     <string name="action_empty_trash">Vider la corbeille</string>
     <string name="action_empty_trash_short">Vider</string>
     <string name="action_keep">Garder</string>
-    <string name="action_layout_grid">Affichage grille</string>
-    <string name="action_layout_list">Affichage liste</string>
+    <string name="action_layout_grid">Disposition grille</string>
+    <string name="action_layout_list">Disposition liste</string>
+    <string name="action_mark_as_done">Marquer comme terminé</string>
+    <string name="action_none">Aucune</string>
+    <string name="action_ok">OK</string>
     <string name="action_pin">Épingler</string>
+    <string name="action_postpone">Reporter</string>
+    <string name="action_reminder_add">Ajouter un rappel</string>
+    <string name="action_reminder_edit">Modifier le rappel</string>
     <string name="action_restore">Restaurer</string>
     <string name="action_search">Rechercher</string>
     <string name="action_select_all">Sélectionner tout</string>
@@ -44,6 +50,15 @@
     <string name="action_uncheck_all">Décocher tous les éléments</string>
     <string name="action_undo">Annuler</string>
     <string name="action_unpin">Désépingler</string>
+
+    <!-- Shortcuts -->
+    <!-- Note: normal length is ideally 25 chars or less, short is 10 chars or less. -->
+    <string name="shortcut_text_note">Nouveau texte</string>
+    <string name="shortcut_text_note_short">Texte</string>
+    <string name="shortcut_list_note">Nouvelle liste</string>
+    <string name="shortcut_list_note_short">Liste</string>
+    <string name="shortcut_reminders">Rappels</string>
+    <string name="shortcut_reminders_short">Rappels</string>
 
     <!-- Home -->
     <string name="note_location_active">Notes</string>
@@ -101,6 +116,21 @@
 
     <string name="edit_convert_keep_checked">Effacer les éléments cochés?</string>
 
+    <!-- Reminder -->
+    <string name="note_reminders">Rappels</string>
+    <string name="reminder_upcoming">À venir</string>
+    <string name="reminder_today">Aujourd\'hui</string>
+    <string name="reminder_overdue">En retard</string>
+    <string name="reminder_date">Date</string>
+    <string name="reminder_time">Heure</string>
+    <string name="reminder_invalid_time">Ce moment est déjà passé.</string>
+    <string name="reminder_notif_channel_title">Rappels</string>
+    <string name="reminder_notif_channel_descr">Rappels mis sur les notes</string>
+    <string name="reminder_empty_placeholder">Aucun rappel défini</string>
+    <string name="reminder_restricted_battery">Les alarmes des rappels pourraient ne pas fonctionner
+    correctement puisque l\'application a une restriction au niveau de l\'utilisation de la pile.
+    Cela peut être changé dans les paramètres.</string>
+
     <!-- Settings -->
     <string name="pref_group_appearance">Apparence</string>
     <string name="pref_theme">Thème de l\'application</string>
@@ -108,6 +138,13 @@
     <string name="pref_theme_dark">Sombre</string>
     <string name="pref_theme_system">Par défaut</string>
     <string name="pref_strikethrough_checked">Barrer les éléments cochés</string>
+
+    <string name="pref_preview_lines">Maximum de lignes dans l\'aperçu</string>
+    <string name="pref_preview_lines_summary">Configure le nombre de lignes ou d\'items affichés, pour chaque disposition et chaque type de note</string>
+    <string name="pref_preview_lines_grid_layout">Disposition grille</string>
+    <string name="pref_preview_lines_list_layout">Disposition liste</string>
+    <string name="pref_preview_lines_text">Lignes dans les notes textuelles</string>
+    <string name="pref_preview_lines_list">Items dans les listes</string>
 
     <string name="pref_group_behavior">Comportement</string>
     <string name="pref_behavior_swipe_action">Action de glissement</string>
@@ -128,5 +165,17 @@
     <!-- Content description -->
     <string name="content_descrp_open_drawer">Ouvrir la navigation</string>
     <string name="content_descrp_back">Revenir en arrière</string>
+
+    <!-- Relative date time format -->
+    <string name="date_rel_today">Aujourd\'hui, %s</string>
+    <string name="date_rel_yesterday">Hier, %s</string>
+    <string name="date_rel_tomorrow">Demain, %s</string>
+    <plurals name="date_rel_days_past" tools:ignore="MissingQuantity">
+        <item quantity="other">Il y a %d, %s</item>
+    </plurals>
+    <plurals name="date_rel_days_future" tools:ignore="MissingQuantity">
+        <item quantity="other">Dans %d jours, %s</item>
+    </plurals>
+    <string name="date_rel_absolute">%1$s, %2$s</string>
 
 </resources>
