@@ -164,4 +164,19 @@
     <string name="content_descrp_open_drawer">Open drawer</string>
     <string name="content_descrp_back">Go back</string>
 
+    <!-- Relative date time format -->
+    <string name="date_rel_today">Today, %s</string>
+    <string name="date_rel_yesterday">Yesterday, %s</string>
+    <string name="date_rel_tomorrow">Tomorrow, %s</string>
+    <plurals name="date_rel_days_past">
+        <!-- used with quantity >= 2, format values: number of days, time -->
+        <item quantity="other">%d days ago, %s</item>
+    </plurals>
+    <plurals name="date_rel_days_future">
+        <!-- used with quantity >= 2, format values: number of days, time -->
+        <item quantity="other">In %d days, %s</item>
+    </plurals>
+    <!-- format values: date, time -->
+    <string name="date_rel_absolute">%1$s, %2$s</string>
+
 </resources>

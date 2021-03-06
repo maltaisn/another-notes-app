@@ -16,7 +16,6 @@
 
 package com.maltaisn.notes.ui.note.adapter
 
-import android.text.format.DateUtils
 import android.view.View
 import android.widget.TextView
 import androidx.core.view.isVisible
@@ -36,10 +35,19 @@ import com.maltaisn.notes.sync.databinding.ItemNoteListBinding
 import com.maltaisn.notes.sync.databinding.ItemNoteListItemBinding
 import com.maltaisn.notes.sync.databinding.ItemNoteTextBinding
 import com.maltaisn.notes.ui.note.HighlightHelper
+import com.maltaisn.notes.utils.RelativeDateFormatter
 import kotlin.math.min
+
+/**
+ * Maximum number of days in the past or the future for which
+ * the reminder date is displayed in relative format.
+ */
+private const val MAXIMUM_RELATIVE_DATE_DAYS = 6
 
 abstract class NoteViewHolder(itemView: View) :
     RecyclerView.ViewHolder(itemView) {
+
+    private val dateFormatter = RelativeDateFormatter(itemView.resources)
 
     protected abstract val cardView: MaterialCardView
     protected abstract val titleTxv: TextView
@@ -69,13 +77,8 @@ abstract class NoteViewHolder(itemView: View) :
 
         reminderChip.isVisible = note.reminder != null
         if (note.reminder != null) {
-            reminderChip.text = DateUtils.getRelativeDateTimeString(
-                reminderChip.context,
-                note.reminder.next.time,
-                DateUtils.MINUTE_IN_MILLIS,
-                DateUtils.WEEK_IN_MILLIS,
-                DateUtils.FORMAT_SHOW_DATE or DateUtils.FORMAT_SHOW_TIME or DateUtils.FORMAT_ABBREV_RELATIVE
-            )
+            reminderChip.text = dateFormatter.format(note.reminder.next.time,
+                System.currentTimeMillis(), MAXIMUM_RELATIVE_DATE_DAYS)
             reminderChip.strikethroughText = note.reminder.done
             reminderChip.isActivated = !note.reminder.done
             reminderChip.setChipIconResource(if (note.reminder.recurrence != null)
