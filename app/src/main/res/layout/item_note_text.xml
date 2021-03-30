@@ -49,12 +49,29 @@
             />
 
         <TextView
+            android:id="@+id/date_txv"
+            style="@style/NoteDateStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/title_txv"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0"
+            app:layout_constrainedWidth="true"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginTop="4dp"
+            tools:text="3 days ago, 16:11"
+            tools:visibility="visible"
+            />
+
+        <TextView
             android:id="@+id/content_txv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/title_txv"
+            app:layout_constraintTop_toBottomOf="@id/date_txv"
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
             android:layout_marginTop="8dp"

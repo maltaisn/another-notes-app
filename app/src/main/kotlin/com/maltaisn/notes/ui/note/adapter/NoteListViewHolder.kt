@@ -42,6 +42,7 @@ import kotlin.math.min
 /**
  * Maximum number of days in the past or the future for which
  * the reminder date is displayed in relative format.
+ * Also maximum days for creation date.
  */
 private const val MAXIMUM_RELATIVE_DATE_DAYS = 6
 
@@ -54,11 +55,13 @@ abstract class NoteViewHolder(itemView: View) :
 
     protected abstract val cardView: MaterialCardView
     protected abstract val titleTxv: TextView
+    protected abstract val dateTxv: TextView
     protected abstract val reminderChip: Chip
     protected abstract val actionBtn: MaterialButton
 
     open fun bind(adapter: NoteAdapter, item: NoteItem) {
         val note = item.note
+        val now = System.currentTimeMillis()
 
         var title = note.title
         if (BuildConfig.DEBUG) {
@@ -68,6 +71,9 @@ abstract class NoteViewHolder(itemView: View) :
         titleTxv.text = HighlightHelper.getHighlightedText(title, item.titleHighlights,
             adapter.highlightBackgroundColor, adapter.highlightForegroundColor)
         titleTxv.isVisible = title.isNotBlank()
+
+        dateTxv.text = dateFormatter.format(note.addedDate.time,
+            now, MAXIMUM_RELATIVE_DATE_DAYS)
 
         cardView.isChecked = item.checked
         cardView.setOnClickListener {
@@ -81,7 +87,7 @@ abstract class NoteViewHolder(itemView: View) :
         reminderChip.isVisible = note.reminder != null
         if (note.reminder != null) {
             reminderChip.text = dateFormatter.format(note.reminder.next.time,
-                System.currentTimeMillis(), MAXIMUM_RELATIVE_DATE_DAYS)
+                now, MAXIMUM_RELATIVE_DATE_DAYS)
             reminderChip.strikethroughText = note.reminder.done
             reminderChip.isActivated = !note.reminder.done
             reminderChip.setChipIconResource(if (note.reminder.recurrence != null)
@@ -111,6 +117,7 @@ class TextNoteViewHolder(private val binding: ItemNoteTextBinding) :
 
     override val cardView = binding.cardView
     override val titleTxv = binding.titleTxv
+    override val dateTxv = binding.dateTxv
     override val reminderChip = binding.reminderChip
     override val actionBtn = binding.actionBtn
 
@@ -130,6 +137,7 @@ class ListNoteViewHolder(private val binding: ItemNoteListBinding) : NoteViewHol
 
     override val cardView = binding.cardView
     override val titleTxv = binding.titleTxv
+    override val dateTxv = binding.dateTxv
     override val reminderChip = binding.reminderChip
     override val actionBtn = binding.actionBtn
 

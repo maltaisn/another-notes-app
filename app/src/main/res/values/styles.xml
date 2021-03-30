@@ -23,6 +23,13 @@
         <item name="android:textAlignment">viewStart</item>
     </style>
 
+    <style name="NoteDateStyle">
+        <item name="android:textAppearance">?textAppearanceCaption</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:textAlignment">viewStart</item>
+        <item name="android:textColor">@color/material_on_surface_emphasis_high_type</item>
+    </style>
+
     <style name="NoteListItemCardStyle">
         <item name="android:background">?colorOnSurface</item>
         <item name="android:foreground">?selectableItemBackground</item>
