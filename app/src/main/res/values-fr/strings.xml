@@ -171,7 +171,7 @@
     <string name="date_rel_yesterday">Hier, %s</string>
     <string name="date_rel_tomorrow">Demain, %s</string>
     <plurals name="date_rel_days_past" tools:ignore="MissingQuantity">
-        <item quantity="other">Il y a %d, %s</item>
+        <item quantity="other">Il y a %d jours, %s</item>
     </plurals>
     <plurals name="date_rel_days_future" tools:ignore="MissingQuantity">
         <item quantity="other">Dans %d jours, %s</item>
