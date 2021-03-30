@@ -38,6 +38,12 @@
             app:title="@string/pref_strikethrough_checked"
             />
 
+        <SwitchPreferenceCompat
+            android:defaultValue="false"
+            app:key="show_date_in_preview"
+            app:title="@string/pref_show_date_in_preview"
+            />
+
         <Preference
             app:key="preview_lines"
             app:title="@string/pref_preview_lines"

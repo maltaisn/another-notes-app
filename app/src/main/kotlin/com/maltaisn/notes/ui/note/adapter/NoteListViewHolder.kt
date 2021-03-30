@@ -72,8 +72,13 @@ abstract class NoteViewHolder(itemView: View) :
             adapter.highlightBackgroundColor, adapter.highlightForegroundColor)
         titleTxv.isVisible = title.isNotBlank()
 
-        dateTxv.text = dateFormatter.format(note.addedDate.time,
-            now, MAXIMUM_RELATIVE_DATE_DAYS)
+        if (adapter.shouldShowDateInPreview()) {
+            dateTxv.text = dateFormatter.format(note.addedDate.time,
+                now, MAXIMUM_RELATIVE_DATE_DAYS)
+            dateTxv.isVisible = true
+        } else {
+            dateTxv.isVisible = false
+        }
 
         cardView.isChecked = item.checked
         cardView.setOnClickListener {

@@ -121,6 +121,8 @@ class NoteAdapter(
                 LayoutInflater.from(context), null, false))
         }
 
+    fun shouldShowDateInPreview() = prefsManager.showDateInPreview
+
     fun getMaximumPreviewLines(noteType: NoteType) =
         prefsManager.getMaximumPreviewLines(listLayoutMode, noteType)
 

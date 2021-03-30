@@ -137,6 +137,7 @@
     <string name="pref_theme_dark">Dark</string>
     <string name="pref_theme_system">Follow system</string>
     <string name="pref_strikethrough_checked">Strikethrough checked list items</string>
+    <string name="pref_show_date_in_preview">Show creation date in preview</string>
 
     <string name="pref_preview_lines">Maximum lines in previews</string>
     <string name="pref_preview_lines_summary">Configure how many lines and items are shown on notes, for each layout mode and note type</string>

@@ -64,6 +64,9 @@ class PrefsManager @Inject constructor(
             return SwipeAction.values().find { it.value == value }!!
         }
 
+    val showDateInPreview: Boolean
+        get() = prefs.getBoolean(SHOW_DATE_IN_PREVIEW, false)
+
     var lastTrashReminderTime: Long
         get() = prefs.getLong(LAST_TRASH_REMIND_TIME, 0)
         set(value) = prefs.edit { putLong(LAST_TRASH_REMIND_TIME, value) }
@@ -104,6 +107,7 @@ class PrefsManager @Inject constructor(
         const val PREVIEW_LINES_TEXT_GRID = "preview_lines_text_grid"
         const val PREVIEW_LINES_LIST_GRID = "preview_lines_list_grid"
         const val STRIKETHROUGH_CHECKED = "strikethrough_checked"
+        const val SHOW_DATE_IN_PREVIEW = "show_date_in_preview"
         const val SWIPE_ACTION = "swipe_action"
         const val EXPORT_DATA = "export_data"
         const val CLEAR_DATA = "clear_data"
