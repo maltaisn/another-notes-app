@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Nicolas Maltais
+ * Copyright 2021 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.maltaisn.notes.hideKeyboard
 import com.maltaisn.notes.sync.databinding.ItemEditContentBinding
+import com.maltaisn.notes.sync.databinding.ItemEditDateBinding
 import com.maltaisn.notes.sync.databinding.ItemEditItemAddBinding
 import com.maltaisn.notes.sync.databinding.ItemEditItemBinding
 import com.maltaisn.notes.sync.databinding.ItemEditTitleBinding
@@ -62,6 +63,8 @@ class EditAdapter(val context: Context, val callback: Callback) :
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         return when (viewType) {
+            ViewType.DATE.ordinal -> EditDateViewHolder(ItemEditDateBinding
+                .inflate(inflater, parent, false))
             ViewType.TITLE.ordinal -> EditTitleViewHolder(ItemEditTitleBinding
                 .inflate(inflater, parent, false), callback)
             ViewType.CONTENT.ordinal -> EditContentViewHolder(ItemEditContentBinding
@@ -89,6 +92,7 @@ class EditAdapter(val context: Context, val callback: Callback) :
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val item = getItem(position)
         when (holder) {
+            is EditDateViewHolder -> holder.bind(item as EditDateItem)
             is EditTitleViewHolder -> holder.bind(item as EditTitleItem)
             is EditContentViewHolder -> holder.bind(item as EditContentItem)
             is EditItemViewHolder -> holder.bind(item as EditItemItem)
@@ -122,6 +126,7 @@ class EditAdapter(val context: Context, val callback: Callback) :
     }
 
     enum class ViewType {
+        DATE,
         TITLE,
         CONTENT,
         ITEM,

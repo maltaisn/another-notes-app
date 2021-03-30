@@ -36,6 +36,7 @@ import com.maltaisn.notes.ui.ShareData
 import com.maltaisn.notes.ui.StatusChange
 import com.maltaisn.notes.ui.edit.adapter.EditAdapter
 import com.maltaisn.notes.ui.edit.adapter.EditContentItem
+import com.maltaisn.notes.ui.edit.adapter.EditDateItem
 import com.maltaisn.notes.ui.edit.adapter.EditItemAddItem
 import com.maltaisn.notes.ui.edit.adapter.EditItemItem
 import com.maltaisn.notes.ui.edit.adapter.EditListItem
@@ -77,6 +78,11 @@ class EditViewModel @Inject constructor(
     private var reminder: Reminder? = null
 
     /**
+     * Whether to show date item.
+     */
+    private var showDate: Boolean = false
+
+    /**
      * The currently displayed list items created in [createListItems].
      */
     private var listItems = emptyList<EditListItem>()
@@ -86,9 +92,14 @@ class EditViewModel @Inject constructor(
         }
 
     /**
-     * The first item in [listItems] used to display the title, or `null` if not created yet.
+     * The item in [listItems] used to display the creation date, or `null` if not created yet.
      */
-    private var titleItem: EditTitleItem? = null
+    private val dateItem by lazy { EditDateItem(0) }
+
+    /**
+     * The item in [listItems] used to display the title, or `null` if not created yet.
+     */
+    private val titleItem by lazy { EditTitleItem(DefaultEditableText(), false) }
 
     private val _noteType = MutableLiveData<NoteType?>()
     val noteType: LiveData<NoteType?>
@@ -164,6 +175,10 @@ class EditViewModel @Inject constructor(
                 note = note.copy(id = id)
 
                 focusItemAt(1, 0, false)
+                showDate = false
+            } else {
+                // Only show creation date when editing notes
+                showDate = true
             }
             this@EditViewModel.note = note
             status = note.status
@@ -302,8 +317,8 @@ class EditViewModel @Inject constructor(
             }
 
             // Update title item
-            titleItem!!.title.replaceAll(newTitle)
-            focusItemAt(0, newTitle.length, true)
+            titleItem.title.replaceAll(newTitle)
+            focusItemAt(if (showDate) 1 else 0, newTitle.length, true)
         }
     }
 
@@ -388,12 +403,13 @@ class EditViewModel @Inject constructor(
      */
     private fun updateNote() {
         // Create note
-        val title = titleItem!!.title.text.toString()
+        val title = titleItem.title.text.toString()
         val content: String
         val metadata: NoteMetadata
         when (note.type) {
             NoteType.TEXT -> {
-                content = (listItems[1] as EditContentItem).content.text.toString()
+                val contentPos = if (showDate) 2 else 1
+                content = (listItems[contentPos] as EditContentItem).content.text.toString()
                 metadata = BlankNoteMetadata
             }
             NoteType.LIST -> {
@@ -414,12 +430,16 @@ class EditViewModel @Inject constructor(
         val list = mutableListOf<EditListItem>()
         val canEdit = !isNoteInTrash
 
+        // Date item
+        if (showDate) {
+            dateItem.date = note.addedDate.time
+            list += dateItem
+        }
+
         // Title item
-        val title = titleItem ?: EditTitleItem(DefaultEditableText(), false)
-        title.title = DefaultEditableText(note.title)
-        title.editable = canEdit
-        titleItem = title
-        list += title
+        titleItem.title = DefaultEditableText(note.title)
+        titleItem.editable = canEdit
+        list += titleItem
 
         when (note.type) {
             NoteType.TEXT -> {

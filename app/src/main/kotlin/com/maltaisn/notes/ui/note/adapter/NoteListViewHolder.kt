@@ -36,6 +36,7 @@ import com.maltaisn.notes.sync.databinding.ItemNoteListItemBinding
 import com.maltaisn.notes.sync.databinding.ItemNoteTextBinding
 import com.maltaisn.notes.ui.note.HighlightHelper
 import com.maltaisn.notes.utils.RelativeDateFormatter
+import java.text.DateFormat
 import kotlin.math.min
 
 /**
@@ -47,7 +48,9 @@ private const val MAXIMUM_RELATIVE_DATE_DAYS = 6
 abstract class NoteViewHolder(itemView: View) :
     RecyclerView.ViewHolder(itemView) {
 
-    private val dateFormatter = RelativeDateFormatter(itemView.resources)
+    private val dateFormatter = RelativeDateFormatter(itemView.resources) { date ->
+        DateFormat.getDateInstance(DateFormat.SHORT).format(date)
+    }
 
     protected abstract val cardView: MaterialCardView
     protected abstract val titleTxv: TextView

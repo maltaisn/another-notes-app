@@ -18,6 +18,7 @@ package com.maltaisn.notes.ui.edit.adapter
 
 import android.text.Editable
 import android.text.TextWatcher
+import android.text.format.DateUtils
 import android.text.style.CharacterStyle
 import android.view.KeyEvent
 import androidx.core.text.getSpans
@@ -26,16 +27,40 @@ import androidx.core.widget.doOnTextChanged
 import androidx.recyclerview.widget.RecyclerView
 import com.maltaisn.notes.strikethroughText
 import com.maltaisn.notes.sync.databinding.ItemEditContentBinding
+import com.maltaisn.notes.sync.databinding.ItemEditDateBinding
 import com.maltaisn.notes.sync.databinding.ItemEditItemAddBinding
 import com.maltaisn.notes.sync.databinding.ItemEditItemBinding
 import com.maltaisn.notes.sync.databinding.ItemEditTitleBinding
 import com.maltaisn.notes.ui.edit.BulletTextWatcher
+import com.maltaisn.notes.utils.RelativeDateFormatter
+
+/**
+ * Maximum number of days in the past or the future for which
+ * the creation date is displayed in relative format.
+ */
+private const val MAXIMUM_RELATIVE_DATE_DAYS = 6
 
 /**
  * Interface implemented by any item that can have its focus position changed.
  */
 interface EditFocusableViewHolder {
     fun setFocus(pos: Int)
+}
+
+class EditDateViewHolder(binding: ItemEditDateBinding) :
+    RecyclerView.ViewHolder(binding.root) {
+
+    private val dateEdt = binding.dateEdt
+
+    private val dateFormatter = RelativeDateFormatter(dateEdt.resources) { date ->
+        DateUtils.formatDateTime(dateEdt.context, date, DateUtils.FORMAT_SHOW_DATE or
+                DateUtils.FORMAT_SHOW_WEEKDAY or DateUtils.FORMAT_ABBREV_ALL)
+    }
+
+    fun bind(item: EditDateItem) {
+        dateEdt.text = dateFormatter.format(item.date, System.currentTimeMillis(),
+            MAXIMUM_RELATIVE_DATE_DAYS)
+    }
 }
 
 class EditTitleViewHolder(binding: ItemEditTitleBinding, callback: EditAdapter.Callback) :

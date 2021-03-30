@@ -25,6 +25,7 @@ import com.nhaarman.mockitokotlin2.mock
 import org.junit.Before
 import org.junit.Test
 import org.mockito.ArgumentMatchers.anyInt
+import java.text.DateFormat
 import java.util.Locale
 import kotlin.test.assertEquals
 
@@ -51,7 +52,9 @@ class RelativeDateFormatterTest {
                 strings[it.arguments[0]]?.format(*it.arguments.copyOfRange(2, it.arguments.size))
             }
         }
-        formatter = RelativeDateFormatter(resources)
+        formatter = RelativeDateFormatter(resources) { date ->
+            DateFormat.getDateInstance(DateFormat.SHORT).format(date)
+        }
     }
 
     @Test

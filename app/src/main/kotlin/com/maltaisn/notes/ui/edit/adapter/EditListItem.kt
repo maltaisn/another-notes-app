@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Nicolas Maltais
+ * Copyright 2021 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,13 @@ import com.maltaisn.notes.ui.edit.adapter.EditAdapter.ViewType
 
 sealed class EditListItem {
     abstract val type: ViewType
+}
+
+data class EditDateItem(
+    var date: Long
+) : EditListItem() {
+
+    override val type get() = ViewType.DATE
 }
 
 data class EditTitleItem(

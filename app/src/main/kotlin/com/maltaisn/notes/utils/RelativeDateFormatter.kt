@@ -30,8 +30,11 @@ import java.util.Calendar
  * The only downside is a few additional strings to translate.
  *
  * This class is not thread-safe.
+ *
+ * @property absoluteDateFormatter Date formatter used for absolute dates.
  */
-class RelativeDateFormatter(private val resources: Resources) {
+class RelativeDateFormatter(private val resources: Resources,
+                            private val absoluteDateFormatter: (date: Long) -> String) {
 
     private val calendar = Calendar.getInstance()
 
@@ -55,7 +58,7 @@ class RelativeDateFormatter(private val resources: Resources) {
             in -2 downTo -maxRelativeDays -> resources.getQuantityString(
                 R.plurals.date_rel_days_past, -days, -days, timeStr)
             else -> resources.getString(R.string.date_rel_absolute,
-                DateFormat.getDateInstance(DateFormat.SHORT).format(date), timeStr)
+                absoluteDateFormatter(date), timeStr)
         }
     }
 
