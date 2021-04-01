@@ -42,7 +42,10 @@ import com.maltaisn.notes.ui.edit.adapter.EditItemAddItem
 import com.maltaisn.notes.ui.edit.adapter.EditItemItem
 import com.maltaisn.notes.ui.edit.adapter.EditTitleItem
 import com.maltaisn.notes.ui.getOrAwaitValue
+import com.maltaisn.notes.ui.note.ShownDateField
+import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.whenever
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Before
 import org.junit.Rule
@@ -69,7 +72,9 @@ class EditViewModelTest {
     @Before
     fun before() {
         notesRepo = MockNotesRepository()
-        prefs = mock()
+        prefs = mock {
+            on { shownDateField } doReturn ShownDateField.ADDED
+        }
 
         // Sample active notes
         notesRepo.addNote(testNote(id = 1, title = "title",
@@ -702,6 +707,34 @@ class EditViewModelTest {
         assertEquals(notesRepo.requireById(3).reminder, viewModel.noteReminder.getOrAwaitValue())
     }
 
+    @Test
+    fun `should edit existing text note (modified date field)`() = mainCoroutineRule.runBlockingTest {
+        whenever(prefs.shownDateField) doReturn ShownDateField.MODIFIED
+        viewModel.start(1)
+
+        assertEquals(NoteStatus.ACTIVE, viewModel.noteStatus.getOrAwaitValue())
+        assertEquals(NoteType.TEXT, viewModel.noteType.getOrAwaitValue())
+
+        assertEquals(listOf(
+            EditDateItem(dateFor("2019-01-01").time),
+            EditTitleItem(DefaultEditableText("title"), true),
+            EditContentItem(DefaultEditableText("content"), true)
+        ), viewModel.editItems.getOrAwaitValue())
+    }
+
+    @Test
+    fun `should edit existing text note (no date field)`() = mainCoroutineRule.runBlockingTest {
+        whenever(prefs.shownDateField) doReturn ShownDateField.NONE
+        viewModel.start(1)
+
+        assertEquals(NoteStatus.ACTIVE, viewModel.noteStatus.getOrAwaitValue())
+        assertEquals(NoteType.TEXT, viewModel.noteType.getOrAwaitValue())
+
+        assertEquals(listOf(
+            EditTitleItem(DefaultEditableText("title"), true),
+            EditContentItem(DefaultEditableText("content"), true)
+        ), viewModel.editItems.getOrAwaitValue())
+    }
 
 
 }

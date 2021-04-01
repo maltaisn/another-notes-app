@@ -42,6 +42,7 @@ import com.maltaisn.notes.ui.edit.adapter.EditItemItem
 import com.maltaisn.notes.ui.edit.adapter.EditListItem
 import com.maltaisn.notes.ui.edit.adapter.EditTitleItem
 import com.maltaisn.notes.ui.edit.adapter.EditableText
+import com.maltaisn.notes.ui.note.ShownDateField
 import com.maltaisn.notes.ui.send
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.launch
@@ -178,7 +179,7 @@ class EditViewModel @Inject constructor(
                 showDate = false
             } else {
                 // Only show creation date when editing notes
-                showDate = true
+                showDate = (prefs.shownDateField != ShownDateField.NONE)
             }
             this@EditViewModel.note = note
             status = note.status
@@ -432,7 +433,11 @@ class EditViewModel @Inject constructor(
 
         // Date item
         if (showDate) {
-            dateItem.date = note.addedDate.time
+            dateItem.date = when (prefs.shownDateField) {
+                ShownDateField.ADDED -> note.addedDate.time
+                ShownDateField.MODIFIED -> note.lastModifiedDate.time
+                else -> 0L  // never happens
+            }
             list += dateItem
         }
 

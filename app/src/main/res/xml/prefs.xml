@@ -38,10 +38,13 @@
             app:title="@string/pref_strikethrough_checked"
             />
 
-        <SwitchPreferenceCompat
-            android:defaultValue="false"
-            app:key="show_date_in_preview"
-            app:title="@string/pref_show_date_in_preview"
+        <DropDownPreference
+            app:defaultValue="none"
+            app:entries="@array/pref_shown_date_entries"
+            app:entryValues="@array/pref_shown_date_values"
+            app:key="shown_date"
+            app:title="@string/pref_shown_date"
+            app:useSimpleSummaryProvider="true"
             />
 
         <Preference

@@ -24,6 +24,7 @@ import com.maltaisn.notes.OpenForTesting
 import com.maltaisn.notes.model.entity.NoteType
 import com.maltaisn.notes.sync.R
 import com.maltaisn.notes.ui.AppTheme
+import com.maltaisn.notes.ui.note.ShownDateField
 import com.maltaisn.notes.ui.note.SwipeAction
 import com.maltaisn.notes.ui.note.adapter.NoteListLayoutMode
 import javax.inject.Inject
@@ -64,8 +65,11 @@ class PrefsManager @Inject constructor(
             return SwipeAction.values().find { it.value == value }!!
         }
 
-    val showDateInPreview: Boolean
-        get() = prefs.getBoolean(SHOW_DATE_IN_PREVIEW, false)
+    val shownDateField: ShownDateField
+        get() {
+            val value = prefs.getString(SHOWN_DATE, ShownDateField.NONE.value)
+            return ShownDateField.values().find { it.value == value }!!
+        }
 
     var lastTrashReminderTime: Long
         get() = prefs.getLong(LAST_TRASH_REMIND_TIME, 0)
@@ -107,7 +111,7 @@ class PrefsManager @Inject constructor(
         const val PREVIEW_LINES_TEXT_GRID = "preview_lines_text_grid"
         const val PREVIEW_LINES_LIST_GRID = "preview_lines_list_grid"
         const val STRIKETHROUGH_CHECKED = "strikethrough_checked"
-        const val SHOW_DATE_IN_PREVIEW = "show_date_in_preview"
+        const val SHOWN_DATE = "shown_date"
         const val SWIPE_ACTION = "swipe_action"
         const val EXPORT_DATA = "export_data"
         const val CLEAR_DATA = "clear_data"

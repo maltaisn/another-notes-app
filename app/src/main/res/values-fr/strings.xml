@@ -138,7 +138,11 @@
     <string name="pref_theme_dark">Sombre</string>
     <string name="pref_theme_system">Par défaut</string>
     <string name="pref_strikethrough_checked">Barrer les éléments cochés</string>
-    <string name="pref_show_date_in_preview">Afficher la date de création dans l\'aperçu</string>
+
+    <string name="pref_shown_date">Date affichée pour les notes</string>
+    <string name="pref_shown_date_added">Date de création</string>
+    <string name="pref_shown_date_modified">Date de modification</string>
+    <string name="pref_shown_date_none">Aucune date</string>
 
     <string name="pref_preview_lines">Maximum de lignes dans l\'aperçu</string>
     <string name="pref_preview_lines_summary">Configure le nombre de lignes ou d\'items affichés, pour chaque disposition et chaque type de note</string>

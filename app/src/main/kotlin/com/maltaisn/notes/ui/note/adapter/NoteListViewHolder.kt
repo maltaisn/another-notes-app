@@ -16,8 +16,10 @@
 
 package com.maltaisn.notes.ui.note.adapter
 
+import android.text.format.DateUtils
 import android.view.View
 import android.widget.TextView
+import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
@@ -35,6 +37,7 @@ import com.maltaisn.notes.sync.databinding.ItemNoteListBinding
 import com.maltaisn.notes.sync.databinding.ItemNoteListItemBinding
 import com.maltaisn.notes.sync.databinding.ItemNoteTextBinding
 import com.maltaisn.notes.ui.note.HighlightHelper
+import com.maltaisn.notes.ui.note.ShownDateField
 import com.maltaisn.notes.utils.RelativeDateFormatter
 import java.text.DateFormat
 import kotlin.math.min
@@ -50,6 +53,10 @@ abstract class NoteViewHolder(itemView: View) :
     RecyclerView.ViewHolder(itemView) {
 
     private val dateFormatter = RelativeDateFormatter(itemView.resources) { date ->
+        DateUtils.formatDateTime(itemView.context, date, DateUtils.FORMAT_SHOW_DATE or
+                DateUtils.FORMAT_SHOW_WEEKDAY or DateUtils.FORMAT_ABBREV_ALL)
+    }
+    private val reminderDateFormatter = RelativeDateFormatter(itemView.resources) { date ->
         DateFormat.getDateInstance(DateFormat.SHORT).format(date)
     }
 
@@ -63,23 +70,26 @@ abstract class NoteViewHolder(itemView: View) :
         val note = item.note
         val now = System.currentTimeMillis()
 
+        // Title
         var title = note.title
         if (BuildConfig.DEBUG) {
             title += " (${note.id})"
         }
-
         titleTxv.text = HighlightHelper.getHighlightedText(title, item.titleHighlights,
             adapter.highlightBackgroundColor, adapter.highlightForegroundColor)
         titleTxv.isVisible = title.isNotBlank()
 
-        if (adapter.shouldShowDateInPreview()) {
-            dateTxv.text = dateFormatter.format(note.addedDate.time,
-                now, MAXIMUM_RELATIVE_DATE_DAYS)
-            dateTxv.isVisible = true
-        } else {
-            dateTxv.isVisible = false
+        // Date text
+        val dateField = adapter.prefsManager.shownDateField
+        val date = when (dateField) {
+            ShownDateField.ADDED -> note.addedDate.time
+            ShownDateField.MODIFIED -> note.lastModifiedDate.time
+            ShownDateField.NONE -> 0L
         }
+        dateTxv.text = dateFormatter.format(date, now, MAXIMUM_RELATIVE_DATE_DAYS)
+        dateTxv.isGone = (dateField == ShownDateField.NONE)
 
+        // Click listeners
         cardView.isChecked = item.checked
         cardView.setOnClickListener {
             adapter.callback.onNoteItemClicked(item, adapterPosition)
@@ -89,9 +99,10 @@ abstract class NoteViewHolder(itemView: View) :
             true
         }
 
+        // Reminder
         reminderChip.isVisible = note.reminder != null
         if (note.reminder != null) {
-            reminderChip.text = dateFormatter.format(note.reminder.next.time,
+            reminderChip.text = reminderDateFormatter.format(note.reminder.next.time,
                 now, MAXIMUM_RELATIVE_DATE_DAYS)
             reminderChip.strikethroughText = note.reminder.done
             reminderChip.isActivated = !note.reminder.done
@@ -99,6 +110,7 @@ abstract class NoteViewHolder(itemView: View) :
                 R.drawable.ic_repeat else R.drawable.ic_alarm)
         }
 
+        // Mark as done button
         val bottomPadding: Int
         if (item.showMarkAsDone && !item.checked) {
             actionBtn.isVisible = true
