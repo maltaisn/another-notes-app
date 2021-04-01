@@ -20,7 +20,6 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.isVisible
-import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.SimpleItemAnimator
 import com.maltaisn.notes.App
@@ -47,8 +46,6 @@ class SearchFragment : NoteFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val navController = findNavController()
-
-        drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
 
         // Toolbar
         val toolbar = binding.toolbar

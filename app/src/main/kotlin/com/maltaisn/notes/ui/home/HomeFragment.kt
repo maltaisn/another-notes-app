@@ -20,10 +20,12 @@ import android.app.ActivityManager
 import android.content.Context
 import android.os.Build
 import android.os.Bundle
+import android.view.ActionMode
 import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
@@ -102,6 +104,13 @@ class HomeFragment : NoteFragment(), Toolbar.OnMenuItemClickListener,
 
         viewModel.listLayoutMode.observe(viewLifecycleOwner) { mode ->
             updateListLayoutItemForMode(mode ?: return@observe)
+        }
+
+        viewModel.currentSelection.observe(viewLifecycleOwner) { selection ->
+            if (selection.count != 0) {
+                // Lock drawer when user just selected a first note.
+                drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
+            }
         }
 
         viewModel.showEmptyTrashDialogEvent.observeEvent(viewLifecycleOwner) {
@@ -185,6 +194,11 @@ class HomeFragment : NoteFragment(), Toolbar.OnMenuItemClickListener,
         }
 
         return true
+    }
+
+    override fun onDestroyActionMode(mode: ActionMode) {
+        super.onDestroyActionMode(mode)
+        drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
     }
 
     private fun checkNavigationItemForDestination(destination: HomeDestination) {

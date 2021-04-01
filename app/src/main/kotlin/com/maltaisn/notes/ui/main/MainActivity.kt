@@ -21,6 +21,8 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.navigation.NavController
+import androidx.navigation.NavDestination
 import androidx.navigation.findNavController
 import com.google.android.material.navigation.NavigationView
 import com.maltaisn.notes.App
@@ -40,7 +42,7 @@ import com.maltaisn.notes.ui.viewModel
 import javax.inject.Inject
 import javax.inject.Provider
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedListener {
 
     @Inject
     lateinit var sharedViewModelProvider: Provider<SharedViewModel>
@@ -52,6 +54,7 @@ class MainActivity : AppCompatActivity() {
 
     lateinit var drawerLayout: DrawerLayout
     lateinit var navigationView: NavigationView
+    lateinit var navController: NavController
 
     private lateinit var binding: ActivityMainBinding
 
@@ -67,11 +70,13 @@ class MainActivity : AppCompatActivity() {
         drawerLayout = binding.drawerLayout
         navigationView = binding.navigationView
 
+        navController = findNavController(R.id.nav_host_fragment)
+        navController.addOnDestinationChangedListener(this)
+
         setupViewModelObservers()
     }
 
     private fun setupViewModelObservers() {
-        val navController = findNavController(R.id.nav_host_fragment)
         viewModel.editItemEvent.observeEvent(this) { noteId ->
             navController.navigateSafe(NavGraphMainDirections.actionEditNote(noteId))
         }
@@ -90,6 +95,14 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    override fun onDestinationChanged(ctl: NavController, dst: NavDestination, args: Bundle?) {
+        drawerLayout.setDrawerLockMode(if (dst.id == R.id.fragment_home) {
+            DrawerLayout.LOCK_MODE_UNLOCKED
+        } else {
+            DrawerLayout.LOCK_MODE_LOCKED_CLOSED
+        })
+    }
+
     override fun onStart() {
         super.onStart()
         viewModel.onStart()
@@ -98,6 +111,11 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         handleIntent()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        navController.removeOnDestinationChangedListener(this)
     }
 
     private fun handleIntent() {

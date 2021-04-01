@@ -91,7 +91,6 @@ abstract class NoteFragment : Fragment(), ActionMode.Callback, ConfirmDialog.Cal
         // Drawer
         val activity = requireActivity() as MainActivity
         drawerLayout = activity.drawerLayout
-        drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
         navView = activity.navigationView
         navView.setNavigationItemSelectedListener(this)
 
@@ -132,11 +131,6 @@ abstract class NoteFragment : Fragment(), ActionMode.Callback, ConfirmDialog.Cal
         viewModel.currentSelection.observe(viewLifecycleOwner) { selection ->
             updateActionModeForSelection(selection)
             updateItemsForSelection(selection)
-
-            if (selection.count != 0) {
-                // Lock drawer when user just selected a first note.
-                drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
-            }
         }
 
         viewModel.shareEvent.observeEvent(viewLifecycleOwner) { data ->
@@ -308,8 +302,6 @@ abstract class NoteFragment : Fragment(), ActionMode.Callback, ConfirmDialog.Cal
     override fun onDestroyActionMode(mode: ActionMode) {
         actionMode = null
         viewModel.clearSelection()
-
-        drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
     }
 
     override fun onDestinationChanged(
