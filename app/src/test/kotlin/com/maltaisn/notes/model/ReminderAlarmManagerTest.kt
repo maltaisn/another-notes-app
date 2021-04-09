@@ -66,7 +66,7 @@ class ReminderAlarmManagerTest {
     @Test
     fun `should set reminder alarm`() =
         coroutineScope.runBlockingTest {
-            val note = notesRepo.requireById(1)
+            val note = notesRepo.requireNoteById(1)
             alarmManager.setNoteReminderAlarm(note)
             assertEquals(dateFor("2021-01-01").time, alarmCallback.alarms[1])
         }
@@ -75,7 +75,7 @@ class ReminderAlarmManagerTest {
     fun `should remove reminder alarm`() =
         coroutineScope.runBlockingTest {
             alarmCallback.addAlarm(4, 1000)
-            val note = notesRepo.requireById(4)
+            val note = notesRepo.requireNoteById(4)
             alarmManager.setNoteReminderAlarm(note)
             assertNull(alarmCallback.alarms[4])
         }
@@ -83,7 +83,7 @@ class ReminderAlarmManagerTest {
     @Test
     fun `should set next alarm for non-recurring reminder (does nothing)`() =
         coroutineScope.runBlockingTest {
-            val note = notesRepo.requireById(1)
+            val note = notesRepo.requireNoteById(1)
             alarmManager.setNextNoteReminderAlarm(note)
             assertNull(alarmCallback.alarms[1])
         }
@@ -91,13 +91,13 @@ class ReminderAlarmManagerTest {
     @Test
     fun `should set next alarm for recurring reminder`() =
         coroutineScope.runBlockingTest {
-            alarmManager.setNextNoteReminderAlarm(notesRepo.requireById(2))
+            alarmManager.setNextNoteReminderAlarm(notesRepo.requireNoteById(2))
             assertEquals(dateFor("2100-01-02").time, alarmCallback.alarms[2])
             alarmCallback.removeAlarm(2)
-            alarmManager.setNextNoteReminderAlarm(notesRepo.requireById(2))
+            alarmManager.setNextNoteReminderAlarm(notesRepo.requireNoteById(2))
             assertEquals(dateFor("2100-01-03").time, alarmCallback.alarms[2])
             alarmCallback.removeAlarm(2)
-            alarmManager.setNextNoteReminderAlarm(notesRepo.requireById(2))
+            alarmManager.setNextNoteReminderAlarm(notesRepo.requireNoteById(2))
             assertNull(alarmCallback.alarms[2])
         }
 
@@ -105,7 +105,7 @@ class ReminderAlarmManagerTest {
     fun `should mark reminder as done`() =
         coroutineScope.runBlockingTest {
             alarmManager.markReminderAsDone(1)
-            assertTrue(notesRepo.requireById(1).reminder!!.done)
+            assertTrue(notesRepo.requireNoteById(1).reminder!!.done)
         }
 
     @Test
@@ -123,7 +123,7 @@ class ReminderAlarmManagerTest {
             assertEquals(dateFor("2100-02-01").time, alarmCallback.alarms[5])
             assertEquals(dateFor("2100-03-01").time, alarmCallback.alarms[6])
 
-            assertEquals(dateFor("2100-03-01"), notesRepo.requireById(6).reminder!!.next)
+            assertEquals(dateFor("2100-03-01"), notesRepo.requireNoteById(6).reminder!!.next)
         }
 
 }

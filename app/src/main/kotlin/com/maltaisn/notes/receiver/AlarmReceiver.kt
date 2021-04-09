@@ -66,7 +66,7 @@ class AlarmReceiver : BroadcastReceiver() {
      * Two action buttons can be clicked: mark as done and postpone.
      */
     private suspend fun showNotificationForReminder(context: Context, noteId: Long) {
-        val note = notesRepository.getById(noteId) ?: return
+        val note = notesRepository.getNoteById(noteId) ?: return
 
         reminderAlarmManager.setNextNoteReminderAlarm(note)
 

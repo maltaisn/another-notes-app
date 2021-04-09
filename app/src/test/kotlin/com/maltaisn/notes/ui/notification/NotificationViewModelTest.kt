@@ -68,7 +68,7 @@ class NotificationViewModelTest {
 
     @Test
     fun `should change date and time for reminder`() = mainCoroutineRule.runBlockingTest {
-        val oldNote = notesRepo.requireById(1)
+        val oldNote = notesRepo.requireNoteById(1)
         viewModel.onPostponeClicked(1)
 
         val date = viewModel.showDateDialogEvent.getOrAwaitValue().requireUnhandledContent()
@@ -90,37 +90,37 @@ class NotificationViewModelTest {
         assertEquals(1, alarmCallback.alarms.size)
         assertEquals(postponeTime.time, alarmCallback.alarms[1])
         assertNoteEquals(oldNote.copy(reminder = oldNote.reminder?.postponeTo(postponeTime)),
-            notesRepo.requireById(1))
+            notesRepo.requireNoteById(1))
     }
 
     @Test
     fun `should cancel postpone on date dialog`() = mainCoroutineRule.runBlockingTest {
-        val oldNote = notesRepo.requireById(1)
+        val oldNote = notesRepo.requireNoteById(1)
         viewModel.onPostponeClicked(1)
         viewModel.cancelPostpone()
         assertLiveDataEventSent(viewModel.exitEvent)
         assertEquals(0, alarmCallback.alarms.size)
-        assertEquals(oldNote, notesRepo.getById(1))
+        assertEquals(oldNote, notesRepo.getNoteById(1))
     }
 
     @Test
     fun `should cancel postpone on time dialog`() = mainCoroutineRule.runBlockingTest {
-        val oldNote = notesRepo.requireById(1)
+        val oldNote = notesRepo.requireNoteById(1)
         viewModel.onPostponeClicked(1)
         viewModel.setPostponeDate(2021, Calendar.JANUARY, 1)
         viewModel.cancelPostpone()
         assertLiveDataEventSent(viewModel.exitEvent)
         assertEquals(0, alarmCallback.alarms.size)
-        assertEquals(oldNote, notesRepo.getById(1))
+        assertEquals(oldNote, notesRepo.getNoteById(1))
     }
 
     @Test
     fun `should exit if note has no reminder`() = mainCoroutineRule.runBlockingTest {
-        val oldNote = notesRepo.requireById(2)
+        val oldNote = notesRepo.requireNoteById(2)
         viewModel.onPostponeClicked(2)
         assertLiveDataEventSent(viewModel.exitEvent)
         assertEquals(0, alarmCallback.alarms.size)
-        assertEquals(oldNote, notesRepo.getById(2))
+        assertEquals(oldNote, notesRepo.getNoteById(2))
     }
 
     @Test
@@ -129,36 +129,36 @@ class NotificationViewModelTest {
         viewModel.setPostponeDate(2100, Calendar.JANUARY, 1)
 
         // delete note reminder in the meantime
-        val oldNote = notesRepo.requireById(1).copy(reminder = null)
+        val oldNote = notesRepo.requireNoteById(1).copy(reminder = null)
         notesRepo.updateNote(oldNote)
 
         viewModel.setPostponeTime(13, 50)
         assertLiveDataEventSent(viewModel.exitEvent)
         assertEquals(0, alarmCallback.alarms.size)
-        assertEquals(oldNote, notesRepo.getById(1))
+        assertEquals(oldNote, notesRepo.getNoteById(1))
     }
 
     @Test
     fun `should do nothing if postponed in the past`() = mainCoroutineRule.runBlockingTest {
-        val oldNote = notesRepo.requireById(1)
+        val oldNote = notesRepo.requireNoteById(1)
         viewModel.onPostponeClicked(1)
         viewModel.setPostponeDate(2000, Calendar.JANUARY, 1)
         viewModel.setPostponeTime(13, 50)
         assertLiveDataEventSent(viewModel.exitEvent)
         assertEquals(0, alarmCallback.alarms.size)
-        assertEquals(oldNote, notesRepo.getById(1))
+        assertEquals(oldNote, notesRepo.getNoteById(1))
     }
 
     @Test
     fun `should postpone reminder bug 1`() = mainCoroutineRule.runBlockingTest {
         // bug was due to using HOUR instead of HOUR_OF_DAY
-        val oldNote = notesRepo.requireById(3)
+        val oldNote = notesRepo.requireNoteById(3)
         viewModel.onPostponeClicked(3)
         viewModel.setPostponeDate(2100, Calendar.JANUARY, 23)
         viewModel.setPostponeTime(22, 38)
         val postponeTime = dateFor("2100-01-23T22:38:00.000")
         assertEquals(oldNote.copy(reminder = oldNote.reminder?.postponeTo(postponeTime)),
-            notesRepo.getById(3))
+            notesRepo.getNoteById(3))
     }
 
     private fun assertOnSameDay(expected: Long, actual: Long) {

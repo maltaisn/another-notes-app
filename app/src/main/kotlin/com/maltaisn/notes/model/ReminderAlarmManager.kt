@@ -81,7 +81,7 @@ class ReminderAlarmManager @Inject constructor(
     }
 
     suspend fun markReminderAsDone(noteId: Long) {
-        val note = notesRepository.getById(noteId) ?: return
+        val note = notesRepository.getNoteById(noteId) ?: return
         notesRepository.updateNote(note.copy(reminder = note.reminder?.markAsDone()))
     }
 

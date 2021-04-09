@@ -111,7 +111,7 @@ class ReminderViewModel @AssistedInject constructor(
             savedStateHandle[KEY_NOTE_IDS] = noteIds
 
             val reminder = if (noteIds.size == 1) {
-                notesRepository.getById(noteIds.first())?.reminder
+                notesRepository.getNoteById(noteIds.first())?.reminder
             } else {
                 null
             }
@@ -121,7 +121,7 @@ class ReminderViewModel @AssistedInject constructor(
             // Delete button is visible if any of the notes have a reminder
             _isDeleteBtnVisible.value = false
             for (noteId in noteIds) {
-                val note = notesRepository.getById(noteId) ?: continue
+                val note = notesRepository.getNoteById(noteId) ?: continue
                 if (note.reminder != null) {
                     _isDeleteBtnVisible.value = true
                     break
@@ -249,7 +249,7 @@ class ReminderViewModel @AssistedInject constructor(
         // Update notes in database
         // Note: changing reminder doesn't change the last modified date.
         val newNotes = noteIds.mapNotNull { id ->
-            val oldNote = notesRepository.getById(id)!!
+            val oldNote = notesRepository.getNoteById(id)!!
             if (oldNote.reminder != reminder) {
                 oldNote.copy(reminder = reminder)
             } else {

@@ -61,8 +61,8 @@ class SharedViewModelTest {
     @Test
     fun `should do and undo status change`() =
         mainCoroutineRule.runBlockingTest {
-            val note1 = notesRepo.requireById(1)
-            val note2 = notesRepo.requireById(2)
+            val note1 = notesRepo.requireNoteById(1)
+            val note2 = notesRepo.requireNoteById(2)
             notesRepo.updateNote(note1.copy(status = NoteStatus.ARCHIVED,
                 pinned = PinnedStatus.CANT_PIN))
             val statusChange = StatusChange(listOf(note1, note2),
@@ -71,13 +71,13 @@ class SharedViewModelTest {
             assertLiveDataEventSent(viewModel.statusChangeEvent, statusChange)
 
             viewModel.undoStatusChange()
-            assertEquals(note2, notesRepo.getById(2))
+            assertEquals(note2, notesRepo.getNoteById(2))
         }
 
     @Test
     fun `should undo status change and set reminder alarm back`() =
         mainCoroutineRule.runBlockingTest {
-            val note = notesRepo.requireById(3)
+            val note = notesRepo.requireNoteById(3)
             alarmCallback.addAlarm(3, 10)
             viewModel.onStatusChange(StatusChange(listOf(note),
                 NoteStatus.ACTIVE, NoteStatus.DELETED))

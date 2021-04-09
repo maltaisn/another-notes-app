@@ -87,7 +87,7 @@ class MainViewModel @Inject constructor(
 
     fun markReminderDone(id: Long) {
         viewModelScope.launch {
-            val note = notesRepository.getById(id) ?: return@launch
+            val note = notesRepository.getNoteById(id) ?: return@launch
             notesRepository.updateNote(note.copy(reminder = note.reminder?.markAsDone()))
         }
     }

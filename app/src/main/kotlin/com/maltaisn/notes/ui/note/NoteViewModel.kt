@@ -133,7 +133,7 @@ abstract class NoteViewModel(
     protected open suspend fun restoreState() {
         // Restore saved selected notes
         val selectedIds = savedStateHandle.get<List<Long>>(KEY_SELECTED_IDS) ?: return
-        _selectedNotes += selectedIds.mapNotNull { notesRepository.getById(it) }
+        _selectedNotes += selectedIds.mapNotNull { notesRepository.getNoteById(it) }
         updateNoteSelection()
     }
 

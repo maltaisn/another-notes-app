@@ -23,6 +23,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import com.maltaisn.notes.model.entity.Label
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface LabelsDao {
@@ -47,7 +48,7 @@ interface LabelsDao {
      * Used for viewing labels and exporting data.
      */
     @Query("SELECT * FROM labels")
-    suspend fun getAll(): List<Label>
+    fun getAll(): Flow<List<Label>>
 
     /**
      * Get a label by its ID. Returns `null` if label doesn't exist.
@@ -56,10 +57,10 @@ interface LabelsDao {
     suspend fun getById(id: Long): Label?
 
     /**
-     * Get a label ID by its name, or `NO_ID` if none exists. Name must match exactly.
+     * Get a label by its name, or `null` if none exists. Name must match exactly.
      * Used to ensure name uniqueness and for searching by label.
      */
-    @Query("SELECT id FROM labels WHERE name == :name")
-    suspend fun getLabelIdByName(name: String)
+    @Query("SELECT * FROM labels WHERE name == :name")
+    suspend fun getLabelByName(name: String): Label?
 
 }

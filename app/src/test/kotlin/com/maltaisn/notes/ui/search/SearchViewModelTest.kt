@@ -79,7 +79,7 @@ class SearchViewModelTest {
     fun `should show search results for query (only active)`() = mainCoroutineRule.runBlockingTest {
         searchNotesAndWait("1")
         assertEquals(listOf(
-            NoteItem(1, notesRepo.requireById(1), false, listOf(0..1), emptyList())
+            NoteItem(1, notesRepo.requireNoteById(1), false, listOf(0..1), emptyList())
         ), viewModel.noteItems.getOrAwaitValue())
     }
 
@@ -89,7 +89,7 @@ class SearchViewModelTest {
             searchNotesAndWait("2")
             assertEquals(listOf(
                 HeaderItem(-1, R.string.note_location_archived),
-                NoteItem(2, notesRepo.requireById(2), false, listOf(0..1), emptyList())
+                NoteItem(2, notesRepo.requireNoteById(2), false, listOf(0..1), emptyList())
             ), viewModel.noteItems.getOrAwaitValue())
         }
 
@@ -98,9 +98,9 @@ class SearchViewModelTest {
         mainCoroutineRule.runBlockingTest {
             searchNotesAndWait("3")
             assertEquals(listOf(
-                NoteItem(1, notesRepo.requireById(1), false, listOf(1..2), emptyList()),
+                NoteItem(1, notesRepo.requireNoteById(1), false, listOf(1..2), emptyList()),
                 HeaderItem(-1, R.string.note_location_archived),
-                NoteItem(2, notesRepo.requireById(2), false, listOf(1..2), emptyList())
+                NoteItem(2, notesRepo.requireNoteById(2), false, listOf(1..2), emptyList())
             ), viewModel.noteItems.getOrAwaitValue())
         }
 

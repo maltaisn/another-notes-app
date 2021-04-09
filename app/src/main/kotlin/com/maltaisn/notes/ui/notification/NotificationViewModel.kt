@@ -73,7 +73,7 @@ class NotificationViewModel @AssistedInject constructor(
         savedStateHandle[KEY_NOTE_ID] = noteId
 
         viewModelScope.launch {
-            val reminder = notesRepository.getById(noteId)?.reminder
+            val reminder = notesRepository.getNoteById(noteId)?.reminder
             if (reminder == null) {
                 // This can happen if user is in app when notification is shown,
                 // user then removes the reminder for notification and then tries to postpone it.
@@ -112,7 +112,7 @@ class NotificationViewModel @AssistedInject constructor(
         // If postpone time is past, ignore it.
         if (calendar.timeInMillis > System.currentTimeMillis()) {
             viewModelScope.launch {
-                val note = notesRepository.getById(noteId)
+                val note = notesRepository.getNoteById(noteId)
                 val reminder = note?.reminder
                 if (note != null && reminder != null) {
                     // There's hardly a way note or reminder can be null at this point, but

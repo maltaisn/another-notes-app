@@ -164,7 +164,7 @@ class EditViewModel @Inject constructor(
     fun start(noteId: Long) {
         viewModelScope.launch {
             // Try to get note by ID.
-            var note = notesRepository.getById(noteId)
+            var note = notesRepository.getNoteById(noteId)
 
             if (note == null) {
                 // Note doesn't exist, create new blank text note.
@@ -205,7 +205,7 @@ class EditViewModel @Inject constructor(
 
         viewModelScope.launch(NonCancellable) {
             // Compare previously saved note from database with new one.
-            val oldNote = notesRepository.getById(note.id)
+            val oldNote = notesRepository.getNoteById(note.id)
             if (oldNote != note) {
                 // Note was changed.
                 note = note.copy(lastModifiedDate = Date())

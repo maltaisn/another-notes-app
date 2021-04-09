@@ -16,13 +16,13 @@
 
 package com.maltaisn.notes.model
 
+import com.maltaisn.notes.model.entity.Label
 import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.model.entity.NoteStatus
-import kotlinx.coroutines.channels.ConflatedBroadcastChannel
-import kotlinx.coroutines.channels.sendBlocking
-import kotlinx.coroutines.flow.asFlow
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.buildJsonObject
@@ -38,8 +38,14 @@ class MockNotesRepository : NotesRepository {
     private val json = Json {}
 
     private val notes = mutableMapOf<Long, Note>()
+    private val labels = mutableMapOf<Long, Label>()
 
-    var lastId = 0L
+    private val labelRefs = mutableMapOf<Long, Long>()
+
+    var lastNoteId = 0L
+        private set
+
+    var lastLabelId = 0L
         private set
 
     /**
@@ -51,39 +57,54 @@ class MockNotesRepository : NotesRepository {
     /**
      * Number of notes in database.
      */
-    val size: Int
+    val notesCount: Int
         get() = notes.size
 
-    private val changeChannel = ConflatedBroadcastChannel(Unit)
+    /**
+     * Number of labels in database.
+     */
+    val labelsCount: Int
+        get() = labels.size
 
-    fun addNote(note: Note): Long {
+    private val noteChangeFlow = MutableSharedFlow<Unit>(replay = 1)
+    private val labelChangeFlow = MutableSharedFlow<Unit>(replay = 1)
+
+    private fun addNoteInternal(note: Note): Long {
         val id = if (note.id != Note.NO_ID) {
             notes[note.id] = note
-            if (note.id > lastId) {
-                lastId = note.id
+            if (note.id > lastNoteId) {
+                lastNoteId = note.id
             }
             note.id
         } else {
-            lastId++
-            notes[lastId] = note.copy(id = lastId)
-            lastId
+            lastNoteId++
+            notes[lastNoteId] = note.copy(id = lastNoteId)
+            lastNoteId
         }
         lastAddedNote = notes[id]
-        changeChannel.sendBlocking(Unit)
+        return id
+    }
+
+    /** Non-suspending version of [insertNote]. */
+    fun addNote(note: Note): Long {
+        val id = addNoteInternal(note)
+        noteChangeFlow.tryEmit(Unit)
         return id
     }
 
     override suspend fun insertNote(note: Note) = addNote(note)
 
     override suspend fun updateNote(note: Note) {
-        require(note.id != Note.NO_ID)
+        require(note.id in notes) { "Cannot update non-existent note" }
         insertNote(note)
     }
 
     override suspend fun updateNotes(notes: List<Note>) {
         for (note in notes) {
-            updateNote(note)
+            require(note.id != Note.NO_ID)
+            addNoteInternal(note)
         }
+        noteChangeFlow.emit(Unit)
     }
 
     override suspend fun deleteNote(note: Note) {
@@ -92,46 +113,88 @@ class MockNotesRepository : NotesRepository {
 
     suspend fun deleteNote(id: Long) {
         notes -= id
-        changeChannel.send(Unit)
+        noteChangeFlow.emit(Unit)
     }
 
     override suspend fun deleteNotes(notes: List<Note>) {
         for (note in notes) {
-            deleteNote(note)
+            this.notes -= note.id
         }
+        noteChangeFlow.emit(Unit)
     }
 
-    override suspend fun getById(id: Long) = notes[id]
+    override suspend fun getNoteById(id: Long) = notes[id]
 
-    fun requireById(id: Long) = notes.getOrElse(id) {
+    fun requireNoteById(id: Long) = notes.getOrElse(id) {
         error("No note with ID $id")
     }
 
-    override fun getNotesWithReminder() = flow {
-        changeChannel.asFlow().collect {
-            val notes = notes.values.filterTo(mutableListOf()) { it.reminder?.done == false }
-            notes.sortBy { it.reminder!!.next.time }
-            emit(notes)
-        }
-    }
-
-    override fun getNotesByStatus(status: NoteStatus) = flow {
-        changeChannel.asFlow().collect {
-            // Sort by last modified, then by ID.
-            val sorted = notes.values.sortedWith(
-                compareByDescending<Note> { it.pinned }
-                    .thenByDescending { it.lastModifiedDate }
-                    .thenBy { it.id })
-            emit(sorted.filter { it.status == status })
-        }
-    }
-
-    override fun searchNotes(query: String) = flow {
-        val queryNoFtsSyntax = query.replace("[*\"-]".toRegex(), "")
-        if (queryNoFtsSyntax.isEmpty()) {
-            emit(emptyList<Note>())
+    /**
+     * Add label without notifying change flow.
+     * Should only be used during test initialization!
+     */
+    fun addLabel(label: Label): Long {
+        val id = if (label.id != Label.NO_ID) {
+            labels[label.id] = label
+            if (label.id > lastLabelId) {
+                lastLabelId = label.id
+            }
+            label.id
         } else {
-            changeChannel.asFlow().collect {
+            lastLabelId++
+            labels[lastLabelId] = label.copy(id = lastLabelId)
+            lastLabelId
+        }
+        return id
+    }
+
+    override suspend fun insertLabel(label: Label): Long {
+        val id = addLabel(label)
+        labelChangeFlow.emit(Unit)
+        return id
+    }
+
+    override suspend fun updateLabel(label: Label) {
+        require(label.id in labels) { "Cannot update non-existent label" }
+        insertLabel(label)
+    }
+
+    override suspend fun deleteLabel(label: Label) {
+        labels -= label.id
+        labelChangeFlow.emit(Unit)
+    }
+
+    override suspend fun getLabelById(id: Long) = labels[id]
+
+    fun requireLabelById(id: Long) = labels.getOrElse(id) {
+        error("No label with ID $id")
+    }
+
+    override suspend fun getLabelByName(name: String) = labels.values.find { it.name == name }
+
+    override fun getNotesWithReminder() = noteChangeFlow.map {
+        notes.values.asSequence()
+            .filter { it.reminder?.done == false }
+            .sortedBy { it.reminder!!.next.time }
+            .toList()
+    }
+
+    override fun getNotesByStatus(status: NoteStatus) = noteChangeFlow.map {
+        // Sort by last modified, then by ID.
+        notes.values.asSequence()
+            .filter { it.status == status }
+            .sortedWith(compareByDescending<Note> { it.pinned }
+                .thenByDescending { it.lastModifiedDate }
+                .thenBy { it.id })
+            .toList()
+    }
+
+    override fun searchNotes(query: String): Flow<List<Note>> {
+        val queryNoFtsSyntax = query.replace("[*\"-]".toRegex(), "")
+        return if (queryNoFtsSyntax.isEmpty()) {
+            flow { emit(emptyList<Note>()) }
+        } else {
+            noteChangeFlow.map {
                 val found = notes.mapNotNullTo(ArrayList()) { (_, note) ->
                     note.takeIf {
                         note.status != NoteStatus.DELETED &&
@@ -139,7 +202,7 @@ class MockNotesRepository : NotesRepository {
                     }
                 }
                 found.sortWith(compareBy<Note> { it.status }.thenByDescending { it.lastModifiedDate })
-                emit(found)
+                found
             }
         }
     }
@@ -148,7 +211,7 @@ class MockNotesRepository : NotesRepository {
         notes.entries.removeIf { (_, note) ->
             note.status == NoteStatus.DELETED
         }
-        changeChannel.send(Unit)
+        noteChangeFlow.emit(Unit)
     }
 
     override suspend fun deleteOldNotesInTrash() {
@@ -157,7 +220,7 @@ class MockNotesRepository : NotesRepository {
                     (System.currentTimeMillis() - note.lastModifiedDate.time) >
                     PrefsManager.TRASH_AUTO_DELETE_DELAY.toLongMilliseconds()
         }
-        changeChannel.send(Unit)
+        noteChangeFlow.emit(Unit)
     }
 
     override suspend fun getJsonData(): String {
@@ -171,13 +234,16 @@ class MockNotesRepository : NotesRepository {
 
     override suspend fun clearAllData() {
         notes.clear()
-        lastId = 0
-        changeChannel.send(Unit)
+        lastNoteId = 0
+        noteChangeFlow.emit(Unit)
     }
 
-    fun getAll() = flow {
-        changeChannel.asFlow().collect {
-            emit(notes.values)
-        }
+    fun getAllNotes() = noteChangeFlow.map {
+        notes.values.toList()
     }
+
+    override fun getAllLabels() = noteChangeFlow.map {
+        labels.values.toList()
+    }
+
 }

@@ -87,8 +87,8 @@ class HomeViewModelTest {
     @Test
     fun `should show only active notes (both pinned and unpinned)`() =
         mainCoroutineRule.runBlockingTest {
-            val note1 = notesRepo.requireById(1)
-            val note2 = notesRepo.requireById(2)
+            val note1 = notesRepo.requireNoteById(1)
+            val note2 = notesRepo.requireNoteById(2)
             viewModel.setDestination(HomeDestination.ACTIVE)
 
             assertEquals(HomeDestination.ACTIVE, viewModel.destination.getOrAwaitValue())
@@ -103,7 +103,7 @@ class HomeViewModelTest {
     @Test
     fun `should show only active notes (pinned only)`() = mainCoroutineRule.runBlockingTest {
         notesRepo.deleteNote(2)
-        val note = notesRepo.requireById(1)
+        val note = notesRepo.requireNoteById(1)
         viewModel.setDestination(HomeDestination.ACTIVE)
 
         assertEquals(HomeDestination.ACTIVE, viewModel.destination.getOrAwaitValue())
@@ -116,7 +116,7 @@ class HomeViewModelTest {
     @Test
     fun `should show only active notes (unpinned only)`() = mainCoroutineRule.runBlockingTest {
         notesRepo.deleteNote(1)
-        val note = notesRepo.requireById(2)
+        val note = notesRepo.requireNoteById(2)
         viewModel.setDestination(HomeDestination.ACTIVE)
 
         assertEquals(HomeDestination.ACTIVE, viewModel.destination.getOrAwaitValue())
@@ -127,7 +127,7 @@ class HomeViewModelTest {
 
     @Test
     fun `should show only archived notes`() = mainCoroutineRule.runBlockingTest {
-        val note = notesRepo.requireById(3)
+        val note = notesRepo.requireNoteById(3)
         viewModel.setDestination(HomeDestination.ARCHIVED)
 
         assertEquals(HomeDestination.ARCHIVED, viewModel.destination.getOrAwaitValue())
@@ -138,7 +138,7 @@ class HomeViewModelTest {
 
     @Test
     fun `should show only deleted notes`() = mainCoroutineRule.runBlockingTest {
-        val note = notesRepo.requireById(4)
+        val note = notesRepo.requireNoteById(4)
         viewModel.setDestination(HomeDestination.DELETED)
 
         assertEquals(HomeDestination.DELETED, viewModel.destination.getOrAwaitValue())
@@ -151,12 +151,12 @@ class HomeViewModelTest {
 
     @Test
     fun `should update list when data is changed`() = mainCoroutineRule.runBlockingTest {
-        val note1 = notesRepo.requireById(1)
-        val note2 = notesRepo.requireById(2)
+        val note1 = notesRepo.requireNoteById(1)
+        val note2 = notesRepo.requireNoteById(2)
         viewModel.setDestination(HomeDestination.ACTIVE)
 
         notesRepo.insertNote(testNote(status = NoteStatus.ACTIVE))
-        val newNote = notesRepo.getById(notesRepo.lastId)!!
+        val newNote = notesRepo.getNoteById(notesRepo.lastNoteId)!!
 
         assertEquals(listOf(
             HomeViewModel.PINNED_HEADER_ITEM,
@@ -170,7 +170,7 @@ class HomeViewModelTest {
     @Test
     fun `should update list when trash reminder item is dismissed`() =
         mainCoroutineRule.runBlockingTest {
-            val note = notesRepo.requireById(4)
+            val note = notesRepo.requireNoteById(4)
             viewModel.setDestination(HomeDestination.DELETED)
             viewModel.onMessageItemDismissed(MessageItem(-1, 0, emptyList()), 0)
 
@@ -237,11 +237,11 @@ class HomeViewModelTest {
     fun `should archive note on swipe`() = mainCoroutineRule.runBlockingTest {
         whenever(prefs.swipeAction) doReturn SwipeAction.ARCHIVE
 
-        val note = notesRepo.requireById(1)
+        val note = notesRepo.requireNoteById(1)
         viewModel.setDestination(HomeDestination.ACTIVE)
         viewModel.onNoteSwiped(1)
 
-        assertEquals(NoteStatus.ARCHIVED, notesRepo.requireById(1).status)
+        assertEquals(NoteStatus.ARCHIVED, notesRepo.requireNoteById(1).status)
         assertLiveDataEventSent(viewModel.statusChangeEvent, StatusChange(
             listOf(note), NoteStatus.ACTIVE, NoteStatus.ARCHIVED))
     }
@@ -250,11 +250,11 @@ class HomeViewModelTest {
     fun `should delete note on swipe`() = mainCoroutineRule.runBlockingTest {
         whenever(prefs.swipeAction) doReturn SwipeAction.DELETE
 
-        val note = notesRepo.requireById(1)
+        val note = notesRepo.requireNoteById(1)
         viewModel.setDestination(HomeDestination.ACTIVE)
         viewModel.onNoteSwiped(1)
 
-        assertEquals(NoteStatus.DELETED, notesRepo.requireById(1).status)
+        assertEquals(NoteStatus.DELETED, notesRepo.requireNoteById(1).status)
         assertLiveDataEventSent(viewModel.statusChangeEvent, StatusChange(
             listOf(note), NoteStatus.ACTIVE, NoteStatus.DELETED))
     }
