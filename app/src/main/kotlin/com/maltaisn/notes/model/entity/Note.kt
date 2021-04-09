@@ -22,7 +22,9 @@ package com.maltaisn.notes.model.entity
 import androidx.room.ColumnInfo
 import androidx.room.Embedded
 import androidx.room.Entity
+import androidx.room.Junction
 import androidx.room.PrimaryKey
+import androidx.room.Relation
 import com.maltaisn.notes.model.converter.DateTimeConverter
 import com.maltaisn.notes.model.converter.NoteMetadataConverter
 import com.maltaisn.notes.model.converter.NoteStatusConverter
@@ -107,7 +109,7 @@ data class Note(
      * The note reminder, or `null` if none is set.
      */
     @Embedded(prefix = "reminder_")
-    val reminder: Reminder?
+    val reminder: Reminder?,
 ) {
 
     init {
@@ -263,6 +265,17 @@ data class Note(
         }
     }
 }
+
+data class NoteWithLabels(
+    @Embedded
+    val note: Note,
+
+    @Relation(
+        parentColumn = "noteId",
+        entityColumn = "labelId",
+        associateBy = Junction(LabelRef::class))
+    val labels: List<Label>
+)
 
 /**
  * Representation of a list note item for [Note.listItems].

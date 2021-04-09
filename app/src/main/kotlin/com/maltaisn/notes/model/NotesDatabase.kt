@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Nicolas Maltais
+ * Copyright 2021 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,13 +27,15 @@ import com.maltaisn.notes.model.converter.NoteStatusConverter
 import com.maltaisn.notes.model.converter.NoteTypeConverter
 import com.maltaisn.notes.model.converter.PinnedStatusConverter
 import com.maltaisn.notes.model.converter.RecurrenceConverter
+import com.maltaisn.notes.model.entity.Label
 import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.model.entity.NoteFts
 
 @Database(
     entities = [
         Note::class,
-        NoteFts::class
+        NoteFts::class,
+        Label::class,
     ],
     version = 3)
 @TypeConverters(
@@ -42,11 +44,13 @@ import com.maltaisn.notes.model.entity.NoteFts
     NoteStatusConverter::class,
     NoteMetadataConverter::class,
     PinnedStatusConverter::class,
-    RecurrenceConverter::class
+    RecurrenceConverter::class,
 )
 abstract class NotesDatabase : RoomDatabase() {
 
     abstract fun notesDao(): NotesDao
+
+    abstract fun labelsDao(): LabelsDao
 
     @Suppress("MagicNumber")
     companion object {
@@ -84,13 +88,16 @@ abstract class NotesDatabase : RoomDatabase() {
                     execSQL("ALTER TABLE notes ADD COLUMN reminder_next INTEGER")
                     execSQL("ALTER TABLE notes ADD COLUMN reminder_count INTEGER")
                     execSQL("ALTER TABLE notes ADD COLUMN reminder_done INTEGER")
+
+                    // add labels table
+                    execSQL("CREATE TABLE labels (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, name TEXT NOT NULL)")
                 }
             }
         }
 
         val ALL_MIGRATIONS = arrayOf(
             MIGRATION_1_2,
-            MIGRATION_2_3
+            MIGRATION_2_3,
         )
     }
 }
