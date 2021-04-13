@@ -16,8 +16,6 @@
 
 package com.maltaisn.notes.model
 
-import com.maltaisn.notes.model.entity.Label
-import com.maltaisn.notes.model.entity.LabelRef
 import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.model.entity.NoteStatus
 import kotlinx.coroutines.NonCancellable
@@ -31,7 +29,6 @@ import javax.inject.Inject
 
 class DefaultNotesRepository @Inject constructor(
     private val notesDao: NotesDao,
-    private val labelsDao: LabelsDao,
     private val json: Json
 ) : NotesRepository {
 
@@ -62,31 +59,9 @@ class DefaultNotesRepository @Inject constructor(
     override suspend fun getNoteById(id: Long) = notesDao.getById(id)
 
 
-    override suspend fun insertLabel(label: Label) = withContext(NonCancellable) {
-        labelsDao.insert(label)
-    }
-
-    override suspend fun updateLabel(label: Label) = withContext(NonCancellable) {
-        labelsDao.update(label)
-    }
-
-    override suspend fun deleteLabel(label: Label) {
-        labelsDao.delete(label)
-    }
-
-    override suspend fun getLabelById(id: Long) = labelsDao.getById(id)
-
-    override suspend fun getLabelByName(name: String) = labelsDao.getLabelByName(name)
-
-    override suspend fun insertLabelRefs(refs: List<LabelRef>) = labelsDao.insertRefs(refs)
-
-    override suspend fun deleteLabelRefs(refs: List<LabelRef>) = labelsDao.removeRefs(refs)
-
     override fun getNotesByStatus(status: NoteStatus) = notesDao.getByStatus(status)
 
     override fun getNotesWithReminder() = notesDao.getAllWithReminder()
-
-    override fun getAllLabels() = labelsDao.getAll()
 
     override fun searchNotes(query: String) = notesDao.search(query)
 

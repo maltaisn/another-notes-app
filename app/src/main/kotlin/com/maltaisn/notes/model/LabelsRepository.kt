@@ -16,27 +16,23 @@
 
 package com.maltaisn.notes.model
 
-import com.maltaisn.notes.model.entity.Note
-import com.maltaisn.notes.model.entity.NoteStatus
+import com.maltaisn.notes.model.entity.Label
+import com.maltaisn.notes.model.entity.LabelRef
 import kotlinx.coroutines.flow.Flow
 
-interface NotesRepository {
+interface LabelsRepository {
 
-    suspend fun insertNote(note: Note): Long
-    suspend fun updateNote(note: Note)
-    suspend fun updateNotes(notes: List<Note>)
-    suspend fun deleteNote(note: Note)
-    suspend fun deleteNotes(notes: List<Note>)
-    suspend fun getNoteById(id: Long): Note?
+    suspend fun insertLabel(label: Label): Long
+    suspend fun updateLabel(label: Label)
+    suspend fun deleteLabel(label: Label)
+    suspend fun getLabelById(id: Long): Label?
+    suspend fun getLabelByName(name: String): Label?
 
-    fun getNotesWithReminder(): Flow<List<Note>>
-    fun getNotesByStatus(status: NoteStatus): Flow<List<Note>>
-    fun searchNotes(query: String): Flow<List<Note>>
+    suspend fun insertLabelRefs(refs: List<LabelRef>)
+    suspend fun deleteLabelRefs(refs: List<LabelRef>)
 
-    suspend fun emptyTrash()
-    suspend fun deleteOldNotesInTrash()
+    fun getAllLabels(): Flow<List<Label>>
 
-    suspend fun getJsonData(): String
     suspend fun clearAllData()
 
 }

@@ -19,7 +19,9 @@ package com.maltaisn.notes.di
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.preference.PreferenceManager
+import com.maltaisn.notes.model.DefaultLabelsRepository
 import com.maltaisn.notes.model.DefaultNotesRepository
+import com.maltaisn.notes.model.LabelsRepository
 import com.maltaisn.notes.model.NotesRepository
 import com.maltaisn.notes.model.ReminderAlarmCallback
 import com.maltaisn.notes.receiver.ReceiverAlarmCallback
@@ -38,7 +40,10 @@ import kotlinx.serialization.json.Json
 abstract class AppModule {
 
     @get:Binds
-    abstract val DefaultNotesRepository.bindRepository: NotesRepository
+    abstract val DefaultNotesRepository.bindNotesRepository: NotesRepository
+
+    @get:Binds
+    abstract val DefaultLabelsRepository.bindLabelsRepository: LabelsRepository
 
     @get:Binds
     abstract val ReceiverAlarmCallback.bindAlarmCallback: ReminderAlarmCallback
