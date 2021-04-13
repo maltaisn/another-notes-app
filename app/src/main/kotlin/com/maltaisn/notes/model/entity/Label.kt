@@ -19,12 +19,16 @@ package com.maltaisn.notes.model.entity
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
+import androidx.room.Index
 import androidx.room.PrimaryKey
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-@Entity(tableName = "labels")
+@Entity(
+    tableName = "labels",
+    indices = [Index(value = ["name"])],
+)
 data class Label(
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "id")

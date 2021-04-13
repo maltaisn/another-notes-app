@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Nicolas Maltais
+ * Copyright 2021 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,9 @@
 
 package com.maltaisn.notes.model
 
+import androidx.core.database.getIntOrNull
+import androidx.core.database.getLongOrNull
+import androidx.core.database.getStringOrNull
 import androidx.room.Room
 import androidx.room.testing.MigrationTestHelper
 import androidx.sqlite.db.framework.FrameworkSQLiteOpenHelperFactory
@@ -26,6 +29,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import java.io.IOException
 import kotlin.test.assertEquals
+import kotlin.test.assertNull
 
 @RunWith(AndroidJUnit4::class)
 class MigrationTest {
@@ -57,9 +61,15 @@ class MigrationTest {
         }
         val db = helper.runMigrationsAndValidate(DB_NAME, 3, true, NotesDatabase.MIGRATION_2_3)
 
-        val cursor = db.query("SELECT pinned FROM notes")
+        val cursor = db.query("""SELECT pinned, reminder_start, reminder_recurrence,
+                                       reminder_next, reminder_count, reminder_done FROM notes""")
         cursor.moveToFirst()
         assertEquals(1, cursor.getInt(0))
+        assertNull(cursor.getLongOrNull(1))
+        assertNull(cursor.getStringOrNull(2))
+        assertNull(cursor.getLongOrNull(3))
+        assertNull(cursor.getIntOrNull(4))
+        assertNull(cursor.getIntOrNull(5))
         cursor.moveToNext()
         assertEquals(0, cursor.getInt(0))
         cursor.close()

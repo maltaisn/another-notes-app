@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Nicolas Maltais
+ * Copyright 2021 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,9 @@ import com.maltaisn.notes.dateFor
 import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.model.entity.NoteStatus
 import com.maltaisn.notes.model.entity.PinnedStatus
+import com.maltaisn.notes.model.entity.Reminder
 import com.maltaisn.notes.testNote
+import com.maltaisn.recurpicker.RecurrenceFinder
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.junit.After
@@ -55,11 +57,11 @@ class NotesDaoTest {
 
     @Test
     fun readWriteTests() = runBlocking {
-        val note = testNote(id = 1, title = "note")
+        val noteNoId = testNote(title = "note")
 
         // Insert
-        val id = notesDao.insert(note)
-        assertEquals(note, notesDao.getById(id))
+        val id = notesDao.insert(noteNoId)
+        assertEquals(noteNoId.copy(id = id), notesDao.getById(id))
 
         // Update with insert
         val updatedNote0 = testNote(id = 1, title = "updated note 0")
@@ -84,6 +86,14 @@ class NotesDaoTest {
 
         // Delete all
         notesDao.deleteAll(newNotes)
+        assertEquals(emptyList(), notesDao.getAll())
+    }
+
+    @Test
+    fun clearTest() = runBlocking {
+        notesDao.insertAll(listOf(testNote(), testNote(), testNote()))
+        notesDao.clear()
+        assertEquals(emptyList(), notesDao.getAll())
     }
 
     @Test
@@ -135,8 +145,26 @@ class NotesDaoTest {
         }
         notesDao.insertAll(notes)
 
-        val queryNotes = notesDao.getByStatusAndDate(NoteStatus.DELETED, dateFor("2020-01-01T00:00:00.000Z"))
+        val queryNotes =
+            notesDao.getByStatusAndDate(NoteStatus.DELETED, dateFor("2020-01-01T00:00:00.000Z"))
         assertEquals(notes.subList(0, 4).toSet(), queryNotes.toSet())
+    }
+
+    @Test
+    fun getAllWithReminderTest() = runBlocking {
+        val recurFinder = RecurrenceFinder()
+        val notes = listOf(
+            testNote(id = 1, title = "note0", reminder = Reminder.create(dateFor("2020-01-01"),
+                null, recurFinder)),
+            testNote(id = 2, title = "note1"),
+            testNote(id = 3, title = "note2"),
+            testNote(id = 4, title = "note3", reminder = Reminder.create(dateFor("2020-02-02"),
+                null, recurFinder)),
+            testNote(id = 5, title = "note4", reminder = Reminder.create(dateFor("2020-02-02"),
+                null, recurFinder).markAsDone()),
+        )
+        notesDao.insertAll(notes)
+        assertEquals(listOf(notes[0], notes[3]), notesDao.getAllWithReminder().first())
     }
 
     @Test
@@ -158,4 +186,5 @@ class NotesDaoTest {
         notesDao.insert(note2)
         assertEquals(listOf(note1, note0, note2), noteFlow.first())
     }
+
 }
