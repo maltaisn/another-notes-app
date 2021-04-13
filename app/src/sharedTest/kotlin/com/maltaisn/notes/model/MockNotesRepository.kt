@@ -17,6 +17,7 @@
 package com.maltaisn.notes.model
 
 import com.maltaisn.notes.model.entity.Label
+import com.maltaisn.notes.model.entity.LabelRef
 import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.model.entity.NoteStatus
 import kotlinx.coroutines.flow.Flow
@@ -171,6 +172,18 @@ class MockNotesRepository : NotesRepository {
     }
 
     override suspend fun getLabelByName(name: String) = labels.values.find { it.name == name }
+
+    override suspend fun insertLabelRefs(refs: List<LabelRef>) {
+        for (ref in refs) {
+            labelRefs[ref.noteId] = ref.labelId
+        }
+    }
+
+    override suspend fun deleteLabelRefs(refs: List<LabelRef>) {
+        for (ref in refs) {
+            labelRefs -= ref.noteId
+        }
+    }
 
     override fun getNotesWithReminder() = noteChangeFlow.map {
         notes.values.asSequence()

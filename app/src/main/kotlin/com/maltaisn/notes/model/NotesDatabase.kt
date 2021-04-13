@@ -28,6 +28,7 @@ import com.maltaisn.notes.model.converter.NoteTypeConverter
 import com.maltaisn.notes.model.converter.PinnedStatusConverter
 import com.maltaisn.notes.model.converter.RecurrenceConverter
 import com.maltaisn.notes.model.entity.Label
+import com.maltaisn.notes.model.entity.LabelRef
 import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.model.entity.NoteFts
 
@@ -36,6 +37,7 @@ import com.maltaisn.notes.model.entity.NoteFts
         Note::class,
         NoteFts::class,
         Label::class,
+        LabelRef::class,
     ],
     version = 3)
 @TypeConverters(
@@ -89,8 +91,11 @@ abstract class NotesDatabase : RoomDatabase() {
                     execSQL("ALTER TABLE notes ADD COLUMN reminder_count INTEGER")
                     execSQL("ALTER TABLE notes ADD COLUMN reminder_done INTEGER")
 
-                    // add labels table
+                    // Add label tables
                     execSQL("CREATE TABLE labels (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, name TEXT NOT NULL)")
+                    execSQL("""CREATE TABLE label_refs (noteId INTEGER NOT NULL, labelId INTEGER NOT NULL, PRIMARY KEY(noteId, labelId),
+                               FOREIGN KEY(noteId) REFERENCES notes(id) ON UPDATE NO ACTION ON DELETE CASCADE,
+                               FOREIGN KEY(labelId) REFERENCES labels(id) ON UPDATE NO ACTION ON DELETE CASCADE)""")
                 }
             }
         }

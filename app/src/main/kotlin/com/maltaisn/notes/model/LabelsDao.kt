@@ -23,6 +23,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import com.maltaisn.notes.model.entity.Label
+import com.maltaisn.notes.model.entity.LabelRef
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -62,5 +63,11 @@ interface LabelsDao {
      */
     @Query("SELECT * FROM labels WHERE name == :name")
     suspend fun getLabelByName(name: String): Label?
+
+    @Insert
+    suspend fun insertRefs(refs: List<LabelRef>)
+
+    @Delete
+    suspend fun removeRefs(refs: List<LabelRef>)
 
 }

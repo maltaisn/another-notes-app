@@ -61,15 +61,13 @@ data class Label(
             entity = Note::class,
             parentColumns = ["id"],
             childColumns = ["noteId"],
-            onDelete = ForeignKey.NO_ACTION,
-            onUpdate = ForeignKey.NO_ACTION,
+            onDelete = ForeignKey.CASCADE,
         ),
         ForeignKey(
             entity = Label::class,
             parentColumns = ["id"],
             childColumns = ["labelId"],
             onDelete = ForeignKey.CASCADE,
-            onUpdate = ForeignKey.CASCADE,
         ),
     ]
 )

@@ -17,6 +17,7 @@
 package com.maltaisn.notes.model
 
 import com.maltaisn.notes.model.entity.Label
+import com.maltaisn.notes.model.entity.LabelRef
 import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.model.entity.NoteStatus
 import kotlinx.coroutines.flow.Flow
@@ -35,6 +36,9 @@ interface NotesRepository {
     suspend fun deleteLabel(label: Label)
     suspend fun getLabelById(id: Long): Label?
     suspend fun getLabelByName(name: String): Label?
+
+    suspend fun insertLabelRefs(refs: List<LabelRef>)
+    suspend fun deleteLabelRefs(refs: List<LabelRef>)
 
     fun getNotesWithReminder(): Flow<List<Note>>
     fun getNotesByStatus(status: NoteStatus): Flow<List<Note>>

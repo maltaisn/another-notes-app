@@ -17,6 +17,7 @@
 package com.maltaisn.notes.model
 
 import com.maltaisn.notes.model.entity.Label
+import com.maltaisn.notes.model.entity.LabelRef
 import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.model.entity.NoteStatus
 import kotlinx.coroutines.NonCancellable
@@ -77,6 +78,9 @@ class DefaultNotesRepository @Inject constructor(
 
     override suspend fun getLabelByName(name: String) = labelsDao.getLabelByName(name)
 
+    override suspend fun insertLabelRefs(refs: List<LabelRef>) = labelsDao.insertRefs(refs)
+
+    override suspend fun deleteLabelRefs(refs: List<LabelRef>) = labelsDao.removeRefs(refs)
 
     override fun getNotesByStatus(status: NoteStatus) = notesDao.getByStatus(status)
 
