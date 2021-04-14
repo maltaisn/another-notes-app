@@ -19,27 +19,27 @@ package com.maltaisn.notes.model.entity
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
-import androidx.room.Index
 import androidx.room.PrimaryKey
-import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 
 @Serializable
-@Entity(
-    tableName = "labels",
-    indices = [Index(value = ["name"])],
-)
+@Entity(tableName = "labels")
 data class Label(
+    /**
+     * Label ID in the database.
+     * ID is transient during serialization since labels are mapped by ID in JSON,
+     * so repeating this field would be superfluous.
+     */
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "id")
-    @SerialName("id")
-    val id: Long,
+    @Transient
+    val id: Long = NO_ID,
 
     /**
      * Label name, cannot be blank.
      */
-    @ColumnInfo(name = "name")
-    @SerialName("name")
+    @ColumnInfo(name = "name", index = true)
     val name: String,
 ) {
 
@@ -76,6 +76,9 @@ data class Label(
     ]
 )
 data class LabelRef(
+    @ColumnInfo(name = "noteId")
     val noteId: Long,
+
+    @ColumnInfo(name = "labelId")
     val labelId: Long,
 )

@@ -36,7 +36,6 @@ interface NotesRepository {
     suspend fun emptyTrash()
     suspend fun deleteOldNotesInTrash()
 
-    suspend fun getJsonData(): String
     suspend fun clearAllData()
 
 }

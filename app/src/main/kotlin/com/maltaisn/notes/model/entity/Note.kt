@@ -32,6 +32,7 @@ import com.maltaisn.notes.model.converter.NoteTypeConverter
 import com.maltaisn.notes.model.converter.PinnedStatusConverter
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 import kotlinx.serialization.UseSerializers
 import java.util.Date
 
@@ -40,10 +41,13 @@ import java.util.Date
 data class Note(
     /**
      * Note ID in the database.
+     * ID is transient during serialization since notes are mapped by ID in JSON,
+     * so repeating this field would be superfluous.
      */
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "id")
-    val id: Long,
+    @Transient
+    val id: Long = NO_ID,
 
     /**
      * Note type, determines the type of metadata.
@@ -271,9 +275,13 @@ data class NoteWithLabels(
     val note: Note,
 
     @Relation(
-        parentColumn = "noteId",
-        entityColumn = "labelId",
-        associateBy = Junction(LabelRef::class))
+        parentColumn = "id",
+        entityColumn = "id",
+        associateBy = Junction(
+            LabelRef::class,
+            parentColumn = "noteId",
+            entityColumn = "labelId",
+        ))
     val labels: List<Label>
 )
 

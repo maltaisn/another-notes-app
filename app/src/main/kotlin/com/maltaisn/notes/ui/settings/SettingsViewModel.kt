@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Nicolas Maltais
+ * Copyright 2021 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.maltaisn.notes.model.JsonExporter
+import com.maltaisn.notes.model.LabelsRepository
 import com.maltaisn.notes.model.NotesRepository
 import com.maltaisn.notes.sync.R
 import com.maltaisn.notes.ui.Event
@@ -28,7 +30,9 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class SettingsViewModel @Inject constructor(
-    private val notesRepository: NotesRepository
+    private val notesRepository: NotesRepository,
+    private val labelsRepository: LabelsRepository,
+    private val jsonExporter: JsonExporter,
 ) : ViewModel() {
 
     private val _messageEvent = MutableLiveData<Event<Int>>()
@@ -41,13 +45,14 @@ class SettingsViewModel @Inject constructor(
 
     fun exportData() {
         viewModelScope.launch {
-            _exportDataEvent.send(notesRepository.getJsonData())
+            _exportDataEvent.send(jsonExporter.exportJsonData())
         }
     }
 
     fun clearData() {
         viewModelScope.launch {
             notesRepository.clearAllData()
+            labelsRepository.clearAllData()
             _messageEvent.send(R.string.pref_data_clear_success_message)
         }
     }

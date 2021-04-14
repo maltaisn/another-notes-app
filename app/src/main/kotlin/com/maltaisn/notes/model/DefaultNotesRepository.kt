@@ -21,15 +21,11 @@ import com.maltaisn.notes.model.entity.NoteStatus
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.buildJsonObject
 import java.util.Date
 import javax.inject.Inject
 
 class DefaultNotesRepository @Inject constructor(
     private val notesDao: NotesDao,
-    private val json: Json
 ) : NotesRepository {
 
     // Data modification methods are wrapped in non-cancellable context
@@ -73,16 +69,6 @@ class DefaultNotesRepository @Inject constructor(
         val delay = PrefsManager.TRASH_AUTO_DELETE_DELAY.toLongMilliseconds()
         val minDate = Date(System.currentTimeMillis() - delay)
         deleteNotes(notesDao.getByStatusAndDate(NoteStatus.DELETED, minDate))
-    }
-
-    override suspend fun getJsonData(): String {
-        val notes = notesDao.getAll()
-        val notesJson = buildJsonObject {
-            for (note in notes) {
-                put(note.id.toString(), json.encodeToJsonElement(Note.serializer(), note))
-            }
-        }
-        return json.encodeToString(JsonObject.serializer(), notesJson)
     }
 
     override suspend fun clearAllData() {

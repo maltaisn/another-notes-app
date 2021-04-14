@@ -23,8 +23,6 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.buildJsonObject
 
 /**
  * Implementation of the notes repository that stores data itself instead of relying on DAOs.
@@ -164,15 +162,6 @@ class MockNotesRepository : NotesRepository {
                     PrefsManager.TRASH_AUTO_DELETE_DELAY.toLongMilliseconds()
         }
         changeFlow.emit(Unit)
-    }
-
-    override suspend fun getJsonData(): String {
-        val notesJson = buildJsonObject {
-            for ((id, note) in notes) {
-                put(id.toString(), json.encodeToJsonElement(Note.serializer(), note))
-            }
-        }
-        return json.encodeToString(JsonObject.serializer(), notesJson)
     }
 
     override suspend fun clearAllData() {

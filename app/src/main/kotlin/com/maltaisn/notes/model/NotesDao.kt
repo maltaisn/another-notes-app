@@ -21,9 +21,11 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Transaction
 import androidx.room.Update
 import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.model.entity.NoteStatus
+import com.maltaisn.notes.model.entity.NoteWithLabels
 import kotlinx.coroutines.flow.Flow
 import java.util.Date
 
@@ -55,11 +57,12 @@ interface NotesDao {
     suspend fun clear()
 
     /**
-     * Get all notes in database.
+     * Get all notes in database, with their labels.
      * Used for exporting data.
      */
+    @Transaction
     @Query("SELECT * FROM notes")
-    suspend fun getAll(): List<Note>
+    suspend fun getAll(): List<NoteWithLabels>
 
     /**
      * Get a note by its ID. Returns `null` if note doesn't exist.
