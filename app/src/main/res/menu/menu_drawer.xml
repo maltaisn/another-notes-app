@@ -38,6 +38,23 @@
 
     </group>
 
+    <item
+        android:title="@string/note_location_labels">
+        <menu>
+            <group
+                android:id="@+id/group_labels"
+                >
+
+                <item
+                    android:id="@+id/item_add_label"
+                    android:title="@string/label_create"
+                    android:icon="@drawable/ic_plus"
+                    />
+
+            </group>
+        </menu>
+    </item>
+
     <group
         android:id="@+id/group_other_notes">
 

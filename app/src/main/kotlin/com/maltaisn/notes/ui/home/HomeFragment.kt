@@ -188,6 +188,8 @@ class HomeFragment : NoteFragment(), Toolbar.OnMenuItemClickListener,
             R.id.item_location_archived -> viewModel.setDestination(HomeDestination.ARCHIVED)
             R.id.item_location_deleted -> viewModel.setDestination(HomeDestination.DELETED)
             R.id.item_reminder_list -> viewModel.setDestination(HomeDestination.REMINDERS)
+            R.id.item_add_label -> findNavController().navigateSafe(
+                HomeFragmentDirections.actionHomeToLabelAdd())
             R.id.item_settings -> findNavController().navigateSafe(
                 HomeFragmentDirections.actionHomeToSettings())
             else -> return false

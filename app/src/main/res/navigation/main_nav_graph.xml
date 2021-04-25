@@ -37,6 +37,10 @@
             android:id="@+id/action_home_to_settings"
             app:destination="@id/fragment_settings"
             />
+        <action
+            android:id="@+id/action_home_to_label_add"
+            app:destination="@id/dialog_label_add"
+            />
     </fragment>
 
     <fragment
@@ -137,6 +141,11 @@
         </dialog>
 
     </navigation>
+
+    <dialog
+        android:id="@+id/dialog_label_add"
+        android:name="com.maltaisn.notes.ui.labels.LabelAddDialog"
+        />
 
     <action
         android:id="@+id/action_reminder"

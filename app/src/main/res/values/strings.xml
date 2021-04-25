@@ -64,6 +64,7 @@
     <string name="note_location_active">Notes</string>
     <string name="note_location_archived">Archived</string>
     <string name="note_location_deleted">Deleted</string>
+    <string name="note_location_labels">Labels</string>
 
     <string name="note_pinned">Pinned</string>
     <string name="note_not_pinned">Others</string>
@@ -129,6 +130,10 @@
     <string name="reminder_empty_placeholder">No reminders set</string>
     <string name="reminder_restricted_battery">Reminder alarms may not work correctly because the
     app has restricted battery usage. This can be changed in the app settings.</string>
+
+    <!-- Labels -->
+    <string name="label_create">Create new label</string>
+    <string name="label_already_exists">A label with this name already exists.</string>
 
     <!-- Settings -->
     <string name="pref_group_appearance">Appearance</string>
