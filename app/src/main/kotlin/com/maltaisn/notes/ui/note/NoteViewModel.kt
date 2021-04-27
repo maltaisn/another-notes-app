@@ -236,6 +236,7 @@ abstract class NoteViewModel(
     private fun setAllSelected(selected: Boolean) {
         if (!selected && selectedNotes.isEmpty()) {
             // Already all unselected.
+            // (No fast path for all selected since there are multiple view types.)
             return
         }
 

@@ -22,6 +22,7 @@ import com.maltaisn.notes.receiver.AlarmReceiver
 import com.maltaisn.notes.ui.edit.EditFragment
 import com.maltaisn.notes.ui.home.HomeFragment
 import com.maltaisn.notes.ui.labels.LabelAddDialog
+import com.maltaisn.notes.ui.labels.LabelFragment
 import com.maltaisn.notes.ui.main.MainActivity
 import com.maltaisn.notes.ui.notification.NotificationActivity
 import com.maltaisn.notes.ui.notification.ReminderPostponeDateDialog
@@ -47,6 +48,7 @@ interface AppComponent {
     fun inject(fragment: HomeFragment)
     fun inject(fragment: SearchFragment)
     fun inject(fragment: EditFragment)
+    fun inject(fragment: LabelFragment)
     fun inject(fragment: SettingsFragment)
     fun inject(dialog: ReminderDialog)
     fun inject(dialog: ReminderDateDialog)

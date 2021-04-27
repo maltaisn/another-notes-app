@@ -133,7 +133,9 @@
 
     <!-- Labels -->
     <string name="label_create">Create new label</string>
+    <string name="label_manage">Manage labels</string>
     <string name="label_already_exists">A label with this name already exists.</string>
+    <string name="label_placeholder">No labels created</string>
 
     <!-- Settings -->
     <string name="pref_group_appearance">Appearance</string>

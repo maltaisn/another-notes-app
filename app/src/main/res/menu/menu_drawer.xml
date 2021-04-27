@@ -46,6 +46,12 @@
                 >
 
                 <item
+                    android:id="@+id/item_manage_label"
+                    android:title="@string/label_manage"
+                    android:icon="@drawable/ic_label_multiple_outline"
+                    />
+
+                <item
                     android:id="@+id/item_add_label"
                     android:title="@string/label_create"
                     android:icon="@drawable/ic_plus"

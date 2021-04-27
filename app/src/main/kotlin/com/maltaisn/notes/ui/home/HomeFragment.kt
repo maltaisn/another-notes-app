@@ -183,14 +183,17 @@ class HomeFragment : NoteFragment(), Toolbar.OnMenuItemClickListener,
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         super.onNavigationItemSelected(item)
 
+        val navController = findNavController()
         when (item.itemId) {
             R.id.item_location_active -> viewModel.setDestination(HomeDestination.ACTIVE)
             R.id.item_location_archived -> viewModel.setDestination(HomeDestination.ARCHIVED)
             R.id.item_location_deleted -> viewModel.setDestination(HomeDestination.DELETED)
             R.id.item_reminder_list -> viewModel.setDestination(HomeDestination.REMINDERS)
-            R.id.item_add_label -> findNavController().navigateSafe(
+            R.id.item_add_label -> navController.navigateSafe(
                 HomeFragmentDirections.actionHomeToLabelAdd())
-            R.id.item_settings -> findNavController().navigateSafe(
+            R.id.item_manage_label -> navController.navigateSafe(
+                HomeFragmentDirections.actionHomeToLabel())
+            R.id.item_settings -> navController.navigateSafe(
                 HomeFragmentDirections.actionHomeToSettings())
             else -> return false
         }
