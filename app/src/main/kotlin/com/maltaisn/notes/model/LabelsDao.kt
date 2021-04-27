@@ -71,7 +71,7 @@ interface LabelsDao {
     suspend fun insertRefs(refs: List<LabelRef>)
 
     @Delete
-    suspend fun removeRefs(refs: List<LabelRef>)
+    suspend fun deleteRefs(refs: List<LabelRef>)
 
     /**
      * Get all label references for a note by ID.

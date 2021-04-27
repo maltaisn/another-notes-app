@@ -21,6 +21,8 @@ import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.maltaisn.notes.model.entity.Label
+import com.maltaisn.notes.model.entity.LabelRef
+import com.maltaisn.notes.testNote
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.junit.After
@@ -35,12 +37,14 @@ class LabelsDaoTest {
 
     private lateinit var database: NotesDatabase
     private lateinit var labelsDao: LabelsDao
+    private lateinit var notesDao: NotesDao
 
     @Before
     fun createDatabase() {
         val context = ApplicationProvider.getApplicationContext<Context>()
         database = Room.inMemoryDatabaseBuilder(context, NotesDatabase::class.java).build()
         labelsDao = database.labelsDao()
+        notesDao = database.notesDao()
     }
 
     @After
@@ -83,6 +87,48 @@ class LabelsDaoTest {
         labelsDao.insert(Label(3, "label3"))
         labelsDao.clear()
         assertEquals(emptyList(), labelsDao.getAll().first())
+    }
+
+    @Test
+    fun changeLabelRefsTest() = runBlocking {
+        notesDao.insertAll(listOf(
+            testNote(id = 1),
+            testNote(id = 2),
+            testNote(id = 3),
+        ))
+        for (i in 1L..5L) {
+            labelsDao.insert(Label(i, "label$i"))
+        }
+        labelsDao.insertRefs(listOf(
+            LabelRef(1, 1),
+            LabelRef(1, 5),
+            LabelRef(2, 1),
+            LabelRef(2, 3),
+            LabelRef(2, 4),
+            LabelRef(3, 1),
+            LabelRef(3, 4),
+            LabelRef(3, 5),
+        ))
+        assertEquals(3, labelsDao.countRefs(1))
+        assertEquals(2, labelsDao.countRefs(5))
+        assertEquals(1, labelsDao.countRefs(3))
+        assertEquals(0, labelsDao.countRefs(2))
+        assertEquals(setOf(1L, 5L), labelsDao.getLabelRefsForNote(1).toSet())
+        assertEquals(setOf(1L, 3L, 4L), labelsDao.getLabelRefsForNote(2).toSet())
+        assertEquals(setOf(1L, 4L, 5L), labelsDao.getLabelRefsForNote(3).toSet())
+
+        labelsDao.deleteRefs(listOf(
+            LabelRef(1, 5),
+            LabelRef(2, 3),
+            LabelRef(2, 4),
+            LabelRef(3, 4),
+            LabelRef(3, 5),
+        ))
+        assertEquals(3, labelsDao.countRefs(1))
+        assertEquals(0, labelsDao.countRefs(5))
+        assertEquals(setOf(1L), labelsDao.getLabelRefsForNote(1).toSet())
+        assertEquals(setOf(1L), labelsDao.getLabelRefsForNote(2).toSet())
+        assertEquals(setOf(1L), labelsDao.getLabelRefsForNote(3).toSet())
     }
 
 }
