@@ -38,8 +38,8 @@
             app:destination="@id/fragment_settings"
             />
         <action
-            android:id="@+id/action_home_to_label_add"
-            app:destination="@id/dialog_label_add"
+            android:id="@+id/action_home_to_label_edit"
+            app:destination="@id/dialog_label_edit"
             />
         <action
             android:id="@+id/action_home_to_label"
@@ -151,15 +151,21 @@
         android:name="com.maltaisn.notes.ui.labels.LabelFragment"
         >
         <action
-            android:id="@+id/action_label_to_label_add"
-            app:destination="@id/dialog_label_add"
+            android:id="@+id/action_label_to_label_edit"
+            app:destination="@id/dialog_label_edit"
             />
     </fragment>
 
     <dialog
-        android:id="@+id/dialog_label_add"
-        android:name="com.maltaisn.notes.ui.labels.LabelAddDialog"
-        />
+        android:id="@+id/dialog_label_edit"
+        android:name="com.maltaisn.notes.ui.labels.LabelEditDialog"
+        >
+        <argument
+            android:name="labelId"
+            android:defaultValue="0L"
+            app:argType="long"
+            />
+    </dialog>
 
     <action
         android:id="@+id/action_reminder"

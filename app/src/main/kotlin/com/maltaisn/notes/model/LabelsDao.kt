@@ -38,6 +38,9 @@ interface LabelsDao {
     @Delete
     suspend fun delete(label: Label)
 
+    @Delete
+    suspend fun deleteAll(labels: List<Label>)
+
     /**
      * Used for clearing all data.
      */
@@ -69,5 +72,12 @@ interface LabelsDao {
 
     @Delete
     suspend fun removeRefs(refs: List<LabelRef>)
+
+    /**
+     * Returns the number of references to a label ID.
+     * Used when deleting a label to show confirmation or not.
+     */
+    @Query("SELECT COUNT(*) FROM label_refs WHERE labelId = :id")
+    suspend fun countRefs(id: Long): Long
 
 }

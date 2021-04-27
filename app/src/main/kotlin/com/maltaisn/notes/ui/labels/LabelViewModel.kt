@@ -24,8 +24,10 @@ import androidx.lifecycle.viewModelScope
 import com.maltaisn.notes.model.LabelsRepository
 import com.maltaisn.notes.model.entity.Label
 import com.maltaisn.notes.ui.AssistedSavedStateViewModelFactory
+import com.maltaisn.notes.ui.Event
 import com.maltaisn.notes.ui.labels.adapter.LabelAdapter
 import com.maltaisn.notes.ui.labels.adapter.LabelListItem
+import com.maltaisn.notes.ui.send
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
 import kotlinx.coroutines.flow.collect
@@ -48,6 +50,14 @@ class LabelViewModel @AssistedInject constructor(
     val placeholderShown: LiveData<Boolean>
         get() = _placeholderShown
 
+    private val _showDeleteConfirmEvent = MutableLiveData<Event<Unit>>()
+    val showDeleteConfirmEvent: LiveData<Event<Unit>>
+        get() = _showDeleteConfirmEvent
+
+    private val _showRenameDialogEvent = MutableLiveData<Event<Long>>()
+    val showRenameDialogEvent: LiveData<Event<Long>>
+        get() = _showRenameDialogEvent
+
     private var listItems = mutableListOf<LabelListItem>()
         set(value) {
             field = value
@@ -56,9 +66,11 @@ class LabelViewModel @AssistedInject constructor(
             // Update selected notes.
             val selectedBefore = selectedLabels.size
             selectedLabels.clear()
+            selectedLabelIds.clear()
             for (item in value) {
                 if (item.checked) {
                     selectedLabels += item.label
+                    selectedLabelIds += item.label.id
                 }
             }
 
@@ -71,18 +83,30 @@ class LabelViewModel @AssistedInject constructor(
             }
         }
 
+    private val selectedLabelIds = mutableSetOf<Long>()
     private val selectedLabels = mutableSetOf<Label>()
+
+    private var renamingLabel = false
 
     init {
         viewModelScope.launch {
             // Restore label selection
-            val selectedIds = savedStateHandle.get<List<Long>>(KEY_SELECTED_IDS).orEmpty()
-            selectedLabels += selectedIds.mapNotNull { labelsRepository.getLabelById(it) }
+            selectedLabelIds += savedStateHandle.get<List<Long>>(KEY_SELECTED_IDS).orEmpty()
+            selectedLabels += selectedLabelIds.mapNotNull { labelsRepository.getLabelById(it) }
+
+            renamingLabel = savedStateHandle.get(KEY_RENAMING_LABEL) ?: false
 
             // Initialize label list
             labelsRepository.getAllLabels().collect { labels ->
+                if (renamingLabel) {
+                    // List was updated after renaming label, this can only be due to label rename.
+                    // Deselect label since it was probably selected only for renaming.
+                    renamingLabel = false
+                    selectedLabelIds.clear()
+                    selectedLabels.clear()
+                }
                 listItems = labels.mapTo(mutableListOf()) { label ->
-                    LabelListItem(label.id, label, label in selectedLabels)
+                    LabelListItem(label.id, label, label.id in selectedLabelIds)
                 }
             }
         }
@@ -94,6 +118,42 @@ class LabelViewModel @AssistedInject constructor(
 
     fun selectAll() {
         setAllSelected(true)
+    }
+
+    fun renameSelection() {
+        if (selectedLabels.size != 1) {
+            // Renaming multiple or no labels, abort.
+            return
+        }
+        renamingLabel = true
+        _showRenameDialogEvent.send(selectedLabelIds.first())
+    }
+
+    fun deleteSelectionPre() {
+        viewModelScope.launch {
+            var used = false
+            for (label in selectedLabels) {
+                if (labelsRepository.countLabelRefs(label.id) > 0) {
+                    used = true
+                    break;
+                }
+            }
+
+            if (used) {
+                _showDeleteConfirmEvent.send()
+            } else {
+                // None of the labels are used, delete without confirmation.
+                deleteSelection()
+            }
+        }
+    }
+
+    fun deleteSelection() {
+        // Delete labels (called after confirmation)
+        viewModelScope.launch {
+            labelsRepository.deleteLabels(selectedLabels.toList())
+            clearSelection()
+        }
     }
 
     /** Set the selected state of all notes to [selected]. */
@@ -116,7 +176,7 @@ class LabelViewModel @AssistedInject constructor(
 
     override fun onLabelItemClicked(item: LabelListItem, pos: Int) {
         if (selectedLabels.isEmpty()) {
-            // TODO edit label name
+            _showRenameDialogEvent.send(item.label.id)
         } else {
             toggleItemChecked(item, pos)
         }
@@ -141,7 +201,7 @@ class LabelViewModel @AssistedInject constructor(
 
     /** Save [selectedLabels] to [savedStateHandle]. */
     private fun saveLabelSelectionState() {
-        savedStateHandle.set(KEY_SELECTED_IDS, selectedLabels.mapTo(ArrayList()) { it.id })
+        savedStateHandle.set(KEY_SELECTED_IDS, selectedLabelIds.toList())
     }
 
     @AssistedInject.Factory
@@ -151,6 +211,7 @@ class LabelViewModel @AssistedInject constructor(
 
     companion object {
         private const val KEY_SELECTED_IDS = "selected_ids"
+        private const val KEY_RENAMING_LABEL = "renaming_label"
     }
 
 }

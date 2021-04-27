@@ -63,9 +63,11 @@ abstract class NoteViewModel(
             // Update selected notes.
             val selectedBefore = selectedNotes.size
             _selectedNotes.clear()
+            selectedNoteIds.clear()
             for (item in value) {
                 if (item is NoteItem && item.checked) {
                     _selectedNotes += item.note
+                    selectedNoteIds += item.note.id
                 }
             }
 
@@ -76,6 +78,7 @@ abstract class NoteViewModel(
         }
 
     private val _selectedNotes = mutableSetOf<Note>()
+    private val selectedNoteIds = mutableSetOf<Long>()
     protected val selectedNotes: Set<Note> get() = _selectedNotes
 
     /**
@@ -132,8 +135,9 @@ abstract class NoteViewModel(
      */
     protected open suspend fun restoreState() {
         // Restore saved selected notes
-        val selectedIds = savedStateHandle.get<List<Long>>(KEY_SELECTED_IDS) ?: return
-        _selectedNotes += selectedIds.mapNotNull { notesRepository.getNoteById(it) }
+        selectedNoteIds += savedStateHandle.get<List<Long>>(KEY_SELECTED_IDS)
+            .orEmpty().toMutableSet()
+        _selectedNotes += selectedNoteIds.mapNotNull { notesRepository.getNoteById(it) }
         updateNoteSelection()
     }
 
@@ -250,8 +254,7 @@ abstract class NoteViewModel(
     }
 
     protected fun isNoteSelected(note: Note): Boolean {
-        // Compare IDs because Note object can change and not be equal.
-        return selectedNotes.any { it.id == note.id }
+        return note.id in selectedNoteIds
     }
 
     /** Update current selection live data to reflect current selection. */
@@ -274,7 +277,7 @@ abstract class NoteViewModel(
 
     /** Save [selectedNotes] to [savedStateHandle]. */
     private fun saveNoteSelectionState() {
-        savedStateHandle.set(KEY_SELECTED_IDS, selectedNotes.mapTo(ArrayList()) { it.id })
+        savedStateHandle.set(KEY_SELECTED_IDS, selectedNoteIds.toList())
     }
 
     /** Change the status of [notes] to [newStatus]. */

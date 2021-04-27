@@ -17,7 +17,10 @@
 package com.maltaisn.notes.ui.labels
 
 import android.os.Bundle
+import android.view.ActionMode
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
@@ -29,11 +32,14 @@ import com.maltaisn.notes.App
 import com.maltaisn.notes.navigateSafe
 import com.maltaisn.notes.sync.R
 import com.maltaisn.notes.sync.databinding.FragmentLabelBinding
+import com.maltaisn.notes.ui.common.ConfirmDialog
 import com.maltaisn.notes.ui.labels.adapter.LabelAdapter
+import com.maltaisn.notes.ui.observeEvent
 import com.maltaisn.notes.ui.viewModel
+import java.text.NumberFormat
 import javax.inject.Inject
 
-class LabelFragment : DialogFragment() {
+class LabelFragment : DialogFragment(), ActionMode.Callback, ConfirmDialog.Callback {
 
     @Inject
     lateinit var viewModelFactory: LabelViewModel.Factory
@@ -42,12 +48,18 @@ class LabelFragment : DialogFragment() {
     private var _binding: FragmentLabelBinding? = null
     private val binding get() = _binding!!
 
+    private var actionMode: ActionMode? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         (requireContext().applicationContext as App).appComponent.inject(this);
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, state: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        state: Bundle?
+    ): View {
         _binding = FragmentLabelBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -64,7 +76,7 @@ class LabelFragment : DialogFragment() {
         }
 
         binding.fab.setOnClickListener {
-            findNavController().navigateSafe(LabelFragmentDirections.actionLabelToLabelAdd())
+            findNavController().navigateSafe(LabelFragmentDirections.actionLabelToLabelEdit())
         }
 
         val rcv = binding.recyclerView
@@ -77,6 +89,11 @@ class LabelFragment : DialogFragment() {
         setupViewModelObservers(adapter)
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
     private fun setupViewModelObservers(adapter: LabelAdapter) {
         viewModel.labelItems.observe(this) { items ->
             adapter.submitList(items)
@@ -87,14 +104,77 @@ class LabelFragment : DialogFragment() {
         }
 
         viewModel.labelSelection.observe(this) { count ->
-            // TODO manage action mode
+            updateActionModeForSelection(count)
+            updateItemsForSelection(count)
+        }
+
+        viewModel.showRenameDialogEvent.observeEvent(this) { labelId ->
+            findNavController().navigateSafe(LabelFragmentDirections.actionLabelToLabelEdit(labelId))
+        }
+
+        viewModel.showDeleteConfirmEvent.observeEvent(this) {
+            showDeleteConfirmDialog()
         }
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
+    private fun updateActionModeForSelection(count: Int) {
+        if (count != 0 && actionMode == null) {
+            actionMode = binding.toolbar.startActionMode(this)
+        } else if (count == 0 && actionMode != null) {
+            actionMode?.finish()
+            actionMode = null
+        }
     }
 
+    private fun updateItemsForSelection(count: Int) {
+        actionMode?.let {
+            it.title = NUMBER_FORMAT.format(count)
+
+            val menu = it.menu
+            menu.findItem(R.id.item_rename).isVisible = count == 1
+        }
+    }
+
+    private fun showDeleteConfirmDialog() {
+        ConfirmDialog.newInstance(
+            title = R.string.action_delete_selection,
+            message = R.string.label_delete_message,
+            btnPositive = R.string.action_delete
+        ).show(childFragmentManager, DELETE_CONFIRM_DIALOG_TAG)
+    }
+
+    override fun onActionItemClicked(mode: ActionMode, item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.item_rename -> viewModel.renameSelection()
+            R.id.item_delete -> viewModel.deleteSelectionPre()
+            R.id.item_select_all -> viewModel.selectAll()
+            else -> return false
+        }
+        return true
+    }
+
+    override fun onCreateActionMode(mode: ActionMode, menu: Menu): Boolean {
+        mode.menuInflater.inflate(R.menu.cab_label_selection, menu)
+        return true
+    }
+
+    override fun onPrepareActionMode(mode: ActionMode, menu: Menu) = false
+
+    override fun onDestroyActionMode(mode: ActionMode) {
+        actionMode = null
+        viewModel.clearSelection()
+    }
+
+    override fun onDialogConfirmed(tag: String?) {
+        if (tag == DELETE_CONFIRM_DIALOG_TAG) {
+            viewModel.deleteSelection()
+        }
+    }
+
+    companion object {
+        private val NUMBER_FORMAT = NumberFormat.getInstance()
+
+        private const val DELETE_CONFIRM_DIALOG_TAG = "delete_confirm_dialog"
+    }
 
 }

@@ -321,6 +321,14 @@ class NoteViewModelTest {
             viewModel.currentSelection.getOrAwaitValue())
     }
 
+    @Test
+    fun `should keep selection after changing note`() = mainCoroutineRule.runBlockingTest {
+        viewModel.onNoteItemLongClicked(viewModel.getNoteItemAt(0), 0)
+        assertEquals(1, viewModel.currentSelection.getOrAwaitValue().count)
+        notesRepo.updateNote(notesRepo.requireNoteById(1).copy(title = "changed note"))
+        assertEquals(1, viewModel.currentSelection.getOrAwaitValue().count)
+    }
+
     private class TestNoteViewModel(
         notesRepo: MockNotesRepository,
         prefs: PrefsManager,
@@ -340,7 +348,7 @@ class NoteViewModelTest {
             viewModelScope.launch {
                 notesRepo.getAllNotes().collect { notes ->
                     listItems = notes.map { note ->
-                        NoteItem(note.id, note)
+                        NoteItem(note.id, note, isNoteSelected(note))
                     }
                 }
             }

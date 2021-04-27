@@ -42,6 +42,10 @@ class DefaultLabelsRepository @Inject constructor(
         labelsDao.delete(label)
     }
 
+    override suspend fun deleteLabels(labels: List<Label>) {
+        labelsDao.deleteAll(labels)
+    }
+
     override suspend fun getLabelById(id: Long) = labelsDao.getById(id)
 
     override suspend fun getLabelByName(name: String) = labelsDao.getLabelByName(name)
@@ -49,6 +53,8 @@ class DefaultLabelsRepository @Inject constructor(
     override suspend fun insertLabelRefs(refs: List<LabelRef>) = labelsDao.insertRefs(refs)
 
     override suspend fun deleteLabelRefs(refs: List<LabelRef>) = labelsDao.removeRefs(refs)
+
+    override suspend fun countLabelRefs(id: Long) = labelsDao.countRefs(id)
 
     override fun getAllLabels() = labelsDao.getAll()
 

@@ -293,7 +293,7 @@ abstract class NoteFragment : Fragment(), ActionMode.Callback, ConfirmDialog.Cal
     }
 
     override fun onCreateActionMode(mode: ActionMode, menu: Menu): Boolean {
-        mode.menuInflater.inflate(R.menu.cab_selection, menu)
+        mode.menuInflater.inflate(R.menu.cab_note_selection, menu)
         return true
     }
 

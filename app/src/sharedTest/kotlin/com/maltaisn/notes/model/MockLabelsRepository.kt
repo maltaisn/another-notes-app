@@ -84,6 +84,13 @@ class MockLabelsRepository : LabelsRepository {
         changeFlow.emit(Unit)
     }
 
+    override suspend fun deleteLabels(labels: List<Label>) {
+        for (label in labels) {
+            this.labels -= label.id
+        }
+        changeFlow.emit(Unit)
+    }
+
     override suspend fun getLabelById(id: Long) = labels[id]
 
     fun requireLabelById(id: Long) = labels.getOrElse(id) {
@@ -93,9 +100,7 @@ class MockLabelsRepository : LabelsRepository {
     override suspend fun getLabelByName(name: String) = labels.values.find { it.name == name }
 
     override suspend fun insertLabelRefs(refs: List<LabelRef>) {
-        for (ref in refs) {
-            labelRefs[ref.noteId] = ref.labelId
-        }
+        addLabelRefs(refs)
     }
 
     override suspend fun deleteLabelRefs(refs: List<LabelRef>) {
@@ -103,6 +108,16 @@ class MockLabelsRepository : LabelsRepository {
             labelRefs -= ref.noteId
         }
     }
+
+    // Non suspending version for initialization
+    fun addLabelRefs(refs: List<LabelRef>) {
+        for (ref in refs) {
+            labelRefs[ref.noteId] = ref.labelId
+        }
+    }
+
+    override suspend fun countLabelRefs(id: Long) =
+        labelRefs.count { (_, labelId) -> labelId == id }.toLong()
 
     override suspend fun clearAllData() {
         labels.clear()

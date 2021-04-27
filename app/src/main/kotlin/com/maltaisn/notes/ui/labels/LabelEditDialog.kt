@@ -23,19 +23,24 @@ import android.view.LayoutInflater
 import android.view.WindowManager
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.DialogFragment
+import androidx.navigation.fragment.navArgs
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.maltaisn.notes.App
+import com.maltaisn.notes.model.entity.Label
 import com.maltaisn.notes.sync.R
 import com.maltaisn.notes.sync.databinding.DialogLabelAddBinding
+import com.maltaisn.notes.ui.observeEvent
 import com.maltaisn.notes.ui.viewModel
 import javax.inject.Inject
 import javax.inject.Provider
 
-class LabelAddDialog : DialogFragment() {
+class LabelEditDialog : DialogFragment() {
 
     @Inject
-    lateinit var viewModelProvider: Provider<LabelAddViewModel>
+    lateinit var viewModelProvider: Provider<LabelEditViewModel>
     private val viewModel by viewModel { viewModelProvider.get() }
+
+    private val args: LabelEditDialogArgs by navArgs()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,21 +51,20 @@ class LabelAddDialog : DialogFragment() {
         val context = requireContext();
         val binding = DialogLabelAddBinding.inflate(LayoutInflater.from(context), null, false);
 
-        binding.nameInput.doAfterTextChanged {
-            viewModel.onNameChanged(it?.toString() ?: "")
-        }
-
         val dialog = MaterialAlertDialogBuilder(context)
             .setView(binding.root)
             .setPositiveButton(R.string.action_ok) { _, _ ->
                 viewModel.addLabel()
             }
             .setNegativeButton(R.string.action_cancel, null)
-            .setTitle(R.string.label_create)
+            .setTitle(if (args.labelId == Label.NO_ID) {
+                R.string.label_create
+            } else {
+                R.string.label_edit
+            })
             .create()
 
         dialog.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE)
-        binding.nameInput.requestFocus()
 
         dialog.setOnShowListener {
             val okBtn = dialog.getButton(DialogInterface.BUTTON_POSITIVE)
@@ -75,6 +79,18 @@ class LabelAddDialog : DialogFragment() {
                     }
             }
         }
+
+        val nameInput = binding.nameInput
+        nameInput.doAfterTextChanged {
+            viewModel.onNameChanged(it?.toString() ?: "")
+        }
+        nameInput.requestFocus()
+        viewModel.changeNameEvent.observeEvent(this)  { name ->
+            nameInput.setText(name)
+            nameInput.setSelection(name.length)  // put cursor at the end
+        }
+
+        viewModel.start(args.labelId)
 
         return dialog
     }

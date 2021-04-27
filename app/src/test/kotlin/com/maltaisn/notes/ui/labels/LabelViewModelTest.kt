@@ -21,6 +21,8 @@ import androidx.lifecycle.SavedStateHandle
 import com.maltaisn.notes.MainCoroutineRule
 import com.maltaisn.notes.model.MockLabelsRepository
 import com.maltaisn.notes.model.entity.Label
+import com.maltaisn.notes.model.entity.LabelRef
+import com.maltaisn.notes.ui.assertLiveDataEventSent
 import com.maltaisn.notes.ui.getOrAwaitValue
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Before
@@ -28,6 +30,7 @@ import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class LabelViewModelTest {
@@ -45,9 +48,15 @@ class LabelViewModelTest {
     @Before
     fun before() {
         labelsRepo = MockLabelsRepository()
-        labelsRepo.addLabel(Label(Label.NO_ID, "label0"))
-        labelsRepo.addLabel(Label(Label.NO_ID, "label1"))
-        labelsRepo.addLabel(Label(Label.NO_ID, "label2"))
+        labelsRepo.addLabel(Label(1, "label0"))
+        labelsRepo.addLabel(Label(2, "label1"))
+        labelsRepo.addLabel(Label(3, "label2"))
+
+        labelsRepo.addLabelRefs(listOf(
+            LabelRef(1, 1),
+            LabelRef(2, 1),
+            LabelRef(1, 2),
+        ))
 
         viewModel = LabelViewModel(labelsRepo, SavedStateHandle())
     }
@@ -96,6 +105,47 @@ class LabelViewModelTest {
         assertFalse(viewModel.placeholderShown.getOrAwaitValue())
         labelsRepo.clearAllData()
         assertTrue(viewModel.placeholderShown.getOrAwaitValue())
+    }
+
+    @Test
+    fun `should show rename dialog`() = mainCoroutineRule.runBlockingTest {
+        viewModel.onLabelItemClicked(getLabelItemAt(2), 2)
+        assertLiveDataEventSent(viewModel.showRenameDialogEvent, 3)
+    }
+
+    @Test
+    fun `should show rename dialog for selection`() = mainCoroutineRule.runBlockingTest {
+        viewModel.onLabelItemLongClicked(getLabelItemAt(0), 0)
+        viewModel.renameSelection()
+        assertLiveDataEventSent(viewModel.showRenameDialogEvent, 1)
+
+        // rename label (simulate confirm of rename dialog)
+        labelsRepo.updateLabel(labelsRepo.requireLabelById(1).copy(name = "changed label"))
+        // renaming should deselect label
+        assertEquals(0, viewModel.labelSelection.getOrAwaitValue())
+    }
+
+    @Test
+    fun `should delete label without showing confirmation`() = mainCoroutineRule.runBlockingTest {
+        viewModel.onLabelItemLongClicked(getLabelItemAt(2), 2)
+        viewModel.deleteSelectionPre()
+        assertNull(labelsRepo.getLabelById(3))
+    }
+
+    @Test
+    fun `should delete labels showing confirmation before`() = mainCoroutineRule.runBlockingTest {
+        viewModel.onLabelItemLongClicked(getLabelItemAt(0), 0)
+        viewModel.onLabelItemLongClicked(getLabelItemAt(1), 1)
+        viewModel.deleteSelectionPre()
+        assertLiveDataEventSent(viewModel.showDeleteConfirmEvent)
+    }
+
+    @Test
+    fun `should keep selection after editing label`() = mainCoroutineRule.runBlockingTest {
+        viewModel.onLabelItemLongClicked(getLabelItemAt(0), 0)
+        assertEquals(1, viewModel.labelSelection.getOrAwaitValue())
+        labelsRepo.updateLabel(labelsRepo.requireLabelById(1).copy(name = "changed label"))
+        assertEquals(1, viewModel.labelSelection.getOrAwaitValue())
     }
 
     private fun getLabelItemAt(pos: Int) = viewModel.labelItems.value!!.get(pos)

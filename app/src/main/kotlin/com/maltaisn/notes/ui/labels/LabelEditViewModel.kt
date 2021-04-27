@@ -22,30 +22,60 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.maltaisn.notes.model.LabelsRepository
 import com.maltaisn.notes.model.entity.Label
+import com.maltaisn.notes.ui.Event
+import com.maltaisn.notes.ui.send
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class LabelAddViewModel @Inject constructor(
+class LabelEditViewModel @Inject constructor(
     private val labelsRepository: LabelsRepository,
 ) : ViewModel() {
+
+    private val _changeNameEvent = MutableLiveData<Event<String>>()
+    val changeNameEvent: LiveData<Event<String>>
+        get() = _changeNameEvent
 
     private val _nameError = MutableLiveData(true)
     val nameError: LiveData<Boolean>
         get() = _nameError
 
+    private var label = NO_LABEL
     private var labelName = ""
+
+    fun start(labelId: Long) {
+        viewModelScope.launch {
+            val label = labelsRepository.getLabelById(labelId)
+            if (label != null) {
+                // Edit label, set name initially
+                this@LabelEditViewModel.label = label
+                _changeNameEvent.send(label.name)
+            }
+        }
+    }
 
     fun onNameChanged(name: String) {
         labelName = name
         viewModelScope.launch {
             // Label name must not be empty and must not exist.
-            _nameError.value = (name.isEmpty() || labelsRepository.getLabelByName(name) != null)
+            // Ignore name clash if label is the one being edited.
+            val existingLabel = labelsRepository.getLabelByName(name)
+            _nameError.value = (name.isEmpty() ||
+                    existingLabel != null && existingLabel.id != label.id)
         }
     }
 
     fun addLabel() {
         viewModelScope.launch {
-            labelsRepository.insertLabel(Label(Label.NO_ID, labelName))
+            if (label == NO_LABEL) {
+                labelsRepository.insertLabel(Label(Label.NO_ID, labelName))
+            } else {
+                labelsRepository.updateLabel(label.copy(name = labelName))
+            }
         }
     }
+
+    companion object {
+        private val NO_LABEL = Label(Label.NO_ID, "_")
+    }
+
 }

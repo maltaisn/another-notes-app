@@ -28,6 +28,7 @@
     <string name="action_delete">Delete</string>
     <string name="action_delete_checked">Delete checked items</string>
     <string name="action_delete_forever">Delete forever</string>
+    <string name="action_delete_selection">Delete selection</string>
     <string name="action_delete_selection_forever">Delete selection forever</string>
     <string name="action_empty_trash">Empty recycle bin</string>
     <string name="action_empty_trash_short">Empty</string>
@@ -41,6 +42,7 @@
     <string name="action_postpone">Postpone</string>
     <string name="action_reminder_add">Add reminder</string>
     <string name="action_reminder_edit">Edit reminder</string>
+    <string name="action_rename">Rename</string>
     <string name="action_restore">Restore</string>
     <string name="action_search">Search</string>
     <string name="action_select_all">Select all</string>
@@ -133,9 +135,12 @@
 
     <!-- Labels -->
     <string name="label_create">Create new label</string>
+    <string name="label_edit">Edit label name</string>
     <string name="label_manage">Manage labels</string>
     <string name="label_already_exists">A label with this name already exists.</string>
     <string name="label_placeholder">No labels created</string>
+    <string name="label_delete_message">Selected labels will be deleted, but the notes associated
+    to them will be kept.</string>
 
     <!-- Settings -->
     <string name="pref_group_appearance">Appearance</string>

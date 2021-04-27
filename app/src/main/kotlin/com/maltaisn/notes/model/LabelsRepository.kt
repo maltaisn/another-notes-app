@@ -25,11 +25,13 @@ interface LabelsRepository {
     suspend fun insertLabel(label: Label): Long
     suspend fun updateLabel(label: Label)
     suspend fun deleteLabel(label: Label)
+    suspend fun deleteLabels(labels: List<Label>)
     suspend fun getLabelById(id: Long): Label?
     suspend fun getLabelByName(name: String): Label?
 
     suspend fun insertLabelRefs(refs: List<LabelRef>)
     suspend fun deleteLabelRefs(refs: List<LabelRef>)
+    suspend fun countLabelRefs(id: Long): Long
 
     fun getAllLabels(): Flow<List<Label>>
 
