@@ -76,6 +76,8 @@ abstract class NoteFragment : Fragment(), ActionMode.Callback, ConfirmDialog.Cal
     protected lateinit var drawerLayout: DrawerLayout
     protected lateinit var navView: NavigationView
 
+    private var hideActionMode = false
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -149,8 +151,12 @@ abstract class NoteFragment : Fragment(), ActionMode.Callback, ConfirmDialog.Cal
             }
         }
 
-        viewModel.showReminderDialogEvent.observeEvent(viewLifecycleOwner) {
-            navController.navigateSafe(NavGraphMainDirections.actionReminder(it.toLongArray()))
+        viewModel.showReminderDialogEvent.observeEvent(viewLifecycleOwner) { noteIds ->
+            navController.navigateSafe(NavGraphMainDirections.actionReminder(noteIds.toLongArray()))
+        }
+
+        viewModel.showLabelsFragmentEvent.observeEvent(viewLifecycleOwner) { noteIds ->
+            navController.navigateSafe(NavGraphMainDirections.actionLabel(noteIds.toLongArray()))
         }
 
         viewModel.showDeleteConfirmEvent.observeEvent(viewLifecycleOwner) {
@@ -264,6 +270,15 @@ abstract class NoteFragment : Fragment(), ActionMode.Callback, ConfirmDialog.Cal
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+
+        // If navigating to another fragment while there is a selection (action mode shown),
+        // action mode will stay shown on top of new fragment, it has to be destroyed.
+        // `actionMode.finish` calls `onDestroyActionMode`, but we don't want to clear the
+        // selection, hence the `hideActionMode` flag.
+        // When view is recreated, selection observer will be fired and action mode reshown.
+        hideActionMode = true
+        actionMode?.finish()
+
         findNavController().removeOnDestinationChangedListener(this)
     }
 
@@ -281,6 +296,7 @@ abstract class NoteFragment : Fragment(), ActionMode.Callback, ConfirmDialog.Cal
         when (item.itemId) {
             R.id.item_pin -> viewModel.togglePin()
             R.id.item_reminder -> viewModel.createReminder()
+            R.id.item_labels -> viewModel.changeLabels()
             R.id.item_move -> viewModel.moveSelectedNotes()
             R.id.item_select_all -> viewModel.selectAll()
             R.id.item_share -> viewModel.shareSelectedNote()
@@ -301,7 +317,10 @@ abstract class NoteFragment : Fragment(), ActionMode.Callback, ConfirmDialog.Cal
 
     override fun onDestroyActionMode(mode: ActionMode) {
         actionMode = null
-        viewModel.clearSelection()
+        if (!hideActionMode) {
+            viewModel.clearSelection()
+        }
+        hideActionMode = false
     }
 
     override fun onDestinationChanged(

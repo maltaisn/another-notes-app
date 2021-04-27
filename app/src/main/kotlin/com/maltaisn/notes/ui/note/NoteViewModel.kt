@@ -119,6 +119,10 @@ abstract class NoteViewModel(
     val showReminderDialogEvent: LiveData<Event<List<Long>>>
         get() = _showReminderDialogEvent
 
+    private val _showLabelsFragmentEvent = MutableLiveData<Event<List<Long>>>()
+    val showLabelsFragmentEvent: LiveData<Event<List<Long>>>
+        get() = _showLabelsFragmentEvent
+
     private val _showDeletedForeverConfirmEvent = MutableLiveData<Event<Unit>>()
     val showDeleteConfirmEvent: LiveData<Event<Unit>>
         get() = _showDeletedForeverConfirmEvent
@@ -175,7 +179,11 @@ abstract class NoteViewModel(
     }
 
     fun createReminder() {
-        _showReminderDialogEvent.send(selectedNotes.map { it.id })
+        _showReminderDialogEvent.send(selectedNoteIds.toList())
+    }
+
+    fun changeLabels() {
+        _showLabelsFragmentEvent.send(selectedNoteIds.toList())
     }
 
     fun toggleListLayoutMode() {

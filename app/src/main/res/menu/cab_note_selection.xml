@@ -17,13 +17,14 @@
 <menu
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:ignore="AppCompatResource"
     >
 
     <item
         android:id="@+id/item_pin"
         android:icon="@null"
-        android:showAsAction="always"
+        app:showAsAction="always"
         android:title="@null"
         tools:icon="@drawable/ic_pin"
         tools:title="@string/action_pin"
@@ -32,15 +33,22 @@
     <item
         android:id="@+id/item_reminder"
         android:icon="@drawable/ic_alarm"
-        android:showAsAction="ifRoom"
+        app:showAsAction="ifRoom"
         android:title="@null"
         tools:title="@string/action_reminder_add"
         />
 
     <item
+        android:id="@+id/item_labels"
+        android:icon="@drawable/ic_label_outline"
+        android:title="@string/action_labels"
+        app:showAsAction="ifRoom"
+        />
+
+    <item
         android:id="@+id/item_move"
         android:icon="@null"
-        android:showAsAction="ifRoom"
+        app:showAsAction="ifRoom"
         android:title="@null"
         tools:icon="@drawable/ic_archive"
         tools:title="@string/action_archive"
@@ -49,25 +57,25 @@
     <item
         android:id="@+id/item_select_all"
         android:icon="@drawable/ic_select_all"
-        android:showAsAction="ifRoom"
+        app:showAsAction="ifRoom"
         android:title="@string/action_select_all"
         />
 
     <item
         android:id="@+id/item_share"
-        android:showAsAction="never"
+        app:showAsAction="never"
         android:title="@string/action_share"
         />
 
     <item
         android:id="@+id/item_copy"
-        android:showAsAction="never"
+        app:showAsAction="never"
         android:title="@string/action_copy"
         />
 
     <item
         android:id="@+id/item_delete"
-        android:showAsAction="never"
+        app:showAsAction="never"
         android:title="@null"
         tools:title="@string/action_delete"
         />

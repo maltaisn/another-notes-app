@@ -108,11 +108,30 @@ class LabelViewModel @AssistedInject constructor(
 
     init {
         viewModelScope.launch {
-            // Restore label selection
-            selectedLabelIds += savedStateHandle.get<List<Long>>(KEY_SELECTED_IDS).orEmpty()
-            selectedLabels += selectedLabelIds.mapNotNull { labelsRepository.getLabelById(it) }
+            // Restore state
+            if (KEY_SELECTED_IDS in savedStateHandle) {
+                selectedLabelIds += savedStateHandle.get<List<Long>>(KEY_SELECTED_IDS).orEmpty()
+                selectedLabels += selectedLabelIds.mapNotNull { labelsRepository.getLabelById(it) }
+                renamingLabel = savedStateHandle.get(KEY_RENAMING_LABEL) ?: false
+            }
+        }
+    }
 
-            renamingLabel = savedStateHandle.get(KEY_RENAMING_LABEL) ?: false
+    /**
+     * Initializes view model to set labels on notes by ID.
+     * If ID list is empty, view model will be set up to manage labels instead.
+     */
+    fun start(noteIds: List<Long>) {
+        viewModelScope.launch {
+            if (this@LabelViewModel.noteIds.isEmpty() && noteIds.isNotEmpty()) {
+                this@LabelViewModel.noteIds = noteIds
+                // Initially, set selected notes to the subset of labels shared by all notes.
+                selectedLabelIds.clear()
+                selectedLabelIds += labelsRepository.getLabelRefsForNote(noteIds.first())
+                for (noteId in noteIds.listIterator(1)) {
+                    selectedLabelIds.retainAll(labelsRepository.getLabelRefsForNote(noteId))
+                }
+            }
 
             // Initialize label list
             labelsRepository.getAllLabels().collect { labels ->
@@ -125,42 +144,6 @@ class LabelViewModel @AssistedInject constructor(
                 }
                 listItems = labels.mapTo(mutableListOf()) { label ->
                     LabelListItem(label.id, label, label.id in selectedLabelIds)
-                }
-            }
-        }
-    }
-
-    /**
-     * Initializes view model to set labels on notes by ID.
-     * If ID list is empty, view model will be set up to manage labels instead.
-     */
-    fun start(noteIds: List<Long>) {
-        if (this.noteIds.isNotEmpty()) {
-            // Already started
-            return
-        }
-        this.noteIds = noteIds
-
-        viewModelScope.launch {
-            if (noteIds.isNotEmpty()) {
-                // Initially, set selected notes to the subset of labels shared by all notes.
-                selectedLabels.clear()
-                selectedLabelIds.clear()
-                selectedLabelIds += labelsRepository.getLabelRefsForNote(noteIds.first())
-                for (noteId in noteIds.listIterator(1)) {
-                    selectedLabelIds.retainAll(labelsRepository.getLabelRefsForNote(noteId))
-                }
-                if (listItems.isNotEmpty()) {
-                    // Set selected items if list was initialized at this point.
-                    // Otherwise this will be done when labels flow is collected
-                    changeListItems { items ->
-                        for ((i, item) in items.withIndex()) {
-                            if (item.label.id in selectedLabelIds) {
-                                items[i] = item.copy(checked = true)
-                                selectedLabels += item.label
-                            }
-                        }
-                    }
                 }
             }
         }

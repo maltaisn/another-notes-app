@@ -183,7 +183,7 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener, ConfirmDialog.
         }
 
         viewModel.showLabelsFragmentEvent.observeEvent(viewLifecycleOwner) { noteId ->
-            navController.navigateSafe(EditFragmentDirections.actionEditToLabel(longArrayOf(noteId)))
+            navController.navigateSafe(NavGraphMainDirections.actionLabel(longArrayOf(noteId)))
         }
 
         sharedViewModel.reminderChangeEvent.observeEvent(viewLifecycleOwner) { reminder ->

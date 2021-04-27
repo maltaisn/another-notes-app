@@ -41,10 +41,6 @@
             android:id="@+id/action_home_to_label_edit"
             app:destination="@id/dialog_label_edit"
             />
-        <action
-            android:id="@+id/action_home_to_label"
-            app:destination="@id/fragment_label"
-            />
     </fragment>
 
     <fragment
@@ -62,10 +58,6 @@
             android:name="noteId"
             android:defaultValue="0L"
             app:argType="long"
-            />
-        <action
-            android:id="@+id/action_edit_to_label"
-            app:destination="@id/fragment_label"
             />
     </fragment>
 
@@ -184,5 +176,10 @@
             app:argType="long[]"
             />
     </action>
+
+    <action
+        android:id="@+id/action_label"
+        app:destination="@id/fragment_label"
+        />
 
 </navigation>
