@@ -106,6 +106,7 @@ class LabelFragment : DialogFragment(), ActionMode.Callback, ConfirmDialog.Callb
         viewModel.labelSelection.observe(this) { count ->
             updateActionModeForSelection(count)
             updateItemsForSelection(count)
+            updateFabForSelection(count)
         }
 
         viewModel.showRenameDialogEvent.observeEvent(this) { labelId ->
@@ -132,6 +133,16 @@ class LabelFragment : DialogFragment(), ActionMode.Callback, ConfirmDialog.Callb
 
             val menu = it.menu
             menu.findItem(R.id.item_rename).isVisible = count == 1
+        }
+    }
+
+    private fun updateFabForSelection(count: Int) {
+        if (count != 0) {
+            if (binding.fab.isOrWillBeShown) {
+                binding.fab.hide()
+            }
+        } else if (binding.fab.isOrWillBeHidden) {
+            binding.fab.show()
         }
     }
 

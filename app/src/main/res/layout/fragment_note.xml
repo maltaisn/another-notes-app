@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?><!--
-  Copyright 2020 Nicolas Maltais
+  Copyright 2021 Nicolas Maltais
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -106,6 +106,7 @@
         android:layout_margin="16dp"
         android:layout_gravity="bottom|end"
         android:src="@drawable/ic_plus"
+        android:contentDescription="@string/edit_add_title"
         app:layout_behavior="com.google.android.material.floatingactionbutton.FloatingActionButton$Behavior"
         />
 

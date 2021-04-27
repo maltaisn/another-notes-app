@@ -36,6 +36,7 @@ import com.maltaisn.notes.sync.NavGraphMainDirections
 import com.maltaisn.notes.sync.R
 import com.maltaisn.notes.ui.common.ConfirmDialog
 import com.maltaisn.notes.ui.note.NoteFragment
+import com.maltaisn.notes.ui.note.NoteViewModel
 import com.maltaisn.notes.ui.note.adapter.NoteListLayoutMode
 import com.maltaisn.notes.ui.observeEvent
 import com.maltaisn.notes.ui.viewModel
@@ -111,6 +112,7 @@ class HomeFragment : NoteFragment(), Toolbar.OnMenuItemClickListener,
                 // Lock drawer when user just selected a first note.
                 drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
             }
+            updateFabForSelection(selection)
         }
 
         viewModel.showEmptyTrashDialogEvent.observeEvent(viewLifecycleOwner) {
@@ -143,6 +145,16 @@ class HomeFragment : NoteFragment(), Toolbar.OnMenuItemClickListener,
             binding.fab.show()
         } else {
             binding.fab.hide()
+        }
+    }
+
+    private fun updateFabForSelection(selection: NoteViewModel.NoteSelection) {
+        if (selection.count != 0) {
+            if (binding.fab.isOrWillBeShown) {
+                binding.fab.hide()
+            }
+        } else if (binding.fab.isOrWillBeHidden) {
+            binding.fab.show()
         }
     }
 
