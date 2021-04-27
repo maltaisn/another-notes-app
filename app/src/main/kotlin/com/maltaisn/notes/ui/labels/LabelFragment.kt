@@ -23,8 +23,10 @@ import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.fragment.app.DialogFragment
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.maltaisn.notes.App
+import com.maltaisn.notes.navigateSafe
 import com.maltaisn.notes.sync.R
 import com.maltaisn.notes.sync.databinding.FragmentLabelBinding
 import com.maltaisn.notes.ui.labels.adapter.LabelAdapter
@@ -62,7 +64,7 @@ class LabelFragment : DialogFragment() {
         }
 
         binding.fab.setOnClickListener {
-            // TODO create new label
+            findNavController().navigateSafe(LabelFragmentDirections.actionLabelToLabelAdd())
         }
 
         val rcv = binding.recyclerView

@@ -149,7 +149,12 @@
     <fragment
         android:id="@+id/fragment_label"
         android:name="com.maltaisn.notes.ui.labels.LabelFragment"
-        />
+        >
+        <action
+            android:id="@+id/action_label_to_label_add"
+            app:destination="@id/dialog_label_add"
+            />
+    </fragment>
 
     <dialog
         android:id="@+id/dialog_label_add"
