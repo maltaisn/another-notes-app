@@ -74,10 +74,17 @@ interface LabelsDao {
     suspend fun removeRefs(refs: List<LabelRef>)
 
     /**
+     * Get all label references for a note by ID.
+     * Used to remove old label references when changing labels on a note.
+     */
+    @Query("SELECT labelId FROM label_refs WHERE noteId = :noteId")
+    suspend fun getLabelRefsForNote(noteId: Long): List<Long>
+
+    /**
      * Returns the number of references to a label ID.
      * Used when deleting a label to show confirmation or not.
      */
-    @Query("SELECT COUNT(*) FROM label_refs WHERE labelId = :id")
-    suspend fun countRefs(id: Long): Long
+    @Query("SELECT COUNT(*) FROM label_refs WHERE labelId = :labelId")
+    suspend fun countRefs(labelId: Long): Long
 
 }

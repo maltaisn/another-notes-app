@@ -91,7 +91,6 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener, ConfirmDialog.
         // Toolbar
         binding.toolbar.apply {
             setOnMenuItemClickListener(this@EditFragment)
-            setNavigationIcon(R.drawable.ic_arrow_left)
             setNavigationOnClickListener {
                 view.hideKeyboard()
                 viewModel.save()
@@ -181,6 +180,10 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener, ConfirmDialog.
 
         viewModel.showReminderDialogEvent.observeEvent(viewLifecycleOwner) { noteId ->
             navController.navigateSafe(NavGraphMainDirections.actionReminder(longArrayOf(noteId)))
+        }
+
+        viewModel.showLabelsFragmentEvent.observeEvent(viewLifecycleOwner) { noteId ->
+            navController.navigateSafe(EditFragmentDirections.actionEditToLabel(longArrayOf(noteId)))
         }
 
         sharedViewModel.reminderChangeEvent.observeEvent(viewLifecycleOwner) { reminder ->
@@ -284,6 +287,7 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener, ConfirmDialog.
             R.id.item_move -> viewModel.moveNoteAndExit()
             R.id.item_pin -> viewModel.togglePin()
             R.id.item_reminder -> viewModel.changeReminder()
+            R.id.item_labels -> viewModel.changeLabels()
             R.id.item_share -> viewModel.shareNote()
             R.id.item_uncheck_all -> {
                 viewModel.uncheckAllItems()

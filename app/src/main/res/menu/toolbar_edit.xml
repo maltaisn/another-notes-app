@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?><!--
-  Copyright 2020 Nicolas Maltais
+  Copyright 2021 Nicolas Maltais
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -56,10 +56,17 @@
         />
 
     <item
+        android:id="@+id/item_labels"
+        android:icon="@drawable/ic_label_outline"
+        android:title="@string/action_labels"
+        app:showAsAction="ifRoom"
+        />
+
+    <item
         android:id="@+id/item_share"
         android:icon="@drawable/ic_share"
         android:title="@string/action_share"
-        app:showAsAction="ifRoom"
+        app:showAsAction="never"
         />
 
     <item

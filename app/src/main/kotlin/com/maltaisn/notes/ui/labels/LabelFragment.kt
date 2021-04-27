@@ -23,10 +23,12 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.widget.Toolbar
 import androidx.core.view.isVisible
 import androidx.fragment.app.DialogFragment
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.maltaisn.notes.App
 import com.maltaisn.notes.navigateSafe
@@ -39,11 +41,22 @@ import com.maltaisn.notes.ui.viewModel
 import java.text.NumberFormat
 import javax.inject.Inject
 
-class LabelFragment : DialogFragment(), ActionMode.Callback, ConfirmDialog.Callback {
+/**
+ * This fragment has two purposes:
+ *
+ * - Managing labels: add, rename, delete. Supports multiple selection.
+ * - Selecting and applying labels: set or change labels on a set of notes.
+ *
+ * The mode is determined by the argument passed by the navigation component.
+ */
+class LabelFragment : DialogFragment(), Toolbar.OnMenuItemClickListener,
+    ActionMode.Callback, ConfirmDialog.Callback {
 
     @Inject
     lateinit var viewModelFactory: LabelViewModel.Factory
     val viewModel by viewModel { viewModelFactory.create(it) }
+
+    private val args: LabelFragmentArgs by navArgs()
 
     private var _binding: FragmentLabelBinding? = null
     private val binding get() = _binding!!
@@ -52,7 +65,7 @@ class LabelFragment : DialogFragment(), ActionMode.Callback, ConfirmDialog.Callb
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        (requireContext().applicationContext as App).appComponent.inject(this);
+        (requireContext().applicationContext as App).appComponent.inject(this)
     }
 
     override fun onCreateView(
@@ -68,11 +81,20 @@ class LabelFragment : DialogFragment(), ActionMode.Callback, ConfirmDialog.Callb
         super.onViewCreated(view, savedInstanceState)
         val context = requireContext()
 
+        viewModel.start(args.noteIds.toList())
+
         binding.toolbar.apply {
+            setOnMenuItemClickListener(this@LabelFragment)
             setNavigationIcon(R.drawable.ic_arrow_left)
             setNavigationOnClickListener {
                 findNavController().popBackStack()
             }
+            setTitle(if (args.noteIds.isEmpty()) {
+                R.string.label_manage
+            } else {
+                R.string.label_select
+            })
+            menu.findItem(R.id.item_confirm).isVisible = (args.noteIds.isNotEmpty())
         }
 
         binding.fab.setOnClickListener {
@@ -116,6 +138,10 @@ class LabelFragment : DialogFragment(), ActionMode.Callback, ConfirmDialog.Callb
         viewModel.showDeleteConfirmEvent.observeEvent(this) {
             showDeleteConfirmDialog()
         }
+
+        viewModel.exitEvent.observeEvent(this) {
+            findNavController().popBackStack()
+        }
     }
 
     private fun updateActionModeForSelection(count: Int) {
@@ -152,6 +178,14 @@ class LabelFragment : DialogFragment(), ActionMode.Callback, ConfirmDialog.Callb
             message = R.string.label_delete_message,
             btnPositive = R.string.action_delete
         ).show(childFragmentManager, DELETE_CONFIRM_DIALOG_TAG)
+    }
+
+    override fun onMenuItemClick(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.item_confirm -> viewModel.setNotesLabels()
+            else -> return false
+        }
+        return true
     }
 
     override fun onActionItemClicked(mode: ActionMode, item: MenuItem): Boolean {

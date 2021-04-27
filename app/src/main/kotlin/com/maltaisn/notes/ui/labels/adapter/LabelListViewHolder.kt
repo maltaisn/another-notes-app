@@ -17,6 +17,7 @@
 package com.maltaisn.notes.ui.labels.adapter
 
 import androidx.recyclerview.widget.RecyclerView
+import com.maltaisn.notes.sync.R
 import com.maltaisn.notes.sync.databinding.ItemLabelBinding
 
 class LabelViewHolder(val binding: ItemLabelBinding) : RecyclerView.ViewHolder(binding.root) {
@@ -25,7 +26,17 @@ class LabelViewHolder(val binding: ItemLabelBinding) : RecyclerView.ViewHolder(b
         binding.labelTxv.text = item.label.name
 
         val view = binding.root
-        view.isActivated = item.checked
+
+        if (adapter.callback.shouldHighlightCheckedItems) {
+            view.isActivated = item.checked
+        } else {
+            binding.labelImv.setImageResource(if (item.checked) {
+                R.drawable.ic_label
+            } else {
+                R.drawable.ic_label_outline
+            })
+        }
+
         view.setOnClickListener {
             adapter.callback.onLabelItemClicked(item, adapterPosition)
         }

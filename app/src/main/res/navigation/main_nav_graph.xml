@@ -63,6 +63,10 @@
             android:defaultValue="0L"
             app:argType="long"
             />
+        <action
+            android:id="@+id/action_edit_to_label"
+            app:destination="@id/fragment_label"
+            />
     </fragment>
 
     <fragment
@@ -150,6 +154,10 @@
         android:id="@+id/fragment_label"
         android:name="com.maltaisn.notes.ui.labels.LabelFragment"
         >
+        <argument
+            android:name="noteIds"
+            app:argType="long[]"
+            />
         <action
             android:id="@+id/action_label_to_label_edit"
             app:destination="@id/dialog_label_edit"

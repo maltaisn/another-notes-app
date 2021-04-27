@@ -24,6 +24,7 @@ import com.maltaisn.notes.model.entity.Label
 import com.maltaisn.notes.model.entity.LabelRef
 import com.maltaisn.notes.ui.assertLiveDataEventSent
 import com.maltaisn.notes.ui.getOrAwaitValue
+import com.maltaisn.notes.ui.labels.adapter.LabelListItem
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Before
 import org.junit.Rule
@@ -51,23 +52,43 @@ class LabelViewModelTest {
         labelsRepo.addLabel(Label(1, "label0"))
         labelsRepo.addLabel(Label(2, "label1"))
         labelsRepo.addLabel(Label(3, "label2"))
+        labelsRepo.addLabel(Label(4, "label3"))
+        labelsRepo.addLabel(Label(5, "label4"))
 
         labelsRepo.addLabelRefs(listOf(
             LabelRef(1, 1),
+            LabelRef(1, 5),
             LabelRef(2, 1),
-            LabelRef(1, 2),
+            LabelRef(2, 3),
+            LabelRef(2, 4),
+            LabelRef(3, 1),
+            LabelRef(3, 4),
+            LabelRef(3, 5),
         ))
 
         viewModel = LabelViewModel(labelsRepo, SavedStateHandle())
     }
 
     @Test
-    fun `should select all or no labels`() = mainCoroutineRule.runBlockingTest {
+    fun `should show all labels`() = mainCoroutineRule.runBlockingTest {
+        viewModel.start(emptyList())
+        assertEquals(listOf(
+            LabelListItem(1, labelsRepo.requireLabelById(1), false),
+            LabelListItem(2, labelsRepo.requireLabelById(2), false),
+            LabelListItem(3, labelsRepo.requireLabelById(3), false),
+            LabelListItem(4, labelsRepo.requireLabelById(4), false),
+            LabelListItem(5, labelsRepo.requireLabelById(5), false),
+        ), viewModel.labelItems.getOrAwaitValue())
+    }
+
+    @Test
+    fun `should select all or no labels (management)`() = mainCoroutineRule.runBlockingTest {
+        viewModel.start(emptyList())
         viewModel.selectAll()
 
         var listItems = viewModel.labelItems.getOrAwaitValue()
         assertTrue(listItems.all { it.checked })
-        assertEquals(3, viewModel.labelSelection.getOrAwaitValue())
+        assertEquals(5, viewModel.labelSelection.getOrAwaitValue())
 
         viewModel.clearSelection()
 
@@ -77,7 +98,8 @@ class LabelViewModelTest {
     }
 
     @Test
-    fun `should toggle selection of label on long click`() = mainCoroutineRule.runBlockingTest {
+    fun `should toggle selection of label on long click (management)`() = mainCoroutineRule.runBlockingTest {
+        viewModel.start(emptyList())
         viewModel.onLabelItemLongClicked(getLabelItemAt(0), 0)
         assertTrue(getLabelItemAt(0).checked)
         assertEquals(1, viewModel.labelSelection.getOrAwaitValue())
@@ -88,9 +110,10 @@ class LabelViewModelTest {
     }
 
     @Test
-    fun `should toggle selection on label on click after first selected`() =
+    fun `should toggle selection on label on click after first selected (management)`() =
         mainCoroutineRule.runBlockingTest {
             // Select a first label by long click
+            viewModel.start(emptyList())
             viewModel.onLabelItemLongClicked(getLabelItemAt(0), 0)
 
             viewModel.onLabelItemLongClicked(getLabelItemAt(1), 1)
@@ -102,6 +125,7 @@ class LabelViewModelTest {
 
     @Test
     fun `should update placeholder visibility`() = mainCoroutineRule.runBlockingTest {
+        viewModel.start(emptyList())
         assertFalse(viewModel.placeholderShown.getOrAwaitValue())
         labelsRepo.clearAllData()
         assertTrue(viewModel.placeholderShown.getOrAwaitValue())
@@ -109,12 +133,14 @@ class LabelViewModelTest {
 
     @Test
     fun `should show rename dialog`() = mainCoroutineRule.runBlockingTest {
+        viewModel.start(emptyList())
         viewModel.onLabelItemClicked(getLabelItemAt(2), 2)
         assertLiveDataEventSent(viewModel.showRenameDialogEvent, 3)
     }
 
     @Test
     fun `should show rename dialog for selection`() = mainCoroutineRule.runBlockingTest {
+        viewModel.start(emptyList())
         viewModel.onLabelItemLongClicked(getLabelItemAt(0), 0)
         viewModel.renameSelection()
         assertLiveDataEventSent(viewModel.showRenameDialogEvent, 1)
@@ -127,13 +153,15 @@ class LabelViewModelTest {
 
     @Test
     fun `should delete label without showing confirmation`() = mainCoroutineRule.runBlockingTest {
-        viewModel.onLabelItemLongClicked(getLabelItemAt(2), 2)
+        viewModel.start(emptyList())
+        viewModel.onLabelItemLongClicked(getLabelItemAt(1), 1)
         viewModel.deleteSelectionPre()
-        assertNull(labelsRepo.getLabelById(3))
+        assertNull(labelsRepo.getLabelById(2))
     }
 
     @Test
     fun `should delete labels showing confirmation before`() = mainCoroutineRule.runBlockingTest {
+        viewModel.start(emptyList())
         viewModel.onLabelItemLongClicked(getLabelItemAt(0), 0)
         viewModel.onLabelItemLongClicked(getLabelItemAt(1), 1)
         viewModel.deleteSelectionPre()
@@ -142,10 +170,41 @@ class LabelViewModelTest {
 
     @Test
     fun `should keep selection after editing label`() = mainCoroutineRule.runBlockingTest {
+        viewModel.start(emptyList())
         viewModel.onLabelItemLongClicked(getLabelItemAt(0), 0)
         assertEquals(1, viewModel.labelSelection.getOrAwaitValue())
         labelsRepo.updateLabel(labelsRepo.requireLabelById(1).copy(name = "changed label"))
         assertEquals(1, viewModel.labelSelection.getOrAwaitValue())
+    }
+
+    @Test
+    fun `should init with subset of labels shared by all notes`() = mainCoroutineRule.runBlockingTest {
+        viewModel.start(listOf(1, 2, 3))
+        assertEquals(listOf(
+            LabelListItem(1, labelsRepo.requireLabelById(1), true),
+            LabelListItem(2, labelsRepo.requireLabelById(2), false),
+            LabelListItem(3, labelsRepo.requireLabelById(3), false),
+            LabelListItem(4, labelsRepo.requireLabelById(4), false),
+            LabelListItem(5, labelsRepo.requireLabelById(5), false),
+        ), viewModel.labelItems.getOrAwaitValue())
+    }
+
+    @Test
+    fun `should update labels on all notes`() = mainCoroutineRule.runBlockingTest {
+        viewModel.start(listOf(1, 2, 3))
+        // deselect label 1
+        viewModel.onLabelItemClicked(getLabelItemAt(0), 0)
+        // select label 3 and 5
+        viewModel.onLabelItemClicked(getLabelItemAt(2), 2)
+        viewModel.onLabelItemClicked(getLabelItemAt(4), 3)
+
+        viewModel.setNotesLabels()
+
+        assertEquals(setOf(3L, 5L), labelsRepo.getLabelRefsForNote(1).toSet())
+        assertEquals(setOf(3L, 5L), labelsRepo.getLabelRefsForNote(2).toSet())
+        assertEquals(setOf(3L, 5L), labelsRepo.getLabelRefsForNote(3).toSet())
+
+        assertLiveDataEventSent(viewModel.exitEvent)
     }
 
     private fun getLabelItemAt(pos: Int) = viewModel.labelItems.value!!.get(pos)

@@ -150,6 +150,10 @@ class EditViewModel @Inject constructor(
     val showReminderDialogEvent: LiveData<Event<Long>>
         get() = _showReminderDialogEvent
 
+    private val _showLabelsFragmentEvent = MutableLiveData<Event<Long>>()
+    val showLabelsFragmentEvent: LiveData<Event<Long>>
+        get() = _showLabelsFragmentEvent
+
     private val _exitEvent = MutableLiveData<Event<Unit>>()
     val exitEvent: LiveData<Event<Unit>>
         get() = _exitEvent
@@ -262,6 +266,10 @@ class EditViewModel @Inject constructor(
 
     fun changeReminder() {
         _showReminderDialogEvent.send(note.id)
+    }
+
+    fun changeLabels() {
+        _showLabelsFragmentEvent.send(note.id)
     }
 
     fun onReminderChange(reminder: Reminder?) {

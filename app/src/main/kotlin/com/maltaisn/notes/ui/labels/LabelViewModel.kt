@@ -23,6 +23,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.maltaisn.notes.model.LabelsRepository
 import com.maltaisn.notes.model.entity.Label
+import com.maltaisn.notes.model.entity.LabelRef
 import com.maltaisn.notes.ui.AssistedSavedStateViewModelFactory
 import com.maltaisn.notes.ui.Event
 import com.maltaisn.notes.ui.labels.adapter.LabelAdapter
@@ -33,6 +34,7 @@ import com.squareup.inject.assisted.AssistedInject
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
+
 class LabelViewModel @AssistedInject constructor(
     private val labelsRepository: LabelsRepository,
     @Assisted private val savedStateHandle: SavedStateHandle,
@@ -42,6 +44,7 @@ class LabelViewModel @AssistedInject constructor(
     val labelItems: LiveData<List<LabelListItem>>
         get() = _labelItems
 
+    // current number of selected labels (only when managing labels)
     private val _labelSelection = MutableLiveData<Int>()
     val labelSelection: LiveData<Int>
         get() = _labelSelection
@@ -57,6 +60,10 @@ class LabelViewModel @AssistedInject constructor(
     private val _showRenameDialogEvent = MutableLiveData<Event<Long>>()
     val showRenameDialogEvent: LiveData<Event<Long>>
         get() = _showRenameDialogEvent
+
+    private val _exitEvent = MutableLiveData<Event<Unit>>()
+    val exitEvent: LiveData<Event<Unit>>
+        get() = _exitEvent
 
     private var listItems = mutableListOf<LabelListItem>()
         set(value) {
@@ -77,11 +84,22 @@ class LabelViewModel @AssistedInject constructor(
             // Update placeholder visibility
             _placeholderShown.value = value.isEmpty()
 
-            _labelSelection.value = selectedLabels.size
+            if (managingLabels) {
+                _labelSelection.value = selectedLabels.size
+            }
             if (selectedLabels.size != selectedBefore) {
                 saveLabelSelectionState()
             }
         }
+
+    /**
+     * IDs of notes to set labels on.
+     * Empty if managing labels
+     */
+    private var noteIds = emptyList<Long>()
+
+    private val managingLabels: Boolean
+        get() = noteIds.isEmpty()
 
     private val selectedLabelIds = mutableSetOf<Long>()
     private val selectedLabels = mutableSetOf<Label>()
@@ -112,6 +130,58 @@ class LabelViewModel @AssistedInject constructor(
         }
     }
 
+    /**
+     * Initializes view model to set labels on notes by ID.
+     * If ID list is empty, view model will be set up to manage labels instead.
+     */
+    fun start(noteIds: List<Long>) {
+        if (this.noteIds.isNotEmpty()) {
+            // Already started
+            return
+        }
+        this.noteIds = noteIds
+
+        viewModelScope.launch {
+            if (noteIds.isNotEmpty()) {
+                // Initially, set selected notes to the subset of labels shared by all notes.
+                selectedLabels.clear()
+                selectedLabelIds.clear()
+                selectedLabelIds += labelsRepository.getLabelRefsForNote(noteIds.first())
+                for (noteId in noteIds.listIterator(1)) {
+                    selectedLabelIds.retainAll(labelsRepository.getLabelRefsForNote(noteId))
+                }
+                if (listItems.isNotEmpty()) {
+                    // Set selected items if list was initialized at this point.
+                    // Otherwise this will be done when labels flow is collected
+                    changeListItems { items ->
+                        for ((i, item) in items.withIndex()) {
+                            if (item.label.id in selectedLabelIds) {
+                                items[i] = item.copy(checked = true)
+                                selectedLabels += item.label
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    fun setNotesLabels() {
+        viewModelScope.launch {
+            for (noteId in noteIds) {
+                // Find difference between old labels and new labels
+                val labelsToRemove = labelsRepository.getLabelRefsForNote(noteId).toMutableSet()
+                val labelsToAdd = selectedLabelIds.toMutableSet()
+                val unchangedLabels = labelsToAdd intersect labelsToRemove
+                labelsToRemove.removeAll(unchangedLabels)
+                labelsToAdd.removeAll(unchangedLabels)
+                labelsRepository.deleteLabelRefs(labelsToRemove.map { LabelRef(noteId, it) })
+                labelsRepository.insertLabelRefs(labelsToAdd.map { LabelRef(noteId, it) })
+            }
+            _exitEvent.send()
+        }
+    }
+
     fun clearSelection() {
         setAllSelected(false)
     }
@@ -135,7 +205,7 @@ class LabelViewModel @AssistedInject constructor(
             for (label in selectedLabels) {
                 if (labelsRepository.countLabelRefs(label.id) > 0) {
                     used = true
-                    break;
+                    break
                 }
             }
 
@@ -165,31 +235,38 @@ class LabelViewModel @AssistedInject constructor(
             return
         }
 
-        changeListItems {
-            for ((i, item) in it.withIndex()) {
+        changeListItems { items ->
+            for ((i, item) in items.withIndex()) {
                 if (item.checked != selected) {
-                    it[i] = item.copy(checked = selected)
+                    items[i] = item.copy(checked = selected)
                 }
             }
         }
     }
 
+    override val shouldHighlightCheckedItems: Boolean
+        // When managing labels, items are highlighted if checked.
+        // When selecting labels for a note, only the left icon is changed.
+        get() = managingLabels
+
     override fun onLabelItemClicked(item: LabelListItem, pos: Int) {
-        if (selectedLabels.isEmpty()) {
-            _showRenameDialogEvent.send(item.label.id)
-        } else {
+        if (!managingLabels || selectedLabels.isNotEmpty()) {
             toggleItemChecked(item, pos)
+        } else {
+            _showRenameDialogEvent.send(item.label.id)
         }
     }
 
     override fun onLabelItemLongClicked(item: LabelListItem, pos: Int) {
-        toggleItemChecked(item, pos)
+        if (managingLabels) {
+            toggleItemChecked(item, pos)
+        }
     }
 
     private fun toggleItemChecked(item: LabelListItem, pos: Int) {
         // Set the item as checked and update the list.
-        changeListItems {
-            it[pos] = item.copy(checked = !item.checked)
+        changeListItems { items ->
+            items[pos] = item.copy(checked = !item.checked)
         }
     }
 

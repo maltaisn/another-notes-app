@@ -43,6 +43,8 @@ class LabelAdapter(
     override fun getItemId(position: Int) = getItem(position).id
 
     interface Callback {
+        val shouldHighlightCheckedItems: Boolean
+
         /** Called when a label [item] at [pos] is clicked. */
         fun onLabelItemClicked(item: LabelListItem, pos: Int)
 

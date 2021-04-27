@@ -31,7 +31,8 @@ interface LabelsRepository {
 
     suspend fun insertLabelRefs(refs: List<LabelRef>)
     suspend fun deleteLabelRefs(refs: List<LabelRef>)
-    suspend fun countLabelRefs(id: Long): Long
+    suspend fun getLabelRefsForNote(noteId: Long): List<Long>
+    suspend fun countLabelRefs(labelId: Long): Long
 
     fun getAllLabels(): Flow<List<Label>>
 

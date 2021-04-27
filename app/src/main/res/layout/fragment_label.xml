@@ -37,8 +37,10 @@
             style="?toolbarStyle"
             android:layout_width="match_parent"
             android:layout_height="?actionBarSize"
+            app:menu="@menu/toolbar_label"
             app:titleTextColor="?colorControlNormal"
-            app:title="@string/note_location_labels"
+            app:navigationIcon="@drawable/ic_arrow_left"
+            tools:title="@string/label_select"
             />
 
     </com.google.android.material.appbar.AppBarLayout>

@@ -30,16 +30,10 @@ import kotlinx.coroutines.flow.map
 class MockLabelsRepository : LabelsRepository {
 
     private val labels = mutableMapOf<Long, Label>()
-    private val labelRefs = mutableMapOf<Long, Long>()
+    private val labelRefs = mutableMapOf<Long, MutableSet<Long>>()
 
     var lastLabelId = 0L
         private set
-
-    /**
-     * Number of labels in database.
-     */
-    val labelsCount: Int
-        get() = labels.size
 
     private val changeFlow = MutableSharedFlow<Unit>(replay = 1)
 
@@ -105,19 +99,21 @@ class MockLabelsRepository : LabelsRepository {
 
     override suspend fun deleteLabelRefs(refs: List<LabelRef>) {
         for (ref in refs) {
-            labelRefs -= ref.noteId
+            labelRefs[ref.noteId]?.remove(ref.labelId)
         }
     }
+
+    override suspend fun getLabelRefsForNote(noteId: Long) = labelRefs[noteId].orEmpty().toList()
 
     // Non suspending version for initialization
     fun addLabelRefs(refs: List<LabelRef>) {
         for (ref in refs) {
-            labelRefs[ref.noteId] = ref.labelId
+            labelRefs.getOrPut(ref.noteId) { mutableSetOf() } += ref.labelId
         }
     }
 
-    override suspend fun countLabelRefs(id: Long) =
-        labelRefs.count { (_, labelId) -> labelId == id }.toLong()
+    override suspend fun countLabelRefs(labelId: Long) =
+        labelRefs.values.sumBy { labels -> labels.count { it == labelId } }.toLong()
 
     override suspend fun clearAllData() {
         labels.clear()

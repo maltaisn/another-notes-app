@@ -204,7 +204,7 @@ class HomeFragment : NoteFragment(), Toolbar.OnMenuItemClickListener,
             R.id.item_add_label -> navController.navigateSafe(
                 HomeFragmentDirections.actionHomeToLabelEdit())
             R.id.item_manage_label -> navController.navigateSafe(
-                HomeFragmentDirections.actionHomeToLabel())
+                HomeFragmentDirections.actionHomeToLabel(longArrayOf()))
             R.id.item_settings -> navController.navigateSafe(
                 HomeFragmentDirections.actionHomeToSettings())
             else -> return false

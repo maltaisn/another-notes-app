@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?><!--
-  Copyright 2020 Nicolas Maltais
+  Copyright 2021 Nicolas Maltais
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -38,6 +38,7 @@
             android:layout_height="?actionBarSize"
             app:menu="@menu/toolbar_edit"
             app:titleTextColor="?colorControlNormal"
+            app:navigationIcon="@drawable/ic_arrow_left"
             tools:title="@string/edit_add_title"
             />
 
