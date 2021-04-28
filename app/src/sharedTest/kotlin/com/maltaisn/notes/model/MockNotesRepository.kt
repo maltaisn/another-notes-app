@@ -16,8 +16,10 @@
 
 package com.maltaisn.notes.model
 
+import com.maltaisn.notes.model.entity.Label
 import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.model.entity.NoteStatus
+import com.maltaisn.notes.model.entity.NoteWithLabels
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.flow
@@ -29,8 +31,11 @@ import kotlinx.serialization.json.Json
  *
  * This implementation should work almost exactly like [DefaultNotesRepository].
  * Returned flows will also emit a new value on every change.
+ *
+ * A [labelsRepository] is needed if using methods that return [NoteWithLabels].
  */
-class MockNotesRepository : NotesRepository {
+class MockNotesRepository(private val labelsRepository: LabelsRepository? = null) :
+    NotesRepository {
 
     private val json = Json {}
 
@@ -108,6 +113,18 @@ class MockNotesRepository : NotesRepository {
     }
 
     override suspend fun getNoteById(id: Long) = notes[id]
+
+    override suspend fun getNoteByIdWithLabels(id: Long): NoteWithLabels? {
+        val note = getNoteById(id)
+        if (note != null) {
+            val labels = mutableListOf<Label>()
+            for (labelId in labelsRepository!!.getLabelIdsForNote(id)) {
+                labels += labelsRepository.getLabelById(labelId)!!
+            }
+            return NoteWithLabels(note, labels)
+        }
+        return null
+    }
 
     fun requireNoteById(id: Long) = notes.getOrElse(id) {
         error("No note with ID $id")

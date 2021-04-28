@@ -21,9 +21,12 @@ import com.maltaisn.notes.MainCoroutineRule
 import com.maltaisn.notes.assertNoteEquals
 import com.maltaisn.notes.dateFor
 import com.maltaisn.notes.listNote
+import com.maltaisn.notes.model.MockLabelsRepository
 import com.maltaisn.notes.model.MockNotesRepository
 import com.maltaisn.notes.model.PrefsManager
 import com.maltaisn.notes.model.ReminderAlarmManager
+import com.maltaisn.notes.model.entity.Label
+import com.maltaisn.notes.model.entity.LabelRef
 import com.maltaisn.notes.model.entity.ListNoteItem
 import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.model.entity.NoteStatus
@@ -40,6 +43,7 @@ import com.maltaisn.notes.ui.edit.adapter.EditContentItem
 import com.maltaisn.notes.ui.edit.adapter.EditDateItem
 import com.maltaisn.notes.ui.edit.adapter.EditItemAddItem
 import com.maltaisn.notes.ui.edit.adapter.EditItemItem
+import com.maltaisn.notes.ui.edit.adapter.EditItemLabelsItem
 import com.maltaisn.notes.ui.edit.adapter.EditTitleItem
 import com.maltaisn.notes.ui.getOrAwaitValue
 import com.maltaisn.notes.ui.note.ShownDateField
@@ -60,6 +64,7 @@ class EditViewModelTest {
 
     private lateinit var viewModel: EditViewModel
     private lateinit var notesRepo: MockNotesRepository
+    private lateinit var labelsRepo: MockLabelsRepository
     private lateinit var alarmCallback: MockAlarmCallback
     private lateinit var prefs: PrefsManager
 
@@ -71,7 +76,14 @@ class EditViewModelTest {
 
     @Before
     fun before() {
-        notesRepo = MockNotesRepository()
+        labelsRepo = MockLabelsRepository()
+        labelsRepo.addLabel(Label(1, "label1"))
+        labelsRepo.addLabelRefs(listOf(
+            LabelRef(1, 1),
+            LabelRef(2, 1),
+        ))
+
+        notesRepo = MockNotesRepository(labelsRepo)
         prefs = mock {
             on { shownDateField } doReturn ShownDateField.ADDED
         }
@@ -140,7 +152,8 @@ class EditViewModelTest {
         assertEquals(listOf(
             EditDateItem(dateFor("2018-01-01").time),
             EditTitleItem(DefaultEditableText("title"), true),
-            EditContentItem(DefaultEditableText("content"), true)
+            EditContentItem(DefaultEditableText("content"), true),
+            EditItemLabelsItem(listOf(labelsRepo.requireLabelById(1))),
         ), viewModel.editItems.getOrAwaitValue())
     }
 
@@ -156,7 +169,8 @@ class EditViewModelTest {
             EditTitleItem(DefaultEditableText("title"), true),
             EditItemItem(DefaultEditableText("item 1"), checked = true, editable = true),
             EditItemItem(DefaultEditableText("item 2"), checked = false, editable = true),
-            EditItemAddItem
+            EditItemAddItem,
+            EditItemLabelsItem(listOf(labelsRepo.requireLabelById(1))),
         ), viewModel.editItems.getOrAwaitValue())
     }
 
@@ -215,7 +229,7 @@ class EditViewModelTest {
 
         assertNoteEquals(listNote(listOf(
             ListNoteItem("modified item", false),
-            ListNoteItem("item 2", false)
+            ListNoteItem("item 2", false),
         ), title = "title", status = NoteStatus.ACTIVE,
             added = oldNote.addedDate, modified = Date()), notesRepo.lastAddedNote!!)
     }
@@ -249,7 +263,8 @@ class EditViewModelTest {
             EditDateItem(dateFor("2018-01-01").time),
             EditTitleItem(DefaultEditableText("title"), true),
             EditItemItem(DefaultEditableText("content"), checked = false, editable = true),
-            EditItemAddItem
+            EditItemAddItem,
+            EditItemLabelsItem(listOf(labelsRepo.requireLabelById(1))),
         ), viewModel.editItems.getOrAwaitValue())
     }
 
@@ -282,7 +297,8 @@ class EditViewModelTest {
         assertEquals(listOf(
             EditDateItem(dateFor("2020-03-30").time),
             EditTitleItem(DefaultEditableText("title"), true),
-            EditContentItem(DefaultEditableText("- item 2"), true)
+            EditContentItem(DefaultEditableText("- item 2"), true),
+            EditItemLabelsItem(listOf(labelsRepo.requireLabelById(1))),
         ), viewModel.editItems.getOrAwaitValue())
     }
 
@@ -294,7 +310,8 @@ class EditViewModelTest {
         assertEquals(listOf(
             EditDateItem(dateFor("2020-03-30").time),
             EditTitleItem(DefaultEditableText("title"), true),
-            EditContentItem(DefaultEditableText("- item 1\n- item 2"), true)
+            EditContentItem(DefaultEditableText("- item 1\n- item 2"), true),
+            EditItemLabelsItem(listOf(labelsRepo.requireLabelById(1))),
         ), viewModel.editItems.getOrAwaitValue())
     }
 
@@ -469,7 +486,8 @@ class EditViewModelTest {
             EditTitleItem(DefaultEditableText("title"), true),
             EditItemItem(DefaultEditableText("item 1"), checked = false, editable = true),
             EditItemItem(DefaultEditableText("item 2"), checked = false, editable = true),
-            EditItemAddItem
+            EditItemAddItem,
+            EditItemLabelsItem(listOf(labelsRepo.requireLabelById(1))),
         ), viewModel.editItems.getOrAwaitValue())
     }
 
@@ -496,7 +514,8 @@ class EditViewModelTest {
             EditDateItem(dateFor("2020-03-30").time),
             EditTitleItem(DefaultEditableText("title"), true),
             EditItemItem(DefaultEditableText("item 2"), checked = false, editable = true),
-            EditItemAddItem
+            EditItemAddItem,
+            EditItemLabelsItem(listOf(labelsRepo.requireLabelById(1))),
         ), viewModel.editItems.getOrAwaitValue())
     }
 
@@ -529,7 +548,8 @@ class EditViewModelTest {
             EditItemItem(DefaultEditableText("item 1"), checked = true, editable = true),
             EditItemItem(DefaultEditableText(""), checked = false, editable = true),
             EditItemItem(DefaultEditableText("item 2"), checked = false, editable = true),
-            EditItemAddItem
+            EditItemAddItem,
+            EditItemLabelsItem(listOf(labelsRepo.requireLabelById(1))),
         ), viewModel.editItems.getOrAwaitValue())
         assertLiveDataEventSent(viewModel.focusEvent,
             EditViewModel.FocusChange(3, 0, false))
@@ -555,7 +575,8 @@ class EditViewModelTest {
                 checked = false,
                 editable = true),
             EditItemItem(DefaultEditableText("item 2"), checked = false, editable = true),
-            EditItemAddItem
+            EditItemAddItem,
+            EditItemLabelsItem(listOf(labelsRepo.requireLabelById(1))),
         ), viewModel.editItems.getOrAwaitValue())
         assertLiveDataEventSent(viewModel.focusEvent,
             EditViewModel.FocusChange(4, 15, false))
@@ -571,7 +592,8 @@ class EditViewModelTest {
             EditDateItem(dateFor("2020-03-30").time),
             EditTitleItem(DefaultEditableText("title"), true),
             EditItemItem(DefaultEditableText("item 1item 2"), checked = true, editable = true),
-            EditItemAddItem
+            EditItemAddItem,
+            EditItemLabelsItem(listOf(labelsRepo.requireLabelById(1))),
         ), viewModel.editItems.getOrAwaitValue())
         assertLiveDataEventSent(viewModel.focusEvent,
             EditViewModel.FocusChange(2, 6, true))
@@ -588,7 +610,8 @@ class EditViewModelTest {
             EditTitleItem(DefaultEditableText("title"), true),
             EditItemItem(DefaultEditableText("item 1"), checked = true, editable = true),
             EditItemItem(DefaultEditableText("item 2"), checked = false, editable = true),
-            EditItemAddItem
+            EditItemAddItem,
+            EditItemLabelsItem(listOf(labelsRepo.requireLabelById(1))),
         ), viewModel.editItems.getOrAwaitValue())
     }
 
@@ -601,7 +624,8 @@ class EditViewModelTest {
             EditDateItem(dateFor("2020-03-30").time),
             EditTitleItem(DefaultEditableText("title"), true),
             EditItemItem(DefaultEditableText("item 1"), checked = true, editable = true),
-            EditItemAddItem
+            EditItemAddItem,
+            EditItemLabelsItem(listOf(labelsRepo.requireLabelById(1))),
         ), viewModel.editItems.getOrAwaitValue())
         assertLiveDataEventSent(viewModel.focusEvent,
             EditViewModel.FocusChange(2, 6, true))
@@ -616,7 +640,8 @@ class EditViewModelTest {
             EditDateItem(dateFor("2020-03-30").time),
             EditTitleItem(DefaultEditableText("title"), true),
             EditItemItem(DefaultEditableText("item 2"), checked = false, editable = true),
-            EditItemAddItem
+            EditItemAddItem,
+            EditItemLabelsItem(listOf(labelsRepo.requireLabelById(1))),
         ), viewModel.editItems.getOrAwaitValue())
         assertLiveDataEventSent(viewModel.focusEvent,
             EditViewModel.FocusChange(3, 6, true))
@@ -625,7 +650,7 @@ class EditViewModelTest {
     @Test
     fun `should add blank list note item and focus it`() = mainCoroutineRule.runBlockingTest {
         viewModel.start(2)
-        viewModel.onNoteItemAddClicked()
+        viewModel.onNoteItemAddClicked(4)
 
         assertEquals(listOf(
             EditDateItem(dateFor("2020-03-30").time),
@@ -633,7 +658,8 @@ class EditViewModelTest {
             EditItemItem(DefaultEditableText("item 1"), checked = true, editable = true),
             EditItemItem(DefaultEditableText("item 2"), checked = false, editable = true),
             EditItemItem(DefaultEditableText(""), checked = false, editable = true),
-            EditItemAddItem
+            EditItemAddItem,
+            EditItemLabelsItem(listOf(labelsRepo.requireLabelById(1))),
         ), viewModel.editItems.getOrAwaitValue())
         assertLiveDataEventSent(viewModel.focusEvent,
             EditViewModel.FocusChange(4, 0, false))
@@ -718,7 +744,8 @@ class EditViewModelTest {
         assertEquals(listOf(
             EditDateItem(dateFor("2019-01-01").time),
             EditTitleItem(DefaultEditableText("title"), true),
-            EditContentItem(DefaultEditableText("content"), true)
+            EditContentItem(DefaultEditableText("content"), true),
+            EditItemLabelsItem(listOf(labelsRepo.requireLabelById(1))),
         ), viewModel.editItems.getOrAwaitValue())
     }
 
@@ -732,7 +759,8 @@ class EditViewModelTest {
 
         assertEquals(listOf(
             EditTitleItem(DefaultEditableText("title"), true),
-            EditContentItem(DefaultEditableText("content"), true)
+            EditContentItem(DefaultEditableText("content"), true),
+            EditItemLabelsItem(listOf(labelsRepo.requireLabelById(1))),
         ), viewModel.editItems.getOrAwaitValue())
     }
 

@@ -200,9 +200,9 @@ class LabelViewModelTest {
 
         viewModel.setNotesLabels()
 
-        assertEquals(setOf(3L, 5L), labelsRepo.getLabelRefsForNote(1).toSet())
-        assertEquals(setOf(3L, 5L), labelsRepo.getLabelRefsForNote(2).toSet())
-        assertEquals(setOf(3L, 5L), labelsRepo.getLabelRefsForNote(3).toSet())
+        assertEquals(setOf(3L, 5L), labelsRepo.getLabelIdsForNote(1).toSet())
+        assertEquals(setOf(3L, 5L), labelsRepo.getLabelIdsForNote(2).toSet())
+        assertEquals(setOf(3L, 5L), labelsRepo.getLabelIdsForNote(3).toSet())
 
         assertLiveDataEventSent(viewModel.exitEvent)
     }

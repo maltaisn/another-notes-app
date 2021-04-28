@@ -127,9 +127,9 @@ class LabelViewModel @AssistedInject constructor(
                 this@LabelViewModel.noteIds = noteIds
                 // Initially, set selected notes to the subset of labels shared by all notes.
                 selectedLabelIds.clear()
-                selectedLabelIds += labelsRepository.getLabelRefsForNote(noteIds.first())
+                selectedLabelIds += labelsRepository.getLabelIdsForNote(noteIds.first())
                 for (noteId in noteIds.listIterator(1)) {
-                    selectedLabelIds.retainAll(labelsRepository.getLabelRefsForNote(noteId))
+                    selectedLabelIds.retainAll(labelsRepository.getLabelIdsForNote(noteId))
                 }
             }
 
@@ -153,7 +153,7 @@ class LabelViewModel @AssistedInject constructor(
         viewModelScope.launch {
             for (noteId in noteIds) {
                 // Find difference between old labels and new labels
-                val labelsToRemove = labelsRepository.getLabelRefsForNote(noteId).toMutableSet()
+                val labelsToRemove = labelsRepository.getLabelIdsForNote(noteId).toMutableSet()
                 val labelsToAdd = selectedLabelIds.toMutableSet()
                 val unchangedLabels = labelsToAdd intersect labelsToRemove
                 labelsToRemove.removeAll(unchangedLabels)

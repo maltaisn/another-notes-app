@@ -18,6 +18,7 @@ package com.maltaisn.notes.model
 
 import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.model.entity.NoteStatus
+import com.maltaisn.notes.model.entity.NoteWithLabels
 import kotlinx.coroutines.flow.Flow
 
 interface NotesRepository {
@@ -28,6 +29,7 @@ interface NotesRepository {
     suspend fun deleteNote(note: Note)
     suspend fun deleteNotes(notes: List<Note>)
     suspend fun getNoteById(id: Long): Note?
+    suspend fun getNoteByIdWithLabels(id: Long): NoteWithLabels?
 
     fun getNotesWithReminder(): Flow<List<Note>>
     fun getNotesByStatus(status: NoteStatus): Flow<List<Note>>

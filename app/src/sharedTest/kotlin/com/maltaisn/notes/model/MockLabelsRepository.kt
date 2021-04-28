@@ -103,7 +103,7 @@ class MockLabelsRepository : LabelsRepository {
         }
     }
 
-    override suspend fun getLabelRefsForNote(noteId: Long) = labelRefs[noteId].orEmpty().toList()
+    override suspend fun getLabelIdsForNote(noteId: Long) = labelRefs[noteId].orEmpty().toList()
 
     // Non suspending version for initialization
     fun addLabelRefs(refs: List<LabelRef>) {

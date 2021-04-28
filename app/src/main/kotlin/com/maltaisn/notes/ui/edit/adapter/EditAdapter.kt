@@ -29,6 +29,7 @@ import com.maltaisn.notes.sync.databinding.ItemEditContentBinding
 import com.maltaisn.notes.sync.databinding.ItemEditDateBinding
 import com.maltaisn.notes.sync.databinding.ItemEditItemAddBinding
 import com.maltaisn.notes.sync.databinding.ItemEditItemBinding
+import com.maltaisn.notes.sync.databinding.ItemEditLabelsBinding
 import com.maltaisn.notes.sync.databinding.ItemEditTitleBinding
 import com.maltaisn.notes.ui.edit.EditViewModel
 
@@ -71,6 +72,8 @@ class EditAdapter(val context: Context, val callback: Callback) :
                 .inflate(inflater, parent, false), callback)
             ViewType.ITEM_ADD.ordinal -> EditItemAddViewHolder(ItemEditItemAddBinding
                 .inflate(inflater, parent, false), callback)
+            ViewType.ITEM_LABELS.ordinal -> EditItemLabelsViewHolder(ItemEditLabelsBinding
+                .inflate(inflater, parent, false), callback)
             ViewType.ITEM.ordinal -> {
                 val viewHolder = EditItemViewHolder(ItemEditItemBinding
                     .inflate(inflater, parent, false), callback)
@@ -96,6 +99,7 @@ class EditAdapter(val context: Context, val callback: Callback) :
             is EditTitleViewHolder -> holder.bind(item as EditTitleItem)
             is EditContentViewHolder -> holder.bind(item as EditContentItem)
             is EditItemViewHolder -> holder.bind(item as EditItemItem)
+            is EditItemLabelsViewHolder -> holder.bind(item as EditItemLabelsItem)
         }
         if (holder is EditFocusableViewHolder && position == pendingFocusChange?.itemPos) {
             // Apply pending focus change event.
@@ -130,7 +134,8 @@ class EditAdapter(val context: Context, val callback: Callback) :
         TITLE,
         CONTENT,
         ITEM,
-        ITEM_ADD
+        ITEM_ADD,
+        ITEM_LABELS,
     }
 
     interface Callback {
@@ -150,7 +155,10 @@ class EditAdapter(val context: Context, val callback: Callback) :
         fun onNoteItemDeleteClicked(pos: Int)
 
         /** Called when [EditItemAddItem] is clicked.*/
-        fun onNoteItemAddClicked()
+        fun onNoteItemAddClicked(pos: Int)
+
+        /** Called when a chip in [EditItemLabelsItem] is clicked. */
+        fun onNoteLabelClicked()
 
         /** Called when any item is clicked on to start editing.*/
         fun onNoteClickedToEdit()

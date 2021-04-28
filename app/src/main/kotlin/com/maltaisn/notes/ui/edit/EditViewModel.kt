@@ -24,6 +24,7 @@ import com.maltaisn.notes.model.NotesRepository
 import com.maltaisn.notes.model.PrefsManager
 import com.maltaisn.notes.model.ReminderAlarmManager
 import com.maltaisn.notes.model.entity.BlankNoteMetadata
+import com.maltaisn.notes.model.entity.Label
 import com.maltaisn.notes.model.entity.ListNoteMetadata
 import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.model.entity.NoteMetadata
@@ -39,6 +40,7 @@ import com.maltaisn.notes.ui.edit.adapter.EditContentItem
 import com.maltaisn.notes.ui.edit.adapter.EditDateItem
 import com.maltaisn.notes.ui.edit.adapter.EditItemAddItem
 import com.maltaisn.notes.ui.edit.adapter.EditItemItem
+import com.maltaisn.notes.ui.edit.adapter.EditItemLabelsItem
 import com.maltaisn.notes.ui.edit.adapter.EditListItem
 import com.maltaisn.notes.ui.edit.adapter.EditTitleItem
 import com.maltaisn.notes.ui.edit.adapter.EditableText
@@ -61,6 +63,11 @@ class EditViewModel @Inject constructor(
      * so [save] must be called before using it and to persist it.
      */
     private var note = BLANK_NOTE
+
+    /**
+     * List of labels on note.
+     */
+    private var labels = emptyList<Label>()
 
     /**
      * Status of the note being edited. This is separate from [note] so that
@@ -93,14 +100,15 @@ class EditViewModel @Inject constructor(
         }
 
     /**
-     * The item in [listItems] used to display the creation date, or `null` if not created yet.
-     */
-    private val dateItem by lazy { EditDateItem(0) }
-
-    /**
      * The item in [listItems] used to display the title, or `null` if not created yet.
      */
     private val titleItem by lazy { EditTitleItem(DefaultEditableText(), false) }
+
+    /**
+     * The item in [listItems] to display content for text notes.
+     */
+    private val contentItem by lazy { EditContentItem(DefaultEditableText(), false) }
+
 
     private val _noteType = MutableLiveData<NoteType?>()
     val noteType: LiveData<NoteType?>
@@ -168,9 +176,11 @@ class EditViewModel @Inject constructor(
     fun start(noteId: Long) {
         viewModelScope.launch {
             // Try to get note by ID.
-            var note = notesRepository.getNoteById(noteId)
+            val noteWithLabels = notesRepository.getNoteByIdWithLabels(noteId)
+            var note = noteWithLabels?.note
+            var labels = noteWithLabels?.labels
 
-            if (note == null) {
+            if (note == null || labels == null) {
                 // Note doesn't exist, create new blank text note.
                 val date = Date()
                 note = BLANK_NOTE.copy(
@@ -178,6 +188,7 @@ class EditViewModel @Inject constructor(
                     lastModifiedDate = date)
                 val id = notesRepository.insertNote(note)
                 note = note.copy(id = id)
+                labels = emptyList()
 
                 focusItemAt(1, 0, false)
                 showDate = false
@@ -186,6 +197,7 @@ class EditViewModel @Inject constructor(
                 showDate = (prefs.shownDateField != ShownDateField.NONE)
             }
             this@EditViewModel.note = note
+            this@EditViewModel.labels = labels
             status = note.status
             pinned = note.pinned
             reminder = note.reminder
@@ -417,8 +429,7 @@ class EditViewModel @Inject constructor(
         val metadata: NoteMetadata
         when (note.type) {
             NoteType.TEXT -> {
-                val contentPos = if (showDate) 2 else 1
-                content = (listItems[contentPos] as EditContentItem).content.text.toString()
+                content = contentItem.content.text.toString()
                 metadata = BlankNoteMetadata
             }
             NoteType.LIST -> {
@@ -441,12 +452,11 @@ class EditViewModel @Inject constructor(
 
         // Date item
         if (showDate) {
-            dateItem.date = when (prefs.shownDateField) {
+            list += EditDateItem(when (prefs.shownDateField) {
                 ShownDateField.ADDED -> note.addedDate.time
                 ShownDateField.MODIFIED -> note.lastModifiedDate.time
                 else -> 0L  // never happens
-            }
-            list += dateItem
+            })
         }
 
         // Title item
@@ -457,8 +467,9 @@ class EditViewModel @Inject constructor(
         when (note.type) {
             NoteType.TEXT -> {
                 // Content item
-                val content = EditContentItem(DefaultEditableText(note.content), canEdit)
-                list += content
+                contentItem.content = DefaultEditableText(note.content)
+                contentItem.editable = canEdit
+                list += contentItem
             }
             NoteType.LIST -> {
                 // List items
@@ -469,10 +480,13 @@ class EditViewModel @Inject constructor(
 
                 // Item add item
                 if (canEdit) {
-                    val itemAdd = EditItemAddItem
-                    list += itemAdd
+                    list += EditItemAddItem
                 }
             }
+        }
+
+        if (labels.isNotEmpty()) {
+            list += EditItemLabelsItem(labels)
         }
 
         listItems = list
@@ -528,12 +542,16 @@ class EditViewModel @Inject constructor(
         changeListItems { it.removeAt(pos) }
     }
 
-    override fun onNoteItemAddClicked() {
-        val pos = listItems.size - 1
+    override fun onNoteItemAddClicked(pos: Int) {
+        // pos is the position of EditItemAdd item, which is also the position to insert the new item.
         changeListItems { list ->
             list.add(pos, EditItemItem(DefaultEditableText(), checked = false, editable = true))
         }
         focusItemAt(pos, 0, false)
+    }
+
+    override fun onNoteLabelClicked() {
+        changeLabels()
     }
 
     override fun onNoteClickedToEdit() {
@@ -550,7 +568,7 @@ class EditViewModel @Inject constructor(
     }
 
     override val isNoteDragEnabled: Boolean
-        get() = listItems.size >= MIN_DRAG_ITEMS && !isNoteInTrash
+        get() = !isNoteInTrash && listItems.count { it is EditItemItem } > 1
 
     override fun onNoteItemSwapped(from: Int, to: Int) {
         Collections.swap(listItems, from, to)
@@ -598,8 +616,5 @@ class EditViewModel @Inject constructor(
     companion object {
         private val BLANK_NOTE = Note(Note.NO_ID, NoteType.TEXT, "", "",
             BlankNoteMetadata, Date(0), Date(0), NoteStatus.ACTIVE, PinnedStatus.UNPINNED, null)
-
-        /** Minimum items needed for dragging. (title + 2 items + add new) */
-        private const val MIN_DRAG_ITEMS = 4
     }
 }

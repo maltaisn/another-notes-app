@@ -54,6 +54,7 @@ class DefaultNotesRepository @Inject constructor(
 
     override suspend fun getNoteById(id: Long) = notesDao.getById(id)
 
+    override suspend fun getNoteByIdWithLabels(id: Long) = notesDao.getByIdWithLabels(id)
 
     override fun getNotesByStatus(status: NoteStatus) = notesDao.getByStatus(status)
 

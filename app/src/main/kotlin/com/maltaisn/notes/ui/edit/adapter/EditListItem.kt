@@ -16,6 +16,7 @@
 
 package com.maltaisn.notes.ui.edit.adapter
 
+import com.maltaisn.notes.model.entity.Label
 import com.maltaisn.notes.ui.edit.adapter.EditAdapter.ViewType
 
 sealed class EditListItem {
@@ -39,7 +40,7 @@ data class EditTitleItem(
 
 data class EditContentItem(
     var content: EditableText,
-    val editable: Boolean
+    var editable: Boolean
 ) : EditListItem() {
 
     override val type get() = ViewType.CONTENT
@@ -57,6 +58,13 @@ data class EditItemItem(
 object EditItemAddItem : EditListItem() {
 
     override val type get() = ViewType.ITEM_ADD
+}
+
+data class EditItemLabelsItem(
+    var labels: List<Label>
+) : EditListItem() {
+
+    override val type get() = ViewType.ITEM_LABELS
 }
 
 /**

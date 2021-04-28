@@ -21,15 +21,21 @@ import android.text.TextWatcher
 import android.text.format.DateUtils
 import android.text.style.CharacterStyle
 import android.view.KeyEvent
+import android.view.LayoutInflater
+import android.view.View
 import androidx.core.text.getSpans
+import androidx.core.view.get
 import androidx.core.view.isInvisible
 import androidx.core.widget.doOnTextChanged
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.chip.Chip
 import com.maltaisn.notes.strikethroughText
+import com.maltaisn.notes.sync.R
 import com.maltaisn.notes.sync.databinding.ItemEditContentBinding
 import com.maltaisn.notes.sync.databinding.ItemEditDateBinding
 import com.maltaisn.notes.sync.databinding.ItemEditItemAddBinding
 import com.maltaisn.notes.sync.databinding.ItemEditItemBinding
+import com.maltaisn.notes.sync.databinding.ItemEditLabelsBinding
 import com.maltaisn.notes.sync.databinding.ItemEditTitleBinding
 import com.maltaisn.notes.ui.edit.BulletTextWatcher
 import com.maltaisn.notes.utils.RelativeDateFormatter
@@ -205,7 +211,40 @@ class EditItemAddViewHolder(binding: ItemEditItemAddBinding, callback: EditAdapt
 
     init {
         itemView.setOnClickListener {
-            callback.onNoteItemAddClicked()
+            callback.onNoteItemAddClicked(adapterPosition)
+        }
+    }
+}
+
+class EditItemLabelsViewHolder(binding: ItemEditLabelsBinding, callback: EditAdapter.Callback) :
+    RecyclerView.ViewHolder(binding.root) {
+
+    private val chipGroup = binding.chipGroup
+    private val chipClickListener: View.OnClickListener
+
+    init {
+        chipClickListener = View.OnClickListener {
+            callback.onNoteLabelClicked()
+        }
+    }
+
+    fun bind(item: EditItemLabelsItem) {
+        // Reuse previously inflated chips and create new ones if needed
+        val layoutInflater = LayoutInflater.from(chipGroup.context)
+        for ((i, label) in item.labels.withIndex()) {
+            val chip = if (i < chipGroup.childCount) {
+                chipGroup[i] as Chip
+            } else {
+                val c =
+                    layoutInflater.inflate(R.layout.view_label_chip_edit, chipGroup, false) as Chip
+                chipGroup.addView(c)
+                c
+            }
+            chip.text = label.name
+            chip.setOnClickListener(chipClickListener)
+        }
+        if (chipGroup.childCount > item.labels.size) {
+            chipGroup.removeViews(item.labels.size, chipGroup.childCount - item.labels.size)
         }
     }
 }

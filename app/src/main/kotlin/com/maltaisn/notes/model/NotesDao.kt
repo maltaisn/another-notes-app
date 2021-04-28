@@ -71,6 +71,12 @@ interface NotesDao {
     suspend fun getById(id: Long): Note?
 
     /**
+     * Get a note by its ID with its labels. Returns `null` if note doesn't exist.
+     */
+    @Query("SELECT * FROM notes WHERE id == :id")
+    suspend fun getByIdWithLabels(id: Long): NoteWithLabels?
+
+    /**
      * Get all notes with a [status], sorted by last modified date, with pinned notes first.
      * This is used to display notes for each status.
      */
