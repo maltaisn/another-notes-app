@@ -28,7 +28,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.maltaisn.notes.App
 import com.maltaisn.notes.model.entity.Label
 import com.maltaisn.notes.sync.R
-import com.maltaisn.notes.sync.databinding.DialogLabelAddBinding
+import com.maltaisn.notes.sync.databinding.DialogLabelEditBinding
 import com.maltaisn.notes.ui.observeEvent
 import com.maltaisn.notes.ui.viewModel
 import javax.inject.Inject
@@ -49,7 +49,7 @@ class LabelEditDialog : DialogFragment() {
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val context = requireContext();
-        val binding = DialogLabelAddBinding.inflate(LayoutInflater.from(context), null, false);
+        val binding = DialogLabelEditBinding.inflate(LayoutInflater.from(context), null, false);
 
         val dialog = MaterialAlertDialogBuilder(context)
             .setView(binding.root)
@@ -70,8 +70,8 @@ class LabelEditDialog : DialogFragment() {
             val okBtn = dialog.getButton(DialogInterface.BUTTON_POSITIVE)
             viewModel.nameError.observe(this) { error ->
                 okBtn.isEnabled = !error
-                binding.nameInputLayout.error =
-                    if (error && binding.nameInput.length() > 0) {
+                binding.labelInputLayout.error =
+                    if (error && binding.labelInput.length() > 0) {
                         // don't show error for empty label name
                         getString(R.string.label_already_exists)
                     } else {
@@ -80,7 +80,7 @@ class LabelEditDialog : DialogFragment() {
             }
         }
 
-        val nameInput = binding.nameInput
+        val nameInput = binding.labelInput
         nameInput.doAfterTextChanged {
             viewModel.onNameChanged(it?.toString() ?: "")
         }

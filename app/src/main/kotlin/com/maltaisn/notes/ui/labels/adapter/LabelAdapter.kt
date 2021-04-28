@@ -50,5 +50,8 @@ class LabelAdapter(
 
         /** Called when a label [item] at [pos] is long-clicked. */
         fun onLabelItemLongClicked(item: LabelListItem, pos: Int)
+
+        /** Called when the icon of a label [item] at [pos] is clicked. */
+        fun onLabelItemIconClicked(item: LabelListItem, pos: Int)
     }
 }

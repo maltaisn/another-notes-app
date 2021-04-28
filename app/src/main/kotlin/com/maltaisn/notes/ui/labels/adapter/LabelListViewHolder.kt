@@ -37,6 +37,9 @@ class LabelViewHolder(val binding: ItemLabelBinding) : RecyclerView.ViewHolder(b
             })
         }
 
+        binding.labelImv.setOnClickListener {
+            adapter.callback.onLabelItemIconClicked(item, adapterPosition)
+        }
         view.setOnClickListener {
             adapter.callback.onLabelItemClicked(item, adapterPosition)
         }

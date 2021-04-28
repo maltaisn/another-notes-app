@@ -246,6 +246,12 @@ class LabelViewModel @AssistedInject constructor(
         }
     }
 
+    override fun onLabelItemIconClicked(item: LabelListItem, pos: Int) {
+        if (managingLabels) {
+            toggleItemChecked(item, pos)
+        }
+    }
+
     private fun toggleItemChecked(item: LabelListItem, pos: Int) {
         // Set the item as checked and update the list.
         changeListItems { items ->

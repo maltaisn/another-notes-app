@@ -27,7 +27,7 @@
          with keyboard shown, but there's not much to do about it. -->
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/name_input_layout"
+        android:id="@+id/label_input_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -38,12 +38,16 @@
         >
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/name_input"
+            android:id="@+id/label_input"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            tools:text="29 Dec. 2020"
+            tools:text="Label text"
             android:paddingBottom="16dp"
             android:paddingTop="16dp"
+            android:imeOptions="actionDone|flagNoExtractUi"
+            android:singleLine="true"
+            android:maxLines="1"
+            android:maxLength="50"
             />
     </com.google.android.material.textfield.TextInputLayout>
 

@@ -110,6 +110,18 @@ class LabelViewModelTest {
     }
 
     @Test
+    fun `should toggle selection of label on icon click (management)`() = mainCoroutineRule.runBlockingTest {
+        viewModel.start(emptyList())
+        viewModel.onLabelItemIconClicked(getLabelItemAt(0), 0)
+        assertTrue(getLabelItemAt(0).checked)
+        assertEquals(1, viewModel.labelSelection.getOrAwaitValue())
+
+        viewModel.onLabelItemIconClicked(getLabelItemAt(0), 0)
+        assertFalse(getLabelItemAt(0).checked)
+        assertEquals(0, viewModel.labelSelection.getOrAwaitValue())
+    }
+
+    @Test
     fun `should toggle selection on label on click after first selected (management)`() =
         mainCoroutineRule.runBlockingTest {
             // Select a first label by long click
