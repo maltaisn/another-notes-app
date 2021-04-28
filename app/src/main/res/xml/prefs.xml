@@ -38,6 +38,15 @@
             app:title="@string/pref_strikethrough_checked"
             />
 
+        <SeekBarPreference
+            android:defaultValue="2"
+            app:key="preview_labels"
+            app:title="@string/pref_preview_labels"
+            app:min="0"
+            android:max="10"
+            app:showSeekBarValue="true"
+            />
+
         <DropDownPreference
             app:defaultValue="none"
             app:entries="@array/pref_shown_date_entries"

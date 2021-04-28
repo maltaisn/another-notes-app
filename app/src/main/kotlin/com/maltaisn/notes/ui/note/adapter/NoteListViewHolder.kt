@@ -52,13 +52,6 @@ import kotlin.math.min
  */
 private const val MAXIMUM_RELATIVE_DATE_DAYS = 6
 
-/**
- * Maximum number of label chips shown per note item.
- * If more labels are set on note, a `+N` chip is added at the end.
- */
-private const val MAXIMUM_LABEL_CHIPS = 2
-
-
 abstract class NoteViewHolder(itemView: View) :
     RecyclerView.ViewHolder(itemView) {
 
@@ -125,11 +118,12 @@ abstract class NoteViewHolder(itemView: View) :
 
         // Labels
         // Show labels in order up to the maximum, then show a +N chip at the end.
-        if (MAXIMUM_LABEL_CHIPS > 0) {
+        val maxLabels = adapter.prefsManager.maximumPreviewLabels
+        if (maxLabels > 0) {
             labelGroup.isVisible = item.labels.isNotEmpty()
-            val labels = if (item.labels.size > MAXIMUM_LABEL_CHIPS) {
-                item.labels.subList(0, MAXIMUM_LABEL_CHIPS) +
-                        Label(Label.NO_ID, "+${item.labels.size - MAXIMUM_LABEL_CHIPS}")
+            val labels = if (item.labels.size > maxLabels) {
+                item.labels.subList(0, maxLabels) +
+                        Label(Label.NO_ID, "+${item.labels.size - maxLabels}")
             } else {
                 item.labels
             }
@@ -192,8 +186,9 @@ class TextNoteViewHolder(private val binding: ItemNoteTextBinding) :
 
         val contentTxv = binding.contentTxv
         contentTxv.isVisible = item.note.content.isNotBlank()
-        contentTxv.text = HighlightHelper.getHighlightedText(item.note.content, item.contentHighlights,
-            adapter.highlightBackgroundColor, adapter.highlightForegroundColor)
+        contentTxv.text =
+            HighlightHelper.getHighlightedText(item.note.content, item.contentHighlights,
+                adapter.highlightBackgroundColor, adapter.highlightForegroundColor)
         contentTxv.maxLines = adapter.getMaximumPreviewLines(NoteType.TEXT)
     }
 }
@@ -221,7 +216,8 @@ class ListNoteViewHolder(private val binding: ItemNoteListBinding) : NoteViewHol
 
         // Add the first few items in list note using view holders in pool.
         val maxItems = adapter.getMaximumPreviewLines(NoteType.LIST)
-        val itemHighlights = HighlightHelper.splitListNoteHighlightsByItem(noteItems, item.contentHighlights)
+        val itemHighlights =
+            HighlightHelper.splitListNoteHighlightsByItem(noteItems, item.contentHighlights)
         for (i in 0 until min(maxItems, noteItems.size)) {
             val noteItem = noteItems[i]
             val viewHolder = adapter.obtainListNoteItemViewHolder()
@@ -251,7 +247,8 @@ class ListNoteViewHolder(private val binding: ItemNoteListBinding) : NoteViewHol
     }
 }
 
-class MessageViewHolder(private val binding: ItemMessageBinding) : RecyclerView.ViewHolder(binding.root) {
+class MessageViewHolder(private val binding: ItemMessageBinding) :
+    RecyclerView.ViewHolder(binding.root) {
 
     fun bind(item: MessageItem, adapter: NoteAdapter) {
         binding.messageTxv.text = adapter.context.getString(item.message, *item.args.toTypedArray())
@@ -264,7 +261,8 @@ class MessageViewHolder(private val binding: ItemMessageBinding) : RecyclerView.
     }
 }
 
-class HeaderViewHolder(private val binding: ItemHeaderBinding) : RecyclerView.ViewHolder(binding.root) {
+class HeaderViewHolder(private val binding: ItemHeaderBinding) :
+    RecyclerView.ViewHolder(binding.root) {
 
     fun bind(item: HeaderItem) {
         binding.titleTxv.setText(item.title)

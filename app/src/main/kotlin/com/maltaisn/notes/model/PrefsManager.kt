@@ -71,6 +71,9 @@ class PrefsManager @Inject constructor(
             return ShownDateField.values().find { it.value == value }!!
         }
 
+    val maximumPreviewLabels: Int
+        get() = prefs.getInt(PREVIEW_LABELS, 0)
+
     var lastTrashReminderTime: Long
         get() = prefs.getLong(LAST_TRASH_REMIND_TIME, 0)
         set(value) = prefs.edit { putLong(LAST_TRASH_REMIND_TIME, value) }
@@ -105,6 +108,7 @@ class PrefsManager @Inject constructor(
     companion object {
         // Settings keys
         const val THEME = "theme"
+        const val PREVIEW_LABELS = "preview_labels"
         const val PREVIEW_LINES = "preview_lines"
         const val PREVIEW_LINES_TEXT_LIST = "preview_lines_text_list"
         const val PREVIEW_LINES_LIST_LIST = "preview_lines_list_list"
@@ -121,7 +125,8 @@ class PrefsManager @Inject constructor(
         // Other keys
         private const val LIST_LAYOUT_MODE = "is_in_list_layout"
         private const val LAST_TRASH_REMIND_TIME = "last_deleted_remind_time"
-        private const val LAST_RESTRICTED_BATTERY_REMIND_TIME = "last_restricted_battery_remind_time"
+        private const val LAST_RESTRICTED_BATTERY_REMIND_TIME =
+            "last_restricted_battery_remind_time"
 
         private val PREFS_XML = listOf(
             R.xml.prefs,
