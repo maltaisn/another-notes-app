@@ -21,6 +21,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.maltaisn.notes.MainCoroutineRule
 import com.maltaisn.notes.assertNoteEquals
+import com.maltaisn.notes.model.MockLabelsRepository
 import com.maltaisn.notes.model.MockNotesRepository
 import com.maltaisn.notes.model.PrefsManager
 import com.maltaisn.notes.model.ReminderAlarmManager
@@ -69,7 +70,7 @@ class NoteViewModelTest {
 
     @Before
     fun before() {
-        notesRepo = MockNotesRepository()
+        notesRepo = MockNotesRepository(MockLabelsRepository())
         notesRepo.addNote(testNote(id = 1,
             title = "title",
             content = "content",
@@ -245,7 +246,7 @@ class NoteViewModelTest {
 
         assertNoteEquals(testNote(title = "title - Copy", content = "content",
             type = NoteType.TEXT, status = NoteStatus.ACTIVE,
-            added = Date(), modified = Date()), notesRepo.getNoteById(notesRepo.lastNoteId)!!)
+            added = Date(), modified = Date()), notesRepo.requireNoteById(notesRepo.lastNoteId))
     }
 
     @Test
@@ -346,9 +347,10 @@ class NoteViewModelTest {
 
         init {
             viewModelScope.launch {
-                notesRepo.getAllNotes().collect { notes ->
-                    listItems = notes.map { note ->
-                        NoteItem(note.id, note, isNoteSelected(note))
+                notesRepo.getAllNotesWithLabels().collect { notes ->
+                    listItems = notes.map { noteWithLabels ->
+                        val note = noteWithLabels.note
+                        NoteItem(note.id, note, noteWithLabels.labels, isNoteSelected(note))
                     }
                 }
             }

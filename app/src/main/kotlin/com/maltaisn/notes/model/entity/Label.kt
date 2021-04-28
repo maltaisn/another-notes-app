@@ -76,9 +76,9 @@ data class Label(
     ]
 )
 data class LabelRef(
-    @ColumnInfo(name = "noteId")
+    @ColumnInfo(name = "noteId", index = true)
     val noteId: Long,
 
-    @ColumnInfo(name = "labelId")
+    @ColumnInfo(name = "labelId", index = true)
     val labelId: Long,
 )

@@ -20,6 +20,7 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.SavedStateHandle
 import com.maltaisn.notes.MainCoroutineRule
 import com.maltaisn.notes.dateFor
+import com.maltaisn.notes.model.MockLabelsRepository
 import com.maltaisn.notes.model.MockNotesRepository
 import com.maltaisn.notes.model.PrefsManager
 import com.maltaisn.notes.model.ReminderAlarmManager
@@ -62,7 +63,7 @@ class HomeViewModelRemindersTest {
         val upcoming = Date(System.currentTimeMillis() + 86400000)
         val overdue = Date(System.currentTimeMillis() - 86400000)
 
-        notesRepo = MockNotesRepository()
+        notesRepo = MockNotesRepository(MockLabelsRepository())
         notesRepo.addNote(testNote(id = 1, status = NoteStatus.ACTIVE, pinned = PinnedStatus.PINNED,
             reminder = Reminder(todayPast, null, todayPast, 1, false)))
         notesRepo.addNote(testNote(id = 2, status = NoteStatus.ACTIVE,

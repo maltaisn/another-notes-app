@@ -18,6 +18,8 @@ package com.maltaisn.notes.model
 
 import com.maltaisn.notes.model.entity.Label
 import com.maltaisn.notes.model.entity.LabelRef
+import com.maltaisn.notes.model.entity.Note
+import com.maltaisn.notes.model.entity.NoteWithLabels
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.map
 
@@ -103,7 +105,11 @@ class MockLabelsRepository : LabelsRepository {
         }
     }
 
-    override suspend fun getLabelIdsForNote(noteId: Long) = labelRefs[noteId].orEmpty().toList()
+    override suspend fun getLabelIdsForNote(noteId: Long) =
+        labelRefs[noteId].orEmpty().toList()
+
+    fun getNoteWithLabels(note: Note) = NoteWithLabels(note,
+        labelRefs[note.id].orEmpty().map { requireLabelById(it) })
 
     // Non suspending version for initialization
     fun addLabelRefs(refs: List<LabelRef>) {

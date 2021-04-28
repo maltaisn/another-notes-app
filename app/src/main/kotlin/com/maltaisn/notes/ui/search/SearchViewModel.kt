@@ -21,8 +21,8 @@ import androidx.lifecycle.viewModelScope
 import com.maltaisn.notes.model.NotesRepository
 import com.maltaisn.notes.model.PrefsManager
 import com.maltaisn.notes.model.ReminderAlarmManager
-import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.model.entity.NoteStatus
+import com.maltaisn.notes.model.entity.NoteWithLabels
 import com.maltaisn.notes.sync.R
 import com.maltaisn.notes.ui.AssistedSavedStateViewModelFactory
 import com.maltaisn.notes.ui.note.HighlightHelper
@@ -85,10 +85,11 @@ class SearchViewModel @AssistedInject constructor(
 
     override val isNoteSwipeEnabled = false
 
-    private fun createListItems(notes: List<Note>) {
+    private fun createListItems(notes: List<NoteWithLabels>) {
         listItems = buildList {
             var addedArchivedHeader = false
-            for (note in notes) {
+            for (noteWithLabels in notes) {
+                val note = noteWithLabels.note
                 // If this is the first archived note, add a header before it.
                 if (!addedArchivedHeader && note.status == NoteStatus.ARCHIVED) {
                     this += ARCHIVED_HEADER_ITEM
@@ -101,7 +102,8 @@ class SearchViewModel @AssistedInject constructor(
                 val contentHighlights = HighlightHelper.findHighlightsInString(
                     note.content, lastQuery, MAX_HIGHLIGHTS_IN_CONTENT)
 
-                this += NoteItem(note.id, note, checked, titleHighlights, contentHighlights)
+                this += NoteItem(note.id, note, noteWithLabels.labels,
+                    checked, titleHighlights, contentHighlights)
             }
         }
     }

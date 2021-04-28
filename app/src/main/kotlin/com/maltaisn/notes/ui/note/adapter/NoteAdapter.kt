@@ -29,6 +29,7 @@ import com.maltaisn.notes.model.entity.NoteType
 import com.maltaisn.notes.sync.R
 import com.maltaisn.notes.sync.databinding.ItemHeaderBinding
 import com.maltaisn.notes.sync.databinding.ItemMessageBinding
+import com.maltaisn.notes.sync.databinding.ItemNoteLabelBinding
 import com.maltaisn.notes.sync.databinding.ItemNoteListBinding
 import com.maltaisn.notes.sync.databinding.ItemNoteListItemBinding
 import com.maltaisn.notes.sync.databinding.ItemNoteTextBinding
@@ -45,7 +46,15 @@ class NoteAdapter(
      * When list note items are recycled, view holders are added back to the pool.
      * **Should only be accessed on main thread.**
      */
-    private val listNoteItemsPool = ArrayDeque<ListNoteItemViewHolder>()
+    private val listNoteItemViewHolderPool = ArrayDeque<ListNoteItemViewHolder>()
+
+    /**
+     * A pool of view holders for showing label chips
+     * When note items are bound, view holders are obtained from this pool and bound.
+     * When note items are recycled, view holders are added back to the pool.
+     * **Should only be accessed on main thread.**
+     */
+    private val labelViewHolderPool = ArrayDeque<LabelViewHolder>()
 
     var listLayoutMode = NoteListLayoutMode.LIST
         set(value) {
@@ -88,10 +97,9 @@ class NoteAdapter(
             is MessageViewHolder -> holder.bind(item as MessageItem, this)
             is HeaderViewHolder -> holder.bind(item as HeaderItem)
             is NoteViewHolder -> {
-                if (holder is ListNoteViewHolder) {
-                    // [onViewRecycled] is not always called so unbinding is also done here.
-                    unbindListNoteViewHolder(holder)
-                }
+                // [onViewRecycled] is not always called so unbinding is also done here.
+                holder.unbind(this)
+
                 holder.bind(this, item as NoteItem)
             }
         }
@@ -102,24 +110,37 @@ class NoteAdapter(
     override fun getItemId(position: Int) = getItem(position).id
 
     override fun onViewRecycled(holder: RecyclerView.ViewHolder) {
-        if (holder is ListNoteViewHolder) {
-            unbindListNoteViewHolder(holder)
+        // Used to recycle secondary view holders
+        if (holder is NoteViewHolder) {
+            holder.unbind(this)
         }
-    }
-
-    private fun unbindListNoteViewHolder(holder: ListNoteViewHolder) {
-        val viewHolders = holder.unbind()
-        listNoteItemsPool += viewHolders
     }
 
     @SuppressLint("InflateParams")
     fun obtainListNoteItemViewHolder(): ListNoteItemViewHolder =
-        if (listNoteItemsPool.isNotEmpty()) {
-            listNoteItemsPool.removeLast()
+        if (listNoteItemViewHolderPool.isNotEmpty()) {
+            listNoteItemViewHolderPool.removeLast()
         } else {
             ListNoteItemViewHolder(ItemNoteListItemBinding.inflate(
                 LayoutInflater.from(context), null, false))
         }
+
+    @SuppressLint("InflateParams")
+    fun obtainLabelViewHolder(): LabelViewHolder =
+        if (labelViewHolderPool.isNotEmpty()) {
+            labelViewHolderPool.removeLast()
+        } else {
+            LabelViewHolder(ItemNoteLabelBinding.inflate(
+                LayoutInflater.from(context), null, false))
+        }
+
+    fun freeListNoteItemViewHolder(viewHolder: ListNoteItemViewHolder) {
+        listNoteItemViewHolderPool += viewHolder
+    }
+
+    fun freeLabelViewHolder(viewHolder: LabelViewHolder) {
+        labelViewHolderPool += viewHolder
+    }
 
     fun getMaximumPreviewLines(noteType: NoteType) =
         prefsManager.getMaximumPreviewLines(listLayoutMode, noteType)

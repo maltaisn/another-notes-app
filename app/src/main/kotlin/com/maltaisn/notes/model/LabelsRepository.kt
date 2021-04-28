@@ -23,9 +23,12 @@ import kotlinx.coroutines.flow.Flow
 interface LabelsRepository {
 
     suspend fun insertLabel(label: Label): Long
+
     suspend fun updateLabel(label: Label)
+
     suspend fun deleteLabel(label: Label)
     suspend fun deleteLabels(labels: List<Label>)
+
     suspend fun getLabelById(id: Long): Label?
     suspend fun getLabelByName(name: String): Label?
 

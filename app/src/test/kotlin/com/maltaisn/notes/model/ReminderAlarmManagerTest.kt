@@ -42,7 +42,7 @@ class ReminderAlarmManagerTest {
     @Before
     fun before() {
         val recurFinder = RecurrenceFinder()
-        notesRepo = MockNotesRepository()
+        notesRepo = MockNotesRepository(MockLabelsRepository())
         notesRepo.addNote(testNote(id = 1,
             reminder = Reminder.create(dateFor("2021-01-01"), null, recurFinder)))
         notesRepo.addNote(testNote(id = 2,

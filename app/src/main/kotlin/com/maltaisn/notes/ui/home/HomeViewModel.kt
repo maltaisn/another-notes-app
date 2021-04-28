@@ -23,8 +23,8 @@ import androidx.lifecycle.viewModelScope
 import com.maltaisn.notes.model.NotesRepository
 import com.maltaisn.notes.model.PrefsManager
 import com.maltaisn.notes.model.ReminderAlarmManager
-import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.model.entity.NoteStatus
+import com.maltaisn.notes.model.entity.NoteWithLabels
 import com.maltaisn.notes.model.entity.PinnedStatus
 import com.maltaisn.notes.sync.R
 import com.maltaisn.notes.ui.AssistedSavedStateViewModelFactory
@@ -183,12 +183,12 @@ class HomeViewModel @AssistedInject constructor(
         }
     }
 
-    private fun createActiveListItems(notes: List<Note>): List<NoteListItem> = buildList {
+    private fun createActiveListItems(notes: List<NoteWithLabels>): List<NoteListItem> = buildList {
         // If there's at least one pinned note, add pinned header.
-        if (notes.isNotEmpty() && notes.first().pinned == PinnedStatus.PINNED) {
+        if (notes.isNotEmpty() && notes.first().note.pinned == PinnedStatus.PINNED) {
             this += PINNED_HEADER_ITEM
             for (note in notes) {
-                if (note.pinned != PinnedStatus.PINNED) {
+                if (note.note.pinned != PinnedStatus.PINNED) {
                     break
                 }
                 addNoteItem(note)
@@ -200,18 +200,18 @@ class HomeViewModel @AssistedInject constructor(
         }
 
         for (note in notes) {
-            if (note.pinned == PinnedStatus.PINNED) continue
+            if (note.note.pinned == PinnedStatus.PINNED) continue
             addNoteItem(note)
         }
     }
 
-    private fun createArchivedListItems(notes: List<Note>): List<NoteListItem> = buildList {
+    private fun createArchivedListItems(notes: List<NoteWithLabels>) = buildList {
         for (note in notes) {
             addNoteItem(note)
         }
     }
 
-    private fun createDeletedListItems(notes: List<Note>): List<NoteListItem> = buildList {
+    private fun createDeletedListItems(notes: List<NoteWithLabels>) = buildList {
         // If needed, add reminder that notes get auto-deleted when in trash.
         if (notes.isNotEmpty() &&
             System.currentTimeMillis() - prefs.lastTrashReminderTime >
@@ -227,7 +227,7 @@ class HomeViewModel @AssistedInject constructor(
         }
     }
 
-    private fun createRemindersListItems(notes: List<Note>): List<NoteListItem> = buildList {
+    private fun createRemindersListItems(notes: List<NoteWithLabels>) = buildList {
         val calendar = Calendar.getInstance()
         calendar[Calendar.HOUR_OF_DAY] = 0
         calendar[Calendar.MINUTE] = 0
@@ -249,7 +249,8 @@ class HomeViewModel @AssistedInject constructor(
         var addedOverdueHeader = false
         var addedTodayHeader = false
         var addedUpcomingHeader = false
-        for (note in notes) {
+        for (noteWithLabels in notes) {
+            val note = noteWithLabels.note
             val reminderTime = (note.reminder ?: continue).next.time
 
             if (!addedOverdueHeader && reminderTime <= now) {
@@ -268,13 +269,15 @@ class HomeViewModel @AssistedInject constructor(
 
             // Show "Mark as done" action button.
             val checked = isNoteSelected(note)
-            this += NoteItem(note.id, note, checked, showMarkAsDone = reminderTime <= now)
+            this += NoteItem(note.id, note, noteWithLabels.labels, checked,
+                showMarkAsDone = reminderTime <= now)
         }
     }
 
-    private fun MutableList<NoteListItem>.addNoteItem(note: Note) {
+    private fun MutableList<NoteListItem>.addNoteItem(noteWithLabels: NoteWithLabels) {
+        val note = noteWithLabels.note
         val checked = isNoteSelected(note)
-        this += NoteItem(note.id, note, checked)
+        this += NoteItem(note.id, note, noteWithLabels.labels, checked)
     }
 
     override fun updatePlaceholder() = when (destination.value!!) {

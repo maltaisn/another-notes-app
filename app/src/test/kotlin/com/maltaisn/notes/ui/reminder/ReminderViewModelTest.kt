@@ -20,6 +20,7 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.SavedStateHandle
 import com.maltaisn.notes.MainCoroutineRule
 import com.maltaisn.notes.dateFor
+import com.maltaisn.notes.model.MockLabelsRepository
 import com.maltaisn.notes.model.MockNotesRepository
 import com.maltaisn.notes.model.ReminderAlarmManager
 import com.maltaisn.notes.model.entity.Reminder
@@ -58,7 +59,7 @@ class ReminderViewModelTest {
 
     @Before
     fun before() {
-        notesRepo = MockNotesRepository()
+        notesRepo = MockNotesRepository(MockLabelsRepository())
         notesRepo.addNote(testNote(id = 1, reminder = Reminder(
             dateFor("2020-08-15T00:00:00.000"), Recurrence(Recurrence.Period.DAILY),
             dateFor("2020-08-15T00:00:00.000"), 1, false)))

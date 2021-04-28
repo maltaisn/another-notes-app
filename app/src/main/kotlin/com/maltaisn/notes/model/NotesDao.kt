@@ -27,7 +27,6 @@ import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.model.entity.NoteStatus
 import com.maltaisn.notes.model.entity.NoteWithLabels
 import kotlinx.coroutines.flow.Flow
-import java.util.Date
 
 @Dao
 interface NotesDao {
@@ -73,6 +72,7 @@ interface NotesDao {
     /**
      * Get a note by its ID with its labels. Returns `null` if note doesn't exist.
      */
+    @Transaction
     @Query("SELECT * FROM notes WHERE id == :id")
     suspend fun getByIdWithLabels(id: Long): NoteWithLabels?
 
@@ -80,29 +80,32 @@ interface NotesDao {
      * Get all notes with a [status], sorted by last modified date, with pinned notes first.
      * This is used to display notes for each status.
      */
+    @Transaction
     @Query("SELECT * FROM notes WHERE status == :status ORDER BY pinned DESC, modified_date DESC, id")
-    fun getByStatus(status: NoteStatus): Flow<List<Note>>
-
-    /**
-     * Get notes with a [status] and older than a [date][minDate].
-     * Used for deleting old notes in trash after a delay.
-     */
-    @Query("SELECT * FROM notes WHERE status == :status AND modified_date < :minDate")
-    suspend fun getByStatusAndDate(status: NoteStatus, minDate: Date): List<Note>
+    fun getByStatus(status: NoteStatus): Flow<List<NoteWithLabels>>
 
     /**
      * Get all notes with a reminder set and reminder not done, sorted by ascending date.
      * Used for reminders screen and for adding alarms back on boot.
      */
+    @Transaction
     @Query("SELECT * FROM notes WHERE reminder_start IS NOT NULL AND NOT reminder_done ORDER BY reminder_next ASC")
-    fun getAllWithReminder(): Flow<List<Note>>
+    fun getAllWithReminder(): Flow<List<NoteWithLabels>>
 
     /**
      * Search active and archived notes for a [query] using full-text search,
      * sorted by status first then by last modified date.
      */
+    @Transaction
     @Query("""SELECT * FROM notes JOIN notes_fts ON notes_fts.rowid == notes.id
         WHERE notes_fts MATCH :query AND status != 2
         ORDER BY status ASC, modified_date DESC""")
-    fun search(query: String): Flow<List<Note>>
+    fun search(query: String): Flow<List<NoteWithLabels>>
+
+    /**
+     * Delete notes with a [status] and older than a [date][minDate].
+     * Used for deleting notes in trash.
+     */
+    @Query("DELETE FROM notes WHERE status == :status AND modified_date < :minDate")
+    suspend fun deleteNotesByStatusAndDate(status: NoteStatus, minDate: Long)
 }

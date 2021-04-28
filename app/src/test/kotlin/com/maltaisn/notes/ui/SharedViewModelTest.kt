@@ -18,6 +18,7 @@ package com.maltaisn.notes.ui
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.maltaisn.notes.MainCoroutineRule
+import com.maltaisn.notes.model.MockLabelsRepository
 import com.maltaisn.notes.model.MockNotesRepository
 import com.maltaisn.notes.model.ReminderAlarmManager
 import com.maltaisn.notes.model.entity.NoteStatus
@@ -46,7 +47,7 @@ class SharedViewModelTest {
 
     @Before
     fun before() {
-        notesRepo = MockNotesRepository()
+        notesRepo = MockNotesRepository(MockLabelsRepository())
         notesRepo.addNote(testNote(id = 1, status = NoteStatus.ACTIVE))
         notesRepo.addNote(testNote(id = 2, status = NoteStatus.ARCHIVED,
             pinned = PinnedStatus.CANT_PIN))

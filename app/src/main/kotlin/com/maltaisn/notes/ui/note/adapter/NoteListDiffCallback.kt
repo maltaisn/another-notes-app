@@ -50,6 +50,7 @@ class NoteListDiffCallback : DiffUtil.ItemCallback<NoteListItem>() {
                         newNote.content == oldNote.content &&
                         newNote.metadata == oldNote.metadata &&
                         newNote.reminder == oldNote.reminder &&
+                        new.labels == old.labels &&
                         new.titleHighlights == old.titleHighlights &&
                         new.contentHighlights == old.contentHighlights &&
                         new.showMarkAsDone == old.showMarkAsDone

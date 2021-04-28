@@ -19,9 +19,12 @@ package com.maltaisn.notes.ui.home
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.SavedStateHandle
 import com.maltaisn.notes.MainCoroutineRule
+import com.maltaisn.notes.model.MockLabelsRepository
 import com.maltaisn.notes.model.MockNotesRepository
 import com.maltaisn.notes.model.PrefsManager
 import com.maltaisn.notes.model.ReminderAlarmManager
+import com.maltaisn.notes.model.entity.Label
+import com.maltaisn.notes.model.entity.LabelRef
 import com.maltaisn.notes.model.entity.NoteStatus
 import com.maltaisn.notes.model.entity.PinnedStatus
 import com.maltaisn.notes.sync.R
@@ -53,6 +56,7 @@ class HomeViewModelTest {
 
     private lateinit var viewModel: HomeViewModel
 
+    private lateinit var labelsRepo: MockLabelsRepository
     private lateinit var notesRepo: MockNotesRepository
     private lateinit var prefs: PrefsManager
 
@@ -66,7 +70,11 @@ class HomeViewModelTest {
 
     @Before
     fun before() {
-        notesRepo = MockNotesRepository()
+        labelsRepo = MockLabelsRepository()
+        labelsRepo.addLabel(Label(1, "label"))
+        labelsRepo.addLabelRefs(listOf(LabelRef(3, 1)))
+
+        notesRepo = MockNotesRepository(labelsRepo)
         notesRepo.addNote(testNote(id = 1,
             status = NoteStatus.ACTIVE,
             pinned = PinnedStatus.PINNED))
@@ -132,7 +140,7 @@ class HomeViewModelTest {
 
         assertEquals(HomeDestination.ARCHIVED, viewModel.destination.getOrAwaitValue())
         assertEquals(listOf(
-            NoteItem(3, note)
+            NoteItem(3, note, listOf(labelsRepo.requireLabelById(1)))
         ), viewModel.noteItems.getOrAwaitValue())
     }
 

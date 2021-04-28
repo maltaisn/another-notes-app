@@ -24,16 +24,19 @@ import kotlinx.coroutines.flow.Flow
 interface NotesRepository {
 
     suspend fun insertNote(note: Note): Long
+
     suspend fun updateNote(note: Note)
     suspend fun updateNotes(notes: List<Note>)
+
     suspend fun deleteNote(note: Note)
     suspend fun deleteNotes(notes: List<Note>)
+
     suspend fun getNoteById(id: Long): Note?
     suspend fun getNoteByIdWithLabels(id: Long): NoteWithLabels?
 
-    fun getNotesWithReminder(): Flow<List<Note>>
-    fun getNotesByStatus(status: NoteStatus): Flow<List<Note>>
-    fun searchNotes(query: String): Flow<List<Note>>
+    fun getNotesWithReminder(): Flow<List<NoteWithLabels>>
+    fun getNotesByStatus(status: NoteStatus): Flow<List<NoteWithLabels>>
+    fun searchNotes(query: String): Flow<List<NoteWithLabels>>
 
     suspend fun emptyTrash()
     suspend fun deleteOldNotesInTrash()

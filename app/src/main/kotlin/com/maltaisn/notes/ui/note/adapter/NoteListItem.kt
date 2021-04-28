@@ -18,6 +18,7 @@ package com.maltaisn.notes.ui.note.adapter
 
 import androidx.annotation.PluralsRes
 import androidx.annotation.StringRes
+import com.maltaisn.notes.model.entity.Label
 import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.model.entity.NoteType
 import com.maltaisn.notes.ui.note.adapter.NoteAdapter.ViewType
@@ -30,6 +31,7 @@ sealed class NoteListItem {
 data class NoteItem(
     override val id: Long,
     val note: Note,
+    val labels: List<Label> = emptyList(),
     val checked: Boolean = false,
     val titleHighlights: List<IntRange> = emptyList(),
     val contentHighlights: List<IntRange> = emptyList(),

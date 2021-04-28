@@ -65,6 +65,19 @@
         <item name="chipMinTouchTargetSize">0dp</item>
     </style>
 
+    <style name="NoteLabelChipStyle">
+        <item name="android:focusable">false</item>
+        <item name="android:clickable">false</item>
+        <item name="rippleColor">@android:color/transparent</item>
+        <item name="android:textAppearance">?textAppearanceCaption</item>
+        <item name="android:ellipsize">end</item>
+        <item name="chipBackgroundColor">@null</item>
+        <item name="chipMinHeight">28dp</item>
+        <item name="chipStrokeColor">@color/material_on_surface_emphasis_medium</item>
+        <item name="chipStrokeWidth">0.7dp</item>
+        <item name="chipMinTouchTargetSize">0dp</item>
+    </style>
+
     <style name="NoteActionButtonStyle" parent="Widget.MaterialComponents.Button.TextButton">
         <item name="android:textColor">@color/material_on_surface_emphasis_medium</item>
         <item name="android:textSize">12sp</item>

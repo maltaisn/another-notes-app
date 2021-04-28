@@ -32,7 +32,7 @@ class ReminderAlarmManager @Inject constructor(
     suspend fun updateAllAlarms() {
         val now = Date()
         val notesToUpdate = mutableListOf<Note>()
-        val notes = notesRepository.getNotesWithReminder().first()
+        val notes = notesRepository.getNotesWithReminder().first().asSequence().map { it.note }
         for (note in notes) {
             var reminder = note.reminder!!
 

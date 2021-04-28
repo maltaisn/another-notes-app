@@ -16,7 +16,6 @@
 
 package com.maltaisn.notes.model
 
-import com.maltaisn.notes.model.entity.Label
 import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.model.entity.NoteStatus
 import com.maltaisn.notes.model.entity.NoteWithLabels
@@ -24,7 +23,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
-import kotlinx.serialization.json.Json
 
 /**
  * Implementation of the notes repository that stores data itself instead of relying on DAOs.
@@ -34,10 +32,8 @@ import kotlinx.serialization.json.Json
  *
  * A [labelsRepository] is needed if using methods that return [NoteWithLabels].
  */
-class MockNotesRepository(private val labelsRepository: LabelsRepository? = null) :
+class MockNotesRepository(private val labelsRepository: MockLabelsRepository) :
     NotesRepository {
-
-    private val json = Json {}
 
     private val notes = mutableMapOf<Long, Note>()
 
@@ -114,17 +110,8 @@ class MockNotesRepository(private val labelsRepository: LabelsRepository? = null
 
     override suspend fun getNoteById(id: Long) = notes[id]
 
-    override suspend fun getNoteByIdWithLabels(id: Long): NoteWithLabels? {
-        val note = getNoteById(id)
-        if (note != null) {
-            val labels = mutableListOf<Label>()
-            for (labelId in labelsRepository!!.getLabelIdsForNote(id)) {
-                labels += labelsRepository.getLabelById(labelId)!!
-            }
-            return NoteWithLabels(note, labels)
-        }
-        return null
-    }
+    override suspend fun getNoteByIdWithLabels(id: Long) =
+        getNoteById(id)?.let(labelsRepository::getNoteWithLabels)
 
     fun requireNoteById(id: Long) = notes.getOrElse(id) {
         error("No note with ID $id")
@@ -134,6 +121,7 @@ class MockNotesRepository(private val labelsRepository: LabelsRepository? = null
         notes.values.asSequence()
             .filter { it.reminder?.done == false }
             .sortedBy { it.reminder!!.next.time }
+            .map(labelsRepository::getNoteWithLabels)
             .toList()
     }
 
@@ -141,26 +129,26 @@ class MockNotesRepository(private val labelsRepository: LabelsRepository? = null
         // Sort by last modified, then by ID.
         notes.values.asSequence()
             .filter { it.status == status }
-            .sortedWith(compareByDescending<Note> { it.pinned }
-                .thenByDescending { it.lastModifiedDate }
-                .thenBy { it.id })
+            .sortedWith(compareByDescending(Note::pinned)
+                .thenByDescending(Note::lastModifiedDate)
+                .thenBy(Note::id))
+            .map(labelsRepository::getNoteWithLabels)
             .toList()
     }
 
-    override fun searchNotes(query: String): Flow<List<Note>> {
+    override fun searchNotes(query: String): Flow<List<NoteWithLabels>> {
         val queryNoFtsSyntax = query.replace("[*\"-]".toRegex(), "")
         return if (queryNoFtsSyntax.isEmpty()) {
-            flow { emit(emptyList<Note>()) }
+            flow { emit(emptyList<NoteWithLabels>()) }
         } else {
             changeFlow.map {
-                val found = notes.mapNotNullTo(ArrayList()) { (_, note) ->
-                    note.takeIf {
-                        note.status != NoteStatus.DELETED &&
-                                (queryNoFtsSyntax in note.title || queryNoFtsSyntax in note.content)
-                    }
-                }
-                found.sortWith(compareBy<Note> { it.status }.thenByDescending { it.lastModifiedDate })
-                found
+                notes.values.asSequence()
+                    .filter { it.status != NoteStatus.DELETED }
+                    .filter { (queryNoFtsSyntax in it.title || queryNoFtsSyntax in it.content) }
+                    .sortedWith(compareBy(Note::status)
+                        .thenByDescending(Note::lastModifiedDate))
+                    .map(labelsRepository::getNoteWithLabels)
+                    .toList()
             }
         }
     }
@@ -187,8 +175,10 @@ class MockNotesRepository(private val labelsRepository: LabelsRepository? = null
         changeFlow.emit(Unit)
     }
 
-    fun getAllNotes() = changeFlow.map {
-        notes.values.toList()
+    fun getAllNotesWithLabels() = changeFlow.map {
+        notes.values.asSequence()
+            .map(labelsRepository::getNoteWithLabels)
+            .toList()
     }
 
 }

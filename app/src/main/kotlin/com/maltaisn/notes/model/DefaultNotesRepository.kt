@@ -19,9 +19,7 @@ package com.maltaisn.notes.model
 import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.model.entity.NoteStatus
 import kotlinx.coroutines.NonCancellable
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
-import java.util.Date
 import javax.inject.Inject
 
 class DefaultNotesRepository @Inject constructor(
@@ -63,13 +61,15 @@ class DefaultNotesRepository @Inject constructor(
     override fun searchNotes(query: String) = notesDao.search(query)
 
     override suspend fun emptyTrash() {
-        deleteNotes(getNotesByStatus(NoteStatus.DELETED).first())
+        withContext(NonCancellable) {
+            notesDao.deleteNotesByStatusAndDate(NoteStatus.DELETED, Long.MAX_VALUE)
+        }
     }
 
     override suspend fun deleteOldNotesInTrash() {
         val delay = PrefsManager.TRASH_AUTO_DELETE_DELAY.toLongMilliseconds()
-        val minDate = Date(System.currentTimeMillis() - delay)
-        deleteNotes(notesDao.getByStatusAndDate(NoteStatus.DELETED, minDate))
+        val minDate = System.currentTimeMillis() - delay
+        notesDao.deleteNotesByStatusAndDate(NoteStatus.DELETED, minDate)
     }
 
     override suspend fun clearAllData() {

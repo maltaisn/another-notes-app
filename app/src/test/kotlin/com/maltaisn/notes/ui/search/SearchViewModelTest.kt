@@ -19,9 +19,12 @@ package com.maltaisn.notes.ui.search
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.SavedStateHandle
 import com.maltaisn.notes.MainCoroutineRule
+import com.maltaisn.notes.model.MockLabelsRepository
 import com.maltaisn.notes.model.MockNotesRepository
 import com.maltaisn.notes.model.PrefsManager
 import com.maltaisn.notes.model.ReminderAlarmManager
+import com.maltaisn.notes.model.entity.Label
+import com.maltaisn.notes.model.entity.LabelRef
 import com.maltaisn.notes.model.entity.NoteStatus
 import com.maltaisn.notes.model.entity.PinnedStatus
 import com.maltaisn.notes.sync.R
@@ -45,6 +48,7 @@ class SearchViewModelTest {
 
     private lateinit var viewModel: SearchViewModel
 
+    private lateinit var labelsRepo: MockLabelsRepository
     private lateinit var notesRepo: MockNotesRepository
     private lateinit var prefs: PrefsManager
 
@@ -56,7 +60,11 @@ class SearchViewModelTest {
 
     @Before
     fun before() {
-        notesRepo = MockNotesRepository()
+        labelsRepo = MockLabelsRepository()
+        labelsRepo.addLabel(Label(1, "label"))
+        labelsRepo.addLabelRefs(listOf(LabelRef(1, 1)))
+
+        notesRepo = MockNotesRepository(labelsRepo)
         notesRepo.addNote(testNote(id = 1, title = "13", status = NoteStatus.ACTIVE))
         notesRepo.addNote(testNote(id = 2, title = "23", status = NoteStatus.ARCHIVED))
         notesRepo.addNote(testNote(id = 3, title = "12", status = NoteStatus.DELETED))
@@ -79,7 +87,8 @@ class SearchViewModelTest {
     fun `should show search results for query (only active)`() = mainCoroutineRule.runBlockingTest {
         searchNotesAndWait("1")
         assertEquals(listOf(
-            NoteItem(1, notesRepo.requireNoteById(1), false, listOf(0..1), emptyList())
+            NoteItem(1, notesRepo.requireNoteById(1), listOf(labelsRepo.requireLabelById(1)),
+                false, listOf(0..1), emptyList())
         ), viewModel.noteItems.getOrAwaitValue())
     }
 
@@ -89,7 +98,8 @@ class SearchViewModelTest {
             searchNotesAndWait("2")
             assertEquals(listOf(
                 HeaderItem(-1, R.string.note_location_archived),
-                NoteItem(2, notesRepo.requireNoteById(2), false, listOf(0..1), emptyList())
+                NoteItem(2, notesRepo.requireNoteById(2), emptyList(),
+                    false, listOf(0..1), emptyList())
             ), viewModel.noteItems.getOrAwaitValue())
         }
 
@@ -98,9 +108,11 @@ class SearchViewModelTest {
         mainCoroutineRule.runBlockingTest {
             searchNotesAndWait("3")
             assertEquals(listOf(
-                NoteItem(1, notesRepo.requireNoteById(1), false, listOf(1..2), emptyList()),
+                NoteItem(1, notesRepo.requireNoteById(1), listOf(labelsRepo.requireLabelById(1)),
+                    false, listOf(1..2), emptyList()),
                 HeaderItem(-1, R.string.note_location_archived),
-                NoteItem(2, notesRepo.requireNoteById(2), false, listOf(1..2), emptyList())
+                NoteItem(2, notesRepo.requireNoteById(2), emptyList(),
+                    false, listOf(1..2), emptyList())
             ), viewModel.noteItems.getOrAwaitValue())
         }
 

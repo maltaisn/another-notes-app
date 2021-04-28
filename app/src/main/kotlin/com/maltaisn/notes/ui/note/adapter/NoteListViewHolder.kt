@@ -26,6 +26,8 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.chip.Chip
+import com.google.android.material.chip.ChipGroup
+import com.maltaisn.notes.model.entity.Label
 import com.maltaisn.notes.model.entity.ListNoteItem
 import com.maltaisn.notes.model.entity.NoteType
 import com.maltaisn.notes.strikethroughText
@@ -33,6 +35,7 @@ import com.maltaisn.notes.sync.BuildConfig
 import com.maltaisn.notes.sync.R
 import com.maltaisn.notes.sync.databinding.ItemHeaderBinding
 import com.maltaisn.notes.sync.databinding.ItemMessageBinding
+import com.maltaisn.notes.sync.databinding.ItemNoteLabelBinding
 import com.maltaisn.notes.sync.databinding.ItemNoteListBinding
 import com.maltaisn.notes.sync.databinding.ItemNoteListItemBinding
 import com.maltaisn.notes.sync.databinding.ItemNoteTextBinding
@@ -49,6 +52,13 @@ import kotlin.math.min
  */
 private const val MAXIMUM_RELATIVE_DATE_DAYS = 6
 
+/**
+ * Maximum number of label chips shown per note item.
+ * If more labels are set on note, a `+N` chip is added at the end.
+ */
+private const val MAXIMUM_LABEL_CHIPS = 2
+
+
 abstract class NoteViewHolder(itemView: View) :
     RecyclerView.ViewHolder(itemView) {
 
@@ -64,7 +74,10 @@ abstract class NoteViewHolder(itemView: View) :
     protected abstract val titleTxv: TextView
     protected abstract val dateTxv: TextView
     protected abstract val reminderChip: Chip
+    protected abstract val labelGroup: ChipGroup
     protected abstract val actionBtn: MaterialButton
+
+    private val labelViewHolders = mutableListOf<LabelViewHolder>()
 
     open fun bind(adapter: NoteAdapter, item: NoteItem) {
         val note = item.note
@@ -110,6 +123,27 @@ abstract class NoteViewHolder(itemView: View) :
                 R.drawable.ic_repeat else R.drawable.ic_alarm)
         }
 
+        // Labels
+        // Show labels in order up to the maximum, then show a +N chip at the end.
+        if (MAXIMUM_LABEL_CHIPS > 0) {
+            labelGroup.isVisible = item.labels.isNotEmpty()
+            val labels = if (item.labels.size > MAXIMUM_LABEL_CHIPS) {
+                item.labels.subList(0, MAXIMUM_LABEL_CHIPS) +
+                        Label(Label.NO_ID, "+${item.labels.size - MAXIMUM_LABEL_CHIPS}")
+            } else {
+                item.labels
+            }
+            for (label in labels) {
+                val viewHolder = adapter.obtainLabelViewHolder()
+                labelViewHolders += viewHolder
+                viewHolder.bind(label)
+                labelGroup.addView(viewHolder.binding.root)
+            }
+        } else {
+            // Don't show labels in preview
+            labelGroup.isVisible = false
+        }
+
         // Mark as done button
         val bottomPadding: Int
         if (item.showMarkAsDone && !item.checked) {
@@ -127,6 +161,19 @@ abstract class NoteViewHolder(itemView: View) :
         cardView.setContentPadding(0, 0, 0,
             cardView.context.resources.getDimensionPixelSize(bottomPadding))
     }
+
+    /**
+     * Unbind a previously bound view holder.
+     * This is used to free "secondary" view holders.
+     */
+    open fun unbind(adapter: NoteAdapter) {
+        // Free label view holders
+        labelGroup.removeViews(0, labelGroup.childCount)
+        for (viewHolder in labelViewHolders) {
+            adapter.freeLabelViewHolder(viewHolder)
+        }
+        labelViewHolders.clear()
+    }
 }
 
 class TextNoteViewHolder(private val binding: ItemNoteTextBinding) :
@@ -136,6 +183,7 @@ class TextNoteViewHolder(private val binding: ItemNoteTextBinding) :
     override val titleTxv = binding.titleTxv
     override val dateTxv = binding.dateTxv
     override val reminderChip = binding.reminderChip
+    override val labelGroup = binding.labelGroup
     override val actionBtn = binding.actionBtn
 
     override fun bind(adapter: NoteAdapter, item: NoteItem) {
@@ -156,6 +204,7 @@ class ListNoteViewHolder(private val binding: ItemNoteListBinding) : NoteViewHol
     override val titleTxv = binding.titleTxv
     override val dateTxv = binding.dateTxv
     override val reminderChip = binding.reminderChip
+    override val labelGroup = binding.labelGroup
     override val actionBtn = binding.actionBtn
 
     private val itemViewHolders = mutableListOf<ListNoteItemViewHolder>()
@@ -178,7 +227,7 @@ class ListNoteViewHolder(private val binding: ItemNoteListBinding) : NoteViewHol
             val viewHolder = adapter.obtainListNoteItemViewHolder()
             itemViewHolders += viewHolder
             viewHolder.bind(adapter, noteItem, itemHighlights[i])
-            itemsLayout.addView(viewHolder.binding.root, i)
+            itemsLayout.addView(viewHolder.binding.root)
         }
 
         // Show a label indicating the number of items not shown.
@@ -191,16 +240,14 @@ class ListNoteViewHolder(private val binding: ItemNoteListBinding) : NoteViewHol
         }
     }
 
-    /**
-     * Unbind [ListNoteViewHolder] used in this item and return them.
-     */
-    fun unbind(): List<ListNoteItemViewHolder> {
+    override fun unbind(adapter: NoteAdapter) {
+        super.unbind(adapter)
         // Free view holders used by the item.
-        val viewHolders = itemViewHolders.toList()
-        binding.itemsLayout.removeViews(0, binding.itemsLayout.childCount - 1)
+        binding.itemsLayout.removeViews(0, binding.itemsLayout.childCount)
+        for (viewHolder in itemViewHolders) {
+            adapter.freeListNoteItemViewHolder(viewHolder)
+        }
         itemViewHolders.clear()
-
-        return viewHolders
     }
 }
 
@@ -227,7 +274,7 @@ class HeaderViewHolder(private val binding: ItemHeaderBinding) : RecyclerView.Vi
 
 /**
  * A view holder for displayed an item in a list note view holder.
- * This is effectively a view holder in a view holder...
+ * This is a "secondary" view holder, it is held by another view holder.
  */
 class ListNoteItemViewHolder(val binding: ItemNoteListItemBinding) {
 
@@ -243,5 +290,16 @@ class ListNoteItemViewHolder(val binding: ItemNoteListItemBinding) {
         } else {
             R.drawable.ic_checkbox_off
         })
+    }
+}
+
+/**
+ * A view holder for a label chip displayed in note view holders.
+ * This is a "secondary" view holder, it is held by another view holder.
+ */
+class LabelViewHolder(val binding: ItemNoteLabelBinding) {
+
+    fun bind(label: Label) {
+        binding.labelChip.text = label.name
     }
 }

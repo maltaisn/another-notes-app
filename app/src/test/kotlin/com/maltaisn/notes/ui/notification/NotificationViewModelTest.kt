@@ -21,6 +21,7 @@ import androidx.lifecycle.SavedStateHandle
 import com.maltaisn.notes.MainCoroutineRule
 import com.maltaisn.notes.assertNoteEquals
 import com.maltaisn.notes.dateFor
+import com.maltaisn.notes.model.MockLabelsRepository
 import com.maltaisn.notes.model.MockNotesRepository
 import com.maltaisn.notes.model.ReminderAlarmManager
 import com.maltaisn.notes.model.entity.Reminder
@@ -51,7 +52,7 @@ class NotificationViewModelTest {
 
     @Before
     fun before() {
-        notesRepo = MockNotesRepository()
+        notesRepo = MockNotesRepository(MockLabelsRepository())
         notesRepo.addNote(testNote(id = 1, reminder = Reminder(
             dateFor("2100-01-24T08:13:00.000"), null,
             dateFor("2100-01-24T08:13:00.000"), 1, false)))
@@ -100,7 +101,7 @@ class NotificationViewModelTest {
         viewModel.cancelPostpone()
         assertLiveDataEventSent(viewModel.exitEvent)
         assertEquals(0, alarmCallback.alarms.size)
-        assertEquals(oldNote, notesRepo.getNoteById(1))
+        assertEquals(oldNote, notesRepo.requireNoteById(1))
     }
 
     @Test
@@ -111,7 +112,7 @@ class NotificationViewModelTest {
         viewModel.cancelPostpone()
         assertLiveDataEventSent(viewModel.exitEvent)
         assertEquals(0, alarmCallback.alarms.size)
-        assertEquals(oldNote, notesRepo.getNoteById(1))
+        assertEquals(oldNote, notesRepo.requireNoteById(1))
     }
 
     @Test
@@ -120,7 +121,7 @@ class NotificationViewModelTest {
         viewModel.onPostponeClicked(2)
         assertLiveDataEventSent(viewModel.exitEvent)
         assertEquals(0, alarmCallback.alarms.size)
-        assertEquals(oldNote, notesRepo.getNoteById(2))
+        assertEquals(oldNote, notesRepo.requireNoteById(2))
     }
 
     @Test
@@ -135,7 +136,7 @@ class NotificationViewModelTest {
         viewModel.setPostponeTime(13, 50)
         assertLiveDataEventSent(viewModel.exitEvent)
         assertEquals(0, alarmCallback.alarms.size)
-        assertEquals(oldNote, notesRepo.getNoteById(1))
+        assertEquals(oldNote, notesRepo.requireNoteById(1))
     }
 
     @Test
@@ -146,7 +147,7 @@ class NotificationViewModelTest {
         viewModel.setPostponeTime(13, 50)
         assertLiveDataEventSent(viewModel.exitEvent)
         assertEquals(0, alarmCallback.alarms.size)
-        assertEquals(oldNote, notesRepo.getNoteById(1))
+        assertEquals(oldNote, notesRepo.requireNoteById(1))
     }
 
     @Test
@@ -158,7 +159,7 @@ class NotificationViewModelTest {
         viewModel.setPostponeTime(22, 38)
         val postponeTime = dateFor("2100-01-23T22:38:00.000")
         assertEquals(oldNote.copy(reminder = oldNote.reminder?.postponeTo(postponeTime)),
-            notesRepo.getNoteById(3))
+            notesRepo.requireNoteById(3))
     }
 
     private fun assertOnSameDay(expected: Long, actual: Long) {

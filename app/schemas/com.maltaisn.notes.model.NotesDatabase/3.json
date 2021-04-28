@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 3,
-    "identityHash": "878c0b380a5dab5d9ef77d278a7a10c9",
+    "identityHash": "8d825e69010272358d9f9e8097242bb2",
     "entities": [
       {
         "tableName": "notes",
@@ -202,7 +202,24 @@
           ],
           "autoGenerate": false
         },
-        "indices": [],
+        "indices": [
+          {
+            "name": "index_label_refs_noteId",
+            "unique": false,
+            "columnNames": [
+              "noteId"
+            ],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_label_refs_noteId` ON `${TABLE_NAME}` (`noteId`)"
+          },
+          {
+            "name": "index_label_refs_labelId",
+            "unique": false,
+            "columnNames": [
+              "labelId"
+            ],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_label_refs_labelId` ON `${TABLE_NAME}` (`labelId`)"
+          }
+        ],
         "foreignKeys": [
           {
             "table": "notes",
@@ -232,7 +249,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '878c0b380a5dab5d9ef77d278a7a10c9')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '8d825e69010272358d9f9e8097242bb2')"
     ]
   }
 }

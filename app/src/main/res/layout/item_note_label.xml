@@ -18,8 +18,9 @@
 <com.google.android.material.chip.Chip
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/label_chip"
+    style="@style/NoteLabelChipStyle"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:ellipsize="end"
     tools:text="Tasks"
     />
