@@ -30,6 +30,7 @@ import com.maltaisn.notes.model.entity.Reminder
 import com.maltaisn.notes.testNote
 import com.maltaisn.notes.ui.MockAlarmCallback
 import com.maltaisn.notes.ui.getOrAwaitValue
+import com.maltaisn.notes.ui.navigation.HomeDestination
 import com.maltaisn.notes.ui.note.NoteViewModel
 import com.maltaisn.notes.ui.note.adapter.NoteItem
 import com.maltaisn.notes.ui.note.adapter.NoteListLayoutMode
@@ -85,7 +86,7 @@ class HomeViewModelRemindersTest {
 
         viewModel = HomeViewModel(SavedStateHandle(), notesRepo, prefs,
             ReminderAlarmManager(notesRepo, MockAlarmCallback()), mock())
-        viewModel.setDestination(HomeDestination.REMINDERS)
+        viewModel.setDestination(HomeDestination.Reminders)
     }
 
     @Test

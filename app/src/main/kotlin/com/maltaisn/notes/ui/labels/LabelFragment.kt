@@ -117,29 +117,29 @@ class LabelFragment : DialogFragment(), Toolbar.OnMenuItemClickListener,
     }
 
     private fun setupViewModelObservers(adapter: LabelAdapter) {
-        viewModel.labelItems.observe(this) { items ->
+        viewModel.labelItems.observe(viewLifecycleOwner) { items ->
             adapter.submitList(items)
         }
 
-        viewModel.placeholderShown.observe(this) { shown ->
+        viewModel.placeholderShown.observe(viewLifecycleOwner) { shown ->
             binding.placeholderGroup.isVisible = shown
         }
 
-        viewModel.labelSelection.observe(this) { count ->
+        viewModel.labelSelection.observe(viewLifecycleOwner) { count ->
             updateActionModeForSelection(count)
             updateItemsForSelection(count)
             updateFabForSelection(count)
         }
 
-        viewModel.showRenameDialogEvent.observeEvent(this) { labelId ->
+        viewModel.showRenameDialogEvent.observeEvent(viewLifecycleOwner) { labelId ->
             findNavController().navigateSafe(LabelFragmentDirections.actionLabelToLabelEdit(labelId))
         }
 
-        viewModel.showDeleteConfirmEvent.observeEvent(this) {
+        viewModel.showDeleteConfirmEvent.observeEvent(viewLifecycleOwner) {
             showDeleteConfirmDialog()
         }
 
-        viewModel.exitEvent.observeEvent(this) {
+        viewModel.exitEvent.observeEvent(viewLifecycleOwner) {
             findNavController().popBackStack()
         }
     }

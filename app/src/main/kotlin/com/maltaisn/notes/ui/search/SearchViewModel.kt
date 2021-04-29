@@ -90,6 +90,7 @@ class SearchViewModel @AssistedInject constructor(
             var addedArchivedHeader = false
             for (noteWithLabels in notes) {
                 val note = noteWithLabels.note
+
                 // If this is the first archived note, add a header before it.
                 if (!addedArchivedHeader && note.status == NoteStatus.ARCHIVED) {
                     this += ARCHIVED_HEADER_ITEM

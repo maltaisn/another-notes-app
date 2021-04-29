@@ -23,6 +23,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.merge
 
 /**
  * Implementation of the notes repository that stores data itself instead of relying on DAOs.
@@ -52,7 +53,16 @@ class MockNotesRepository(private val labelsRepository: MockLabelsRepository) :
     val notesCount: Int
         get() = notes.size
 
+    /**
+     * Flow that emits when notes change.
+     */
     private val changeFlow = MutableSharedFlow<Unit>(replay = 1)
+
+    /**
+     * Flow that emits when notes, labels, or label refs change.
+     */
+    private val noteWithLabelsChangeFlow =
+        merge(changeFlow, labelsRepository.changeFlow, labelsRepository.refsChangeFlow)
 
     private fun addNoteInternal(note: Note): Long {
         val id = if (note.id != Note.NO_ID) {
@@ -125,7 +135,7 @@ class MockNotesRepository(private val labelsRepository: MockLabelsRepository) :
             .toList()
     }
 
-    override fun getNotesByStatus(status: NoteStatus) = changeFlow.map {
+    override fun getNotesByStatus(status: NoteStatus) = noteWithLabelsChangeFlow.map {
         // Sort by last modified, then by ID.
         notes.values.asSequence()
             .filter { it.status == status }
@@ -136,12 +146,23 @@ class MockNotesRepository(private val labelsRepository: MockLabelsRepository) :
             .toList()
     }
 
+    override fun getNotesByLabel(labelId: Long) = noteWithLabelsChangeFlow.map {
+        labelsRepository.getNotesForLabelId(labelId).asSequence()
+            .map { requireNoteById(it) }
+            .filter { it.status != NoteStatus.DELETED }
+            .sortedWith(compareBy(Note::status)
+                .thenByDescending(Note::pinned)
+                .thenByDescending(Note::lastModifiedDate))
+            .map(labelsRepository::getNoteWithLabels)
+            .toList()
+    }
+
     override fun searchNotes(query: String): Flow<List<NoteWithLabels>> {
         val queryNoFtsSyntax = query.replace("[*\"-]".toRegex(), "")
         return if (queryNoFtsSyntax.isEmpty()) {
             flow { emit(emptyList<NoteWithLabels>()) }
         } else {
-            changeFlow.map {
+            noteWithLabelsChangeFlow.map {
                 notes.values.asSequence()
                     .filter { it.status != NoteStatus.DELETED }
                     .filter { (queryNoFtsSyntax in it.title || queryNoFtsSyntax in it.content) }
@@ -175,7 +196,7 @@ class MockNotesRepository(private val labelsRepository: MockLabelsRepository) :
         changeFlow.emit(Unit)
     }
 
-    fun getAllNotesWithLabels() = changeFlow.map {
+    fun getAllNotesWithLabels() = noteWithLabelsChangeFlow.map {
         notes.values.asSequence()
             .map(labelsRepository::getNoteWithLabels)
             .toList()

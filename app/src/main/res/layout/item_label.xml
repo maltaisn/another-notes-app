@@ -21,7 +21,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:foreground="?selectableItemBackground"
-    android:background="@color/color_bg_label_item"
+    android:background="@color/color_bg_item"
     android:clickable="true"
     android:focusable="true"
     >
@@ -55,7 +55,7 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:layout_gravity="center_vertical"
-        android:layout_marginStart="16dp"
+        android:layout_marginStart="32dp"
         android:textAppearance="?textAppearanceBody1"
         tools:text="Tasks"
         />

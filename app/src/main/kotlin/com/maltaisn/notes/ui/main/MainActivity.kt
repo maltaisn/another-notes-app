@@ -24,7 +24,6 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.findNavController
-import com.google.android.material.navigation.NavigationView
 import com.maltaisn.notes.App
 import com.maltaisn.notes.model.converter.NoteTypeConverter
 import com.maltaisn.notes.model.entity.Note
@@ -35,8 +34,8 @@ import com.maltaisn.notes.sync.NavGraphMainDirections
 import com.maltaisn.notes.sync.R
 import com.maltaisn.notes.sync.databinding.ActivityMainBinding
 import com.maltaisn.notes.ui.SharedViewModel
-import com.maltaisn.notes.ui.home.HomeDestination
 import com.maltaisn.notes.ui.navGraphViewModel
+import com.maltaisn.notes.ui.navigation.HomeDestination
 import com.maltaisn.notes.ui.observeEvent
 import com.maltaisn.notes.ui.viewModel
 import javax.inject.Inject
@@ -53,9 +52,8 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
     private val viewModel by viewModel { viewModelProvider.get() }
 
     lateinit var drawerLayout: DrawerLayout
-    lateinit var navigationView: NavigationView
-    lateinit var navController: NavController
 
+    private lateinit var navController: NavController
     private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -68,7 +66,6 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
         setContentView(binding.root)
 
         drawerLayout = binding.drawerLayout
-        navigationView = binding.navigationView
 
         navController = findNavController(R.id.nav_host_fragment)
         navController.addOnDestinationChangedListener(this)
@@ -143,7 +140,7 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
                 }
                 INTENT_ACTION_SHOW_REMINDERS -> {
                     // Show reminders screen in HomeFragment. Used by launcher shortcut.
-                    sharedViewModel.changeDestination(HomeDestination.REMINDERS)
+                    sharedViewModel.changeHomeDestination(HomeDestination.Reminders)
                 }
             }
 

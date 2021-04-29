@@ -32,12 +32,14 @@ import kotlinx.coroutines.flow.map
 class MockLabelsRepository : LabelsRepository {
 
     private val labels = mutableMapOf<Long, Label>()
+
     private val labelRefs = mutableMapOf<Long, MutableSet<Long>>()
 
     var lastLabelId = 0L
         private set
 
-    private val changeFlow = MutableSharedFlow<Unit>(replay = 1)
+    val changeFlow = MutableSharedFlow<Unit>(replay = 1)
+    val refsChangeFlow = MutableSharedFlow<Unit>(replay = 1)
 
     /**
      * Add label without notifying change flow.
@@ -103,10 +105,17 @@ class MockLabelsRepository : LabelsRepository {
         for (ref in refs) {
             labelRefs[ref.noteId]?.remove(ref.labelId)
         }
+        refsChangeFlow.emit(Unit)
     }
 
     override suspend fun getLabelIdsForNote(noteId: Long) =
         labelRefs[noteId].orEmpty().toList()
+
+    fun getNotesForLabelId(labelId: Long) =
+        labelRefs.asSequence()
+            .filter { (_, labelIds) -> labelId in labelIds }
+            .map { (id, _) -> id }
+            .toList()
 
     fun getNoteWithLabels(note: Note) = NoteWithLabels(note,
         labelRefs[note.id].orEmpty().map { requireLabelById(it) })
@@ -116,6 +125,7 @@ class MockLabelsRepository : LabelsRepository {
         for (ref in refs) {
             labelRefs.getOrPut(ref.noteId) { mutableSetOf() } += ref.labelId
         }
+        refsChangeFlow.tryEmit(Unit)
     }
 
     override suspend fun countLabelRefs(labelId: Long) =
@@ -126,6 +136,7 @@ class MockLabelsRepository : LabelsRepository {
         labelRefs.clear()
         lastLabelId = 0
         changeFlow.emit(Unit)
+        refsChangeFlow.emit(Unit)
     }
 
     override fun getAllLabels() = changeFlow.map {

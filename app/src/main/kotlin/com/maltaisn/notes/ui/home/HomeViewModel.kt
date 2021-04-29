@@ -23,12 +23,14 @@ import androidx.lifecycle.viewModelScope
 import com.maltaisn.notes.model.NotesRepository
 import com.maltaisn.notes.model.PrefsManager
 import com.maltaisn.notes.model.ReminderAlarmManager
+import com.maltaisn.notes.model.entity.Label
 import com.maltaisn.notes.model.entity.NoteStatus
 import com.maltaisn.notes.model.entity.NoteWithLabels
 import com.maltaisn.notes.model.entity.PinnedStatus
 import com.maltaisn.notes.sync.R
 import com.maltaisn.notes.ui.AssistedSavedStateViewModelFactory
 import com.maltaisn.notes.ui.Event
+import com.maltaisn.notes.ui.navigation.HomeDestination
 import com.maltaisn.notes.ui.note.NoteViewModel
 import com.maltaisn.notes.ui.note.PlaceholderData
 import com.maltaisn.notes.ui.note.SwipeAction
@@ -43,7 +45,6 @@ import com.squareup.inject.assisted.AssistedInject
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.yield
 import java.util.Calendar
 
 class HomeViewModel @AssistedInject constructor(
@@ -57,11 +58,10 @@ class HomeViewModel @AssistedInject constructor(
 
     private var noteListJob: Job? = null
 
-    private var batteryRestricted = false
+    var currentDestination: HomeDestination = HomeDestination.Status(NoteStatus.ACTIVE)
+        private set
 
-    private val _destination = MutableLiveData<HomeDestination>()
-    val destination: LiveData<HomeDestination>
-        get() = _destination
+    private var batteryRestricted = false
 
     private val _messageEvent = MutableLiveData<Event<Int>>()
     val messageEvent: LiveData<Event<Int>>
@@ -74,40 +74,36 @@ class HomeViewModel @AssistedInject constructor(
     init {
         viewModelScope.launch {
             restoreState()
-
-            setDestination(destination.value!!)
         }
     }
 
-    override suspend fun restoreState() {
-        _destination.value = savedStateHandle.get(KEY_NOTE_STATUS) ?: HomeDestination.ACTIVE
-        super.restoreState()
-    }
-
     fun setDestination(destination: HomeDestination) {
-        _destination.value = destination
-
-        savedStateHandle.set(KEY_NOTE_STATUS, destination)
+        currentDestination = destination
 
         // Cancel previous flow collection
         noteListJob?.cancel()
 
         // Update note items live data when database flow emits a list.
         noteListJob = viewModelScope.launch {
-            val noteStatus = destination.noteStatus
-            if (noteStatus == null) {
-                // Reminders
-                notesRepository.getNotesWithReminder().collect { notes ->
-                    listItems = createRemindersListItems(notes)
-                }
-            } else {
-                notesRepository.getNotesByStatus(noteStatus).collect { notes ->
-                    listItems = when (noteStatus) {
-                        NoteStatus.ACTIVE -> createActiveListItems(notes)
-                        NoteStatus.ARCHIVED -> createArchivedListItems(notes)
-                        NoteStatus.DELETED -> createDeletedListItems(notes)
+            when (destination) {
+                is HomeDestination.Status -> {
+                    notesRepository.getNotesByStatus(destination.status).collect { notes ->
+                        listItems = when (destination.status) {
+                            NoteStatus.ACTIVE -> createActiveListItems(notes)
+                            NoteStatus.ARCHIVED -> createArchivedListItems(notes)
+                            NoteStatus.DELETED -> createDeletedListItems(notes)
+                        }
                     }
-                    yield()
+                }
+                is HomeDestination.Labels -> {
+                    notesRepository.getNotesByLabel(destination.label.id).collect { notes ->
+                        listItems = createLabelsListItems(notes, destination.label)
+                    }
+                }
+                is HomeDestination.Reminders -> {
+                    notesRepository.getNotesWithReminder().collect { notes ->
+                        listItems = createRemindersListItems(notes)
+                    }
                 }
             }
         }
@@ -138,14 +134,20 @@ class HomeViewModel @AssistedInject constructor(
     }
 
     override val selectedNoteStatus: NoteStatus?
-        // There can only be notes of one status selected in this fragment.
         get() {
-            val noteStatus = destination.value?.noteStatus
-            return when {
-                noteStatus != null -> noteStatus
-                selectedNotes.isEmpty() -> null
-                selectedNotes.any { it.status == NoteStatus.ACTIVE } -> NoteStatus.ACTIVE
-                else -> NoteStatus.ARCHIVED
+            val destination = currentDestination
+            return if (destination is HomeDestination.Status) {
+                // Only same status notes in this destination
+                destination.status
+            } else {
+                // If one note is active, consider all active.
+                // Otherwise consider archived.
+                check(selectedNotes.none { it.status == NoteStatus.DELETED })
+                when {
+                    selectedNotes.isEmpty() -> null
+                    selectedNotes.any { it.status == NoteStatus.ACTIVE } -> NoteStatus.ACTIVE
+                    else -> NoteStatus.ARCHIVED
+                }
             }
         }
 
@@ -161,8 +163,8 @@ class HomeViewModel @AssistedInject constructor(
     }
 
     override val isNoteSwipeEnabled: Boolean
-        get() = destination.value == HomeDestination.ACTIVE && selectedNotes.isEmpty() &&
-                prefs.swipeAction != SwipeAction.NONE
+        get() = currentDestination == HomeDestination.Status(NoteStatus.ACTIVE) &&
+                selectedNotes.isEmpty() && prefs.swipeAction != SwipeAction.NONE
 
     override fun onNoteSwiped(pos: Int) {
         // Archive note
@@ -184,23 +186,22 @@ class HomeViewModel @AssistedInject constructor(
     }
 
     private fun createActiveListItems(notes: List<NoteWithLabels>): List<NoteListItem> = buildList {
-        // If there's at least one pinned note, add pinned header.
+        // Separate pinned and not pinned notes with headers
+        var addedPinnedHeader = false
+        var addedNotPinnedHeader = false
+
         if (notes.isNotEmpty() && notes.first().note.pinned == PinnedStatus.PINNED) {
             this += PINNED_HEADER_ITEM
-            for (note in notes) {
-                if (note.note.pinned != PinnedStatus.PINNED) {
-                    break
-                }
-                addNoteItem(note)
-            }
-            if (this.size <= notes.size) {
-                // Add another header for other notes if there's at least one not pinned.
-                this += NOT_PINNED_HEADER_ITEM
-            }
+            addedPinnedHeader = true
         }
 
         for (note in notes) {
-            if (note.note.pinned == PinnedStatus.PINNED) continue
+            if (addedPinnedHeader && !addedNotPinnedHeader &&
+                note.note.pinned == PinnedStatus.UNPINNED
+            ) {
+                this += NOT_PINNED_HEADER_ITEM
+                addedNotPinnedHeader = true
+            }
             addNoteItem(note)
         }
     }
@@ -227,6 +228,37 @@ class HomeViewModel @AssistedInject constructor(
         }
     }
 
+    private fun createLabelsListItems(notes: List<NoteWithLabels>, label: Label) = buildList {
+        // Separate pinned, active and archived notes with headers
+        var addedPinnedHeader = false
+        var addedNotPinnedHeader = false
+        var addedArchivedHeader = false
+
+        if (notes.isNotEmpty() && notes.first().note.pinned == PinnedStatus.PINNED) {
+            this += PINNED_HEADER_ITEM
+            addedPinnedHeader = true
+        }
+
+        for (noteWithLabels in notes) {
+            val note = noteWithLabels.note
+
+            // Add headers if necessary
+            if (!addedArchivedHeader && note.status == NoteStatus.ARCHIVED) {
+                this += ARCHIVED_HEADER_ITEM
+                addedArchivedHeader = true
+            } else if (addedPinnedHeader && !addedNotPinnedHeader &&
+                note.pinned == PinnedStatus.UNPINNED
+            ) {
+                this += NOT_PINNED_HEADER_ITEM
+                addedNotPinnedHeader = true
+            }
+
+            val checked = isNoteSelected(note)
+            // Omit the filtered label from the note since all notes have it.
+            this += NoteItem(note.id, note, noteWithLabels.labels - label, checked)
+        }
+    }
+
     private fun createRemindersListItems(notes: List<NoteWithLabels>) = buildList {
         val calendar = Calendar.getInstance()
         calendar[Calendar.HOUR_OF_DAY] = 0
@@ -249,6 +281,7 @@ class HomeViewModel @AssistedInject constructor(
         var addedOverdueHeader = false
         var addedTodayHeader = false
         var addedUpcomingHeader = false
+
         for (noteWithLabels in notes) {
             val note = noteWithLabels.note
             val reminderTime = (note.reminder ?: continue).next.time
@@ -280,15 +313,22 @@ class HomeViewModel @AssistedInject constructor(
         this += NoteItem(note.id, note, noteWithLabels.labels, checked)
     }
 
-    override fun updatePlaceholder() = when (destination.value!!) {
-        HomeDestination.ACTIVE -> PlaceholderData(R.drawable.ic_list,
-            R.string.note_placeholder_active)
-        HomeDestination.ARCHIVED -> PlaceholderData(R.drawable.ic_archive,
-            R.string.note_placeholder_archived)
-        HomeDestination.DELETED -> PlaceholderData(R.drawable.ic_delete,
-            R.string.note_placeholder_deleted)
-        HomeDestination.REMINDERS -> PlaceholderData(
-            R.drawable.ic_alarm, R.string.reminder_empty_placeholder)
+    override fun updatePlaceholder() = when (val destination = currentDestination) {
+        is HomeDestination.Status -> when (destination.status) {
+            NoteStatus.ACTIVE -> PlaceholderData(R.drawable.ic_list,
+                R.string.note_placeholder_active)
+            NoteStatus.ARCHIVED -> PlaceholderData(R.drawable.ic_archive,
+                R.string.note_placeholder_archived)
+            NoteStatus.DELETED -> PlaceholderData(R.drawable.ic_delete,
+                R.string.note_placeholder_deleted)
+        }
+        is HomeDestination.Reminders -> {
+            PlaceholderData(R.drawable.ic_alarm, R.string.reminder_empty_placeholder)
+        }
+        is HomeDestination.Labels -> {
+            PlaceholderData(R.drawable.ic_label_outline, R.string.label_notes_empty_placeholder)
+        }
+        else -> error("Unknown destination")
     }
 
     @AssistedInject.Factory
@@ -305,7 +345,6 @@ class HomeViewModel @AssistedInject constructor(
         val TODAY_HEADER_ITEM = HeaderItem(-4, R.string.reminder_today)
         val OVERDUE_HEADER_ITEM = HeaderItem(-5, R.string.reminder_overdue)
         val UPCOMING_HEADER_ITEM = HeaderItem(-6, R.string.reminder_upcoming)
-
-        private const val KEY_NOTE_STATUS = "note_status"
+        val ARCHIVED_HEADER_ITEM = HeaderItem(-7, R.string.note_location_archived)
     }
 }

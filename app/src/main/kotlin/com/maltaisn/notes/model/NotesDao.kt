@@ -85,6 +85,17 @@ interface NotesDao {
     fun getByStatus(status: NoteStatus): Flow<List<NoteWithLabels>>
 
     /**
+     * Get all notes tagged with a label ([labelId]), except deleted notes.
+     * The notes are sorted by status then by pinned status (pinned first), then by last modified date.
+     * This is used to display notes by label.
+     */
+    @Transaction
+    @Query("""SELECT notes.* FROM notes JOIN 
+        (SELECT noteId FROM label_refs WHERE labelId == :labelId) ON noteId == id
+        WHERE status != 2 ORDER BY status ASC, pinned DESC, modified_date DESC""")
+    fun getByLabel(labelId: Long): Flow<List<NoteWithLabels>>
+
+    /**
      * Get all notes with a reminder set and reminder not done, sorted by ascending date.
      * Used for reminders screen and for adding alarms back on boot.
      */

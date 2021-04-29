@@ -31,7 +31,6 @@ import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
-import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
 import com.maltaisn.notes.model.PrefsManager
 import com.maltaisn.notes.model.entity.NoteStatus
@@ -57,7 +56,7 @@ import javax.inject.Provider
  * This fragment provides common code for home and search fragments.
  */
 abstract class NoteFragment : Fragment(), ActionMode.Callback, ConfirmDialog.Callback,
-    NavigationView.OnNavigationItemSelectedListener, NavController.OnDestinationChangedListener {
+    NavController.OnDestinationChangedListener {
 
     @Inject
     lateinit var sharedViewModelProvider: Provider<SharedViewModel>
@@ -74,7 +73,6 @@ abstract class NoteFragment : Fragment(), ActionMode.Callback, ConfirmDialog.Cal
     private var actionMode: ActionMode? = null
 
     protected lateinit var drawerLayout: DrawerLayout
-    protected lateinit var navView: NavigationView
 
     private var hideActionMode = false
 
@@ -93,8 +91,6 @@ abstract class NoteFragment : Fragment(), ActionMode.Callback, ConfirmDialog.Cal
         // Drawer
         val activity = requireActivity() as MainActivity
         drawerLayout = activity.drawerLayout
-        navView = activity.navigationView
-        navView.setNavigationItemSelectedListener(this)
 
         val rcv = binding.recyclerView
         rcv.setHasFixedSize(true)
@@ -280,16 +276,6 @@ abstract class NoteFragment : Fragment(), ActionMode.Callback, ConfirmDialog.Cal
         actionMode?.finish()
 
         findNavController().removeOnDestinationChangedListener(this)
-    }
-
-    override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        if (item.isCheckable) {
-            // There are items in two separate group, so checking must be handled manually.
-            navView.setCheckedItem(item)
-        }
-
-        drawerLayout.closeDrawers()
-        return false
     }
 
     override fun onActionItemClicked(mode: ActionMode, item: MenuItem): Boolean {

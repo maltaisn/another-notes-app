@@ -18,6 +18,7 @@ package com.maltaisn.notes.ui.home
 
 import com.maltaisn.notes.DebugUtils
 import com.maltaisn.notes.model.NotesRepository
+import com.maltaisn.notes.ui.navigation.HomeDestination
 import javax.inject.Inject
 
 class DebugBuildTypeBehavior @Inject constructor(
@@ -26,10 +27,10 @@ class DebugBuildTypeBehavior @Inject constructor(
 
     override suspend fun doExtraAction(viewModel: HomeViewModel) {
         // Add a few random notes of the currently selected status.
-        val status = viewModel.destination.value?.noteStatus
-        if (status != null) {
+        val destination = viewModel.currentDestination
+        if (destination is HomeDestination.Status) {
             repeat(3) {
-                notesRepository.insertNote(DebugUtils.getRandomNote(status))
+                notesRepository.insertNote(DebugUtils.getRandomNote(destination.status))
             }
         }
     }

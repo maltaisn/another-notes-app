@@ -25,7 +25,7 @@ import com.maltaisn.notes.model.ReminderAlarmManager
 import com.maltaisn.notes.model.entity.NoteStatus
 import com.maltaisn.notes.model.entity.Reminder
 import com.maltaisn.notes.sync.R
-import com.maltaisn.notes.ui.home.HomeDestination
+import com.maltaisn.notes.ui.navigation.HomeDestination
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -53,10 +53,9 @@ class SharedViewModel @Inject constructor(
     val reminderChangeEvent: LiveData<Event<Reminder?>>
         get() = _reminderChangeEvent
 
-    private val _changeDestinationEvent = MutableLiveData<Event<HomeDestination>>()
-    val changeDestinationEvent: LiveData<Event<HomeDestination>>
-        get() = _changeDestinationEvent
-
+    private val _currentHomeDestination = MutableLiveData<HomeDestination>()
+    val currentHomeDestination: LiveData<HomeDestination>
+        get() = _currentHomeDestination
 
     fun onBlankNoteDiscarded() {
         // Not shown from EditFragment so that FAB is pushed up.
@@ -90,7 +89,7 @@ class SharedViewModel @Inject constructor(
         _reminderChangeEvent.send(reminder)
     }
 
-    fun changeDestination(destination: HomeDestination) {
-        _changeDestinationEvent.send(destination)
+    fun changeHomeDestination(destination: HomeDestination) {
+        _currentHomeDestination.value = destination
     }
 }

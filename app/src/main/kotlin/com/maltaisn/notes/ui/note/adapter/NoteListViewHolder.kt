@@ -52,7 +52,7 @@ import kotlin.math.min
  */
 private const val MAXIMUM_RELATIVE_DATE_DAYS = 6
 
-abstract class NoteViewHolder(itemView: View) :
+sealed class NoteViewHolder(itemView: View) :
     RecyclerView.ViewHolder(itemView) {
 
     private val dateFormatter = RelativeDateFormatter(itemView.resources) { date ->

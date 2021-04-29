@@ -36,6 +36,7 @@
     <string name="action_labels">Change labels</string>
     <string name="action_layout_grid">View as grid</string>
     <string name="action_layout_list">View as list</string>
+    <string name="action_manage">Manage</string>
     <string name="action_mark_as_done">Mark as done</string>
     <string name="action_none">None</string>
     <string name="action_ok">OK</string>
@@ -140,9 +141,10 @@
     <string name="label_manage">Manage labels</string>
     <string name="label_select">Select labels</string>
     <string name="label_already_exists">A label with this name already exists.</string>
-    <string name="label_placeholder">No labels created</string>
+    <string name="label_empty_placeholder">No labels created</string>
     <string name="label_delete_message">Selected labels will be deleted, but the notes associated
     to them will be kept.</string>
+    <string name="label_notes_empty_placeholder">No notes tagged with this label</string>
 
     <!-- Settings -->
     <string name="pref_group_appearance">Appearance</string>

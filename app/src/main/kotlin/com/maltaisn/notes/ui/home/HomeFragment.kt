@@ -27,14 +27,15 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.fragment.findNavController
-import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
 import com.maltaisn.notes.App
+import com.maltaisn.notes.model.entity.NoteStatus
 import com.maltaisn.notes.navigateSafe
 import com.maltaisn.notes.sync.BuildConfig
 import com.maltaisn.notes.sync.NavGraphMainDirections
 import com.maltaisn.notes.sync.R
 import com.maltaisn.notes.ui.common.ConfirmDialog
+import com.maltaisn.notes.ui.navigation.HomeDestination
 import com.maltaisn.notes.ui.note.NoteFragment
 import com.maltaisn.notes.ui.note.NoteViewModel
 import com.maltaisn.notes.ui.note.adapter.NoteListLayoutMode
@@ -45,8 +46,7 @@ import javax.inject.Inject
 /**
  * Start screen fragment displaying a list of note for different note statuses.
  */
-class HomeFragment : NoteFragment(), Toolbar.OnMenuItemClickListener,
-    NavigationView.OnNavigationItemSelectedListener {
+class HomeFragment : NoteFragment(), Toolbar.OnMenuItemClickListener {
 
     @Inject
     lateinit var viewModelFactory: HomeViewModel.Factory
@@ -94,11 +94,6 @@ class HomeFragment : NoteFragment(), Toolbar.OnMenuItemClickListener,
     }
 
     private fun setupViewModelObservers() {
-        viewModel.destination.observe(viewLifecycleOwner) { destination ->
-            updateToolbarForDestination(destination)
-            updateFabForDestination(destination)
-        }
-
         viewModel.messageEvent.observeEvent(viewLifecycleOwner) { messageId ->
             Snackbar.make(requireView(), messageId, Snackbar.LENGTH_SHORT).show()
         }
@@ -119,29 +114,34 @@ class HomeFragment : NoteFragment(), Toolbar.OnMenuItemClickListener,
             showEmptyTrashConfirmDialog()
         }
 
-        sharedViewModel.changeDestinationEvent.observeEvent(viewLifecycleOwner) { destination ->
+        sharedViewModel.currentHomeDestination.observe(viewLifecycleOwner) { destination ->
             viewModel.setDestination(destination)
-            checkNavigationItemForDestination(destination)
+            updateToolbarForDestination(destination)
+            updateFabForDestination(destination)
         }
     }
 
     private fun updateToolbarForDestination(destination: HomeDestination) {
         // Show "Empty recycle bin" toolbar option
         binding.toolbar.menu.findItem(R.id.item_empty_trash).isVisible =
-            destination == HomeDestination.DELETED
+            destination == HomeDestination.Status(NoteStatus.DELETED)
 
         // Update toolbar title
-        binding.toolbar.setTitle(when (destination) {
-            HomeDestination.ACTIVE -> R.string.note_location_active
-            HomeDestination.ARCHIVED -> R.string.note_location_archived
-            HomeDestination.DELETED -> R.string.note_location_deleted
-            HomeDestination.REMINDERS -> R.string.note_reminders
-        })
+        binding.toolbar.title = when (destination) {
+            is HomeDestination.Status -> when (destination.status) {
+                NoteStatus.ACTIVE -> getString(R.string.note_location_active)
+                NoteStatus.ARCHIVED -> getString(R.string.note_location_archived)
+                NoteStatus.DELETED -> getString(R.string.note_location_deleted)
+            }
+            is HomeDestination.Labels -> destination.label.name
+            is HomeDestination.Reminders -> getString(R.string.note_reminders)
+            else -> error("Unknown destination")
+        }
     }
 
     private fun updateFabForDestination(destination: HomeDestination) {
         // Fab is only shown in active notes.
-        if (destination == HomeDestination.ACTIVE) {
+        if (destination == HomeDestination.Status(NoteStatus.ACTIVE)) {
             binding.fab.show()
         } else {
             binding.fab.hide()
@@ -192,39 +192,9 @@ class HomeFragment : NoteFragment(), Toolbar.OnMenuItemClickListener,
         return true
     }
 
-    override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        super.onNavigationItemSelected(item)
-
-        val navController = findNavController()
-        when (item.itemId) {
-            R.id.item_location_active -> viewModel.setDestination(HomeDestination.ACTIVE)
-            R.id.item_location_archived -> viewModel.setDestination(HomeDestination.ARCHIVED)
-            R.id.item_location_deleted -> viewModel.setDestination(HomeDestination.DELETED)
-            R.id.item_reminder_list -> viewModel.setDestination(HomeDestination.REMINDERS)
-            R.id.item_add_label -> navController.navigateSafe(
-                HomeFragmentDirections.actionHomeToLabelEdit())
-            R.id.item_manage_label -> navController.navigateSafe(
-                NavGraphMainDirections.actionLabel(longArrayOf()))
-            R.id.item_settings -> navController.navigateSafe(
-                HomeFragmentDirections.actionHomeToSettings())
-            else -> return false
-        }
-
-        return true
-    }
-
     override fun onDestroyActionMode(mode: ActionMode) {
         super.onDestroyActionMode(mode)
         drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
-    }
-
-    private fun checkNavigationItemForDestination(destination: HomeDestination) {
-        navView.setCheckedItem(when (destination) {
-            HomeDestination.ACTIVE -> R.id.item_location_active
-            HomeDestination.ARCHIVED -> R.id.item_location_archived
-            HomeDestination.DELETED -> R.id.item_location_deleted
-            HomeDestination.REMINDERS -> R.id.item_reminder_list
-        })
     }
 
     override fun onDialogConfirmed(tag: String?) {

@@ -107,12 +107,6 @@
         <item name="android:textAlignment">center</item>
     </style>
 
-    <style name="DividerStyle">
-        <item name="android:layout_height">1dp</item>
-        <item name="android:background">?colorOnSurface</item>
-        <item name="android:alpha">0.2</item>
-    </style>
-
     <style name="ActionModeTitleStyle" parent="TextAppearance.AppCompat.Widget.ActionMode.Title">
         <item name="android:textColor">?colorControlNormal</item>
     </style>

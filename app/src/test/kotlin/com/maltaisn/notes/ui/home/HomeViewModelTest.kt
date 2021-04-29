@@ -33,6 +33,7 @@ import com.maltaisn.notes.ui.MockAlarmCallback
 import com.maltaisn.notes.ui.StatusChange
 import com.maltaisn.notes.ui.assertLiveDataEventSent
 import com.maltaisn.notes.ui.getOrAwaitValue
+import com.maltaisn.notes.ui.navigation.HomeDestination
 import com.maltaisn.notes.ui.note.NoteViewModel
 import com.maltaisn.notes.ui.note.SwipeAction
 import com.maltaisn.notes.ui.note.adapter.MessageItem
@@ -97,9 +98,8 @@ class HomeViewModelTest {
         mainCoroutineRule.runBlockingTest {
             val note1 = notesRepo.requireNoteById(1)
             val note2 = notesRepo.requireNoteById(2)
-            viewModel.setDestination(HomeDestination.ACTIVE)
+            viewModel.setDestination(HomeDestination.Status(NoteStatus.ACTIVE))
 
-            assertEquals(HomeDestination.ACTIVE, viewModel.destination.getOrAwaitValue())
             assertEquals(listOf(
                 HomeViewModel.PINNED_HEADER_ITEM,
                 NoteItem(1, note1),
@@ -112,9 +112,8 @@ class HomeViewModelTest {
     fun `should show only active notes (pinned only)`() = mainCoroutineRule.runBlockingTest {
         notesRepo.deleteNote(2)
         val note = notesRepo.requireNoteById(1)
-        viewModel.setDestination(HomeDestination.ACTIVE)
+        viewModel.setDestination(HomeDestination.Status(NoteStatus.ACTIVE))
 
-        assertEquals(HomeDestination.ACTIVE, viewModel.destination.getOrAwaitValue())
         assertEquals(listOf(
             HomeViewModel.PINNED_HEADER_ITEM,
             NoteItem(1, note)
@@ -125,9 +124,8 @@ class HomeViewModelTest {
     fun `should show only active notes (unpinned only)`() = mainCoroutineRule.runBlockingTest {
         notesRepo.deleteNote(1)
         val note = notesRepo.requireNoteById(2)
-        viewModel.setDestination(HomeDestination.ACTIVE)
+        viewModel.setDestination(HomeDestination.Status(NoteStatus.ACTIVE))
 
-        assertEquals(HomeDestination.ACTIVE, viewModel.destination.getOrAwaitValue())
         assertEquals(listOf(
             NoteItem(2, note)
         ), viewModel.noteItems.getOrAwaitValue())
@@ -136,9 +134,8 @@ class HomeViewModelTest {
     @Test
     fun `should show only archived notes`() = mainCoroutineRule.runBlockingTest {
         val note = notesRepo.requireNoteById(3)
-        viewModel.setDestination(HomeDestination.ARCHIVED)
+        viewModel.setDestination(HomeDestination.Status(NoteStatus.ARCHIVED))
 
-        assertEquals(HomeDestination.ARCHIVED, viewModel.destination.getOrAwaitValue())
         assertEquals(listOf(
             NoteItem(3, note, listOf(labelsRepo.requireLabelById(1)))
         ), viewModel.noteItems.getOrAwaitValue())
@@ -147,9 +144,8 @@ class HomeViewModelTest {
     @Test
     fun `should show only deleted notes`() = mainCoroutineRule.runBlockingTest {
         val note = notesRepo.requireNoteById(4)
-        viewModel.setDestination(HomeDestination.DELETED)
+        viewModel.setDestination(HomeDestination.Status(NoteStatus.DELETED))
 
-        assertEquals(HomeDestination.DELETED, viewModel.destination.getOrAwaitValue())
         assertEquals(listOf(
             MessageItem(-1, R.string.trash_reminder_message,
                 listOf(PrefsManager.TRASH_AUTO_DELETE_DELAY.inDays.toInt())),
@@ -161,7 +157,7 @@ class HomeViewModelTest {
     fun `should update list when data is changed`() = mainCoroutineRule.runBlockingTest {
         val note1 = notesRepo.requireNoteById(1)
         val note2 = notesRepo.requireNoteById(2)
-        viewModel.setDestination(HomeDestination.ACTIVE)
+        viewModel.setDestination(HomeDestination.Status(NoteStatus.ACTIVE))
 
         notesRepo.insertNote(testNote(status = NoteStatus.ACTIVE))
         val newNote = notesRepo.getNoteById(notesRepo.lastNoteId)!!
@@ -179,7 +175,7 @@ class HomeViewModelTest {
     fun `should update list when trash reminder item is dismissed`() =
         mainCoroutineRule.runBlockingTest {
             val note = notesRepo.requireNoteById(4)
-            viewModel.setDestination(HomeDestination.DELETED)
+            viewModel.setDestination(HomeDestination.Status(NoteStatus.DELETED))
             viewModel.onMessageItemDismissed(MessageItem(-1, 0, emptyList()), 0)
 
             verify(prefs).lastTrashReminderTime = any()
@@ -191,19 +187,19 @@ class HomeViewModelTest {
 
     @Test
     fun `should only allow note swipe in active notes`() = mainCoroutineRule.runBlockingTest {
-        viewModel.setDestination(HomeDestination.ACTIVE)
+        viewModel.setDestination(HomeDestination.Status(NoteStatus.ACTIVE))
         assertTrue(viewModel.isNoteSwipeEnabled)
 
-        viewModel.setDestination(HomeDestination.ARCHIVED)
+        viewModel.setDestination(HomeDestination.Status(NoteStatus.ARCHIVED))
         assertFalse(viewModel.isNoteSwipeEnabled)
 
-        viewModel.setDestination(HomeDestination.DELETED)
+        viewModel.setDestination(HomeDestination.Status(NoteStatus.DELETED))
         assertFalse(viewModel.isNoteSwipeEnabled)
     }
 
     @Test
     fun `should not allow swiping if no action set`() = mainCoroutineRule.runBlockingTest {
-        viewModel.setDestination(HomeDestination.ACTIVE)
+        viewModel.setDestination(HomeDestination.Status(NoteStatus.ACTIVE))
         whenever(prefs.swipeAction) doReturn SwipeAction.NONE
         assertFalse(viewModel.isNoteSwipeEnabled)
     }
@@ -224,6 +220,7 @@ class HomeViewModelTest {
 
     @Test
     fun `should show empty trash confirm`() = mainCoroutineRule.runBlockingTest {
+        viewModel.setDestination(HomeDestination.Status(NoteStatus.DELETED))
         viewModel.emptyTrashPre()
         assertLiveDataEventSent(viewModel.showEmptyTrashDialogEvent)
     }
@@ -236,7 +233,7 @@ class HomeViewModelTest {
 
     @Test
     fun `should check selected items when creating them`() = mainCoroutineRule.runBlockingTest {
-        viewModel.setDestination(HomeDestination.ACTIVE)
+        viewModel.setDestination(HomeDestination.Status(NoteStatus.ACTIVE))
         viewModel.onNoteItemLongClicked(getNoteItemAt(1), 1)
         assertTrue(getNoteItemAt(1).checked)
     }
@@ -246,7 +243,7 @@ class HomeViewModelTest {
         whenever(prefs.swipeAction) doReturn SwipeAction.ARCHIVE
 
         val note = notesRepo.requireNoteById(1)
-        viewModel.setDestination(HomeDestination.ACTIVE)
+        viewModel.setDestination(HomeDestination.Status(NoteStatus.ACTIVE))
         viewModel.onNoteSwiped(1)
 
         assertEquals(NoteStatus.ARCHIVED, notesRepo.requireNoteById(1).status)
@@ -259,7 +256,7 @@ class HomeViewModelTest {
         whenever(prefs.swipeAction) doReturn SwipeAction.DELETE
 
         val note = notesRepo.requireNoteById(1)
-        viewModel.setDestination(HomeDestination.ACTIVE)
+        viewModel.setDestination(HomeDestination.Status(NoteStatus.ACTIVE))
         viewModel.onNoteSwiped(1)
 
         assertEquals(NoteStatus.DELETED, notesRepo.requireNoteById(1).status)
@@ -270,7 +267,7 @@ class HomeViewModelTest {
     @Test
     fun `should consider selection as active`() =
         mainCoroutineRule.runBlockingTest {
-            viewModel.setDestination(HomeDestination.ACTIVE)
+            viewModel.setDestination(HomeDestination.Status(NoteStatus.ACTIVE))
             viewModel.onNoteItemLongClicked(getNoteItemAt(3), 3)
             assertEquals(NoteViewModel.NoteSelection(1,
                 NoteStatus.ACTIVE, PinnedStatus.UNPINNED, false),
@@ -280,7 +277,7 @@ class HomeViewModelTest {
     @Test
     fun `should consider selection as archived`() =
         mainCoroutineRule.runBlockingTest {
-            viewModel.setDestination(HomeDestination.ARCHIVED)
+            viewModel.setDestination(HomeDestination.Status(NoteStatus.ARCHIVED))
             viewModel.onNoteItemLongClicked(getNoteItemAt(0), 0)
             assertEquals(NoteViewModel.NoteSelection(1,
                 NoteStatus.ARCHIVED, PinnedStatus.CANT_PIN, false),
@@ -290,7 +287,7 @@ class HomeViewModelTest {
     @Test
     fun `should consider selection as deleted`() =
         mainCoroutineRule.runBlockingTest {
-            viewModel.setDestination(HomeDestination.DELETED)
+            viewModel.setDestination(HomeDestination.Status(NoteStatus.DELETED))
             viewModel.onNoteItemLongClicked(getNoteItemAt(1), 1)
             assertEquals(NoteViewModel.NoteSelection(1,
                 NoteStatus.DELETED, PinnedStatus.CANT_PIN, false),

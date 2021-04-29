@@ -16,15 +16,18 @@
 
 package com.maltaisn.notes.model.entity
 
+import android.os.Parcelable
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
+import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 
 @Serializable
 @Entity(tableName = "labels")
+@Parcelize
 data class Label(
     /**
      * Label ID in the database.
@@ -41,7 +44,7 @@ data class Label(
      */
     @ColumnInfo(name = "name", index = true)
     val name: String,
-) {
+) : Parcelable {
 
     init {
         require(name.isNotBlank()) { "Blank label name" }

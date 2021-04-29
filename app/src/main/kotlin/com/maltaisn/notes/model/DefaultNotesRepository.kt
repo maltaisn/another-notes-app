@@ -56,6 +56,8 @@ class DefaultNotesRepository @Inject constructor(
 
     override fun getNotesByStatus(status: NoteStatus) = notesDao.getByStatus(status)
 
+    override fun getNotesByLabel(labelId: Long) = notesDao.getByLabel(labelId)
+
     override fun getNotesWithReminder() = notesDao.getAllWithReminder()
 
     override fun searchNotes(query: String) = notesDao.search(query)

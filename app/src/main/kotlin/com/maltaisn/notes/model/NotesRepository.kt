@@ -34,8 +34,9 @@ interface NotesRepository {
     suspend fun getNoteById(id: Long): Note?
     suspend fun getNoteByIdWithLabels(id: Long): NoteWithLabels?
 
-    fun getNotesWithReminder(): Flow<List<NoteWithLabels>>
     fun getNotesByStatus(status: NoteStatus): Flow<List<NoteWithLabels>>
+    fun getNotesByLabel(labelId: Long): Flow<List<NoteWithLabels>>
+    fun getNotesWithReminder(): Flow<List<NoteWithLabels>>
     fun searchNotes(query: String): Flow<List<NoteWithLabels>>
 
     suspend fun emptyTrash()
