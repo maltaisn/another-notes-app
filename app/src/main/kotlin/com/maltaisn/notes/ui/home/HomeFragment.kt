@@ -86,7 +86,7 @@ class HomeFragment : NoteFragment(), Toolbar.OnMenuItemClickListener {
 
         // Floating action button
         binding.fab.setOnClickListener {
-            findNavController().navigateSafe(NavGraphMainDirections.actionEditNote())
+            viewModel.createNote()
         }
 
         setupViewModelObservers()
@@ -114,6 +114,10 @@ class HomeFragment : NoteFragment(), Toolbar.OnMenuItemClickListener {
             } else {
                 binding.fab.hide()
             }
+        }
+
+        viewModel.createNoteEvent.observeEvent(viewLifecycleOwner) { labelId ->
+            findNavController().navigateSafe(NavGraphMainDirections.actionEditNote(labelId = labelId))
         }
 
         viewModel.showEmptyTrashDialogEvent.observeEvent(viewLifecycleOwner) {

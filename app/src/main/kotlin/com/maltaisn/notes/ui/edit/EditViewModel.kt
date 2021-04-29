@@ -20,11 +20,13 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.maltaisn.notes.model.LabelsRepository
 import com.maltaisn.notes.model.NotesRepository
 import com.maltaisn.notes.model.PrefsManager
 import com.maltaisn.notes.model.ReminderAlarmManager
 import com.maltaisn.notes.model.entity.BlankNoteMetadata
 import com.maltaisn.notes.model.entity.Label
+import com.maltaisn.notes.model.entity.LabelRef
 import com.maltaisn.notes.model.entity.ListNoteMetadata
 import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.model.entity.NoteMetadata
@@ -54,9 +56,15 @@ import javax.inject.Inject
 
 class EditViewModel @Inject constructor(
     private val notesRepository: NotesRepository,
+    private val labelsRepository: LabelsRepository,
     private val prefs: PrefsManager,
     private val alarmManager: ReminderAlarmManager,
 ) : ViewModel(), EditAdapter.Callback {
+
+    /**
+     * Whether the current note is a new note.
+     */
+    private var isNewNote = false
 
     /**
      * Note being edited by user. This note data is not always up to date with UI,
@@ -171,31 +179,55 @@ class EditViewModel @Inject constructor(
 
     /**
      * Initialize the view model to edit a note with the ID [noteId].
-     * [noteId] can be [Note.NO_ID] to create a new blank note.
+     * The view model can only be started once to edit a note.
+     * Subsequent calls with different arguments will do nothing and previous note will be edited.
+     * @param noteId Can be [Note.NO_ID] to create a new blank note.
+     * @param labelId Can be different from [Label.NO_ID] to initially set a label on a new note.
      */
-    fun start(noteId: Long) {
+    fun start(noteId: Long = Note.NO_ID, labelId: Long = Label.NO_ID) {
         viewModelScope.launch {
-            // Try to get note by ID.
-            val noteWithLabels = notesRepository.getNoteByIdWithLabels(noteId)
+            // Try to get note by ID with its labels.
+            val noteWithLabels = notesRepository.getNoteByIdWithLabels(if (note != BLANK_NOTE) {
+                // start() was already called, fragment was probably recreated
+                // use the note ID of the note being edited previously
+                note.id
+            } else {
+                // first call, use provided note ID
+                noteId
+            })
+
             var note = noteWithLabels?.note
             var labels = noteWithLabels?.labels
 
             if (note == null || labels == null) {
                 // Note doesn't exist, create new blank text note.
+                // This is the expected path for creating a new note (by passing Note.NO_ID)
                 val date = Date()
-                note = BLANK_NOTE.copy(
-                    addedDate = date,
-                    lastModifiedDate = date)
+                note = BLANK_NOTE.copy(addedDate = date, lastModifiedDate = date)
                 val id = notesRepository.insertNote(note)
                 note = note.copy(id = id)
-                labels = emptyList()
 
+                // If a label was passed to be initially set, use it.
+                // Otherwise no labels will be set.
+                val label = labelsRepository.getLabelById(labelId)
+                labels = listOfNotNull(label)
+                if (label != null) {
+                    labelsRepository.insertLabelRefs(listOf(LabelRef(id, labelId)))
+                }
+
+                // Focus on text content (text note) or first item (list note)
                 focusItemAt(1, 0, false)
-                showDate = false
-            } else {
-                // Only show creation date when editing notes
-                showDate = (prefs.shownDateField != ShownDateField.NONE)
+
+                isNewNote = true
             }
+
+            showDate = if (isNewNote) {
+                // Don't show date for new notes, it's meaningless.
+                false
+            } else {
+                prefs.shownDateField != ShownDateField.NONE
+            }
+
             this@EditViewModel.note = note
             this@EditViewModel.labels = labels
             status = note.status

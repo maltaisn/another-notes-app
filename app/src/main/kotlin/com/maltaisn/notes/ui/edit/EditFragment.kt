@@ -86,7 +86,7 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener, ConfirmDialog.
             viewModel.exit()
         }
 
-        viewModel.start(args.noteId)
+        viewModel.start(args.noteId, args.labelId)
 
         // Toolbar
         binding.toolbar.apply {

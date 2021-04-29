@@ -71,6 +71,10 @@ class HomeViewModel @AssistedInject constructor(
     val messageEvent: LiveData<Event<Int>>
         get() = _messageEvent
 
+    private val _createNoteEvent = MutableLiveData<Event<Long>>()
+    val createNoteEvent: LiveData<Event<Long>>
+        get() = _createNoteEvent
+
     private val _showEmptyTrashDialogEvent = MutableLiveData<Event<Unit>>()
     val showEmptyTrashDialogEvent: LiveData<Event<Unit>>
         get() = _showEmptyTrashDialogEvent
@@ -113,6 +117,16 @@ class HomeViewModel @AssistedInject constructor(
         }
 
         updateFabVisibility()
+    }
+
+    /** When user clicks on FAB. */
+    fun createNote() {
+        val destination = currentDestination
+        _createNoteEvent.send(if (destination is HomeDestination.Labels) {
+            destination.label.id
+        } else {
+            Label.NO_ID
+        })
     }
 
     /** When user clicks on empty trash. */

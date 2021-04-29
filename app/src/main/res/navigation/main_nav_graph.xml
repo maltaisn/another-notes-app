@@ -59,6 +59,11 @@
             android:defaultValue="0L"
             app:argType="long"
             />
+        <argument
+            android:name="labelId"
+            android:defaultValue="0L"
+            app:argType="long"
+            />
     </fragment>
 
     <fragment

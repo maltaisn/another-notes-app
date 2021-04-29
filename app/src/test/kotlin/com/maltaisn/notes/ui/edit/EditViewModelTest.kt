@@ -28,7 +28,6 @@ import com.maltaisn.notes.model.ReminderAlarmManager
 import com.maltaisn.notes.model.entity.Label
 import com.maltaisn.notes.model.entity.LabelRef
 import com.maltaisn.notes.model.entity.ListNoteItem
-import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.model.entity.NoteStatus
 import com.maltaisn.notes.model.entity.NoteType
 import com.maltaisn.notes.model.entity.PinnedStatus
@@ -122,12 +121,13 @@ class EditViewModelTest {
 
         alarmCallback = MockAlarmCallback()
 
-        viewModel = EditViewModel(notesRepo, prefs, ReminderAlarmManager(notesRepo, alarmCallback))
+        viewModel = EditViewModel(notesRepo, labelsRepo, prefs,
+            ReminderAlarmManager(notesRepo, alarmCallback))
     }
 
     @Test
     fun `should create new blank note`() = mainCoroutineRule.runBlockingTest {
-        viewModel.start(Note.NO_ID)
+        viewModel.start()
 
         assertNoteEquals(testNote(title = "", content = ""), notesRepo.lastAddedNote!!)
 
@@ -140,6 +140,17 @@ class EditViewModelTest {
         ), viewModel.editItems.getOrAwaitValue())
 
         assertLiveDataEventSent(viewModel.focusEvent, EditViewModel.FocusChange(1, 0, false))
+    }
+
+    @Test
+    fun `should create new blank note with initial label`() = mainCoroutineRule.runBlockingTest {
+        viewModel.start(labelId = 1)
+
+        assertEquals(listOf(
+            EditTitleItem(DefaultEditableText(""), true),
+            EditContentItem(DefaultEditableText(""), true),
+            EditItemLabelsItem(listOf(labelsRepo.requireLabelById(1))),
+        ), viewModel.editItems.getOrAwaitValue())
     }
 
     @Test
@@ -175,33 +186,35 @@ class EditViewModelTest {
     }
 
     @Test
-    fun `should open existing text note in trash, not editable`() = mainCoroutineRule.runBlockingTest {
-        viewModel.start(4)
+    fun `should open existing text note in trash, not editable`() =
+        mainCoroutineRule.runBlockingTest {
+            viewModel.start(4)
 
-        assertEquals(viewModel.noteStatus.getOrAwaitValue(), NoteStatus.DELETED)
-        assertEquals(viewModel.noteType.getOrAwaitValue(), NoteType.TEXT)
+            assertEquals(viewModel.noteStatus.getOrAwaitValue(), NoteStatus.DELETED)
+            assertEquals(viewModel.noteType.getOrAwaitValue(), NoteType.TEXT)
 
-        assertEquals(listOf(
-            EditDateItem(dateFor("2020-03-30").time),
-            EditTitleItem(DefaultEditableText("title"), false),
-            EditContentItem(DefaultEditableText("content"), false)
-        ), viewModel.editItems.getOrAwaitValue())
-    }
+            assertEquals(listOf(
+                EditDateItem(dateFor("2020-03-30").time),
+                EditTitleItem(DefaultEditableText("title"), false),
+                EditContentItem(DefaultEditableText("content"), false)
+            ), viewModel.editItems.getOrAwaitValue())
+        }
 
     @Test
-    fun `should open existing list note in trash, not editable`() = mainCoroutineRule.runBlockingTest {
-        viewModel.start(5)
+    fun `should open existing list note in trash, not editable`() =
+        mainCoroutineRule.runBlockingTest {
+            viewModel.start(5)
 
-        assertEquals(NoteStatus.DELETED, viewModel.noteStatus.getOrAwaitValue())
-        assertEquals(NoteType.LIST, viewModel.noteType.getOrAwaitValue())
+            assertEquals(NoteStatus.DELETED, viewModel.noteStatus.getOrAwaitValue())
+            assertEquals(NoteType.LIST, viewModel.noteType.getOrAwaitValue())
 
-        assertEquals(listOf(
-            EditDateItem(dateFor("2020-03-30").time),
-            EditTitleItem(DefaultEditableText("title"), false),
-            EditItemItem(DefaultEditableText("item 1"), checked = true, editable = false),
-            EditItemItem(DefaultEditableText("item 2"), checked = false, editable = false)
-        ), viewModel.editItems.getOrAwaitValue())
-    }
+            assertEquals(listOf(
+                EditDateItem(dateFor("2020-03-30").time),
+                EditTitleItem(DefaultEditableText("title"), false),
+                EditItemItem(DefaultEditableText("item 1"), checked = true, editable = false),
+                EditItemItem(DefaultEditableText("item 2"), checked = false, editable = false)
+            ), viewModel.editItems.getOrAwaitValue())
+        }
 
     @Test
     fun `should save changed text note`() = mainCoroutineRule.runBlockingTest {
@@ -246,7 +259,7 @@ class EditViewModelTest {
 
     @Test
     fun `should discard blank note on exit`() = mainCoroutineRule.runBlockingTest {
-        viewModel.start(Note.NO_ID)
+        viewModel.start()
         viewModel.exit()
 
         assertNull(notesRepo.getNoteById(notesRepo.lastNoteId))
@@ -269,16 +282,17 @@ class EditViewModelTest {
     }
 
     @Test
-    fun `should convert list note without checked items to text note`() = mainCoroutineRule.runBlockingTest {
-        viewModel.start(3)
-        viewModel.toggleNoteType()
+    fun `should convert list note without checked items to text note`() =
+        mainCoroutineRule.runBlockingTest {
+            viewModel.start(3)
+            viewModel.toggleNoteType()
 
-        assertEquals(listOf(
-            EditDateItem(dateFor("2020-03-30").time),
-            EditTitleItem(DefaultEditableText("title"), true),
-            EditContentItem(DefaultEditableText("- item 1\n- item 2"), true)
-        ), viewModel.editItems.getOrAwaitValue())
-    }
+            assertEquals(listOf(
+                EditDateItem(dateFor("2020-03-30").time),
+                EditTitleItem(DefaultEditableText("title"), true),
+                EditContentItem(DefaultEditableText("- item 1\n- item 2"), true)
+            ), viewModel.editItems.getOrAwaitValue())
+        }
 
     @Test
     fun `should ask user to delete items before converting list note with checked items`() =
@@ -290,30 +304,32 @@ class EditViewModelTest {
         }
 
     @Test
-    fun `should convert list note to text note deleting checked items`() = mainCoroutineRule.runBlockingTest {
-        viewModel.start(2)
-        viewModel.convertToText(false)
+    fun `should convert list note to text note deleting checked items`() =
+        mainCoroutineRule.runBlockingTest {
+            viewModel.start(2)
+            viewModel.convertToText(false)
 
-        assertEquals(listOf(
-            EditDateItem(dateFor("2020-03-30").time),
-            EditTitleItem(DefaultEditableText("title"), true),
-            EditContentItem(DefaultEditableText("- item 2"), true),
-            EditItemLabelsItem(listOf(labelsRepo.requireLabelById(1))),
-        ), viewModel.editItems.getOrAwaitValue())
-    }
+            assertEquals(listOf(
+                EditDateItem(dateFor("2020-03-30").time),
+                EditTitleItem(DefaultEditableText("title"), true),
+                EditContentItem(DefaultEditableText("- item 2"), true),
+                EditItemLabelsItem(listOf(labelsRepo.requireLabelById(1))),
+            ), viewModel.editItems.getOrAwaitValue())
+        }
 
     @Test
-    fun `should convert list note to text note keeping checked items`() = mainCoroutineRule.runBlockingTest {
-        viewModel.start(2)
-        viewModel.convertToText(true)
+    fun `should convert list note to text note keeping checked items`() =
+        mainCoroutineRule.runBlockingTest {
+            viewModel.start(2)
+            viewModel.convertToText(true)
 
-        assertEquals(listOf(
-            EditDateItem(dateFor("2020-03-30").time),
-            EditTitleItem(DefaultEditableText("title"), true),
-            EditContentItem(DefaultEditableText("- item 1\n- item 2"), true),
-            EditItemLabelsItem(listOf(labelsRepo.requireLabelById(1))),
-        ), viewModel.editItems.getOrAwaitValue())
-    }
+            assertEquals(listOf(
+                EditDateItem(dateFor("2020-03-30").time),
+                EditTitleItem(DefaultEditableText("title"), true),
+                EditContentItem(DefaultEditableText("- item 1\n- item 2"), true),
+                EditItemLabelsItem(listOf(labelsRepo.requireLabelById(1))),
+            ), viewModel.editItems.getOrAwaitValue())
+        }
 
     @Test
     fun `should move active note to archive`() = mainCoroutineRule.runBlockingTest {
@@ -409,7 +425,7 @@ class EditViewModelTest {
 
     @Test
     fun `should not copy blank note, only change title`() = mainCoroutineRule.runBlockingTest {
-        viewModel.start(Note.NO_ID)
+        viewModel.start()
         val lastAdded = notesRepo.lastAddedNote!!
 
         viewModel.copyNote("untitled", "Copy")
@@ -520,18 +536,19 @@ class EditViewModelTest {
     }
 
     @Test
-    fun `should not delete checked items in deleted list note`() = mainCoroutineRule.runBlockingTest {
-        viewModel.start(5)
-        viewModel.deleteCheckedItems()
+    fun `should not delete checked items in deleted list note`() =
+        mainCoroutineRule.runBlockingTest {
+            viewModel.start(5)
+            viewModel.deleteCheckedItems()
 
-        assertEquals(listOf(
-            EditDateItem(dateFor("2020-03-30").time),
-            EditTitleItem(DefaultEditableText("title"), false),
-            EditItemItem(DefaultEditableText("item 1"), checked = true, editable = false),
-            EditItemItem(DefaultEditableText("item 2"), checked = false, editable = false)
-        ), viewModel.editItems.getOrAwaitValue())
-        assertLiveDataEventSent(viewModel.messageEvent, EditMessage.CANT_EDIT_IN_TRASH)
-    }
+            assertEquals(listOf(
+                EditDateItem(dateFor("2020-03-30").time),
+                EditTitleItem(DefaultEditableText("title"), false),
+                EditItemItem(DefaultEditableText("item 1"), checked = true, editable = false),
+                EditItemItem(DefaultEditableText("item 2"), checked = false, editable = false)
+            ), viewModel.editItems.getOrAwaitValue())
+            assertLiveDataEventSent(viewModel.messageEvent, EditMessage.CANT_EDIT_IN_TRASH)
+        }
 
     @Test
     fun `should split list note item on new line`() = mainCoroutineRule.runBlockingTest {
@@ -556,64 +573,67 @@ class EditViewModelTest {
     }
 
     @Test
-    fun `should split list note item in multiple items on paste`() = mainCoroutineRule.runBlockingTest {
-        viewModel.start(2)
+    fun `should split list note item in multiple items on paste`() =
+        mainCoroutineRule.runBlockingTest {
+            viewModel.start(2)
 
-        val item = viewModel.editItems.getOrAwaitValue()[2] as EditItemItem
-        item.content.append("\nnew item first\nnew item second")
+            val item = viewModel.editItems.getOrAwaitValue()[2] as EditItemItem
+            item.content.append("\nnew item first\nnew item second")
 
-        viewModel.onNoteItemChanged(item, 2, true)
+            viewModel.onNoteItemChanged(item, 2, true)
 
-        assertEquals(listOf(
-            EditDateItem(dateFor("2020-03-30").time),
-            EditTitleItem(DefaultEditableText("title"), true),
-            EditItemItem(DefaultEditableText("item 1"), checked = true, editable = true),
-            EditItemItem(DefaultEditableText("new item first"),
-                checked = false,
-                editable = true),
-            EditItemItem(DefaultEditableText("new item second"),
-                checked = false,
-                editable = true),
-            EditItemItem(DefaultEditableText("item 2"), checked = false, editable = true),
-            EditItemAddItem,
-            EditItemLabelsItem(listOf(labelsRepo.requireLabelById(1))),
-        ), viewModel.editItems.getOrAwaitValue())
-        assertLiveDataEventSent(viewModel.focusEvent,
-            EditViewModel.FocusChange(4, 15, false))
-    }
-
-    @Test
-    fun `should merge list note item with previous on backspace`() = mainCoroutineRule.runBlockingTest {
-        viewModel.start(2)
-        val item = viewModel.editItems.getOrAwaitValue()[3] as EditItemItem
-        viewModel.onNoteItemBackspacePressed(item, 3)
-
-        assertEquals(listOf(
-            EditDateItem(dateFor("2020-03-30").time),
-            EditTitleItem(DefaultEditableText("title"), true),
-            EditItemItem(DefaultEditableText("item 1item 2"), checked = true, editable = true),
-            EditItemAddItem,
-            EditItemLabelsItem(listOf(labelsRepo.requireLabelById(1))),
-        ), viewModel.editItems.getOrAwaitValue())
-        assertLiveDataEventSent(viewModel.focusEvent,
-            EditViewModel.FocusChange(2, 6, true))
-    }
+            assertEquals(listOf(
+                EditDateItem(dateFor("2020-03-30").time),
+                EditTitleItem(DefaultEditableText("title"), true),
+                EditItemItem(DefaultEditableText("item 1"), checked = true, editable = true),
+                EditItemItem(DefaultEditableText("new item first"),
+                    checked = false,
+                    editable = true),
+                EditItemItem(DefaultEditableText("new item second"),
+                    checked = false,
+                    editable = true),
+                EditItemItem(DefaultEditableText("item 2"), checked = false, editable = true),
+                EditItemAddItem,
+                EditItemLabelsItem(listOf(labelsRepo.requireLabelById(1))),
+            ), viewModel.editItems.getOrAwaitValue())
+            assertLiveDataEventSent(viewModel.focusEvent,
+                EditViewModel.FocusChange(4, 15, false))
+        }
 
     @Test
-    fun `should do nothing with note first item on backspace`() = mainCoroutineRule.runBlockingTest {
-        viewModel.start(2)
-        val item = viewModel.editItems.getOrAwaitValue()[2] as EditItemItem
-        viewModel.onNoteItemBackspacePressed(item, 1)
+    fun `should merge list note item with previous on backspace`() =
+        mainCoroutineRule.runBlockingTest {
+            viewModel.start(2)
+            val item = viewModel.editItems.getOrAwaitValue()[3] as EditItemItem
+            viewModel.onNoteItemBackspacePressed(item, 3)
 
-        assertEquals(listOf(
-            EditDateItem(dateFor("2020-03-30").time),
-            EditTitleItem(DefaultEditableText("title"), true),
-            EditItemItem(DefaultEditableText("item 1"), checked = true, editable = true),
-            EditItemItem(DefaultEditableText("item 2"), checked = false, editable = true),
-            EditItemAddItem,
-            EditItemLabelsItem(listOf(labelsRepo.requireLabelById(1))),
-        ), viewModel.editItems.getOrAwaitValue())
-    }
+            assertEquals(listOf(
+                EditDateItem(dateFor("2020-03-30").time),
+                EditTitleItem(DefaultEditableText("title"), true),
+                EditItemItem(DefaultEditableText("item 1item 2"), checked = true, editable = true),
+                EditItemAddItem,
+                EditItemLabelsItem(listOf(labelsRepo.requireLabelById(1))),
+            ), viewModel.editItems.getOrAwaitValue())
+            assertLiveDataEventSent(viewModel.focusEvent,
+                EditViewModel.FocusChange(2, 6, true))
+        }
+
+    @Test
+    fun `should do nothing with note first item on backspace`() =
+        mainCoroutineRule.runBlockingTest {
+            viewModel.start(2)
+            val item = viewModel.editItems.getOrAwaitValue()[2] as EditItemItem
+            viewModel.onNoteItemBackspacePressed(item, 1)
+
+            assertEquals(listOf(
+                EditDateItem(dateFor("2020-03-30").time),
+                EditTitleItem(DefaultEditableText("title"), true),
+                EditItemItem(DefaultEditableText("item 1"), checked = true, editable = true),
+                EditItemItem(DefaultEditableText("item 2"), checked = false, editable = true),
+                EditItemAddItem,
+                EditItemLabelsItem(listOf(labelsRepo.requireLabelById(1))),
+            ), viewModel.editItems.getOrAwaitValue())
+        }
 
     @Test
     fun `should delete list note item and focus previous`() = mainCoroutineRule.runBlockingTest {
@@ -666,12 +686,13 @@ class EditViewModelTest {
     }
 
     @Test
-    fun `should show can't edit message on try to edit in trash`() = mainCoroutineRule.runBlockingTest {
-        viewModel.start(5)
-        viewModel.onNoteClickedToEdit()
+    fun `should show can't edit message on try to edit in trash`() =
+        mainCoroutineRule.runBlockingTest {
+            viewModel.start(5)
+            viewModel.onNoteClickedToEdit()
 
-        assertLiveDataEventSent(viewModel.messageEvent, EditMessage.CANT_EDIT_IN_TRASH)
-    }
+            assertLiveDataEventSent(viewModel.messageEvent, EditMessage.CANT_EDIT_IN_TRASH)
+        }
 
     @Test
     fun `should allow note drag`() = mainCoroutineRule.runBlockingTest {
@@ -730,24 +751,26 @@ class EditViewModelTest {
     @Test
     fun `should set correct reminder (has reminder)`() = mainCoroutineRule.runBlockingTest {
         viewModel.start(3)
-        assertEquals(notesRepo.requireNoteById(3).reminder, viewModel.noteReminder.getOrAwaitValue())
+        assertEquals(notesRepo.requireNoteById(3).reminder,
+            viewModel.noteReminder.getOrAwaitValue())
     }
 
     @Test
-    fun `should edit existing text note (modified date field)`() = mainCoroutineRule.runBlockingTest {
-        whenever(prefs.shownDateField) doReturn ShownDateField.MODIFIED
-        viewModel.start(1)
+    fun `should edit existing text note (modified date field)`() =
+        mainCoroutineRule.runBlockingTest {
+            whenever(prefs.shownDateField) doReturn ShownDateField.MODIFIED
+            viewModel.start(1)
 
-        assertEquals(NoteStatus.ACTIVE, viewModel.noteStatus.getOrAwaitValue())
-        assertEquals(NoteType.TEXT, viewModel.noteType.getOrAwaitValue())
+            assertEquals(NoteStatus.ACTIVE, viewModel.noteStatus.getOrAwaitValue())
+            assertEquals(NoteType.TEXT, viewModel.noteType.getOrAwaitValue())
 
-        assertEquals(listOf(
-            EditDateItem(dateFor("2019-01-01").time),
-            EditTitleItem(DefaultEditableText("title"), true),
-            EditContentItem(DefaultEditableText("content"), true),
-            EditItemLabelsItem(listOf(labelsRepo.requireLabelById(1))),
-        ), viewModel.editItems.getOrAwaitValue())
-    }
+            assertEquals(listOf(
+                EditDateItem(dateFor("2019-01-01").time),
+                EditTitleItem(DefaultEditableText("title"), true),
+                EditContentItem(DefaultEditableText("content"), true),
+                EditItemLabelsItem(listOf(labelsRepo.requireLabelById(1))),
+            ), viewModel.editItems.getOrAwaitValue())
+        }
 
     @Test
     fun `should edit existing text note (no date field)`() = mainCoroutineRule.runBlockingTest {
@@ -763,6 +786,5 @@ class EditViewModelTest {
             EditItemLabelsItem(listOf(labelsRepo.requireLabelById(1))),
         ), viewModel.editItems.getOrAwaitValue())
     }
-
 
 }
