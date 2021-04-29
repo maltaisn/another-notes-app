@@ -43,6 +43,7 @@ import org.junit.Rule
 import org.junit.Test
 import java.util.Date
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 class HomeViewModelRemindersTest {
 
@@ -92,6 +93,7 @@ class HomeViewModelRemindersTest {
     @Test
     fun `should show all reminders with headers`() =
         mainCoroutineRule.runBlockingTest {
+            assertTrue(viewModel.fabShown.getOrAwaitValue())
             assertEquals(listOf(
                 HomeViewModel.OVERDUE_HEADER_ITEM,
                 NoteItem(4, notesRepo.requireNoteById(4), showMarkAsDone = true),

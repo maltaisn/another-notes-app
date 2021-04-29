@@ -266,7 +266,7 @@ abstract class NoteViewModel(
     }
 
     /** Update current selection live data to reflect current selection. */
-    private fun updateNoteSelection() {
+    protected open fun updateNoteSelection() {
         // If no pinnable (active) notes are selected, selection is unpinnable.
         // If at least one unpinned note is selected, selection is unpinned.
         // Otherwise selection is pinned.
@@ -280,7 +280,8 @@ abstract class NoteViewModel(
         // so the single note reminder can be deleted.
         val hasReminder = selectedNotes.any { it.reminder != null }
 
-        _currentSelection.value = NoteSelection(selectedNotes.size, selectedNoteStatus, pinned, hasReminder)
+        _currentSelection.value =
+            NoteSelection(selectedNotes.size, selectedNoteStatus, pinned, hasReminder)
     }
 
     /** Save [selectedNotes] to [savedStateHandle]. */

@@ -63,6 +63,10 @@ class HomeViewModel @AssistedInject constructor(
 
     private var batteryRestricted = false
 
+    private val _fabShown = MutableLiveData<Boolean>()
+    val fabShown: LiveData<Boolean>
+        get() = _fabShown
+
     private val _messageEvent = MutableLiveData<Event<Int>>()
     val messageEvent: LiveData<Event<Int>>
         get() = _messageEvent
@@ -107,6 +111,8 @@ class HomeViewModel @AssistedInject constructor(
                 }
             }
         }
+
+        updateFabVisibility()
     }
 
     /** When user clicks on empty trash. */
@@ -131,6 +137,20 @@ class HomeViewModel @AssistedInject constructor(
         viewModelScope.launch {
             buildTypeBehavior.doExtraAction(this@HomeViewModel)
         }
+    }
+
+    override fun updateNoteSelection() {
+        super.updateNoteSelection()
+        updateFabVisibility()
+    }
+
+    private fun updateFabVisibility() {
+        _fabShown.value = when (val destination = currentDestination) {
+            is HomeDestination.Status -> destination.status == NoteStatus.ACTIVE
+            is HomeDestination.Labels -> true
+            is HomeDestination.Reminders -> true
+            else -> error("Unknown destination")
+        } && selectedNotes.isEmpty()
     }
 
     override val selectedNoteStatus: NoteStatus?

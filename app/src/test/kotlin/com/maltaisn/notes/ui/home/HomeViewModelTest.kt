@@ -99,6 +99,7 @@ class HomeViewModelTest {
             val note1 = notesRepo.requireNoteById(1)
             val note2 = notesRepo.requireNoteById(2)
             viewModel.setDestination(HomeDestination.Status(NoteStatus.ACTIVE))
+            assertTrue(viewModel.fabShown.getOrAwaitValue())
 
             assertEquals(listOf(
                 HomeViewModel.PINNED_HEADER_ITEM,
@@ -135,6 +136,7 @@ class HomeViewModelTest {
     fun `should show only archived notes`() = mainCoroutineRule.runBlockingTest {
         val note = notesRepo.requireNoteById(3)
         viewModel.setDestination(HomeDestination.Status(NoteStatus.ARCHIVED))
+        assertFalse(viewModel.fabShown.getOrAwaitValue())
 
         assertEquals(listOf(
             NoteItem(3, note, listOf(labelsRepo.requireLabelById(1)))
@@ -145,6 +147,7 @@ class HomeViewModelTest {
     fun `should show only deleted notes`() = mainCoroutineRule.runBlockingTest {
         val note = notesRepo.requireNoteById(4)
         viewModel.setDestination(HomeDestination.Status(NoteStatus.DELETED))
+        assertFalse(viewModel.fabShown.getOrAwaitValue())
 
         assertEquals(listOf(
             MessageItem(-1, R.string.trash_reminder_message,

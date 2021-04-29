@@ -41,6 +41,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 class HomeViewModelLabelsTest {
 
@@ -95,6 +96,8 @@ class HomeViewModelLabelsTest {
     fun `should show all notes with headers (pinned, unpinned, archived)`() =
         mainCoroutineRule.runBlockingTest {
             viewModel.setDestination(HomeDestination.Labels(labelsRepo.requireLabelById(1)))
+            assertTrue(viewModel.fabShown.getOrAwaitValue())
+
             assertEquals(listOf(
                 HomeViewModel.PINNED_HEADER_ITEM,
                 NoteItem(1, notesRepo.requireNoteById(1), listOf(labelsRepo.requireLabelById(2))),
