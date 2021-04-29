@@ -43,7 +43,8 @@ import com.maltaisn.notes.ui.viewModel
 import javax.inject.Inject
 
 /**
- * Start screen fragment displaying a list of note for different note statuses.
+ * Start screen fragment displaying a list of notes for different note status,
+ * by label, or with a reminder.
  */
 class HomeFragment : NoteFragment(), Toolbar.OnMenuItemClickListener {
 

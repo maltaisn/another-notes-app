@@ -182,9 +182,9 @@ abstract class NoteFragment : Fragment(), ActionMode.Callback, ConfirmDialog.Cal
 
             // Share and copy are only visible if there is a single note selected.
             val menu = it.menu
-            val singleSelection = selection.count == 1
-            menu.findItem(R.id.item_share).isVisible = singleSelection
-            menu.findItem(R.id.item_copy).isVisible = singleSelection
+            val copyShareVisible = selection.count == 1 && selection.status != NoteStatus.DELETED
+            menu.findItem(R.id.item_share).isVisible = copyShareVisible
+            menu.findItem(R.id.item_copy).isVisible = copyShareVisible
 
             // Pin item
             val pinItem = menu.findItem(R.id.item_pin)
@@ -206,11 +206,16 @@ abstract class NoteFragment : Fragment(), ActionMode.Callback, ConfirmDialog.Cal
 
             // Reminder item
             val reminderItem = menu.findItem(R.id.item_reminder)
+            reminderItem.isVisible = (selection.status != NoteStatus.DELETED)
             reminderItem.setTitle(if (selection.hasReminder) {
                 R.string.action_reminder_edit
             } else {
                 R.string.action_reminder_add
             })
+
+            // Labels item
+            val labelsItem = menu.findItem(R.id.item_labels)
+            labelsItem.isVisible = (selection.status != NoteStatus.DELETED)
 
             // Update move items depending on status
             val moveItem = menu.findItem(R.id.item_move)
