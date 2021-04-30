@@ -73,11 +73,11 @@ class NavigationViewModel @AssistedInject constructor(
     private var checkedId = 0L
         set(value) {
             field = value
-            savedStateHandle.set(KEY_CHECKED_ID, value)
+            savedStateHandle[KEY_CHECKED_ID] = value
         }
 
     init {
-        checkedId = savedStateHandle.get(KEY_CHECKED_ID) ?: ITEM_ID_ACTIVE
+        checkedId = savedStateHandle[KEY_CHECKED_ID] ?: ITEM_ID_ACTIVE
         viewModelScope.launch {
             // Navigation items are constant, except for labels.
             labelsRepository.getAllLabels().collect { labels ->

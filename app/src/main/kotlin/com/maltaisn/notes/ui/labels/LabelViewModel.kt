@@ -112,7 +112,7 @@ class LabelViewModel @AssistedInject constructor(
             if (KEY_SELECTED_IDS in savedStateHandle) {
                 selectedLabelIds += savedStateHandle.get<List<Long>>(KEY_SELECTED_IDS).orEmpty()
                 selectedLabels += selectedLabelIds.mapNotNull { labelsRepository.getLabelById(it) }
-                renamingLabel = savedStateHandle.get(KEY_RENAMING_LABEL) ?: false
+                renamingLabel = savedStateHandle[KEY_RENAMING_LABEL] ?: false
             }
         }
     }
@@ -267,7 +267,7 @@ class LabelViewModel @AssistedInject constructor(
 
     /** Save [selectedLabels] to [savedStateHandle]. */
     private fun saveLabelSelectionState() {
-        savedStateHandle.set(KEY_SELECTED_IDS, selectedLabelIds.toList())
+        savedStateHandle[KEY_SELECTED_IDS] = selectedLabelIds.toList()
     }
 
     @AssistedInject.Factory

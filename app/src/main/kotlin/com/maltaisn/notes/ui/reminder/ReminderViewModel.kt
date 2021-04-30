@@ -91,8 +91,8 @@ class ReminderViewModel @AssistedInject constructor(
         // Use Long.MAX_VALUE so that time will be marked as valid in the delay between dialog appearance and initialization.
         // Otherwise it causes layout flickering due to the invalid time text view being only briefly shown.
         noteIds = savedStateHandle.get<List<Long>>(KEY_NOTE_IDS).orEmpty()
-        date = savedStateHandle.get<Long>(KEY_DATE) ?: Long.MAX_VALUE
-        recurrence = savedStateHandle.get<Recurrence>(KEY_RECURRENCE) ?: Recurrence.DOES_NOT_REPEAT
+        date = savedStateHandle[KEY_DATE] ?: Long.MAX_VALUE
+        recurrence = savedStateHandle[KEY_RECURRENCE] ?: Recurrence.DOES_NOT_REPEAT
 
         checkIfTimeIsValid()
         updateReminderDetails()

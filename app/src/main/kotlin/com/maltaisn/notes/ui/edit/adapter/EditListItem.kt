@@ -24,7 +24,7 @@ sealed class EditListItem {
 }
 
 data class EditDateItem(
-    var date: Long
+    val date: Long
 ) : EditListItem() {
 
     override val type get() = ViewType.DATE
@@ -32,7 +32,7 @@ data class EditDateItem(
 
 data class EditTitleItem(
     var title: EditableText,
-    var editable: Boolean
+    val editable: Boolean
 ) : EditListItem() {
 
     override val type get() = ViewType.TITLE
@@ -40,7 +40,7 @@ data class EditTitleItem(
 
 data class EditContentItem(
     var content: EditableText,
-    var editable: Boolean
+    val editable: Boolean
 ) : EditListItem() {
 
     override val type get() = ViewType.CONTENT
@@ -61,7 +61,7 @@ object EditItemAddItem : EditListItem() {
 }
 
 data class EditItemLabelsItem(
-    var labels: List<Label>
+    val labels: List<Label>
 ) : EditListItem() {
 
     override val type get() = ViewType.ITEM_LABELS

@@ -18,6 +18,7 @@ package com.maltaisn.notes.ui.edit
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.maltaisn.notes.model.LabelsRepository
@@ -34,6 +35,7 @@ import com.maltaisn.notes.model.entity.NoteStatus
 import com.maltaisn.notes.model.entity.NoteType
 import com.maltaisn.notes.model.entity.PinnedStatus
 import com.maltaisn.notes.model.entity.Reminder
+import com.maltaisn.notes.ui.AssistedSavedStateViewModelFactory
 import com.maltaisn.notes.ui.Event
 import com.maltaisn.notes.ui.ShareData
 import com.maltaisn.notes.ui.StatusChange
@@ -48,32 +50,41 @@ import com.maltaisn.notes.ui.edit.adapter.EditTitleItem
 import com.maltaisn.notes.ui.edit.adapter.EditableText
 import com.maltaisn.notes.ui.note.ShownDateField
 import com.maltaisn.notes.ui.send
+import com.squareup.inject.assisted.Assisted
+import com.squareup.inject.assisted.AssistedInject
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.launch
 import java.util.Collections
 import java.util.Date
-import javax.inject.Inject
 
-class EditViewModel @Inject constructor(
+/**
+ * View model for the edit note screen.
+ * TODO status, pinned, reminder could be livedata, except that livedata has nullable type... flow?
+ */
+class EditViewModel @AssistedInject constructor(
     private val notesRepository: NotesRepository,
     private val labelsRepository: LabelsRepository,
     private val prefs: PrefsManager,
     private val alarmManager: ReminderAlarmManager,
+    @Assisted private val savedStateHandle: SavedStateHandle,
 ) : ViewModel(), EditAdapter.Callback {
 
     /**
      * Whether the current note is a new note.
+     * This is important to remember as to not recreate as new blank note
+     * when [start] is called a second time.
      */
     private var isNewNote = false
 
     /**
-     * Note being edited by user. This note data is not always up to date with UI,
-     * so [save] must be called before using it and to persist it.
+     * Note being edited by user. This note data is not up-to-date with the UI.
+     * - Call [updateNote] to update it to reflect UI state.
+     * - Call [saveNote] to update it from UI and update database.
      */
     private var note = BLANK_NOTE
 
     /**
-     * List of labels on note.
+     * List of labels on note. Always reflects the UI.
      */
     private var labels = emptyList<Label>()
 
@@ -94,40 +105,25 @@ class EditViewModel @Inject constructor(
     private var reminder: Reminder? = null
 
     /**
-     * Whether to show date item.
+     * The currently displayed list items created in [updateListItems].
+     * While this list is mutable, any in place changes should be reported to the adapter!
      */
-    private var showDate: Boolean = false
-
-    /**
-     * The currently displayed list items created in [createListItems].
-     */
-    private var listItems = emptyList<EditListItem>()
+    private var listItems: MutableList<EditListItem> = mutableListOf()
         set(value) {
             field = value
             _editItems.value = value
         }
 
-    /**
-     * The item in [listItems] used to display the title, or `null` if not created yet.
-     */
-    private val titleItem by lazy { EditTitleItem(DefaultEditableText(), false) }
-
-    /**
-     * The item in [listItems] to display content for text notes.
-     */
-    private val contentItem by lazy { EditContentItem(DefaultEditableText(), false) }
-
-
-    private val _noteType = MutableLiveData<NoteType?>()
-    val noteType: LiveData<NoteType?>
+    private val _noteType = MutableLiveData<NoteType>()
+    val noteType: LiveData<NoteType>
         get() = _noteType
 
-    private val _noteStatus = MutableLiveData<NoteStatus?>()
-    val noteStatus: LiveData<NoteStatus?>
+    private val _noteStatus = MutableLiveData<NoteStatus>()
+    val noteStatus: LiveData<NoteStatus>
         get() = _noteStatus
 
-    private val _notePinned = MutableLiveData<PinnedStatus?>()
-    val notePinned: LiveData<PinnedStatus?>
+    private val _notePinned = MutableLiveData<PinnedStatus>()
+    val notePinned: LiveData<PinnedStatus>
         get() = _notePinned
 
     private val _noteReminder = MutableLiveData<Reminder?>()
@@ -174,26 +170,51 @@ class EditViewModel @Inject constructor(
     val exitEvent: LiveData<Event<Unit>>
         get() = _exitEvent
 
+    /**
+     * Whether to show date item.
+     */
+    private val shouldShowDate: Boolean
+        get() = if (isNewNote) false else prefs.shownDateField != ShownDateField.NONE
+
+    /**
+     * Whether note is currently in trash (deleted) or not.
+     */
     private val isNoteInTrash: Boolean
         get() = status == NoteStatus.DELETED
+
+    init {
+        if (KEY_NOTE_ID in savedStateHandle) {
+            viewModelScope.launch {
+                isNewNote = savedStateHandle[KEY_IS_NEW_NOTE] ?: false
+
+                val note = notesRepository.getNoteById(savedStateHandle[KEY_NOTE_ID] ?: Note.NO_ID)
+                if (note != null) {
+                    this@EditViewModel.note = note
+                }
+            }
+        }
+    }
 
     /**
      * Initialize the view model to edit a note with the ID [noteId].
      * The view model can only be started once to edit a note.
      * Subsequent calls with different arguments will do nothing and previous note will be edited.
+     *
      * @param noteId Can be [Note.NO_ID] to create a new blank note.
      * @param labelId Can be different from [Label.NO_ID] to initially set a label on a new note.
      */
     fun start(noteId: Long = Note.NO_ID, labelId: Long = Label.NO_ID) {
         viewModelScope.launch {
+            val isFirstStart = (note == BLANK_NOTE)
+
             // Try to get note by ID with its labels.
-            val noteWithLabels = notesRepository.getNoteByIdWithLabels(if (note != BLANK_NOTE) {
-                // start() was already called, fragment was probably recreated
+            val noteWithLabels = notesRepository.getNoteByIdWithLabels(if (isFirstStart) {
+                // first start, use provided note ID
+                noteId
+            } else {
+                // start() was already called, fragment view was probably recreated
                 // use the note ID of the note being edited previously
                 note.id
-            } else {
-                // first call, use provided note ID
-                noteId
             })
 
             var note = noteWithLabels?.note
@@ -215,17 +236,8 @@ class EditViewModel @Inject constructor(
                     labelsRepository.insertLabelRefs(listOf(LabelRef(id, labelId)))
                 }
 
-                // Focus on text content (text note) or first item (list note)
-                focusItemAt(1, 0, false)
-
                 isNewNote = true
-            }
-
-            showDate = if (isNewNote) {
-                // Don't show date for new notes, it's meaningless.
-                false
-            } else {
-                prefs.shownDateField != ShownDateField.NONE
+                savedStateHandle[KEY_IS_NEW_NOTE] = isNewNote
             }
 
             this@EditViewModel.note = note
@@ -239,18 +251,24 @@ class EditViewModel @Inject constructor(
             _notePinned.value = pinned
             _noteReminder.value = reminder
 
-            createListItems()
+            updateListItems()
+
+            if (isFirstStart && isNewNote) {
+                // Focus on text content
+                focusItemAt(findItemPos<EditContentItem>(), 0, false)
+            }
         }
     }
 
     /**
-     * Create note and save it in database if it was changed.
+     * Update note and save it in database if it was changed.
      * This updates last modified date.
      */
-    fun save() {
+    fun saveNote() {
         // Update note
         updateNote()
 
+        // NonCancellable to avoid save being cancelled if called right before view model destruction
         viewModelScope.launch(NonCancellable) {
             // Compare previously saved note from database with new one.
             val oldNote = notesRepository.getNoteById(note.id)
@@ -296,7 +314,7 @@ class EditViewModel @Inject constructor(
         _noteType.value = note.type
 
         // Update list items
-        createListItems()
+        updateListItems()
     }
 
     fun togglePin() {
@@ -326,7 +344,7 @@ class EditViewModel @Inject constructor(
         _noteType.value = NoteType.TEXT
 
         // Update list items
-        createListItems()
+        updateListItems()
     }
 
     fun moveNoteAndExit() {
@@ -339,19 +357,20 @@ class EditViewModel @Inject constructor(
 
     fun restoreNoteAndEdit() {
         note = note.copy(status = NoteStatus.ACTIVE, pinned = PinnedStatus.UNPINNED)
+
         status = note.status
         pinned = note.pinned
-
-        // Recreate list items so that they are editable.
-        createListItems()
-
-        _messageEvent.send(EditMessage.RESTORED_NOTE)
         _noteStatus.value = status
         _notePinned.value = pinned
+
+        // Recreate list items so that they are editable.
+        updateListItems()
+
+        _messageEvent.send(EditMessage.RESTORED_NOTE)
     }
 
     fun copyNote(untitledName: String, copySuffix: String) {
-        save()
+        saveNote()
 
         viewModelScope.launch {
             val newTitle = Note.getCopiedNoteTitle(note.title, untitledName, copySuffix)
@@ -364,14 +383,23 @@ class EditViewModel @Inject constructor(
                     id = Note.NO_ID,
                     title = newTitle,
                     addedDate = date,
-                    lastModifiedDate = date)
+                    lastModifiedDate = date,
+                    reminder = reminder)
                 val id = notesRepository.insertNote(copy)
-                this@EditViewModel.note = copy.copy(id = id)
+                note = copy.copy(id = id)
+
+                // Set reminder alarm for copy
+                if (reminder != null) {
+                    alarmManager.setNoteReminderAlarm(note)
+                }
+
+                // Set labels for copy
+                labelsRepository.insertLabelRefs(createLabelRefs(id))
             }
 
             // Update title item
-            titleItem.title.replaceAll(newTitle)
-            focusItemAt(if (showDate) 1 else 0, newTitle.length, true)
+            findItem<EditTitleItem>().title.replaceAll(newTitle)
+            focusItemAt(findItemPos<EditTitleItem>(), newTitle.length, true)
         }
     }
 
@@ -398,11 +426,6 @@ class EditViewModel @Inject constructor(
     }
 
     fun uncheckAllItems() {
-        if (isNoteInTrash) {
-            sendRestoreMessage()
-            return
-        }
-
         changeListItems { list ->
             for ((i, item) in list.withIndex()) {
                 if (item is EditItemItem && item.checked) {
@@ -413,11 +436,6 @@ class EditViewModel @Inject constructor(
     }
 
     fun deleteCheckedItems() {
-        if (isNoteInTrash) {
-            sendRestoreMessage()
-            return
-        }
-
         changeListItems { list ->
             list.removeAll { it is EditItemItem && it.checked }
         }
@@ -430,17 +448,22 @@ class EditViewModel @Inject constructor(
             // If note is blank, it will be discarded on exit anyway, so don't change it.
             val oldNote = note
             status = newStatus
+
             pinned = if (status == NoteStatus.ACTIVE) {
                 PinnedStatus.UNPINNED
             } else {
                 PinnedStatus.CANT_PIN
             }
-            if (newStatus == NoteStatus.DELETED && reminder != null) {
-                // Deleted note, remove reminder and alarm.
-                reminder = null
-                alarmManager.removeAlarm(note.id)
+
+            if (newStatus == NoteStatus.DELETED) {
+                // Remove reminder for deleted note
+                if (reminder != null) {
+                    reminder = null
+                    alarmManager.removeAlarm(note.id)
+                }
             }
-            save()
+
+            saveNote()
 
             // Show status change message.
             val statusChange = StatusChange(listOf(oldNote), oldNote.status, newStatus)
@@ -456,12 +479,12 @@ class EditViewModel @Inject constructor(
      */
     private fun updateNote() {
         // Create note
-        val title = titleItem.title.text.toString()
+        val title = findItem<EditTitleItem>().title.text.toString()
         val content: String
         val metadata: NoteMetadata
         when (note.type) {
             NoteType.TEXT -> {
-                content = contentItem.content.text.toString()
+                content = findItem<EditContentItem>().content.text.toString()
                 metadata = BlankNoteMetadata
             }
             NoteType.LIST -> {
@@ -475,16 +498,17 @@ class EditViewModel @Inject constructor(
     }
 
     /**
-     * Create list items corresponding to the [note] data.
-     * [updateNote] might need to be called first for that data to be up-to-date.
+     * Create label refs for a note ID from [labels].
      */
-    private fun createListItems() {
-        val list = mutableListOf<EditListItem>()
+    private fun createLabelRefs(noteId: Long) =
+        labels.map { LabelRef(noteId, it.id) }
+
+    private fun createListItems() = mutableListOf<EditListItem>().apply {
         val canEdit = !isNoteInTrash
 
         // Date item
-        if (showDate) {
-            list += EditDateItem(when (prefs.shownDateField) {
+        if (shouldShowDate) {
+            this += EditDateItem(when (prefs.shownDateField) {
                 ShownDateField.ADDED -> note.addedDate.time
                 ShownDateField.MODIFIED -> note.lastModifiedDate.time
                 else -> 0L  // never happens
@@ -492,36 +516,45 @@ class EditViewModel @Inject constructor(
         }
 
         // Title item
-        titleItem.title = DefaultEditableText(note.title)
-        titleItem.editable = canEdit
-        list += titleItem
+        val titleItem = EditTitleItem(DefaultEditableText(note.title), canEdit)
+        this += titleItem
 
         when (note.type) {
             NoteType.TEXT -> {
                 // Content item
-                contentItem.content = DefaultEditableText(note.content)
-                contentItem.editable = canEdit
-                list += contentItem
+                val contentItem = EditContentItem(DefaultEditableText(note.content), canEdit)
+                this += contentItem
             }
             NoteType.LIST -> {
                 // List items
                 val items = note.listItems
                 for (item in items) {
-                    list += EditItemItem(DefaultEditableText(item.content), item.checked, canEdit)
+                    this += EditItemItem(DefaultEditableText(item.content),
+                        item.checked,
+                        canEdit)
                 }
 
                 // Item add item
                 if (canEdit) {
-                    list += EditItemAddItem
+                    this += EditItemAddItem
                 }
             }
         }
 
         if (labels.isNotEmpty()) {
-            list += EditItemLabelsItem(labels)
+            this += EditItemLabelsItem(labels)
         }
+    }
 
-        listItems = list
+    /**
+     * Update list items to match the [note] data.
+     * [updateNote] might need to be called first for that data to be up-to-date.
+     */
+    private fun updateListItems() {
+        // TODO avoid full list refresh somehow?
+        //  - on note type change
+        //  - on fragment view recreation
+        listItems = createListItems()
     }
 
     override fun onNoteItemChanged(item: EditItemItem, pos: Int, isPaste: Boolean) {
@@ -588,21 +621,18 @@ class EditViewModel @Inject constructor(
 
     override fun onNoteClickedToEdit() {
         if (isNoteInTrash) {
-            sendRestoreMessage()
+            // Cannot edit note in trash! Show message suggesting user to restore the note.
+            // This is not just for show. Editing note would change its last modified date
+            // which would mess up the auto-delete interval in trash.
+            _messageEvent.send(EditMessage.CANT_EDIT_IN_TRASH)
         }
-    }
-
-    private fun sendRestoreMessage() {
-        // Cannot edit note in trash! Show message suggesting user to restore the note.
-        // This is not just for show. Editing note would change its last modified date
-        // which would mess up the auto-delete interval in trash.
-        _messageEvent.send(EditMessage.CANT_EDIT_IN_TRASH)
     }
 
     override val isNoteDragEnabled: Boolean
         get() = !isNoteInTrash && listItems.count { it is EditItemItem } > 1
 
     override fun onNoteItemSwapped(from: Int, to: Int) {
+        // Avoid updating live data, adapter was notified of the change already.
         Collections.swap(listItems, from, to)
     }
 
@@ -617,6 +647,14 @@ class EditViewModel @Inject constructor(
         val newList = listItems.toMutableList()
         change(newList)
         listItems = newList
+    }
+
+    private inline fun <reified T : EditListItem> findItem(): T {
+        return (listItems.find { it is T } ?: error("List item not found")) as T
+    }
+
+    private inline fun <reified T : EditListItem> findItemPos(): Int {
+        return listItems.indexOfFirst { it is T }
     }
 
     data class FocusChange(val itemPos: Int, val pos: Int, val itemExists: Boolean)
@@ -645,8 +683,16 @@ class EditViewModel @Inject constructor(
         override fun toString() = text.toString()
     }
 
+    @AssistedInject.Factory
+    interface Factory : AssistedSavedStateViewModelFactory<EditViewModel> {
+        override fun create(savedStateHandle: SavedStateHandle): EditViewModel
+    }
+
     companion object {
         private val BLANK_NOTE = Note(Note.NO_ID, NoteType.TEXT, "", "",
             BlankNoteMetadata, Date(0), Date(0), NoteStatus.ACTIVE, PinnedStatus.UNPINNED, null)
+
+        private const val KEY_NOTE_ID = "noteId"
+        private const val KEY_IS_NEW_NOTE = "isNewNote"
     }
 }

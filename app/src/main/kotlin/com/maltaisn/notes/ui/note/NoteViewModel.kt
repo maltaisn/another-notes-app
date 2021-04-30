@@ -286,7 +286,7 @@ abstract class NoteViewModel(
 
     /** Save [selectedNotes] to [savedStateHandle]. */
     private fun saveNoteSelectionState() {
-        savedStateHandle.set(KEY_SELECTED_IDS, selectedNoteIds.toList())
+        savedStateHandle[KEY_SELECTED_IDS] = selectedNoteIds.toList()
     }
 
     /** Change the status of [notes] to [newStatus]. */

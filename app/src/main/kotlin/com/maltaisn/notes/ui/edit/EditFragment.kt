@@ -26,7 +26,6 @@ import androidx.activity.addCallback
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.postDelayed
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -56,8 +55,8 @@ import javax.inject.Provider
 class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener, ConfirmDialog.Callback {
 
     @Inject
-    lateinit var viewModelProvider: Provider<EditViewModel>
-    private val viewModel by viewModel { viewModelProvider.get() }
+    lateinit var viewModelFactory: EditViewModel.Factory
+    val viewModel by viewModel { viewModelFactory.create(it) }
 
     @Inject
     lateinit var sharedViewModelProvider: Provider<SharedViewModel>
@@ -73,7 +72,11 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener, ConfirmDialog.
         (requireContext().applicationContext as App).appComponent.inject(this)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, state: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        state: Bundle?
+    ): View {
         _binding = FragmentEditBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -82,7 +85,7 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener, ConfirmDialog.
         val context = requireContext()
 
         requireActivity().onBackPressedDispatcher.addCallback(this) {
-            viewModel.save()
+            viewModel.saveNote()
             viewModel.exit()
         }
 
@@ -93,7 +96,7 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener, ConfirmDialog.
             setOnMenuItemClickListener(this@EditFragment)
             setNavigationOnClickListener {
                 view.hideKeyboard()
-                viewModel.save()
+                viewModel.saveNote()
                 viewModel.exit()
             }
             setTitle(if (args.noteId == Note.NO_ID) {
@@ -113,6 +116,7 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener, ConfirmDialog.
         val layoutManager = LinearLayoutManager(context)
         rcv.adapter = adapter
         rcv.layoutManager = layoutManager
+        rcv.itemAnimator?.changeDuration = 0
 
         setupViewModelObservers(adapter)
     }
@@ -121,28 +125,18 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener, ConfirmDialog.
     private fun setupViewModelObservers(adapter: EditAdapter) {
         val navController = findNavController()
 
-        viewModel.noteStatus.observe(viewLifecycleOwner, Observer { status ->
-            updateItemsForNoteStatus(status ?: return@Observer)
-        })
-
-        viewModel.notePinned.observe(viewLifecycleOwner, Observer { pinned ->
-            updateItemsForPinnedStatus(pinned ?: return@Observer)
-        })
-
+        viewModel.noteStatus.observe(viewLifecycleOwner, ::updateItemsForNoteStatus)
+        viewModel.notePinned.observe(viewLifecycleOwner, ::updateItemsForPinnedStatus)
         viewModel.noteReminder.observe(viewLifecycleOwner, ::updateItemsForReminder)
-
-        viewModel.noteType.observe(viewLifecycleOwner) { type ->
-            updateItemsForNoteType(type ?: return@observe)
-        }
+        viewModel.noteType.observe(viewLifecycleOwner, ::updateItemsForNoteType)
 
         viewModel.editItems.observe(viewLifecycleOwner, adapter::submitList)
 
-        viewModel.focusEvent.observeEvent(viewLifecycleOwner) { focus ->
-            adapter.setItemFocus(focus)
-        }
+        viewModel.focusEvent.observeEvent(viewLifecycleOwner, adapter::setItemFocus)
 
         val restoreNoteSnackbar by lazy {
-            Snackbar.make(requireView(), R.string.edit_in_trash_message, CANT_EDIT_SNACKBAR_DURATION)
+            Snackbar.make(requireView(), R.string.edit_in_trash_message,
+                CANT_EDIT_SNACKBAR_DURATION)
                 .setAction(R.string.action_restore) { viewModel.restoreNoteAndEdit() }
         }
         viewModel.messageEvent.observeEvent(viewLifecycleOwner) { message ->
@@ -154,13 +148,10 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener, ConfirmDialog.
             }
         }
 
-        viewModel.statusChangeEvent.observeEvent(viewLifecycleOwner) { statusChange ->
-            sharedViewModel.onStatusChange(statusChange)
-        }
+        viewModel.statusChangeEvent.observeEvent(viewLifecycleOwner,
+            sharedViewModel::onStatusChange)
 
-        viewModel.shareEvent.observeEvent(viewLifecycleOwner) { data ->
-            startSharingData(data)
-        }
+        viewModel.shareEvent.observeEvent(viewLifecycleOwner, ::startSharingData)
 
         viewModel.showDeleteConfirmEvent.observeEvent(viewLifecycleOwner) {
             ConfirmDialog.newInstance(
@@ -217,6 +208,9 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener, ConfirmDialog.
         val isTrash = status == NoteStatus.DELETED
         menu.findItem(R.id.item_share).isVisible = !isTrash
         menu.findItem(R.id.item_copy).isVisible = !isTrash
+        menu.findItem(R.id.item_reminder).isVisible = !isTrash
+        menu.findItem(R.id.item_uncheck_all).isVisible = !isTrash
+        menu.findItem(R.id.item_delete_checked).isVisible = !isTrash
         menu.findItem(R.id.item_delete).setTitle(if (isTrash) {
             R.string.action_delete_forever
         } else {
@@ -278,7 +272,7 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener, ConfirmDialog.
 
     override fun onStop() {
         super.onStop()
-        viewModel.save()
+        viewModel.saveNote()
     }
 
     override fun onMenuItemClick(item: MenuItem): Boolean {

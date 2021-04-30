@@ -62,10 +62,10 @@ class NotificationViewModel @AssistedInject constructor(
         get() = _exitEvent
 
     init {
-        noteId = savedStateHandle.get(KEY_NOTE_ID) ?: 0
+        noteId = savedStateHandle[KEY_NOTE_ID] ?: 0
         // Postpone time must be saved so that if view model is destroyed after date dialog was
         // shown to not lose the selected date.
-        postponeTime = savedStateHandle.get(KEY_POSTPONE_TIME) ?: 0
+        postponeTime = savedStateHandle[KEY_POSTPONE_TIME] ?: 0
     }
 
     fun onPostponeClicked(noteId: Long) {
