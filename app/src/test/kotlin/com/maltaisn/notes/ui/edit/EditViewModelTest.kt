@@ -426,13 +426,13 @@ class EditViewModelTest {
         viewModel.start(3)
         viewModel.copyNote("untitled", "Copy")
 
+        // should copy labels but not reminder
         val noteCopy = notesRepo.lastAddedNote!!
-        assertNoteEquals(noteCopy, listNote(listOf(
+        assertNoteEquals(listNote(listOf(
             ListNoteItem("item 1", false),
             ListNoteItem("item 2", false)
         ), id = 3, title = "title - Copy", status = NoteStatus.ACTIVE, pinned = PinnedStatus.PINNED,
-            added = Date(), modified = Date(),
-            reminder = Reminder(Date(10), null, Date(10), 1, false)))
+            added = Date(), modified = Date()), noteCopy)
         assertEquals(listOf(1L, 2L), labelsRepo.getLabelIdsForNote(noteCopy.id))
 
         assertEquals(listOf(
@@ -446,7 +446,7 @@ class EditViewModelTest {
         ), viewModel.editItems.getOrAwaitValue())
         assertLiveDataEventSent(viewModel.focusEvent, EditViewModel.FocusChange(1, 12, true))
 
-        assertEquals(10, alarmCallback.alarms[noteCopy.id])
+        assertNull(alarmCallback.alarms[noteCopy.id])
     }
 
     @Test

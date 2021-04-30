@@ -65,7 +65,7 @@ class EditViewModel @AssistedInject constructor(
     private val notesRepository: NotesRepository,
     private val labelsRepository: LabelsRepository,
     private val prefs: PrefsManager,
-    private val alarmManager: ReminderAlarmManager,
+    private val reminderAlarmManager: ReminderAlarmManager,
     @Assisted private val savedStateHandle: SavedStateHandle,
 ) : ViewModel(), EditAdapter.Callback {
 
@@ -384,17 +384,14 @@ class EditViewModel @AssistedInject constructor(
                     title = newTitle,
                     addedDate = date,
                     lastModifiedDate = date,
-                    reminder = reminder)
+                    reminder = null)
                 val id = notesRepository.insertNote(copy)
                 note = copy.copy(id = id)
 
-                // Set reminder alarm for copy
-                if (reminder != null) {
-                    alarmManager.setNoteReminderAlarm(note)
-                }
-
                 // Set labels for copy
-                labelsRepository.insertLabelRefs(createLabelRefs(id))
+                if (labels.isNotEmpty()) {
+                    labelsRepository.insertLabelRefs(createLabelRefs(id))
+                }
             }
 
             // Update title item
@@ -459,7 +456,7 @@ class EditViewModel @AssistedInject constructor(
                 // Remove reminder for deleted note
                 if (reminder != null) {
                     reminder = null
-                    alarmManager.removeAlarm(note.id)
+                    reminderAlarmManager.removeAlarm(note.id)
                 }
             }
 

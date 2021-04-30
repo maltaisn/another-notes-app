@@ -20,6 +20,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
+import com.maltaisn.notes.model.LabelsRepository
 import com.maltaisn.notes.model.NotesRepository
 import com.maltaisn.notes.model.PrefsManager
 import com.maltaisn.notes.model.ReminderAlarmManager
@@ -50,10 +51,11 @@ import java.util.Calendar
 class HomeViewModel @AssistedInject constructor(
     @Assisted savedStateHandle: SavedStateHandle,
     notesRepository: NotesRepository,
+    labelsRepository: LabelsRepository,
     prefs: PrefsManager,
     reminderAlarmManager: ReminderAlarmManager,
     private val buildTypeBehavior: BuildTypeBehavior,
-) : NoteViewModel(savedStateHandle, notesRepository, prefs, reminderAlarmManager),
+) : NoteViewModel(savedStateHandle, notesRepository, labelsRepository, prefs, reminderAlarmManager),
     NoteAdapter.Callback {
 
     private var noteListJob: Job? = null

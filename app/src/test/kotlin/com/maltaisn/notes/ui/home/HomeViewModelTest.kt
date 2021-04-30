@@ -88,7 +88,7 @@ class HomeViewModelTest {
             on { lastTrashReminderTime } doReturn 0
         }
 
-        viewModel = HomeViewModel(SavedStateHandle(), notesRepo, prefs,
+        viewModel = HomeViewModel(SavedStateHandle(), notesRepo, labelsRepo, prefs,
             ReminderAlarmManager(notesRepo, MockAlarmCallback()),
             buildTypeBehavior)
     }

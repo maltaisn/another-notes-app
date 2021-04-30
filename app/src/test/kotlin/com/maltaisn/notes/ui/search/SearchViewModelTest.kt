@@ -73,7 +73,7 @@ class SearchViewModelTest {
             on { listLayoutMode } doReturn NoteListLayoutMode.LIST
         }
 
-        viewModel = SearchViewModel(SavedStateHandle(), notesRepo, prefs,
+        viewModel = SearchViewModel(SavedStateHandle(), notesRepo, labelsRepo, prefs,
             ReminderAlarmManager(notesRepo, MockAlarmCallback()))
     }
 

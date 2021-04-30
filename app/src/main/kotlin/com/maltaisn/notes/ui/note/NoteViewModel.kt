@@ -21,9 +21,11 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.maltaisn.notes.model.LabelsRepository
 import com.maltaisn.notes.model.NotesRepository
 import com.maltaisn.notes.model.PrefsManager
 import com.maltaisn.notes.model.ReminderAlarmManager
+import com.maltaisn.notes.model.entity.LabelRef
 import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.model.entity.NoteStatus
 import com.maltaisn.notes.model.entity.PinnedStatus
@@ -45,6 +47,7 @@ import java.util.Date
 abstract class NoteViewModel(
     protected val savedStateHandle: SavedStateHandle,
     protected val notesRepository: NotesRepository,
+    protected val labelsRepository: LabelsRepository,
     protected val prefs: PrefsManager,
     protected val reminderAlarmManager: ReminderAlarmManager,
 ) : ViewModel(), NoteAdapter.Callback {
@@ -233,8 +236,16 @@ abstract class NoteViewModel(
                 id = Note.NO_ID,
                 title = Note.getCopiedNoteTitle(note.title, untitledName, copySuffix),
                 addedDate = date,
-                lastModifiedDate = date)
-            notesRepository.insertNote(copy)
+                lastModifiedDate = date,
+                reminder = null)
+            val id = notesRepository.insertNote(copy)
+
+            // Set labels for copy
+            val labelIds = labelsRepository.getLabelIdsForNote(note.id)
+            if (labelIds.isNotEmpty()) {
+                labelsRepository.insertLabelRefs(labelIds.map { LabelRef(id, it) })
+            }
+
             clearSelection()
         }
     }
@@ -296,19 +307,21 @@ abstract class NoteViewModel(
             .ifEmpty { return }
 
         val date = Date()
-        val newNotes = mutableListOf<Note>()
-        for (note in oldNotes) {
-            newNotes += note.copy(status = newStatus, lastModifiedDate = date,
-                pinned = if (newStatus == NoteStatus.ACTIVE) PinnedStatus.UNPINNED else PinnedStatus.CANT_PIN,
-                reminder = note.reminder.takeIf { newStatus != NoteStatus.DELETED })
-            if (newStatus == NoteStatus.DELETED && note.reminder != null) {
-                // Remove reminder alarm for deleted note.
-                reminderAlarmManager.removeAlarm(note.id)
-            }
-        }
-
-        // Update the status in database
         viewModelScope.launch {
+            val newNotes = mutableListOf<Note>()
+            for (note in oldNotes) {
+                newNotes += note.copy(status = newStatus, lastModifiedDate = date,
+                    pinned = if (newStatus == NoteStatus.ACTIVE) PinnedStatus.UNPINNED else PinnedStatus.CANT_PIN,
+                    reminder = note.reminder.takeIf { newStatus != NoteStatus.DELETED })
+                if (newStatus == NoteStatus.DELETED) {
+                    if (note.reminder != null) {
+                        // Remove reminder alarm for deleted note.
+                        reminderAlarmManager.removeAlarm(note.id)
+                    }
+                }
+            }
+
+            // Update the status in database
             notesRepository.updateNotes(newNotes)
 
             // Show status change message.

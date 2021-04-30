@@ -18,6 +18,7 @@ package com.maltaisn.notes.ui.search
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
+import com.maltaisn.notes.model.LabelsRepository
 import com.maltaisn.notes.model.NotesRepository
 import com.maltaisn.notes.model.PrefsManager
 import com.maltaisn.notes.model.ReminderAlarmManager
@@ -41,9 +42,10 @@ import kotlinx.coroutines.launch
 class SearchViewModel @AssistedInject constructor(
     @Assisted savedStateHandle: SavedStateHandle,
     notesRepository: NotesRepository,
+    labelsRepository: LabelsRepository,
     prefs: PrefsManager,
     reminderAlarmManager: ReminderAlarmManager
-) : NoteViewModel(savedStateHandle, notesRepository, prefs, reminderAlarmManager),
+) : NoteViewModel(savedStateHandle, notesRepository, labelsRepository, prefs, reminderAlarmManager),
     NoteAdapter.Callback {
 
     // No need to save this is a saved state handle, SearchView will

@@ -50,6 +50,7 @@ class HomeViewModelRemindersTest {
     private lateinit var viewModel: HomeViewModel
 
     private lateinit var notesRepo: MockNotesRepository
+    private lateinit var labelsRepo: MockLabelsRepository
     private lateinit var prefs: PrefsManager
 
     @get:Rule
@@ -65,7 +66,8 @@ class HomeViewModelRemindersTest {
         val upcoming = Date(System.currentTimeMillis() + 86400000)
         val overdue = Date(System.currentTimeMillis() - 86400000)
 
-        notesRepo = MockNotesRepository(MockLabelsRepository())
+        labelsRepo = MockLabelsRepository()
+        notesRepo = MockNotesRepository(labelsRepo)
         notesRepo.addNote(testNote(id = 1, status = NoteStatus.ACTIVE, pinned = PinnedStatus.PINNED,
             reminder = Reminder(todayPast, null, todayPast, 1, false)))
         notesRepo.addNote(testNote(id = 2, status = NoteStatus.ACTIVE,
@@ -85,7 +87,7 @@ class HomeViewModelRemindersTest {
             on { listLayoutMode } doReturn NoteListLayoutMode.LIST
         }
 
-        viewModel = HomeViewModel(SavedStateHandle(), notesRepo, prefs,
+        viewModel = HomeViewModel(SavedStateHandle(), notesRepo, labelsRepo, prefs,
             ReminderAlarmManager(notesRepo, MockAlarmCallback()), mock())
         viewModel.setDestination(HomeDestination.Reminders)
     }
