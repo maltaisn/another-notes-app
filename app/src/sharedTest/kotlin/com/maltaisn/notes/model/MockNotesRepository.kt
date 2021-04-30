@@ -16,22 +16,25 @@
 
 package com.maltaisn.notes.model
 
+import com.maltaisn.notes.model.entity.LabelRef
 import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.model.entity.NoteStatus
 import com.maltaisn.notes.model.entity.NoteWithLabels
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 
 /**
  * Implementation of the notes repository that stores data itself instead of relying on DAOs.
- *
- * This implementation should work almost exactly like [DefaultNotesRepository].
- * Returned flows will also emit a new value on every change.
- *
  * A [labelsRepository] is needed if using methods that return [NoteWithLabels].
+ * This implementation should work almost exactly like [DefaultNotesRepository].
+ *
+ * There is most likely a way to use Room database from unit testing so this shouldn't be
+ * really needed. At least it gives better introspection facilities by allowing to add test methods
+ * accessing the data directly and non-suspending methods for convenience.
  */
 class MockNotesRepository(private val labelsRepository: MockLabelsRepository) :
     NotesRepository {
@@ -106,14 +109,21 @@ class MockNotesRepository(private val labelsRepository: MockLabelsRepository) :
         deleteNote(note.id)
     }
 
-    suspend fun deleteNote(id: Long) {
+    private suspend fun deleteNoteInternal(id: Long) {
         notes -= id
+        // delete all label refs for this note
+        labelsRepository.deleteLabelRefs(labelsRepository.getNotesForLabelId(id)
+            .map { LabelRef(id, it) })
+    }
+
+    suspend fun deleteNote(id: Long) {
+        deleteNoteInternal(id)
         changeFlow.emit(Unit)
     }
 
     override suspend fun deleteNotes(notes: List<Note>) {
         for (note in notes) {
-            this.notes -= note.id
+            deleteNoteInternal(note.id)
         }
         changeFlow.emit(Unit)
     }
@@ -133,7 +143,7 @@ class MockNotesRepository(private val labelsRepository: MockLabelsRepository) :
             .sortedBy { it.reminder!!.next.time }
             .map(labelsRepository::getNoteWithLabels)
             .toList()
-    }
+    }.distinctUntilChanged()
 
     override fun getNotesByStatus(status: NoteStatus) = noteWithLabelsChangeFlow.map {
         // Sort by last modified, then by ID.
@@ -144,7 +154,7 @@ class MockNotesRepository(private val labelsRepository: MockLabelsRepository) :
                 .thenBy(Note::id))
             .map(labelsRepository::getNoteWithLabels)
             .toList()
-    }
+    }.distinctUntilChanged()
 
     override fun getNotesByLabel(labelId: Long) = noteWithLabelsChangeFlow.map {
         labelsRepository.getNotesForLabelId(labelId).asSequence()
@@ -155,7 +165,7 @@ class MockNotesRepository(private val labelsRepository: MockLabelsRepository) :
                 .thenByDescending(Note::lastModifiedDate))
             .map(labelsRepository::getNoteWithLabels)
             .toList()
-    }
+    }.distinctUntilChanged()
 
     override fun searchNotes(query: String): Flow<List<NoteWithLabels>> {
         val queryNoFtsSyntax = query.replace("[*\"-]".toRegex(), "")
@@ -170,7 +180,7 @@ class MockNotesRepository(private val labelsRepository: MockLabelsRepository) :
                         .thenByDescending(Note::lastModifiedDate))
                     .map(labelsRepository::getNoteWithLabels)
                     .toList()
-            }
+            }.distinctUntilChanged()
         }
     }
 
@@ -192,6 +202,7 @@ class MockNotesRepository(private val labelsRepository: MockLabelsRepository) :
 
     override suspend fun clearAllData() {
         notes.clear()
+        labelsRepository.clearAllLabelRefs()
         lastNoteId = 0
         changeFlow.emit(Unit)
     }
@@ -200,6 +211,6 @@ class MockNotesRepository(private val labelsRepository: MockLabelsRepository) :
         notes.values.asSequence()
             .map(labelsRepository::getNoteWithLabels)
             .toList()
-    }
+    }.distinctUntilChanged()
 
 }

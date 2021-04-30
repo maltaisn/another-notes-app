@@ -25,9 +25,7 @@ import kotlinx.coroutines.flow.map
 
 /**
  * Implementation of the labels repository that stores data itself instead of relying on DAOs.
- *
  * This implementation should work almost exactly like [DefaultLabelsRepository].
- * Returned flows will also emit a new value on every change.
  */
 class MockLabelsRepository : LabelsRepository {
 
@@ -77,14 +75,31 @@ class MockLabelsRepository : LabelsRepository {
         insertLabel(label)
     }
 
+    private fun deleteLabelInternal(id: Long): Boolean {
+        var refsChanged = false
+        labels -= id
+        for (refs in labelRefs.values) {
+            if (refs.remove(id)) {
+                refsChanged = true
+            }
+        }
+        return refsChanged
+    }
+
     override suspend fun deleteLabel(label: Label) {
-        labels -= label.id
+        if (deleteLabelInternal(label.id)) {
+            refsChangeFlow.emit(Unit)
+        }
         changeFlow.emit(Unit)
     }
 
     override suspend fun deleteLabels(labels: List<Label>) {
+        var refsChanged = false
         for (label in labels) {
-            this.labels -= label.id
+            refsChanged = refsChanged or deleteLabelInternal(label.id)
+        }
+        if (refsChanged) {
+            refsChangeFlow.emit(Unit)
         }
         changeFlow.emit(Unit)
     }
@@ -136,6 +151,11 @@ class MockLabelsRepository : LabelsRepository {
         labelRefs.clear()
         lastLabelId = 0
         changeFlow.emit(Unit)
+        refsChangeFlow.emit(Unit)
+    }
+
+    suspend fun clearAllLabelRefs() {
+        labelRefs.clear()
         refsChangeFlow.emit(Unit)
     }
 
