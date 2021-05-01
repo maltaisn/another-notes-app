@@ -97,6 +97,8 @@ abstract class NotesDatabase : RoomDatabase() {
                                FOREIGN KEY(noteId) REFERENCES notes(id) ON UPDATE NO ACTION ON DELETE CASCADE,
                                FOREIGN KEY(labelId) REFERENCES labels(id) ON UPDATE NO ACTION ON DELETE CASCADE)""")
                     execSQL("CREATE INDEX index_labels_name ON labels (name)")
+                    execSQL("CREATE INDEX IF NOT EXISTS index_label_refs_noteId ON label_refs (noteId)")
+                    execSQL("CREATE INDEX IF NOT EXISTS index_label_refs_labelId ON label_refs (labelId)")
                 }
             }
         }
