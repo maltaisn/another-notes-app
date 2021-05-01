@@ -14,6 +14,8 @@
   limitations under the License.
   -->
 
+<!-- Note: while newer Android versions allow color state lists as background drawables,
+     older ones don't. So set background white and tint it correctly instead. -->
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -21,7 +23,9 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:foreground="?selectableItemBackground"
-    android:background="@drawable/color_bg_item"
+    android:background="@android:color/white"
+    android:backgroundTintMode="src_in"
+    android:backgroundTint="@color/color_bg_item"
     android:clickable="true"
     android:focusable="true"
     >

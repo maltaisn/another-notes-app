@@ -22,7 +22,9 @@
     android:id="@+id/item_layout"
     xmlns:tools="http://schemas.android.com/tools"
     android:foreground="?selectableItemBackground"
-    android:background="@drawable/color_bg_item"
+    android:background="@android:color/white"
+    android:backgroundTintMode="src_in"
+    android:backgroundTint="@color/color_bg_item"
     android:clickable="true"
     android:focusable="true"
     >
