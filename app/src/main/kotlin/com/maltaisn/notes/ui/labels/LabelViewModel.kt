@@ -31,6 +31,7 @@ import com.maltaisn.notes.ui.labels.adapter.LabelListItem
 import com.maltaisn.notes.ui.send
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
@@ -106,6 +107,8 @@ class LabelViewModel @AssistedInject constructor(
 
     private var renamingLabel = false
 
+    private var labelsListJob: Job? = null
+
     init {
         viewModelScope.launch {
             // Restore state
@@ -122,7 +125,8 @@ class LabelViewModel @AssistedInject constructor(
      * If ID list is empty, view model will be set up to manage labels instead.
      */
     fun start(noteIds: List<Long>) {
-        viewModelScope.launch {
+        labelsListJob?.cancel()
+        labelsListJob = viewModelScope.launch {
             if (this@LabelViewModel.noteIds.isEmpty() && noteIds.isNotEmpty()) {
                 this@LabelViewModel.noteIds = noteIds
                 // Initially, set selected notes to the subset of labels shared by all notes.
@@ -247,9 +251,7 @@ class LabelViewModel @AssistedInject constructor(
     }
 
     override fun onLabelItemIconClicked(item: LabelListItem, pos: Int) {
-        if (managingLabels) {
-            toggleItemChecked(item, pos)
-        }
+        toggleItemChecked(item, pos)
     }
 
     private fun toggleItemChecked(item: LabelListItem, pos: Int) {

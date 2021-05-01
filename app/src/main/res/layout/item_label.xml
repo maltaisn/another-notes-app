@@ -21,7 +21,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:foreground="?selectableItemBackground"
-    android:background="@color/color_bg_item"
+    android:background="@drawable/color_bg_item"
     android:clickable="true"
     android:focusable="true"
     >

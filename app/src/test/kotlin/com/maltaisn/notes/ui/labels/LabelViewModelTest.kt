@@ -208,7 +208,8 @@ class LabelViewModelTest {
         viewModel.onLabelItemClicked(getLabelItemAt(0), 0)
         // select label 3 and 5
         viewModel.onLabelItemClicked(getLabelItemAt(3), 3)
-        viewModel.onLabelItemClicked(getLabelItemAt(2), 2)
+        // test toggling selection through icon click too
+        viewModel.onLabelItemIconClicked(getLabelItemAt(2), 2)
 
         viewModel.setNotesLabels()
 
