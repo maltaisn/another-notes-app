@@ -16,7 +16,7 @@
 
 <resources>
 
-    <string name="app_name">Another Notes (debug)</string>
-    <string name="app_name_short">Notes (debug)</string>
+    <string name="app_name" translatable="false">Another Notes (debug)</string>
+    <string name="app_name_short" translatable="false">Notes (debug)</string>
 
 </resources>

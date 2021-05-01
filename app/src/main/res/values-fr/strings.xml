@@ -16,9 +16,6 @@
 
 <resources xmlns:tools="http://schemas.android.com/tools">
 
-    <string name="app_name">Another Notes</string>
-    <string name="app_name_short">Notes</string>
-
     <string name="action_archive">Archiver</string>
     <string name="action_cancel">Annuler</string>
     <string name="action_clear">Effacer</string>
@@ -28,12 +25,15 @@
     <string name="action_delete">Supprimer</string>
     <string name="action_delete_checked">Effacer les éléments cochés</string>
     <string name="action_delete_forever">Supprimer définitivement</string>
+    <string name="action_delete_selection">Supprimer la sélection</string>
     <string name="action_delete_selection_forever">Supprimer la sélection définitivement</string>
     <string name="action_empty_trash">Vider la corbeille</string>
     <string name="action_empty_trash_short">Vider</string>
     <string name="action_keep">Garder</string>
+    <string name="action_labels">Changer les étiquettes</string>
     <string name="action_layout_grid">Disposition grille</string>
     <string name="action_layout_list">Disposition liste</string>
+    <string name="action_manage">Gérer</string>
     <string name="action_mark_as_done">Marquer comme terminé</string>
     <string name="action_none">Aucune</string>
     <string name="action_ok">OK</string>
@@ -41,6 +41,7 @@
     <string name="action_postpone">Reporter</string>
     <string name="action_reminder_add">Ajouter un rappel</string>
     <string name="action_reminder_edit">Modifier le rappel</string>
+    <string name="action_rename">Renommer</string>
     <string name="action_restore">Restaurer</string>
     <string name="action_search">Rechercher</string>
     <string name="action_select_all">Sélectionner tout</string>
@@ -64,6 +65,7 @@
     <string name="note_location_active">Notes</string>
     <string name="note_location_archived">Archive</string>
     <string name="note_location_deleted">Corbeille</string>
+    <string name="note_location_labels">Étiquettes</string>
 
     <string name="note_pinned">Épinglées</string>
     <string name="note_not_pinned">Autres</string>
@@ -131,6 +133,17 @@
     correctement puisque l\'application a une restriction au niveau de l\'utilisation de la pile.
     Cela peut être changé dans les paramètres.</string>
 
+    <!-- Labels -->
+    <string name="label_create">Créer une étiquette</string>
+    <string name="label_edit">Changer le nom de l\'étiquette</string>
+    <string name="label_manage">Étiquettes</string>
+    <string name="label_select">Sélectionner</string>
+    <string name="label_already_exists">Une étiquette porte déjà ce nom.</string>
+    <string name="label_empty_placeholder">Aucune étiquette créée</string>
+    <string name="label_delete_message">Les étiquettes sélectionnées seront supprimées, mais
+    les notes y étant associées seront gardées.</string>
+    <string name="label_notes_empty_placeholder">Aucune note porte cette étiquette</string>
+
     <!-- Settings -->
     <string name="pref_group_appearance">Apparence</string>
     <string name="pref_theme">Thème de l\'application</string>
@@ -138,6 +151,7 @@
     <string name="pref_theme_dark">Sombre</string>
     <string name="pref_theme_system">Par défaut</string>
     <string name="pref_strikethrough_checked">Barrer les éléments cochés</string>
+    <string name="pref_preview_labels">Maximum d\'étiquettes dans l\'aperçu</string>
 
     <string name="pref_shown_date">Date affichée pour les notes</string>
     <string name="pref_shown_date_added">Date de création</string>

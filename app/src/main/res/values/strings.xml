@@ -16,8 +16,9 @@
 
 <resources>
 
-    <string name="app_name">Another Notes</string>
-    <string name="app_name_short">Notes</string>
+    <!-- Do not translate the app name -->
+    <string name="app_name" translatable="false">Another Notes</string>
+    <string name="app_name_short" translatable="false">Notes</string>
 
     <string name="action_archive">Archive</string>
     <string name="action_cancel">Cancel</string>
