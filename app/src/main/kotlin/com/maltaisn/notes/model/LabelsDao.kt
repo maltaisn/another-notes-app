@@ -49,10 +49,19 @@ interface LabelsDao {
 
     /**
      * Get all labels in database
-     * Used for viewing labels and exporting data.
+     * Used for exporting data.
      */
     @Query("SELECT * FROM labels")
-    fun getAll(): Flow<List<Label>>
+    fun getAll(): List<Label>
+
+    /**
+     * Get all labels in database, sorted by most used first, then by name.
+     * Used for viewing labels.
+     * Left join so that labels with no references are returned.
+     */
+    @Query("""SELECT labels.* FROM labels LEFT JOIN label_refs ON labelId == id
+                    GROUP BY labelId ORDER BY CASE WHEN labelId IS NULL THEN 0 ELSE COUNT(*) END DESC""")
+    fun getAllByUsage(): Flow<List<Label>>
 
     /**
      * Get a label by its ID. Returns `null` if label doesn't exist.
@@ -78,7 +87,7 @@ interface LabelsDao {
      * Used to remove old label references when changing labels on a note.
      */
     @Query("SELECT labelId FROM label_refs WHERE noteId == :noteId")
-    suspend fun getLabelRefsForNote(noteId: Long): List<Long>
+    suspend fun getLabelIdsForNote(noteId: Long): List<Long>
 
     /**
      * Returns the number of references to a label ID.

@@ -37,7 +37,7 @@ interface LabelsRepository {
     suspend fun getLabelIdsForNote(noteId: Long): List<Long>
     suspend fun countLabelRefs(labelId: Long): Long
 
-    fun getAllLabels(): Flow<List<Label>>
+    fun getAllLabelsByUsage(): Flow<List<Label>>
 
     suspend fun clearAllData()
 

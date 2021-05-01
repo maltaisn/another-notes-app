@@ -80,7 +80,7 @@ class NavigationViewModel @AssistedInject constructor(
         checkedId = savedStateHandle[KEY_CHECKED_ID] ?: ITEM_ID_ACTIVE
         viewModelScope.launch {
             // Navigation items are constant, except for labels.
-            labelsRepository.getAllLabels().collect { labels ->
+            labelsRepository.getAllLabelsByUsage().collect { labels ->
                 listItems = createListItems(labels)
             }
         }

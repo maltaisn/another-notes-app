@@ -134,7 +134,7 @@ class LabelViewModel @AssistedInject constructor(
             }
 
             // Initialize label list
-            labelsRepository.getAllLabels().collect { labels ->
+            labelsRepository.getAllLabelsByUsage().collect { labels ->
                 if (renamingLabel) {
                     // List was updated after renaming label, this can only be due to label rename.
                     // Deselect label since it was probably selected only for renaming.

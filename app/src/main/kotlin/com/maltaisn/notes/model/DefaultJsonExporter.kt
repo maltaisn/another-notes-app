@@ -16,7 +16,6 @@
 
 package com.maltaisn.notes.model
 
-import kotlinx.coroutines.flow.first
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.add
@@ -53,7 +52,7 @@ class DefaultJsonExporter @Inject constructor(
 
             // Put all labels under a "labels" entry.
             put("labels", buildJsonObject {
-                val labels = labelsDao.getAll().first()
+                val labels = labelsDao.getAll()
                 for (label in labels) {
                     put(label.id.toString(), json.encodeToJsonElement(label))
                 }

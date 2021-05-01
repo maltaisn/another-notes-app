@@ -21,8 +21,10 @@ import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.maltaisn.notes.dateFor
-import com.maltaisn.notes.model.entity.Note
+import com.maltaisn.notes.model.entity.Label
+import com.maltaisn.notes.model.entity.LabelRef
 import com.maltaisn.notes.model.entity.NoteStatus
+import com.maltaisn.notes.model.entity.NoteWithLabels
 import com.maltaisn.notes.model.entity.PinnedStatus
 import com.maltaisn.notes.model.entity.Reminder
 import com.maltaisn.notes.testNote
@@ -39,15 +41,18 @@ import kotlin.test.assertNull
 
 @RunWith(AndroidJUnit4::class)
 class NotesDaoTest {
+//search
 
     private lateinit var database: NotesDatabase
     private lateinit var notesDao: NotesDao
+    private lateinit var labelsDao: LabelsDao
 
     @Before
     fun createDatabase() {
         val context = ApplicationProvider.getApplicationContext<Context>()
         database = Room.inMemoryDatabaseBuilder(context, NotesDatabase::class.java).build()
         notesDao = database.notesDao()
+        labelsDao = database.labelsDao()
     }
 
     @After
@@ -80,13 +85,20 @@ class NotesDaoTest {
         // Insert all
         val newNotes = listOf(testNote(id = 1), testNote(id = 2))
         notesDao.insertAll(newNotes)
+        assertEquals(newNotes[0], notesDao.getById(1))
+        assertEquals(newNotes[1], notesDao.getById(2))
 
-        // Get all
-        assertEquals(notesDao.getAll(), newNotes)
+        // Update all
+        val updatedNotes = listOf(testNote(id = 1, title = "updated 1"),
+            testNote(id = 2, title = "updated 2"))
+        notesDao.updateAll(updatedNotes)
+        assertEquals(updatedNotes[0], notesDao.getById(1))
+        assertEquals(updatedNotes[1], notesDao.getById(2))
 
         // Delete all
-        notesDao.deleteAll(newNotes)
-        assertEquals(emptyList(), notesDao.getAll())
+        notesDao.deleteAll(updatedNotes)
+        assertNull(notesDao.getById(1))
+        assertNull(notesDao.getById(2))
     }
 
     @Test
@@ -100,12 +112,16 @@ class NotesDaoTest {
     fun getByStatusTest() = runBlocking {
         // Add 5 notes for each status, ordered by descending last modified time. Also add a pinned active note first.
         // Then compare these notes with the result of the database query.
+        for (i in 1L..5L) {
+            labelsDao.insert(Label(i, "label $i"))
+        }
+
         val baseDate = dateFor("2020-01-01T00:00:00.000Z")
-        val activeNotes = mutableListOf<Note>()
+        val activeNotes = mutableListOf<NoteWithLabels>()
 
         val pinnedNote = testNote(id = 1, status = NoteStatus.ACTIVE, added = baseDate,
             modified = baseDate, pinned = PinnedStatus.PINNED)
-        activeNotes += pinnedNote
+        activeNotes += NoteWithLabels(pinnedNote, emptyList())
         notesDao.insert(pinnedNote)
 
         var id = 2L
@@ -114,8 +130,10 @@ class NotesDaoTest {
                 val date = Date(baseDate.time - it * 1000)
                 val note = testNote(id = id, status = status, added = date, modified = date)
                 notesDao.insert(note)
+                val labelId = it + 1L
+                labelsDao.insertRefs(listOf(LabelRef(id, labelId)))
                 if (status == NoteStatus.ACTIVE) {
-                    activeNotes += note
+                    activeNotes += NoteWithLabels(note, listOfNotNull(labelsDao.getById(labelId)))
                 }
                 id++
             }
@@ -125,12 +143,64 @@ class NotesDaoTest {
         assertEquals(activeNotes, noteFlow.first())
 
         // Delete any note to see if flow is updated.
-        notesDao.delete(activeNotes.removeAt(activeNotes.indices.random()))
+        notesDao.delete(activeNotes.removeAt(activeNotes.indices.random()).note)
         assertEquals(activeNotes, noteFlow.first())
     }
 
+    private suspend fun insertNotesAndLabels(): List<NoteWithLabels> {
+        // insert 5 notes, the first note having label1 only,
+        // and each note having one more label, so that note 5 has labels 1-5.
+        for (i in 1L..5L) {
+            labelsDao.insert(Label(i, "label $i"))
+        }
+        val notes = mutableListOf<NoteWithLabels>()
+        for (i in 1L..5L) {
+            val date = Date(i * 1000)
+            val note = testNote(id = i, added = date, modified = date)
+            val labels = (1L..i).map { labelsDao.getById(it)!! }
+            notesDao.insert(note)
+            labelsDao.insertRefs(labels.map { LabelRef(i, it.id) })
+            notes += NoteWithLabels(note, labels)
+        }
+
+        return notes
+    }
+
     @Test
-    fun getByStatusAndDateTest() = runBlocking {
+    fun getByLabelTest() = runBlocking {
+        val notes = insertNotesAndLabels().toMutableList()
+
+        // pin one note to verify correct ordering
+        notes[3] = notes[3].copy(notes[3].note.copy(pinned = PinnedStatus.PINNED))
+        notesDao.update(notes[3].note)
+
+        assertEquals(setOf(notes[4]), notesDao.getByLabel(5).first().toSet())
+        assertEquals(listOf(notes[3], notes[4], notes[2]), notesDao.getByLabel(3).first())
+
+        val label1Flow = notesDao.getByLabel(1)
+        assertEquals(listOf(notes[3], notes[4], notes[2], notes[1], notes[0]), label1Flow.first())
+
+        // verify that label refs are deleted in cascade and that flow is updated
+        labelsDao.delete(labelsDao.getById(1)!!)
+        assertEquals(emptyList(), label1Flow.first())
+    }
+
+    @Test
+    fun getAllTest() = runBlocking {
+        val notes = insertNotesAndLabels()
+        assertEquals(notes.toSet(), notesDao.getAll().toSet())
+    }
+
+    @Test
+    fun getByIdWithLabelsTest() = runBlocking {
+        val notes = insertNotesAndLabels()
+        assertEquals(notes[0], notesDao.getByIdWithLabels(1))
+        assertEquals(notes[1], notesDao.getByIdWithLabels(2))
+        assertEquals(notes[4], notesDao.getByIdWithLabels(5))
+    }
+
+    @Test
+    fun deleteNotesByStatusAndDateTest() = runBlocking {
         val dates = listOf(
             "2019-01-01T00:00:00.000Z",
             "2019-05-01T00:00:00.000Z",
@@ -145,37 +215,46 @@ class NotesDaoTest {
         }
         notesDao.insertAll(notes)
 
-        val queryNotes =
-            notesDao.getByStatusAndDate(NoteStatus.DELETED, dateFor("2020-01-01T00:00:00.000Z"))
-        assertEquals(notes.subList(0, 4).toSet(), queryNotes.toSet())
+        notesDao.deleteNotesByStatusAndDate(NoteStatus.DELETED,
+            dateFor("2020-01-01T00:00:00.000Z").time)
+        assertEquals(setOf(notes[4], notes[5]), notesDao.getAll().map { it.note }.toSet())
     }
 
     @Test
     fun getAllWithReminderTest() = runBlocking {
         val recurFinder = RecurrenceFinder()
-        val notes = listOf(
-            testNote(id = 1, title = "note0", reminder = Reminder.create(dateFor("2020-01-01"),
-                null, recurFinder)),
-            testNote(id = 2, title = "note1"),
-            testNote(id = 3, title = "note2"),
-            testNote(id = 4, title = "note3", reminder = Reminder.create(dateFor("2020-02-02"),
-                null, recurFinder)),
-            testNote(id = 5, title = "note4", reminder = Reminder.create(dateFor("2020-02-02"),
-                null, recurFinder).markAsDone()),
+        val reminders = listOf(
+            Reminder.create(dateFor("2020-01-01"),
+                null, recurFinder),
+            null,
+            null,
+            Reminder.create(dateFor("2020-02-02"),
+                null, recurFinder),
+            Reminder.create(dateFor("2020-02-02"),
+                null, recurFinder).markAsDone(),
         )
-        notesDao.insertAll(notes)
+        val notes = insertNotesAndLabels().zip(reminders).map { (note, reminder) ->
+            val newNote = note.note.copy(reminder = reminder)
+            notesDao.update(newNote)
+            NoteWithLabels(newNote, note.labels)
+        }
+
         assertEquals(listOf(notes[0], notes[3]), notesDao.getAllWithReminder().first())
     }
 
     @Test
-    fun searchNotesTest() = runBlocking {
+    fun searchTest() = runBlocking {
         val note0 = testNote(id = 1, title = "note", content = "content")
         notesDao.insert(note0)
         notesDao.insert(testNote(id = 2, title = "title", content = "foo"))
         notesDao.insert(testNote(id = 3, title = "my note", content = "bar"))
 
+        labelsDao.insert(Label(1, "label 1"))
+        labelsDao.insertRefs(listOf(LabelRef(1, 1)))
+
         val noteFlow = notesDao.search("content")
-        assertEquals(listOf(note0), noteFlow.first())
+        assertEquals(listOf(NoteWithLabels(note0, listOf(labelsDao.getById(1)!!))),
+            noteFlow.first())
 
         val note1 = testNote(id = 4, title = "note copy", content = "content copy")
         val note2 = testNote(id = 5,
@@ -184,7 +263,7 @@ class NotesDaoTest {
             status = NoteStatus.ARCHIVED)
         notesDao.insert(note1)
         notesDao.insert(note2)
-        assertEquals(listOf(note1, note0, note2), noteFlow.first())
+        assertEquals(listOf(note1, note0, note2), noteFlow.first().map { it.note })
     }
 
 }

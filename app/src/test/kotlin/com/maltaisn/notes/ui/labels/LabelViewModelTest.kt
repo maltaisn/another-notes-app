@@ -74,10 +74,10 @@ class LabelViewModelTest {
         viewModel.start(emptyList())
         assertEquals(listOf(
             LabelListItem(1, labelsRepo.requireLabelById(1), false),
-            LabelListItem(2, labelsRepo.requireLabelById(2), false),
-            LabelListItem(3, labelsRepo.requireLabelById(3), false),
             LabelListItem(4, labelsRepo.requireLabelById(4), false),
             LabelListItem(5, labelsRepo.requireLabelById(5), false),
+            LabelListItem(3, labelsRepo.requireLabelById(3), false),
+            LabelListItem(2, labelsRepo.requireLabelById(2), false),
         ), viewModel.labelItems.getOrAwaitValue())
     }
 
@@ -146,7 +146,7 @@ class LabelViewModelTest {
     @Test
     fun `should show rename dialog`() = mainCoroutineRule.runBlockingTest {
         viewModel.start(emptyList())
-        viewModel.onLabelItemClicked(getLabelItemAt(2), 2)
+        viewModel.onLabelItemClicked(getLabelItemAt(3), 3)  // label 3
         assertLiveDataEventSent(viewModel.showRenameDialogEvent, 3)
     }
 
@@ -166,7 +166,7 @@ class LabelViewModelTest {
     @Test
     fun `should delete label without showing confirmation`() = mainCoroutineRule.runBlockingTest {
         viewModel.start(emptyList())
-        viewModel.onLabelItemLongClicked(getLabelItemAt(1), 1)
+        viewModel.onLabelItemLongClicked(getLabelItemAt(4), 4) // label 2
         viewModel.deleteSelectionPre()
         assertNull(labelsRepo.getLabelById(2))
     }
@@ -194,10 +194,10 @@ class LabelViewModelTest {
         viewModel.start(listOf(1, 2, 3))
         assertEquals(listOf(
             LabelListItem(1, labelsRepo.requireLabelById(1), true),
-            LabelListItem(2, labelsRepo.requireLabelById(2), false),
-            LabelListItem(3, labelsRepo.requireLabelById(3), false),
             LabelListItem(4, labelsRepo.requireLabelById(4), false),
             LabelListItem(5, labelsRepo.requireLabelById(5), false),
+            LabelListItem(3, labelsRepo.requireLabelById(3), false),
+            LabelListItem(2, labelsRepo.requireLabelById(2), false),
         ), viewModel.labelItems.getOrAwaitValue())
     }
 
@@ -207,8 +207,8 @@ class LabelViewModelTest {
         // deselect label 1
         viewModel.onLabelItemClicked(getLabelItemAt(0), 0)
         // select label 3 and 5
+        viewModel.onLabelItemClicked(getLabelItemAt(3), 3)
         viewModel.onLabelItemClicked(getLabelItemAt(2), 2)
-        viewModel.onLabelItemClicked(getLabelItemAt(4), 3)
 
         viewModel.setNotesLabels()
 

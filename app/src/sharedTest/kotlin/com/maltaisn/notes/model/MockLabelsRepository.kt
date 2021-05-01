@@ -31,10 +31,13 @@ class MockLabelsRepository : LabelsRepository {
 
     private val labels = mutableMapOf<Long, Label>()
 
+    // list of label IDs mapped by note
     private val labelRefs = mutableMapOf<Long, MutableSet<Long>>()
 
-    var lastLabelId = 0L
-        private set
+    // list of note IDs mapped by label
+    private val inverseLabelRefs = mutableMapOf<Long, MutableSet<Long>>()
+
+    private var lastLabelId = 0L
 
     val changeFlow = MutableSharedFlow<Unit>(replay = 1)
     val refsChangeFlow = MutableSharedFlow<Unit>(replay = 1)
@@ -75,32 +78,25 @@ class MockLabelsRepository : LabelsRepository {
         insertLabel(label)
     }
 
-    private fun deleteLabelInternal(id: Long): Boolean {
-        var refsChanged = false
+    private fun deleteLabelInternal(id: Long) {
         labels -= id
+        inverseLabelRefs -= id
         for (refs in labelRefs.values) {
-            if (refs.remove(id)) {
-                refsChanged = true
-            }
+            refs -= id
         }
-        return refsChanged
     }
 
     override suspend fun deleteLabel(label: Label) {
-        if (deleteLabelInternal(label.id)) {
-            refsChangeFlow.emit(Unit)
-        }
+        deleteLabelInternal(label.id)
+        refsChangeFlow.emit(Unit)
         changeFlow.emit(Unit)
     }
 
     override suspend fun deleteLabels(labels: List<Label>) {
-        var refsChanged = false
         for (label in labels) {
-            refsChanged = refsChanged or deleteLabelInternal(label.id)
+            deleteLabelInternal(label.id)
         }
-        if (refsChanged) {
-            refsChangeFlow.emit(Unit)
-        }
+        refsChangeFlow.emit(Unit)
         changeFlow.emit(Unit)
     }
 
@@ -119,6 +115,7 @@ class MockLabelsRepository : LabelsRepository {
     override suspend fun deleteLabelRefs(refs: List<LabelRef>) {
         for (ref in refs) {
             labelRefs[ref.noteId]?.remove(ref.labelId)
+            inverseLabelRefs[ref.labelId]?.remove(ref.noteId)
         }
         refsChangeFlow.emit(Unit)
     }
@@ -127,10 +124,7 @@ class MockLabelsRepository : LabelsRepository {
         labelRefs[noteId].orEmpty().toList()
 
     fun getNotesForLabelId(labelId: Long) =
-        labelRefs.asSequence()
-            .filter { (_, labelIds) -> labelId in labelIds }
-            .map { (id, _) -> id }
-            .toList()
+        inverseLabelRefs[labelId].orEmpty().toList()
 
     fun getNoteWithLabels(note: Note) = NoteWithLabels(note,
         labelRefs[note.id].orEmpty().map { requireLabelById(it) })
@@ -139,16 +133,18 @@ class MockLabelsRepository : LabelsRepository {
     fun addLabelRefs(refs: List<LabelRef>) {
         for (ref in refs) {
             labelRefs.getOrPut(ref.noteId) { mutableSetOf() } += ref.labelId
+            inverseLabelRefs.getOrPut(ref.labelId) { mutableSetOf() } += ref.noteId
         }
         refsChangeFlow.tryEmit(Unit)
     }
 
     override suspend fun countLabelRefs(labelId: Long) =
-        labelRefs.values.sumBy { labels -> labels.count { it == labelId } }.toLong()
+        inverseLabelRefs[labelId].orEmpty().size.toLong()
 
     override suspend fun clearAllData() {
         labels.clear()
         labelRefs.clear()
+        inverseLabelRefs.clear()
         lastLabelId = 0
         changeFlow.emit(Unit)
         refsChangeFlow.emit(Unit)
@@ -156,11 +152,15 @@ class MockLabelsRepository : LabelsRepository {
 
     suspend fun clearAllLabelRefs() {
         labelRefs.clear()
+        inverseLabelRefs.clear()
         refsChangeFlow.emit(Unit)
     }
 
-    override fun getAllLabels() = changeFlow.map {
-        labels.values.toList()
+    override fun getAllLabelsByUsage() = changeFlow.map {
+        labels.values.asSequence()
+            .sortedWith(compareByDescending<Label> { inverseLabelRefs[it.id].orEmpty().size }
+                .thenBy { it.name })
+            .toList()
     }
 
 }

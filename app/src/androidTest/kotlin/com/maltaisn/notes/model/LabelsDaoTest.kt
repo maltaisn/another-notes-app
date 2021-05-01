@@ -81,12 +81,25 @@ class LabelsDaoTest {
     }
 
     @Test
+    fun getAllTest() = runBlocking {
+        val labels = listOf(
+            Label(1, "label1"),
+            Label(2, "label2"),
+            Label(3, "label3"),
+        )
+        for (label in labels) {
+            labelsDao.insert(label)
+        }
+        assertEquals(labels.toSet(), labelsDao.getAll().toSet())
+    }
+
+    @Test
     fun clearTest() = runBlocking {
         labelsDao.insert(Label(1, "label1"))
         labelsDao.insert(Label(2, "label2"))
         labelsDao.insert(Label(3, "label3"))
         labelsDao.clear()
-        assertEquals(emptyList(), labelsDao.getAll().first())
+        assertEquals(emptyList(), labelsDao.getAll())
     }
 
     @Test
@@ -113,9 +126,9 @@ class LabelsDaoTest {
         assertEquals(2, labelsDao.countRefs(5))
         assertEquals(1, labelsDao.countRefs(3))
         assertEquals(0, labelsDao.countRefs(2))
-        assertEquals(setOf(1L, 5L), labelsDao.getLabelRefsForNote(1).toSet())
-        assertEquals(setOf(1L, 3L, 4L), labelsDao.getLabelRefsForNote(2).toSet())
-        assertEquals(setOf(1L, 4L, 5L), labelsDao.getLabelRefsForNote(3).toSet())
+        assertEquals(setOf(1L, 5L), labelsDao.getLabelIdsForNote(1).toSet())
+        assertEquals(setOf(1L, 3L, 4L), labelsDao.getLabelIdsForNote(2).toSet())
+        assertEquals(setOf(1L, 4L, 5L), labelsDao.getLabelIdsForNote(3).toSet())
 
         labelsDao.deleteRefs(listOf(
             LabelRef(1, 5),
@@ -126,9 +139,26 @@ class LabelsDaoTest {
         ))
         assertEquals(3, labelsDao.countRefs(1))
         assertEquals(0, labelsDao.countRefs(5))
-        assertEquals(setOf(1L), labelsDao.getLabelRefsForNote(1).toSet())
-        assertEquals(setOf(1L), labelsDao.getLabelRefsForNote(2).toSet())
-        assertEquals(setOf(1L), labelsDao.getLabelRefsForNote(3).toSet())
+        assertEquals(setOf(1L), labelsDao.getLabelIdsForNote(1).toSet())
+        assertEquals(setOf(1L), labelsDao.getLabelIdsForNote(2).toSet())
+        assertEquals(setOf(1L), labelsDao.getLabelIdsForNote(3).toSet())
+    }
+
+    @Test
+    fun getAllByUsageTest() = runBlocking {
+        // insert 5 notes, note 5 having no labels,
+        // and each note having one more label, so that note 1 has 4 labels.
+        val labels = (1L..4L).map {
+            val label = Label(it, "label $it")
+            labelsDao.insert(label)
+            label
+        }
+        for (i in 1L..5L) {
+            notesDao.insert(testNote(id = i))
+            labelsDao.insertRefs((4L downTo i).map { LabelRef(i, it) })
+        }
+
+        assertEquals(labels.reversed(), labelsDao.getAllByUsage().first())
     }
 
 }
