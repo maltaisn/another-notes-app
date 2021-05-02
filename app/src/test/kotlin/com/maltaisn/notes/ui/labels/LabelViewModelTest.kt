@@ -220,5 +220,5 @@ class LabelViewModelTest {
         assertLiveDataEventSent(viewModel.exitEvent)
     }
 
-    private fun getLabelItemAt(pos: Int) = viewModel.labelItems.value!!.get(pos)
+    private fun getLabelItemAt(pos: Int) = viewModel.labelItems.value!![pos]
 }

@@ -37,7 +37,7 @@ class ReminderAlarmManagerTest {
     private lateinit var notesRepo: MockNotesRepository
     private lateinit var alarmCallback: MockAlarmCallback
 
-    var coroutineScope = TestCoroutineScope()
+    private var coroutineScope = TestCoroutineScope()
 
     @Before
     fun before() {

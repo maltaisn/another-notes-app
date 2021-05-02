@@ -73,7 +73,7 @@ class NavigationAdapter(
         /** Called when a label [item] at [pos] is clicked. */
         fun onNavigationDestinationItemClicked(item: NavigationDestinationItem, pos: Int)
 
-        /** Called when an action button on a header [item] at [pos] is clicked. */
+        /** Called when an action button on a header [item] is clicked. */
         fun onHeaderActionButtonClicked(item: NavigationHeaderItem)
     }
 }

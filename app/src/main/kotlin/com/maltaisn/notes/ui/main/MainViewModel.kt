@@ -85,13 +85,6 @@ class MainViewModel @Inject constructor(
         _editNoteEvent.send(id)
     }
 
-    fun markReminderDone(id: Long) {
-        viewModelScope.launch {
-            val note = notesRepository.getNoteById(id) ?: return@launch
-            notesRepository.updateNote(note.copy(reminder = note.reminder?.markAsDone()))
-        }
-    }
-
     companion object {
         private val TRASH_AUTO_DELETE_INTERVAL = 1.hours
     }

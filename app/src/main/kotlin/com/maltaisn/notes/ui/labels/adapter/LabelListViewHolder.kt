@@ -38,13 +38,13 @@ class LabelViewHolder(val binding: ItemLabelBinding) : RecyclerView.ViewHolder(b
         }
 
         binding.labelImv.setOnClickListener {
-            adapter.callback.onLabelItemIconClicked(item, adapterPosition)
+            adapter.callback.onLabelItemIconClicked(item, bindingAdapterPosition)
         }
         view.setOnClickListener {
-            adapter.callback.onLabelItemClicked(item, adapterPosition)
+            adapter.callback.onLabelItemClicked(item, bindingAdapterPosition)
         }
         view.setOnLongClickListener {
-            adapter.callback.onLabelItemLongClicked(item, adapterPosition)
+            adapter.callback.onLabelItemLongClicked(item, bindingAdapterPosition)
             true
         }
     }

@@ -23,7 +23,6 @@ import android.view.LayoutInflater
 import androidx.appcompat.app.AlertDialog
 import androidx.core.view.isVisible
 import androidx.fragment.app.DialogFragment
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -106,12 +105,12 @@ class ReminderDialog : DialogFragment(), RecurrenceListCallback, RecurrencePicke
         // Using `this` as lifecycle owner, cannot show dialog twice with same instance to avoid double observation.
         check(!viewModel.details.hasObservers()) { "Dialog was shown twice with same instance." }
 
-        viewModel.details.observe(this, Observer { details ->
+        viewModel.details.observe(this) { details ->
             binding.dateInput.setText(dateFormat.format(details.date))
             binding.timeInput.setText(timeFormat.format(details.date))
             binding.recurrenceTxv.text = recurrenceFormat.format(requireContext(),
                 details.recurrence, details.date)
-        })
+        }
 
         viewModel.invalidTime.observe(this) { invalid ->
             binding.invalidTimeTxv.isVisible = invalid

@@ -11,6 +11,7 @@
 - Added date in edit screen (last modified or creation date)
 - Added customizable swipe action in main screen (archive, delete, none).
 - Added option to strikethrough checked items.
+- Added action to delete checked items and check all items for list notes.
 - Added app shortcuts for Android N+ (new text note, new list note, show reminders).
 - Checked items text now changes color.
 - Changed distance threshold for swiping note action.

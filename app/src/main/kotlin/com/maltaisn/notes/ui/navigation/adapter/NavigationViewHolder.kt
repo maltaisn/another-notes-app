@@ -43,7 +43,7 @@ class NavigationItemViewHolder(val binding: ItemNavigationItemBinding) :
         binding.itemLayout.isActivated = item.checked
         // (activated drawable state is propagated to children views that use a color state list)
         binding.itemLayout.setOnClickListener {
-            callback.onNavigationDestinationItemClicked(item, adapterPosition)
+            callback.onNavigationDestinationItemClicked(item, bindingAdapterPosition)
         }
     }
 }

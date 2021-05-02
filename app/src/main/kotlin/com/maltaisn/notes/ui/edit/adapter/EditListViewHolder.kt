@@ -150,7 +150,7 @@ class EditItemViewHolder(val binding: ItemEditItemBinding, callback: EditAdapter
             // item can be split into multiple items. When user enters a single line break,
             // selection is set at the beginning of new item. On paste, i.e. when more than one
             // character is entered, selection is set at the end of last new item.
-            callback.onNoteItemChanged(item, adapterPosition, count > 1)
+            callback.onNoteItemChanged(item, bindingAdapterPosition, count > 1)
         }
         itemEdt.setOnFocusChangeListener { _, hasFocus ->
             // Only show delete icon for currently focused item.
@@ -161,7 +161,7 @@ class EditItemViewHolder(val binding: ItemEditItemBinding, callback: EditAdapter
             if (isCursorAtStart && event.action == KeyEvent.ACTION_DOWN && event.keyCode == KeyEvent.KEYCODE_DEL) {
                 // If user presses backspace at the start of an item, current item
                 // will be merged with previous.
-                val pos = adapterPosition
+                val pos = bindingAdapterPosition
                 if (pos != RecyclerView.NO_POSITION) {
                     callback.onNoteItemBackspacePressed(item, pos)
                 }
@@ -173,7 +173,7 @@ class EditItemViewHolder(val binding: ItemEditItemBinding, callback: EditAdapter
         }
 
         deleteImv.setOnClickListener {
-            val pos = adapterPosition
+            val pos = bindingAdapterPosition
             if (pos != RecyclerView.NO_POSITION) {
                 callback.onNoteItemDeleteClicked(pos)
             }
@@ -211,7 +211,7 @@ class EditItemAddViewHolder(binding: ItemEditItemAddBinding, callback: EditAdapt
 
     init {
         itemView.setOnClickListener {
-            callback.onNoteItemAddClicked(adapterPosition)
+            callback.onNoteItemAddClicked(bindingAdapterPosition)
         }
     }
 }
@@ -220,12 +220,8 @@ class EditItemLabelsViewHolder(binding: ItemEditLabelsBinding, callback: EditAda
     RecyclerView.ViewHolder(binding.root) {
 
     private val chipGroup = binding.chipGroup
-    private val chipClickListener: View.OnClickListener
-
-    init {
-        chipClickListener = View.OnClickListener {
-            callback.onNoteLabelClicked()
-        }
+    private val chipClickListener = View.OnClickListener {
+        callback.onNoteLabelClicked()
     }
 
     fun bind(item: EditItemLabelsItem) {

@@ -45,8 +45,8 @@ class MockLabelsRepository : LabelsRepository {
     /**
      * Add label without notifying change flow.
      */
-    private fun addLabelInternal(label: Label): Long {
-        val id = if (label.id != Label.NO_ID) {
+    private fun addLabelInternal(label: Label) =
+        if (label.id != Label.NO_ID) {
             labels[label.id] = label
             if (label.id > lastLabelId) {
                 lastLabelId = label.id
@@ -57,8 +57,6 @@ class MockLabelsRepository : LabelsRepository {
             labels[lastLabelId] = label.copy(id = lastLabelId)
             lastLabelId
         }
-        return id
-    }
 
     /** Non-suspending version of [insertLabel]. */
     fun addLabel(label: Label): Long {

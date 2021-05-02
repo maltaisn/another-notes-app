@@ -40,7 +40,7 @@ class NavigationFragment : Fragment() {
 
     @Inject
     lateinit var sharedViewModelProvider: Provider<SharedViewModel>
-    val sharedViewModel by navGraphViewModel(R.id.nav_graph_main) { sharedViewModelProvider.get() }
+    val sharedViewModel: SharedViewModel by navGraphViewModel(R.id.nav_graph_main) { sharedViewModelProvider.get() }
 
     @Inject
     lateinit var viewModelFactory: NavigationViewModel.Factory
@@ -77,7 +77,7 @@ class NavigationFragment : Fragment() {
         rcv.layoutManager = layoutManager
         rcv.itemAnimator?.changeDuration = 0
 
-        drawerLayout = requireActivity().requireViewById(R.id.drawer_layout)
+        drawerLayout = requireActivity().findViewById(R.id.drawer_layout)
 
         setupViewModelObservers(adapter)
     }

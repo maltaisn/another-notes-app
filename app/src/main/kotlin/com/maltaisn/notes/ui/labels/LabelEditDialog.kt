@@ -48,7 +48,7 @@ class LabelEditDialog : DialogFragment() {
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val context = requireContext();
+        val context = requireContext()
         val binding = DialogLabelEditBinding.inflate(LayoutInflater.from(context), null, false);
 
         val dialog = MaterialAlertDialogBuilder(context)

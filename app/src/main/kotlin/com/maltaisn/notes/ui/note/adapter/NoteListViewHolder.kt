@@ -98,10 +98,10 @@ sealed class NoteViewHolder(itemView: View) :
         // Click listeners
         cardView.isChecked = item.checked
         cardView.setOnClickListener {
-            adapter.callback.onNoteItemClicked(item, adapterPosition)
+            adapter.callback.onNoteItemClicked(item, bindingAdapterPosition)
         }
         cardView.setOnLongClickListener {
-            adapter.callback.onNoteItemLongClicked(item, adapterPosition)
+            adapter.callback.onNoteItemLongClicked(item, bindingAdapterPosition)
             true
         }
 
@@ -145,7 +145,7 @@ sealed class NoteViewHolder(itemView: View) :
             actionBtn.setIconResource(R.drawable.ic_check)
             actionBtn.setText(R.string.action_mark_as_done)
             actionBtn.setOnClickListener {
-                adapter.callback.onNoteActionButtonClicked(item, adapterPosition)
+                adapter.callback.onNoteActionButtonClicked(item, bindingAdapterPosition)
             }
             bottomPadding = R.dimen.note_bottom_padding_with_action
         } else {
@@ -253,8 +253,8 @@ class MessageViewHolder(private val binding: ItemMessageBinding) :
     fun bind(item: MessageItem, adapter: NoteAdapter) {
         binding.messageTxv.text = adapter.context.getString(item.message, *item.args.toTypedArray())
         binding.closeImv.setOnClickListener {
-            adapter.callback.onMessageItemDismissed(item, adapterPosition)
-            adapter.notifyItemRemoved(adapterPosition)
+            adapter.callback.onMessageItemDismissed(item, bindingAdapterPosition)
+            adapter.notifyItemRemoved(bindingAdapterPosition)
         }
 
         (itemView.layoutParams as StaggeredGridLayoutManager.LayoutParams).isFullSpan = true

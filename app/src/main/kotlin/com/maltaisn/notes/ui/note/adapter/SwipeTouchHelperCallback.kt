@@ -65,7 +65,7 @@ class SwipeTouchHelperCallback(private val callback: NoteAdapter.Callback) : Ite
     ) = false
 
     override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-        callback.onNoteSwiped(viewHolder.adapterPosition)
+        callback.onNoteSwiped(viewHolder.bindingAdapterPosition)
     }
 
     companion object {

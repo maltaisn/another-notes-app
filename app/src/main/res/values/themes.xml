@@ -18,11 +18,6 @@
 
     <style name="AppTheme.DayNight" parent="Base.AppTheme" />
 
-    <style name="AppTheme.DayNight.DarkActionBar" parent="Base.AppTheme">
-        <item name="windowActionBar">true</item>
-        <item name="windowNoTitle">false</item>
-    </style>
-
     <style name="AppTheme.DayNight.Launcher" parent="AppTheme.DayNight">
         <item name="android:windowBackground">@drawable/splash_screen</item>
     </style>

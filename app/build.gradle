@@ -114,7 +114,7 @@ dependencies {
     implementation "androidx.appcompat:appcompat:$appCompatVersion"
     implementation "androidx.recyclerview:recyclerview:$recyclerViewVersion"
     implementation "androidx.constraintlayout:constraintlayout:$constraintLayoutVersion"
-    implementation "androidx.preference:preference:$preferenceVersion"
+    implementation "androidx.preference:preference-ktx:$preferenceVersion"
     implementation "com.google.android.material:material:$materialVersion"
     implementation "com.maltaisn:recurpicker:$recurpickerVersion"
     implementation "com.mikepenz:aboutlibraries:$aboutLibrariesVersion"

@@ -134,6 +134,5 @@ class SettingsFragment : PreferenceFragmentCompat(), ConfirmDialog.Callback {
 
     companion object {
         private const val CLEAR_DATA_DIALOG_TAG = "clear_data_dialog"
-        private const val LICENSES_DIALOG_TAG = "licenses_dialog"
     }
 }
