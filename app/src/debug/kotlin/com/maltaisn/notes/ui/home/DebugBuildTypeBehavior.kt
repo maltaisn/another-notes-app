@@ -22,7 +22,8 @@ import com.maltaisn.notes.ui.navigation.HomeDestination
 import javax.inject.Inject
 
 class DebugBuildTypeBehavior @Inject constructor(
-    private val notesRepository: NotesRepository
+    private val notesRepository: NotesRepository,
+//    private val labelsRepository: LabelsRepository
 ) : BuildTypeBehavior {
 
     override suspend fun doExtraAction(viewModel: HomeViewModel) {
@@ -32,6 +33,18 @@ class DebugBuildTypeBehavior @Inject constructor(
             repeat(3) {
                 notesRepository.insertNote(DebugUtils.getRandomNote(destination.status))
             }
+
+//            val labels = (1L..100L).map { Label(it, UUID.randomUUID().toString().substring(0, 9)) }
+//            for (label in labels) {
+//                labelsRepository.insertLabel(label)
+//            }
+//            for (status in NoteStatus.values()) {
+//                repeat(300) {
+//                    val id = notesRepository.insertNote(DebugUtils.getRandomNote(status))
+//                    val noteLabels = labels.shuffled().subList(0, Random.nextInt(10))
+//                    labelsRepository.insertLabelRefs(noteLabels.map { LabelRef(id, it.id) })
+//                }
+//            }
         }
     }
 }
