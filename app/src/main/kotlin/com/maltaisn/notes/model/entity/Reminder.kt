@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Nicolas Maltais
+ * Copyright 2021 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import com.maltaisn.notes.model.converter.DateTimeConverter
 import com.maltaisn.notes.model.converter.RecurrenceConverter
 import com.maltaisn.recurpicker.Recurrence
 import com.maltaisn.recurpicker.RecurrenceFinder
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.UseSerializers
 import java.util.Date
@@ -35,12 +36,14 @@ data class Reminder(
     /**
      * The start time of this reminder, in local time zone.
      */
+    @SerialName("start")
     val start: Date,
 
     /**
      * A RFC 5545 RRule describing the recurrence rule of this reminder.
      * Can be `null` to indicate that the reminder isn't recurring.
      */
+    @SerialName("recurrence")
     val recurrence: Recurrence?,
 
     /**
@@ -48,17 +51,20 @@ data class Reminder(
      * For non-recurring reminders, this can also be the time that the reminder was postponed to.
      * When reminder is marked as [done], this keeps track of the last occurence time.
      */
+    @SerialName("next")
     val next: Date,
 
     /**
      * The number of times this reminder has occured as of [next] date. This is needed for recurrence events
      * calculation. For non-recurring reminders, this should always be 1.
      */
+    @SerialName("count")
     val count: Int,
 
     /**
      * Whether the last occurence of this reminder was marked as done by user.
      */
+    @SerialName("done")
     val done: Boolean
 ) {
 
