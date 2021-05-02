@@ -37,6 +37,7 @@ import com.maltaisn.notes.sync.databinding.FragmentLabelBinding
 import com.maltaisn.notes.ui.common.ConfirmDialog
 import com.maltaisn.notes.ui.labels.adapter.LabelAdapter
 import com.maltaisn.notes.ui.observeEvent
+import com.maltaisn.notes.ui.utils.startSafeActionMode
 import com.maltaisn.notes.ui.viewModel
 import java.text.NumberFormat
 import javax.inject.Inject
@@ -146,7 +147,7 @@ class LabelFragment : DialogFragment(), Toolbar.OnMenuItemClickListener,
 
     private fun updateActionModeForSelection(count: Int) {
         if (count != 0 && actionMode == null) {
-            actionMode = binding.toolbar.startActionMode(this)
+            actionMode = binding.toolbar.startSafeActionMode(this)
         } else if (count == 0 && actionMode != null) {
             actionMode?.finish()
             actionMode = null

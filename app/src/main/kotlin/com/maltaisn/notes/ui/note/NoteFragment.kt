@@ -48,6 +48,7 @@ import com.maltaisn.notes.ui.note.adapter.NoteAdapter
 import com.maltaisn.notes.ui.note.adapter.NoteListLayoutMode
 import com.maltaisn.notes.ui.observeEvent
 import com.maltaisn.notes.ui.startSharingData
+import com.maltaisn.notes.ui.utils.startSafeActionMode
 import java.text.NumberFormat
 import javax.inject.Inject
 import javax.inject.Provider
@@ -169,7 +170,7 @@ abstract class NoteFragment : Fragment(), ActionMode.Callback, ConfirmDialog.Cal
 
     private fun updateActionModeForSelection(selection: NoteViewModel.NoteSelection) {
         if (selection.count != 0 && actionMode == null) {
-            actionMode = binding.toolbar.startActionMode(this)
+            actionMode = binding.toolbar.startSafeActionMode(this)
         } else if (selection.count == 0 && actionMode != null) {
             actionMode?.finish()
             actionMode = null
@@ -341,3 +342,4 @@ abstract class NoteFragment : Fragment(), ActionMode.Callback, ConfirmDialog.Cal
         private const val STATUS_CHANGE_SNACKBAR_DURATION = 7500
     }
 }
+

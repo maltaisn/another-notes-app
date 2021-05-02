@@ -80,6 +80,13 @@ class LabelEditDialog : DialogFragment() {
             }
         }
 
+        // Cursor must be hidden when dialog is dimissed to prevent memory leak
+        // See [https://stackoverflow.com/questions/36842805/dialogfragment-leaking-memory]
+        binding.labelInput.isCursorVisible = true
+        dialog.setOnDismissListener {
+            binding.labelInput.isCursorVisible = false
+        }
+
         val nameInput = binding.labelInput
         nameInput.doAfterTextChanged {
             viewModel.onNameChanged(it?.toString() ?: "")
