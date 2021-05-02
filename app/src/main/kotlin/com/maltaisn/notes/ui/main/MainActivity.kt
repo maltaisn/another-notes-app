@@ -23,7 +23,7 @@ import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
-import androidx.navigation.findNavController
+import androidx.navigation.fragment.NavHostFragment
 import com.maltaisn.notes.App
 import com.maltaisn.notes.model.converter.NoteTypeConverter
 import com.maltaisn.notes.model.entity.Note
@@ -68,11 +68,11 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
 //        venom.start()
 
         binding = ActivityMainBinding.inflate(layoutInflater)
+        drawerLayout = binding.drawerLayout
         setContentView(binding.root)
 
-        drawerLayout = binding.drawerLayout
-
-        navController = findNavController(R.id.nav_host_fragment)
+        val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+        navController = navHostFragment.navController
         navController.addOnDestinationChangedListener(this)
 
         setupViewModelObservers()
