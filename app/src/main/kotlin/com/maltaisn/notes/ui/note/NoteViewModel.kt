@@ -39,7 +39,9 @@ import com.maltaisn.notes.ui.note.adapter.NoteListItem
 import com.maltaisn.notes.ui.note.adapter.NoteListLayoutMode
 import com.maltaisn.notes.ui.send
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.yield
 import java.util.Date
+import java.util.concurrent.atomic.AtomicBoolean
 
 /**
  * This view model provides common behavior for home and search view models.
@@ -130,6 +132,8 @@ abstract class NoteViewModel(
     val showDeleteConfirmEvent: LiveData<Event<Unit>>
         get() = _showDeletedForeverConfirmEvent
 
+    private var stateRestored = AtomicBoolean(false)
+
     init {
         // Initialize list layout to saved value.
         _listLayoutMode.value = prefs.listLayoutMode
@@ -137,8 +141,9 @@ abstract class NoteViewModel(
 
     /**
      * Restore the state of this fragment from [savedStateHandle].
-     * This must be called by subclass on initialization. It's not called here because
-     * it's suspending, so state might be restored *after* child is initialized...
+     * Must be called by child to ensure child is fully constructed before restoring state.
+     * Notice that state restoration is suspending, so when initializing the child view model,
+     * [waitForRestoredState] must be called to wait for state restoration to be complete.
      */
     protected open suspend fun restoreState() {
         // Restore saved selected notes
@@ -146,6 +151,13 @@ abstract class NoteViewModel(
             .orEmpty().toMutableSet()
         _selectedNotes += selectedNoteIds.mapNotNull { notesRepository.getNoteById(it) }
         updateNoteSelection()
+        stateRestored.set(true)
+    }
+
+    protected suspend fun waitForRestoredState() {
+        while (!stateRestored.get()) {
+            yield()
+        }
     }
 
     /**

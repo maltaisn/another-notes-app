@@ -90,11 +90,11 @@ class HomeViewModel @AssistedInject constructor(
     fun setDestination(destination: HomeDestination) {
         currentDestination = destination
 
-        // Cancel previous flow collection
-        noteListJob?.cancel()
-
         // Update note items live data when database flow emits a list.
+        noteListJob?.cancel()
         noteListJob = viewModelScope.launch {
+            waitForRestoredState()
+
             when (destination) {
                 is HomeDestination.Status -> {
                     notesRepository.getNotesByStatus(destination.status).collect { notes ->

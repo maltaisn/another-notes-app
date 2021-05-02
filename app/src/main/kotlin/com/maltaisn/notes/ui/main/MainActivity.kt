@@ -24,6 +24,7 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.findNavController
+import com.github.venom.Venom
 import com.maltaisn.notes.App
 import com.maltaisn.notes.model.converter.NoteTypeConverter
 import com.maltaisn.notes.model.entity.Note
@@ -61,6 +62,10 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
 
         super.onCreate(savedInstanceState)
         (applicationContext as App).appComponent.inject(this)
+
+        val venom = Venom.createInstance(this)
+        venom.initialize()
+        venom.start()
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)

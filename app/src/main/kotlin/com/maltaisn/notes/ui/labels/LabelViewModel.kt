@@ -34,7 +34,8 @@ import com.squareup.inject.assisted.AssistedInject
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-
+import kotlinx.coroutines.yield
+import java.util.concurrent.atomic.AtomicBoolean
 
 class LabelViewModel @AssistedInject constructor(
     private val labelsRepository: LabelsRepository,
@@ -109,14 +110,16 @@ class LabelViewModel @AssistedInject constructor(
 
     private var labelsListJob: Job? = null
 
+    private val stateRestored = AtomicBoolean(false)
+
     init {
         viewModelScope.launch {
             // Restore state
-            if (KEY_SELECTED_IDS in savedStateHandle) {
-                selectedLabelIds += savedStateHandle.get<List<Long>>(KEY_SELECTED_IDS).orEmpty()
-                selectedLabels += selectedLabelIds.mapNotNull { labelsRepository.getLabelById(it) }
-                renamingLabel = savedStateHandle[KEY_RENAMING_LABEL] ?: false
-            }
+            noteIds = savedStateHandle.get<List<Long>>(KEY_NOTE_IDS).orEmpty()
+            selectedLabelIds += savedStateHandle.get<List<Long>>(KEY_SELECTED_IDS).orEmpty()
+            selectedLabels += selectedLabelIds.mapNotNull { labelsRepository.getLabelById(it) }
+            renamingLabel = savedStateHandle[KEY_RENAMING_LABEL] ?: false
+            stateRestored.set(true)
         }
     }
 
@@ -124,21 +127,31 @@ class LabelViewModel @AssistedInject constructor(
      * Initializes view model to set labels on notes by ID.
      * If ID list is empty, view model will be set up to manage labels instead.
      */
-    fun start(noteIds: List<Long>) {
+    fun start(ids: List<Long>) {
         labelsListJob?.cancel()
         labelsListJob = viewModelScope.launch {
-            if (this@LabelViewModel.noteIds.isEmpty() && noteIds.isNotEmpty()) {
-                this@LabelViewModel.noteIds = noteIds
+            if (noteIds.isEmpty() && ids.isNotEmpty()) {
+                // First view model start.
                 // Initially, set selected notes to the subset of labels shared by all notes.
+                noteIds = ids
                 selectedLabelIds.clear()
                 selectedLabelIds += labelsRepository.getLabelIdsForNote(noteIds.first())
                 for (noteId in noteIds.listIterator(1)) {
                     selectedLabelIds.retainAll(labelsRepository.getLabelIdsForNote(noteId))
                 }
+
+                savedStateHandle[KEY_NOTE_IDS] = noteIds
+                saveLabelSelectionState()
             }
 
             // Initialize label list
             labelsRepository.getAllLabelsByUsage().collect { labels ->
+                // Since state restoration is suspending, ensure that state is properly restored
+                // (e.g. selection) before setting list items, or selection may be lost.
+                while (!stateRestored.get()) {
+                    yield()
+                }
+
                 if (renamingLabel) {
                     // List was updated after renaming label, this can only be due to label rename.
                     // Deselect label since it was probably selected only for renaming.
@@ -278,6 +291,7 @@ class LabelViewModel @AssistedInject constructor(
     }
 
     companion object {
+        private const val KEY_NOTE_IDS = "note_ids"
         private const val KEY_SELECTED_IDS = "selected_ids"
         private const val KEY_RENAMING_LABEL = "renaming_label"
     }

@@ -11,6 +11,10 @@ plugins {
     id "kotlin-parcelize"
 }
 
+repositories {
+    maven { url "https://jitpack.io" }
+}
+
 android {
     compileSdkVersion 30
     buildToolsVersion "29.0.3"
@@ -144,6 +148,8 @@ dependencies {
 
     // Debug
     debugImplementation "com.squareup.leakcanary:leakcanary-android:$leakCanaryVersion"
+    debugImplementation "com.github.YarikSOffice.Venom:venom:$venomVersion"
+    releaseImplementation "com.github.YarikSOffice.Venom:venom-no-op:$venomVersion"
 
     // Dependencies for local unit tests
     testImplementation "org.jetbrains.kotlin:kotlin-test:$kotlinVersion"
