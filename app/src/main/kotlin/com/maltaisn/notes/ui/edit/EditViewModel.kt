@@ -271,10 +271,18 @@ class EditViewModel @AssistedInject constructor(
         // NonCancellable to avoid save being cancelled if called right before view model destruction
         viewModelScope.launch(NonCancellable) {
             // Compare previously saved note from database with new one.
-            val oldNote = notesRepository.getNoteById(note.id)
+            val oldNote = notesRepository.getNoteById(note.id)!!
             if (oldNote != note) {
                 // Note was changed.
-                note = note.copy(lastModifiedDate = Date())
+                // To know whether last modified date should be changed, compare note
+                // with a copy that has the original values for fields we don't care about.
+                val changeLastModified = (oldNote != note.copy(
+                    pinned = oldNote.pinned,
+                    status = oldNote.status))
+                if (changeLastModified) {
+                    note = note.copy(lastModifiedDate = Date())
+                }
+
                 notesRepository.updateNote(note)
             }
         }

@@ -111,7 +111,7 @@ class EditViewModelTest {
         // Sample deleted notes
         notesRepo.addNote(testNote(id = 4, title = "title",
             content = "content", status = NoteStatus.DELETED,
-            added = dateFor("2020-03-30")))
+            added = dateFor("2020-03-30"), modified = dateFor("2020-03-31")))
         notesRepo.addNote(listNote(listOf(
             ListNoteItem("item 1", true),
             ListNoteItem("item 2", false)
@@ -352,10 +352,8 @@ class EditViewModelTest {
         viewModel.start(1)
         viewModel.moveNoteAndExit()
 
-        assertNoteEquals(testNote(
-            title = "title", content = "content", status = NoteStatus.ARCHIVED,
-            added = dateFor("2018-01-01"),
-            modified = Date()), notesRepo.requireNoteById(1))
+        assertNoteEquals(oldNote.copy(status = NoteStatus.ARCHIVED, pinned = PinnedStatus.CANT_PIN),
+            notesRepo.requireNoteById(1))
         assertLiveDataEventSent(viewModel.statusChangeEvent,
             StatusChange(listOf(oldNote), NoteStatus.ACTIVE, NoteStatus.ARCHIVED))
         assertLiveDataEventSent(viewModel.exitEvent)
@@ -368,9 +366,8 @@ class EditViewModelTest {
         viewModel.start(6)
         viewModel.moveNoteAndExit()
 
-        assertNoteEquals(testNote(
-            title = "title", content = "content", status = NoteStatus.ACTIVE,
-            added = oldNote.addedDate, modified = Date()), notesRepo.requireNoteById(6))
+        assertNoteEquals(oldNote.copy(status = NoteStatus.ACTIVE, pinned = PinnedStatus.UNPINNED),
+            notesRepo.requireNoteById(6))
         assertLiveDataEventSent(viewModel.statusChangeEvent,
             StatusChange(listOf(oldNote), NoteStatus.ARCHIVED, NoteStatus.ACTIVE))
         assertLiveDataEventSent(viewModel.exitEvent)
@@ -383,9 +380,8 @@ class EditViewModelTest {
         viewModel.start(4)
         viewModel.moveNoteAndExit()
 
-        assertNoteEquals(testNote(
-            title = "title", content = "content", status = NoteStatus.ACTIVE,
-            added = oldNote.addedDate, modified = Date()), notesRepo.requireNoteById(4))
+        assertNoteEquals(oldNote.copy(status = NoteStatus.ACTIVE, pinned = PinnedStatus.UNPINNED),
+            notesRepo.requireNoteById(4))
         assertLiveDataEventSent(viewModel.statusChangeEvent,
             StatusChange(listOf(oldNote), NoteStatus.DELETED, NoteStatus.ACTIVE))
         assertLiveDataEventSent(viewModel.exitEvent)
@@ -393,6 +389,8 @@ class EditViewModelTest {
 
     @Test
     fun `should restore deleted text note and allow edit`() = mainCoroutineRule.runBlockingTest {
+        val oldNote = notesRepo.requireNoteById(4)
+
         viewModel.start(4)
         viewModel.restoreNoteAndEdit()
 
@@ -403,6 +401,11 @@ class EditViewModelTest {
             EditTitleItem(DefaultEditableText("title"), true),
             EditContentItem(DefaultEditableText("content"), true)
         ), viewModel.editItems.getOrAwaitValue())
+
+        viewModel.saveNote()
+        viewModel.exit()
+        assertNoteEquals(oldNote.copy(status = NoteStatus.ACTIVE, pinned = PinnedStatus.UNPINNED),
+            notesRepo.requireNoteById(4))
     }
 
     @Test

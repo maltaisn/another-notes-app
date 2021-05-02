@@ -172,7 +172,8 @@ class NoteViewModelTest {
         viewModel.onNoteItemLongClicked(viewModel.getNoteItemAt(0), 0)
         viewModel.moveSelectedNotes()
 
-        assertEquals(NoteStatus.ARCHIVED, notesRepo.requireNoteById(1).status)
+        assertEquals(oldNote.copy(status = NoteStatus.ARCHIVED, pinned = PinnedStatus.CANT_PIN),
+            notesRepo.requireNoteById(1))
         assertLiveDataEventSent(viewModel.statusChangeEvent, StatusChange(
             listOf(oldNote), NoteStatus.ACTIVE, NoteStatus.ARCHIVED))
     }
@@ -183,7 +184,8 @@ class NoteViewModelTest {
         viewModel.onNoteItemLongClicked(viewModel.getNoteItemAt(1), 1)
         viewModel.moveSelectedNotes()
 
-        assertEquals(NoteStatus.ACTIVE, notesRepo.requireNoteById(2).status)
+        assertEquals(oldNote.copy(status = NoteStatus.ACTIVE, pinned = PinnedStatus.UNPINNED),
+            notesRepo.requireNoteById(2))
         assertLiveDataEventSent(viewModel.statusChangeEvent, StatusChange(
             listOf(oldNote), NoteStatus.ARCHIVED, NoteStatus.ACTIVE))
     }
@@ -194,7 +196,8 @@ class NoteViewModelTest {
         viewModel.onNoteItemLongClicked(viewModel.getNoteItemAt(2), 2)
         viewModel.moveSelectedNotes()
 
-        assertEquals(NoteStatus.ACTIVE, notesRepo.requireNoteById(3).status)
+        assertEquals(oldNote.copy(status = NoteStatus.ACTIVE, pinned = PinnedStatus.UNPINNED),
+            notesRepo.requireNoteById(3))
         assertLiveDataEventSent(viewModel.statusChangeEvent, StatusChange(
             listOf(oldNote), NoteStatus.DELETED, NoteStatus.ACTIVE))
     }
@@ -205,7 +208,8 @@ class NoteViewModelTest {
         viewModel.onNoteItemLongClicked(viewModel.getNoteItemAt(0), 0)
         viewModel.deleteSelectedNotesPre()
 
-        assertEquals(NoteStatus.DELETED, notesRepo.requireNoteById(1).status)
+        assertEquals(oldNote.copy(status = NoteStatus.DELETED, pinned = PinnedStatus.CANT_PIN),
+            notesRepo.requireNoteById(1))
         assertLiveDataEventSent(viewModel.statusChangeEvent, StatusChange(
             listOf(oldNote), NoteStatus.ACTIVE, NoteStatus.DELETED))
     }
@@ -218,8 +222,8 @@ class NoteViewModelTest {
         viewModel.deleteSelectedNotesPre()
 
         val newNote = notesRepo.requireNoteById(5)
-        assertEquals(NoteStatus.DELETED, newNote.status)
-        assertNull(newNote.reminder)
+        assertEquals(oldNote.copy(status = NoteStatus.DELETED,
+            pinned = PinnedStatus.CANT_PIN, reminder = null), newNote)
         assertLiveDataEventSent(viewModel.statusChangeEvent, StatusChange(
             listOf(oldNote), NoteStatus.ACTIVE, NoteStatus.DELETED))
         assertNull(alarmCallback.alarms[5])
@@ -231,9 +235,20 @@ class NoteViewModelTest {
         viewModel.onNoteItemLongClicked(viewModel.getNoteItemAt(1), 1)
         viewModel.deleteSelectedNotesPre()
 
-        assertEquals(NoteStatus.DELETED, notesRepo.requireNoteById(2).status)
+        assertEquals(oldNote.copy(status = NoteStatus.DELETED), notesRepo.requireNoteById(2))
         assertLiveDataEventSent(viewModel.statusChangeEvent, StatusChange(
             listOf(oldNote), NoteStatus.ARCHIVED, NoteStatus.DELETED))
+    }
+
+    @Test
+    fun `should pin and unpin note`() = mainCoroutineRule.runBlockingTest {
+        val oldNote = notesRepo.requireNoteById(1)
+        viewModel.onNoteItemLongClicked(viewModel.getNoteItemAt(0), 0)
+        viewModel.togglePin()
+        assertEquals(oldNote.copy(pinned = PinnedStatus.PINNED), notesRepo.requireNoteById(1))
+
+        viewModel.togglePin()
+        assertEquals(oldNote, notesRepo.requireNoteById(1))
     }
 
     @Test

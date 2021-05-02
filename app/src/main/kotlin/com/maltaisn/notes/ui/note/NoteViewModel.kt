@@ -184,7 +184,7 @@ abstract class NoteViewModel(
             }
             val newNotes = selectedNotes.mapNotNull { note ->
                 if (note.pinned != PinnedStatus.CANT_PIN && note.pinned != newPinned) {
-                    note.copy(pinned = newPinned, lastModifiedDate = date)
+                    note.copy(pinned = newPinned)
                 } else {
                     null
                 }
@@ -322,7 +322,7 @@ abstract class NoteViewModel(
         viewModelScope.launch {
             val newNotes = mutableListOf<Note>()
             for (note in oldNotes) {
-                newNotes += note.copy(status = newStatus, lastModifiedDate = date,
+                newNotes += note.copy(status = newStatus,
                     pinned = if (newStatus == NoteStatus.ACTIVE) PinnedStatus.UNPINNED else PinnedStatus.CANT_PIN,
                     reminder = note.reminder.takeIf { newStatus != NoteStatus.DELETED })
                 if (newStatus == NoteStatus.DELETED) {

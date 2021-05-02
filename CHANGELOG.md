@@ -14,6 +14,7 @@
 - Added app shortcuts for Android N+ (new text note, new list note, show reminders).
 - Checked items text now changes color.
 - Changed distance threshold for swiping note action.
+- Changed status changes not to update last modified date.
 - Removed copy and share actions for deleted notes.
 - Fixed auto-correction not enabled in text fields.
 - Fixed formatting not removed when pasting text.
