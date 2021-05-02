@@ -15,6 +15,8 @@
   -->
 
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:alpha="0.2" android:color="?colorPrimary" android:state_activated="true"/>
+    <!-- Ideally I would've used "?colorPrimary" like elsewhere but it fails pre API 24.
+         The result will be exactly the same though. -->
+    <item android:alpha="0.2" android:color="@color/color_primary" android:state_activated="true"/>
     <item android:color="@android:color/transparent"/>
 </selector>

@@ -48,7 +48,7 @@
     </style>
 
     <style name="NoteReminderChipStyle">
-        <item name="android:textColor">@color/item_note_reminder_text_color</item>
+        <item name="android:textColor">@color/item_note_reminder_fg_color</item>
         <item name="android:focusable">false</item>
         <item name="android:clickable">false</item>
         <item name="rippleColor">@android:color/transparent</item>
@@ -61,7 +61,7 @@
         <item name="chipStrokeColor">@color/item_note_reminder_stroke_color</item>
         <item name="chipStrokeWidth">0.7dp</item>
         <item name="chipIconSize">16dp</item>
-        <item name="chipIconTint">@color/item_edit_item_text_color</item>
+        <item name="chipIconTint">@color/item_note_reminder_fg_color</item>
         <item name="chipMinTouchTargetSize">0dp</item>
     </style>
 
