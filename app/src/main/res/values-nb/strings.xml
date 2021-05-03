@@ -16,7 +16,7 @@
 
 <resources>
 
-    <string name="app_name">Another Notes</string>
+    <!-- Can be translated to provided a sensible localized name for a "Notes" app -->
     <string name="app_name_short">Notater</string>
 
     <string name="action_archive">Arkiv</string>
@@ -28,12 +28,15 @@
     <string name="action_delete">Slett</string>
     <string name="action_delete_checked">Slett avmerkede elementer</string>
     <string name="action_delete_forever">Slett for godt</string>
+    <string name="action_delete_selection">Slett merkede</string>
     <string name="action_delete_selection_forever">Slett merkede for godt</string>
     <string name="action_empty_trash">Tøm papirkurv</string>
     <string name="action_empty_trash_short">Tøm</string>
     <string name="action_keep">Behold</string>
+    <string name="action_labels">Endre etiketter</string>
     <string name="action_layout_grid">Vis som rutenett</string>
     <string name="action_layout_list">Vis som liste</string>
+    <string name="action_manage">Behandle</string>
     <string name="action_mark_as_done">Marker som gjort</string>
     <string name="action_none">Ingen</string>
     <string name="action_ok">OK</string>
@@ -41,6 +44,7 @@
     <string name="action_postpone">Utsett</string>
     <string name="action_reminder_add">Legg til påminnelse</string>
     <string name="action_reminder_edit">Rediger påminnelse</string>
+    <string name="action_rename">Endre navn</string>
     <string name="action_restore">Gjenopprett</string>
     <string name="action_search">Søk</string>
     <string name="action_select_all">Velg alle</string>
@@ -64,6 +68,7 @@
     <string name="note_location_active">Notater</string>
     <string name="note_location_archived">Arkivert</string>
     <string name="note_location_deleted">Slettet</string>
+    <string name="note_location_labels">Etiketter</string>
 
     <string name="note_pinned">Festet</string>
     <string name="note_not_pinned">Andre</string>
@@ -130,6 +135,17 @@
     <string name="reminder_restricted_battery">Påminnelsesalarmer virker kanskje ikke riktig fordi
     appen har begrenset batteribruk. Dette kan endres i app-innstillingene.</string>
 
+    <!-- Labels -->
+    <string name="label_create">Opprett ny etikett</string>
+    <string name="label_edit">Rediger etikettnavn</string>
+    <string name="label_manage">Behandle etiketter</string>
+    <string name="label_select">Velg etiketter</string>
+    <string name="label_already_exists">En etikett med dette navnet finnes allerede.</string>
+    <string name="label_empty_placeholder">Ingen etiketter opprettet</string>
+    <string name="label_delete_message">Valgte etiketter blir slettet, men notatene assosiert
+    til dem blir beholdt.</string>
+    <string name="label_notes_empty_placeholder">Ingen notater merket med denne etiketten</string>
+
     <!-- Settings -->
     <string name="pref_group_appearance">Utseende</string>
     <string name="pref_theme">App-tema</string>
@@ -137,6 +153,7 @@
     <string name="pref_theme_dark">Mørkt</string>
     <string name="pref_theme_system">Følg system</string>
     <string name="pref_strikethrough_checked">Gjennomstrekmerkede listeelementer</string>
+    <string name="pref_preview_labels">Maks antall etiketter i forhåndsvisning</string>
 
     <string name="pref_shown_date">Dato vist for notater</string>
     <string name="pref_shown_date_added">Opprettelsesdato</string>
