@@ -70,30 +70,14 @@ sealed class NoteViewHolder(itemView: View) :
     protected abstract val labelGroup: ChipGroup
     protected abstract val actionBtn: MaterialButton
 
-    private val labelViewHolders = mutableListOf<LabelViewHolder>()
+    private val labelViewHolders = mutableListOf<LabelChipViewHolder>()
 
     open fun bind(adapter: NoteAdapter, item: NoteItem) {
-        val note = item.note
-        val now = System.currentTimeMillis()
-
-        // Title
-        var title = note.title
-        if (BuildConfig.DEBUG) {
-            title += " (${note.id})"
-        }
-        titleTxv.text = HighlightHelper.getHighlightedText(title, item.titleHighlights,
-            adapter.highlightBackgroundColor, adapter.highlightForegroundColor)
-        titleTxv.isVisible = title.isNotBlank()
-
-        // Date text
-        val dateField = adapter.prefsManager.shownDateField
-        val date = when (dateField) {
-            ShownDateField.ADDED -> note.addedDate.time
-            ShownDateField.MODIFIED -> note.lastModifiedDate.time
-            ShownDateField.NONE -> 0L
-        }
-        dateTxv.text = dateFormatter.format(date, now, MAXIMUM_RELATIVE_DATE_DAYS)
-        dateTxv.isGone = (dateField == ShownDateField.NONE)
+        bindTitle(adapter, item)
+        bindDate(adapter, item)
+        bindReminder(item)
+        bindLabels(adapter, item)
+        bindActionBtn(adapter, item)
 
         // Click listeners
         cardView.isChecked = item.checked
@@ -104,19 +88,45 @@ sealed class NoteViewHolder(itemView: View) :
             adapter.callback.onNoteItemLongClicked(item, bindingAdapterPosition)
             true
         }
+    }
 
-        // Reminder
+    private fun bindTitle(adapter: NoteAdapter, item: NoteItem) {
+        val note = item.note
+        var title = note.title
+        if (BuildConfig.DEBUG) {
+            title += " (${note.id})"
+        }
+        titleTxv.text = HighlightHelper.getHighlightedText(title, item.titleHighlights,
+            adapter.highlightBackgroundColor, adapter.highlightForegroundColor)
+        titleTxv.isVisible = title.isNotBlank()
+    }
+
+    private fun bindDate(adapter: NoteAdapter, item: NoteItem) {
+        val note = item.note
+        val dateField = adapter.prefsManager.shownDateField
+        val date = when (dateField) {
+            ShownDateField.ADDED -> note.addedDate.time
+            ShownDateField.MODIFIED -> note.lastModifiedDate.time
+            ShownDateField.NONE -> 0L
+        }
+        dateTxv.text = dateFormatter.format(date, System.currentTimeMillis(), MAXIMUM_RELATIVE_DATE_DAYS)
+        dateTxv.isGone = (dateField == ShownDateField.NONE)
+    }
+
+    private fun bindReminder(item: NoteItem) {
+        val note = item.note
         reminderChip.isVisible = note.reminder != null
         if (note.reminder != null) {
             reminderChip.text = reminderDateFormatter.format(note.reminder.next.time,
-                now, MAXIMUM_RELATIVE_DATE_DAYS)
+                System.currentTimeMillis(), MAXIMUM_RELATIVE_DATE_DAYS)
             reminderChip.strikethroughText = note.reminder.done
             reminderChip.isActivated = !note.reminder.done
             reminderChip.setChipIconResource(if (note.reminder.recurrence != null)
                 R.drawable.ic_repeat else R.drawable.ic_alarm)
         }
+    }
 
-        // Labels
+    private fun bindLabels(adapter: NoteAdapter, item: NoteItem) {
         // Show labels in order up to the maximum, then show a +N chip at the end.
         val maxLabels = adapter.prefsManager.maximumPreviewLabels
         if (maxLabels > 0) {
@@ -137,8 +147,9 @@ sealed class NoteViewHolder(itemView: View) :
             // Don't show labels in preview
             labelGroup.isVisible = false
         }
+    }
 
-        // Mark as done button
+    private fun bindActionBtn(adapter: NoteAdapter, item: NoteItem) {
         val bottomPadding: Int
         if (item.showMarkAsDone && !item.checked) {
             actionBtn.isVisible = true
@@ -295,7 +306,7 @@ class ListNoteItemViewHolder(val binding: ItemNoteListItemBinding) {
  * A view holder for a label chip displayed in note view holders.
  * This is a "secondary" view holder, it is held by another view holder.
  */
-class LabelViewHolder(val binding: ItemNoteLabelBinding) {
+class LabelChipViewHolder(val binding: ItemNoteLabelBinding) {
 
     fun bind(label: Label) {
         binding.labelChip.text = label.name

@@ -93,7 +93,8 @@ abstract class NotesDatabase : RoomDatabase() {
 
                     // Add label tables
                     execSQL("CREATE TABLE labels (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, name TEXT NOT NULL)")
-                    execSQL("""CREATE TABLE label_refs (noteId INTEGER NOT NULL, labelId INTEGER NOT NULL, PRIMARY KEY(noteId, labelId),
+                    execSQL("""CREATE TABLE label_refs (noteId INTEGER NOT NULL, labelId INTEGER NOT NULL,
+                               PRIMARY KEY(noteId, labelId),
                                FOREIGN KEY(noteId) REFERENCES notes(id) ON UPDATE NO ACTION ON DELETE CASCADE,
                                FOREIGN KEY(labelId) REFERENCES labels(id) ON UPDATE NO ACTION ON DELETE CASCADE)""")
                     execSQL("CREATE INDEX index_labels_name ON labels (name)")

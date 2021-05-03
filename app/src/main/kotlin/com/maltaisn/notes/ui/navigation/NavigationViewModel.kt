@@ -150,11 +150,14 @@ class NavigationViewModel @AssistedInject constructor(
             titleRes = R.string.action_settings,
         )
 
-        // Restore selection
+        restoreSelection(this)
+    }
+
+    private fun restoreSelection(list: MutableList<NavigationItem>) {
         var selectionFound = false
-        for ((i, item) in this.withIndex()) {
+        for ((i, item) in list.withIndex()) {
             if (item is NavigationDestinationItem && item.id == checkedId) {
-                this[i] = item.copy(checked = true)
+                list[i] = item.copy(checked = true)
                 selectionFound = true
                 break
             }
@@ -163,13 +166,13 @@ class NavigationViewModel @AssistedInject constructor(
             // There's no checked destination. Only way this can happen is a checked label was
             // removed. Go back to active notes.
             checkedId = ITEM_ID_ACTIVE
-            this[1] = (this[1] as NavigationDestinationItem).copy(checked = true)
+            list[1] = (list[1] as NavigationDestinationItem).copy(checked = true)
             _currentHomeDestination.value = HomeDestination.Status(NoteStatus.ACTIVE)
         }
     }
 
     private fun MutableList<NavigationItem>.addDivider() {
-        this += NavigationDividerItem(this.size.toLong() or 0x100000000L)
+        this += NavigationDividerItem(this.size.toLong() or ITEM_ID_DIVIDER_MASK)
     }
 
     override fun onNavigationDestinationItemClicked(item: NavigationDestinationItem, pos: Int) {
@@ -223,6 +226,8 @@ class NavigationViewModel @AssistedInject constructor(
         private const val ITEM_ID_REMINDERS = -5L
         private const val ITEM_ID_SETTINGS = -6L
         private const val ITEM_ID_LABEL_ADD = -7L
+
+        private const val ITEM_ID_DIVIDER_MASK = 0x100000000L
 
         private const val KEY_HOME_DESTINATION = "destination"
         private const val KEY_CHECKED_ID = "checkedId"

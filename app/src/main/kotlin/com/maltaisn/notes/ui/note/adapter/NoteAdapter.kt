@@ -54,7 +54,7 @@ class NoteAdapter(
      * When note items are recycled, view holders are added back to the pool.
      * **Should only be accessed on main thread.**
      */
-    private val labelViewHolderPool = ArrayDeque<LabelViewHolder>()
+    private val labelViewHolderPool = ArrayDeque<LabelChipViewHolder>()
 
     var listLayoutMode = NoteListLayoutMode.LIST
         set(value) {
@@ -126,11 +126,11 @@ class NoteAdapter(
         }
 
     @SuppressLint("InflateParams")
-    fun obtainLabelViewHolder(): LabelViewHolder =
+    fun obtainLabelViewHolder(): LabelChipViewHolder =
         if (labelViewHolderPool.isNotEmpty()) {
             labelViewHolderPool.removeLast()
         } else {
-            LabelViewHolder(ItemNoteLabelBinding.inflate(
+            LabelChipViewHolder(ItemNoteLabelBinding.inflate(
                 LayoutInflater.from(context), null, false))
         }
 
@@ -138,7 +138,7 @@ class NoteAdapter(
         listNoteItemViewHolderPool += viewHolder
     }
 
-    fun freeLabelViewHolder(viewHolder: LabelViewHolder) {
+    fun freeLabelViewHolder(viewHolder: LabelChipViewHolder) {
         labelViewHolderPool += viewHolder
     }
 

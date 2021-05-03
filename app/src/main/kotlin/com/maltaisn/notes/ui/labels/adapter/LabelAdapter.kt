@@ -25,18 +25,18 @@ import com.maltaisn.notes.sync.databinding.ItemLabelBinding
 class LabelAdapter(
     val context: Context,
     val callback: Callback,
-) : ListAdapter<LabelListItem, LabelViewHolder>(LabelListDiffCallback()) {
+) : ListAdapter<LabelListItem, LabelListViewHolder>(LabelListDiffCallback()) {
 
     init {
         setHasStableIds(true)
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LabelViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LabelListViewHolder {
         val inflater = LayoutInflater.from(parent.context)
-        return LabelViewHolder(ItemLabelBinding.inflate(inflater, parent, false))
+        return LabelListViewHolder(ItemLabelBinding.inflate(inflater, parent, false))
     }
 
-    override fun onBindViewHolder(holder: LabelViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: LabelListViewHolder, position: Int) {
         holder.bind(getItem(position), this)
     }
 

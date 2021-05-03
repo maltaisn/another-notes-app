@@ -20,7 +20,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.maltaisn.notes.sync.R
 import com.maltaisn.notes.sync.databinding.ItemLabelBinding
 
-class LabelViewHolder(val binding: ItemLabelBinding) : RecyclerView.ViewHolder(binding.root) {
+class LabelListViewHolder(val binding: ItemLabelBinding) : RecyclerView.ViewHolder(binding.root) {
 
     fun bind(item: LabelListItem, adapter: LabelAdapter) {
         binding.labelTxv.text = item.label.name
