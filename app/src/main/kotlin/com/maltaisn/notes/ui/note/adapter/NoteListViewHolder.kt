@@ -227,14 +227,13 @@ class ListNoteViewHolder(private val binding: ItemNoteListBinding) : NoteViewHol
 
         // Add the first few items in list note using view holders in pool.
         val maxItems = adapter.getMaximumPreviewLines(NoteType.LIST)
-        val itemHighlights =
-            HighlightHelper.splitListNoteHighlightsByItem(noteItems, item.contentHighlights)
+        val itemHighlights = HighlightHelper.splitListNoteHighlightsByItem(noteItems, item.contentHighlights)
         for (i in 0 until min(maxItems, noteItems.size)) {
             val noteItem = noteItems[i]
             val viewHolder = adapter.obtainListNoteItemViewHolder()
             itemViewHolders += viewHolder
             viewHolder.bind(adapter, noteItem, itemHighlights[i])
-            itemsLayout.addView(viewHolder.binding.root)
+            itemsLayout.addView(viewHolder.binding.root, i)
         }
 
         // Show a label indicating the number of items not shown.
@@ -250,7 +249,7 @@ class ListNoteViewHolder(private val binding: ItemNoteListBinding) : NoteViewHol
     override fun unbind(adapter: NoteAdapter) {
         super.unbind(adapter)
         // Free view holders used by the item.
-        binding.itemsLayout.removeViews(0, binding.itemsLayout.childCount)
+        binding.itemsLayout.removeViews(0, binding.itemsLayout.childCount - 1)
         for (viewHolder in itemViewHolders) {
             adapter.freeListNoteItemViewHolder(viewHolder)
         }
