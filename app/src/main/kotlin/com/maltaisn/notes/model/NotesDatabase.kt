@@ -39,7 +39,7 @@ import com.maltaisn.notes.model.entity.NoteFts
         Label::class,
         LabelRef::class,
     ],
-    version = 3)
+    version = NotesDatabase.VERSION)
 @TypeConverters(
     DateTimeConverter::class,
     NoteTypeConverter::class,
@@ -56,6 +56,7 @@ abstract class NotesDatabase : RoomDatabase() {
 
     @Suppress("MagicNumber")
     companion object {
+        const val VERSION = 3
 
         val MIGRATION_1_2 = object : Migration(1, 2) {
             override fun migrate(database: SupportSQLiteDatabase) {

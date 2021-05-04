@@ -21,6 +21,7 @@ import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.add
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.encodeToJsonElement
+import kotlinx.serialization.json.put
 import kotlinx.serialization.json.putJsonArray
 import javax.inject.Inject
 
@@ -32,6 +33,9 @@ class DefaultJsonExporter @Inject constructor(
 
     override suspend fun exportJsonData() = json.encodeToString(JsonObject.serializer(),
         buildJsonObject {
+            // Put version number in case import is implemented eventually
+            put("version", NotesDatabase.VERSION)
+
             // Put all notes under a "notes" entry, with their labels.
             put("notes", buildJsonObject {
                 val notes = notesDao.getAll()

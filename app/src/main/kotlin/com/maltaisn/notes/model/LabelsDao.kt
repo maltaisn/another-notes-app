@@ -52,7 +52,7 @@ interface LabelsDao {
      * Used for exporting data.
      */
     @Query("SELECT * FROM labels")
-    fun getAll(): List<Label>
+    suspend fun getAll(): List<Label>
 
     /**
      * Get all labels in database, sorted by most used first, then by name.
