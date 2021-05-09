@@ -34,8 +34,6 @@ import com.squareup.inject.assisted.AssistedInject
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.yield
-import java.util.concurrent.atomic.AtomicBoolean
 
 class LabelViewModel @AssistedInject constructor(
     private val labelsRepository: LabelsRepository,
@@ -109,17 +107,16 @@ class LabelViewModel @AssistedInject constructor(
     private var renamingLabel = false
 
     private var labelsListJob: Job? = null
-
-    private val stateRestored = AtomicBoolean(false)
+    private var restoreStateJob: Job? = null
 
     init {
-        viewModelScope.launch {
+        restoreStateJob = viewModelScope.launch {
             // Restore state
             noteIds = savedStateHandle.get<List<Long>>(KEY_NOTE_IDS).orEmpty()
             selectedLabelIds += savedStateHandle.get<List<Long>>(KEY_SELECTED_IDS).orEmpty()
             selectedLabels += selectedLabelIds.mapNotNull { labelsRepository.getLabelById(it) }
             renamingLabel = savedStateHandle[KEY_RENAMING_LABEL] ?: false
-            stateRestored.set(true)
+            restoreStateJob = null
         }
     }
 
@@ -148,9 +145,7 @@ class LabelViewModel @AssistedInject constructor(
             labelsRepository.getAllLabelsByUsage().collect { labels ->
                 // Since state restoration is suspending, ensure that state is properly restored
                 // (e.g. selection) before setting list items, or selection may be lost.
-                while (!stateRestored.get()) {
-                    yield()
-                }
+                restoreStateJob?.join()
 
                 if (renamingLabel) {
                     // List was updated after renaming label, this can only be due to label rename.
@@ -295,5 +290,4 @@ class LabelViewModel @AssistedInject constructor(
         private const val KEY_SELECTED_IDS = "selected_ids"
         private const val KEY_RENAMING_LABEL = "renaming_label"
     }
-
 }

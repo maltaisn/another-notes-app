@@ -18,12 +18,10 @@ package com.maltaisn.notes.ui.notification
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationManagerCompat
 import androidx.navigation.findNavController
 import com.maltaisn.notes.App
-import com.maltaisn.notes.TAG
 import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.navigateSafe
 import com.maltaisn.notes.receiver.AlarmReceiver
@@ -68,7 +66,6 @@ class NotificationActivity : AppCompatActivity() {
             when (intent.action) {
                 INTENT_ACTION_POSTPONE -> {
                     val noteId = intent.getLongExtra(AlarmReceiver.EXTRA_NOTE_ID, Note.NO_ID)
-                    Log.d(TAG, "note ID for postpone is $noteId")
                     NotificationManagerCompat.from(this).cancel(noteId.toInt())
                     viewModel.onPostponeClicked(noteId)
                 }

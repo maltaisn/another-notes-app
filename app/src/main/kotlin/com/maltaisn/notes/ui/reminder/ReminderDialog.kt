@@ -19,7 +19,6 @@ package com.maltaisn.notes.ui.reminder
 import android.app.Dialog
 import android.content.DialogInterface
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import androidx.appcompat.app.AlertDialog
 import androidx.core.view.isVisible
@@ -28,7 +27,6 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.maltaisn.notes.App
-import com.maltaisn.notes.TAG
 import com.maltaisn.notes.contains
 import com.maltaisn.notes.navigateSafe
 import com.maltaisn.notes.setMaxWidth
@@ -67,7 +65,6 @@ class ReminderDialog : DialogFragment(), RecurrenceListCallback, RecurrencePicke
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         (requireContext().applicationContext as App).appComponent.inject(this)
-        Log.d(TAG, "Creating ReminderDialog fragment")
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {

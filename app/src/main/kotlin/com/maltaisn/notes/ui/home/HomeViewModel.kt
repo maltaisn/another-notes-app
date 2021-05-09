@@ -82,9 +82,7 @@ class HomeViewModel @AssistedInject constructor(
         get() = _showEmptyTrashDialogEvent
 
     init {
-        viewModelScope.launch {
-            restoreState()
-        }
+        restoreState()
     }
 
     fun setDestination(destination: HomeDestination) {

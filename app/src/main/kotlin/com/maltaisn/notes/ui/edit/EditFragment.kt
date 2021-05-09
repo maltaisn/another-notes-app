@@ -28,7 +28,9 @@ import androidx.core.view.postDelayed
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import com.maltaisn.notes.App
 import com.maltaisn.notes.hideKeyboard
@@ -116,7 +118,25 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener, ConfirmDialog.
         val layoutManager = LinearLayoutManager(context)
         rcv.adapter = adapter
         rcv.layoutManager = layoutManager
-        rcv.itemAnimator?.changeDuration = 0
+        rcv.itemAnimator = object : DefaultItemAnimator() {
+            override fun animateAppearance(
+                viewHolder: RecyclerView.ViewHolder,
+                preLayoutInfo: ItemHolderInfo?,
+                postLayoutInfo: ItemHolderInfo
+            ): Boolean {
+                return if (preLayoutInfo != null && (preLayoutInfo.left != postLayoutInfo.left
+                            || preLayoutInfo.top != postLayoutInfo.top)
+                ) {
+                    // item move, handle normally
+                    super.animateAppearance(viewHolder, preLayoutInfo, postLayoutInfo)
+                } else {
+                    // do not animate new item appearance
+                    // this is mainly to avoid animating the whole list when fragment view is recreated.
+                    dispatchAddFinished(viewHolder)
+                    false
+                }
+            }
+        }
 
         setupViewModelObservers(adapter)
     }

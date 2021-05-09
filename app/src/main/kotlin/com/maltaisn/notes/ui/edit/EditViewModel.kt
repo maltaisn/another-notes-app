@@ -52,6 +52,7 @@ import com.maltaisn.notes.ui.note.ShownDateField
 import com.maltaisn.notes.ui.send
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.launch
 import java.util.Collections
@@ -59,7 +60,6 @@ import java.util.Date
 
 /**
  * View model for the edit note screen.
- * TODO status, pinned, reminder could be livedata, except that livedata has nullable type... flow?
  */
 class EditViewModel @AssistedInject constructor(
     private val notesRepository: NotesRepository,
@@ -106,7 +106,15 @@ class EditViewModel @AssistedInject constructor(
 
     /**
      * The currently displayed list items created in [updateListItems].
-     * While this list is mutable, any in place changes should be reported to the adapter!
+     *
+     * While this list is mutable, any in place changes should be reported to the adapter! This is used in the case
+     * of moving items, where the view model updates the list but the adapter already knows of the move.
+     *
+     * Note the in the case of list items, a specific item has no identity. Its position and its content
+     * can change at any time, so it can be associated with a stable ID. This is problematic for item diff callback
+     * and animations, which would rely on ID. Instead, the diff callback was made to rely on identity so that
+     * add/remove animations take place correctly. The recycler view was also set up to not animate item appearance,
+     * so that if the list is completely recreated, no animation will occur despite all items identity being lost.
      */
     private var listItems: MutableList<EditListItem> = mutableListOf()
         set(value) {
@@ -182,6 +190,8 @@ class EditViewModel @AssistedInject constructor(
     private val isNoteInTrash: Boolean
         get() = status == NoteStatus.DELETED
 
+    private var updateNoteJob: Job? = null
+
     init {
         if (KEY_NOTE_ID in savedStateHandle) {
             viewModelScope.launch {
@@ -205,6 +215,10 @@ class EditViewModel @AssistedInject constructor(
      */
     fun start(noteId: Long = Note.NO_ID, labelId: Long = Label.NO_ID) {
         viewModelScope.launch {
+            // If fragment was very briefly destroyed then recreated, it's possible that this job is launched
+            // before the job to save the note on fragment destruction is called.
+            updateNoteJob?.join()
+
             val isFirstStart = (note == BLANK_NOTE)
 
             // Try to get note by ID with its labels.
@@ -268,8 +282,8 @@ class EditViewModel @AssistedInject constructor(
         // Update note
         updateNote()
 
-        // NonCancellable to avoid save being cancelled if called right before view model destruction
-        viewModelScope.launch(NonCancellable) {
+        // NonCancellable to avoid save being cancelled if called right before fragment destruction
+        updateNoteJob = viewModelScope.launch(NonCancellable) {
             // Compare previously saved note from database with new one.
             // It is possible that note will be null here, if:
             // - Back arrow is clicked, saving note.
@@ -288,6 +302,7 @@ class EditViewModel @AssistedInject constructor(
                 }
 
                 notesRepository.updateNote(note)
+                updateNoteJob = null
             }
         }
     }
@@ -560,9 +575,6 @@ class EditViewModel @AssistedInject constructor(
      * [updateNote] might need to be called first for that data to be up-to-date.
      */
     private fun updateListItems() {
-        // TODO avoid full list refresh somehow?
-        //  - on note type change
-        //  - on fragment view recreation
         listItems = createListItems()
     }
 
