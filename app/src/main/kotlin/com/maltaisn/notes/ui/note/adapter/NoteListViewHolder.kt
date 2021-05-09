@@ -93,7 +93,7 @@ sealed class NoteViewHolder(itemView: View) :
     private fun bindTitle(adapter: NoteAdapter, item: NoteItem) {
         val note = item.note
         var title = note.title
-        if (BuildConfig.DEBUG) {
+        if (BuildConfig.ENABLE_DEBUG_FEATURES) {
             title += " (${note.id})"
         }
         titleTxv.text = HighlightHelper.getHighlightedText(title, item.titleHighlights,

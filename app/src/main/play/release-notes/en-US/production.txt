@@ -1,1 +1,9 @@
-Removed synchronization feature.
+Many new features:
+- Reminders including recurring reminders.
+- Labels on notes.
+- Pinned notes.
+- Show date in preview.
+- More customization settings.
+- App shortcuts.
+
+A lot of bugs were fixed too.

@@ -1,1 +1,9 @@
-La fonctionnalité de synchronisation a été retirée.
+Plusieurs nouvelles fonctionnalités:
+- Rappels, y compris des rappels récurrents.
+- Étiquettes sur les notes.
+- Notes épinglées.
+- Affichage de la date dans l'aperçu.
+- Plus d'options de personnalisation.
+- Racourcis sur l'icône.
+
+Plusieurs bugs ont également été corrigés.

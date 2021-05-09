@@ -14,20 +14,18 @@
   limitations under the License.
   -->
 
-<androidx.appcompat.widget.SearchView
+<!-- This manifest will be merged with the one in main source set. -->
+<manifest
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/search_view"
-    android:theme="@style/SearchViewThemeOverlay"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:paddingStart="-16dp"
-    android:paddingEnd="0dp"
-    android:imeOptions="flagNoExtractUi"
-    android:maxWidth="10000dp"
-    app:closeIcon="@drawable/ic_close"
-    app:iconifiedByDefault="false"
-    app:queryBackground="@null"
-    app:queryHint="@string/search_hint"
-    app:searchIcon="@null"
-    />
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="ProtectedPermissions"
+    package="com.maltaisn.notes.sync"
+    >
+
+    <!-- Used for taking screenshots, for changing locale at runtime. -->
+    <uses-permission android:name="android.permission.CHANGE_CONFIGURATION" />
+
+    <!-- Used to change status bar appearance -->
+    <uses-permission android:name="android.permission.DUMP" />
+
+</manifest>

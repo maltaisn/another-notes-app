@@ -33,8 +33,6 @@ import kotlin.time.days
 /**
  * Base preference manager. This class interacts with [SharedPreferences]
  * so that other classes don't need knowledge of the keys and their associated type.
- *
- * Flavors provide their own extension of this manager.
  */
 @OpenForTesting
 class PrefsManager @Inject constructor(
@@ -103,6 +101,14 @@ class PrefsManager @Inject constructor(
             // will have no effect (or that's what I presumed at least, since it didn't work).
             PreferenceManager.setDefaultValues(context, prefsRes, true)
         }
+    }
+
+    // only used for testing
+    fun clear(context: Context) {
+        for (prefsRes in PREFS_XML) {
+            PreferenceManager.getDefaultSharedPreferences(context).edit().clear().apply()
+        }
+        setDefaults(context)
     }
 
     companion object {

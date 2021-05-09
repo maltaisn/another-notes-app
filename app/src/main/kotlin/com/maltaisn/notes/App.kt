@@ -22,6 +22,7 @@ import android.app.NotificationManager
 import android.os.Build
 import androidx.appcompat.app.AppCompatDelegate
 import com.maltaisn.notes.di.DaggerAppComponent
+import com.maltaisn.notes.model.NotesDatabase
 import com.maltaisn.notes.model.PrefsManager
 import com.maltaisn.notes.sync.R
 import com.maltaisn.notes.ui.AppTheme
@@ -35,6 +36,11 @@ class App : Application() {
 
     @Inject
     lateinit var prefs: PrefsManager
+
+    // for UI tests, should be injected in test ideally
+    // but this works for a temporary solution.
+    @Inject
+    lateinit var database: NotesDatabase
 
     override fun onCreate() {
         super.onCreate()

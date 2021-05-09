@@ -1,0 +1,66 @@
+<!--
+  Copyright 2021 Nicolas Maltais
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  -->
+
+<resources>
+
+    <string name="screenshot_label1">Tâches</string>
+    <string name="screenshot_label2">Apprendre</string>
+    <string name="screenshot_label3">Devoirs</string>
+
+    <string name="screenshot_note1">"
+        Liste d'épicerie
+        + Beurre
+        - Pain
+        + Chocolat
+        + Pommes
+        - Bananes
+    "</string>
+
+    <string name="screenshot_note2">"
+        Instructions recette
+        Dans un autre bol, mélanger le beurre fondu, la cassonade, les jaunes d’oeufs et la vanille à la cuillère de bois, jusqu'à ce que le mélange soit homogène. À la cuillère de bois, incorporer les ingrédients secs et les brisures de chocolat.
+    "</string>
+
+    <string name="screenshot_note3">"
+        Citation quelconque
+        La perfection est atteinte, non pas lorsqu'il n'y a plus rien à ajouter, mais lorsqu'il n'y a plus rien à retirer.
+    "</string>
+
+    <string name="screenshot_note4">"
+        Bucket list
+        + Acheter un seau
+        + Acheter de l'eau
+        - Verser l'eau
+        - Boire le seau
+    "</string>
+
+    <string name="screenshot_note5">"
+        _
+        Par trois méthodes, nous pouvons apprendre la sagesse : premièrement, par la réflexion, qui est la plus noble ; Deuxièmement, par imitation, ce qui est plus facile ; et troisièmement par l'expérience, qui est la plus amère.
+    "</string>
+
+    <string name="screenshot_note6">"
+        Langues à apprendre
+        + Anglais
+        + Français
+        - Espagnol
+        + Mandarin
+        - Arabe
+    "</string>
+
+    <string name="screenshot_search_query">beurre</string>
+
+</resources>

@@ -176,7 +176,6 @@ abstract class NoteViewModel(
     fun togglePin() {
         // If one note in selection isn't pinned, pin all. If all are pinned, unpin all.
         viewModelScope.launch {
-            val date = Date()
             val newPinned = if (selectedNotes.any { it.pinned == PinnedStatus.UNPINNED }) {
                 PinnedStatus.PINNED
             } else {
@@ -318,7 +317,6 @@ abstract class NoteViewModel(
             .filter { it.status != newStatus }
             .ifEmpty { return }
 
-        val date = Date()
         viewModelScope.launch {
             val newNotes = mutableListOf<Note>()
             for (note in oldNotes) {

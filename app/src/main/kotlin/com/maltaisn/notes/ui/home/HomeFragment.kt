@@ -82,7 +82,7 @@ class HomeFragment : NoteFragment(), Toolbar.OnMenuItemClickListener {
             }
 
             // Hide or show build type and flavor specific items
-            menu.findItem(R.id.item_extra_action).isVisible = BuildConfig.DEBUG
+            menu.findItem(R.id.item_extra_action).isVisible = BuildConfig.ENABLE_DEBUG_FEATURES
         }
 
         // Floating action button

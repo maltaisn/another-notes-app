@@ -4,22 +4,19 @@
 
 This is a simple Android app for taking notes, like there have been tens of thousands before.
 The app has Material UI, was built following MVVM architecture, uses Dagger and some Jetpack
-components.
+components. Download is available on:
 
-<a href="https://play.google.com/store/apps/details?id=com.maltaisn.notes.sync"
-   target="blank"><img alt="Get it on Google Play"
-   src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png"
-   height="80"/></a>
-<a href="https://github.com/maltaisn/another-notes-app/releases/latest"
-   target="blank"><img alt="Direct APK download"
-   src=".github/assets/direct-apk-download.png"
-   height="80"/></a>
+- [Google Play Store](https://play.google.com/store/apps/details?id=com.maltaisn.notes.sync)
+- [Direct APK download](https://github.com/maltaisn/another-notes-app/releases/latest)
 
 #### Features
 - Text and list notes.
 - Archive and recycle bin.
+- Labeled notes.
+- Reminders (including recurring).
 - Searching notes.
 - Light and dark theme support.
+- Somewhat customizable interface.
 
 ### Screenshots
 
@@ -33,18 +30,19 @@ components.
 [View changelog here][changelog] for the app release notes.
 
 ### Contributing
-Contributions are welcome, especially translations.
+Contributions are welcome, especially translations (see [`TRANSLATING.md`][translating]).
 - Please open an issue before submitting a pull request that adds a new feature, so it can be
     discussed.
 - All changes should be committed the `dev` branch, not `master`.
-- Make sure to follow existing code style.
+- Make sure to follow existing code style (see `config/intellij-codestylexml` file).
 
-### License
+### License & credits
 - All code is licensed under Apache License 2.0.
 - Icons were mostly found at [Material Design Icons][mdi-icons], license can be found
 [here][mdi-icons-license].
-
+- Thanks to @FTno for the Norwegian translation.
 
 [changelog]: CHANGELOG.md
+[translating]: TRANSLATING.md
 [mdi-icons]: https://materialdesignicons.com
 [mdi-icons-license]: https://github.com/Templarian/MaterialDesign#license

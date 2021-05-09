@@ -8,6 +8,9 @@ intuitive et visuellement attrayante.
 Fonctionnalités:
 - Notes textuelles et listes à cocher.
 - Archive et corbeille.
+- Étiquettes sur les notes.
+- Rappels, y compris des rappels récurrents.
 - Recherche parmi vos notes.
 - Thèmes clair et sombre.
-- Open source et en dévelopement actif.
+- Interface personnalisable.
+- Application open source.

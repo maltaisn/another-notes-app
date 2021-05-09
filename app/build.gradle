@@ -82,6 +82,11 @@ android {
     buildTypes {
         debug {
             applicationIdSuffix ".debug"
+            // enable debug features only if not taking screenshots
+            // androidTest can seemingly only be run in debug mode, hence why it's needed.
+            def takingScreenshots = System.getenv("taking_screenshots")
+            buildConfigField "boolean", "ENABLE_DEBUG_FEATURES",
+                    takingScreenshots == null ? "true" : (!takingScreenshots.toBoolean()).toString()
         }
         release {
             minifyEnabled true
@@ -173,6 +178,9 @@ dependencies {
     androidTestImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:$kotlinMockitoVersion"
     androidTestImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion"
     androidTestImplementation "androidx.room:room-testing:$roomVersion"
+    // For screenshots
+    androidTestImplementation "androidx.test.espresso:espresso-core:3.3.0"
+    androidTestImplementation "androidx.test.espresso:espresso-contrib:3.3.0"
 }
 
 configurations.all {
@@ -192,4 +200,8 @@ play {
 }
 if (file("publishing.gradle").exists()) {
     apply from: "publishing.gradle"
+}
+
+task takeScreenshots(type: Exec) {
+    commandLine "./screenshots.sh"
 }

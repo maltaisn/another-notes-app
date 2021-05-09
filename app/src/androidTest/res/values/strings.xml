@@ -1,0 +1,84 @@
+<!--
+  Copyright 2021 Nicolas Maltais
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  -->
+
+<resources>
+
+    <!--
+    For store listing, describes notes and labels used for dummy data.
+    If you decide to translate these, don't waste your time making an exact translation, most of it was
+    random text I found on the web and which made a little bit of sense in the context of a notes app.
+    Just try to keep it roughly the same subject since notes have hardcoded labels.
+    Look at existing screenshots to see which note appears where.
+
+    Note strings should be named "screenshot_note<ID>".
+    Label strings should be named "screenshot_label<ID>".
+
+    Notes must always follow the same structure. Notice the quotes ", they are used so that line breaks are properly
+    added to the string (otherwise lines are concatenated with spaces instead).
+    The first line is always the title, but can be omitted by using only an underscore '_'.
+    The following lines is the content, but can be omitted for no content.
+    List notes are made using - (unchecked) and + (checked) list item symbols.
+    -->
+
+    <string name="screenshot_label1">Tasks</string>
+    <string name="screenshot_label2">Learning</string>
+    <string name="screenshot_label3">Homework</string>
+
+    <string name="screenshot_note1">"
+        Grocery list
+        + Butter
+        - Bread
+        + Chocolate
+        + Apples
+        - Bananas
+    "</string>
+
+    <string name="screenshot_note2">"
+        Recipe instructions
+        In a small pot over medium-low heat, melt the butter until it is golden and smells nutty.Strain through a sieve set over a bowl (see note). Let cool for 30 minutes. With the rack in the middle position, preheat the oven to 375°F (190°C). Line two baking sheets with silicone mats or parchment paper. Meanwhile, in a bowl, combine the flour, baking soda and salt.
+    "</string>
+
+    <string name="screenshot_note3">"
+        Random quote
+        Perfection is achieved, not when there is nothing more to add, but when there is nothing left to take away.
+    "</string>
+
+    <string name="screenshot_note4">"
+        Bucket list
+        + Buy bucket
+        + Buy water
+        - Pour water
+        - Drink bucket
+    "</string>
+
+    <string name="screenshot_note5">"
+        _
+        Not having heard something is not as good as having heard it; having heard it is not as good as having seen it; having seen it is not as good as knowing it; knowing it is not as good as putting it into practice.
+    "</string>
+
+    <string name="screenshot_note6">"
+        Languages to learn
+        + English
+        - French
+        + Spanish
+        - Mandarin
+        - Arabic
+    "</string>
+
+    <!-- Query should match only notes 1 and 2. -->
+    <string name="screenshot_search_query">butter</string>
+
+</resources>

@@ -6,6 +6,9 @@ take notes. Material design is used to create a visually attractive interface.
 Features:
 - Text and list notes.
 - Archive and recycle bin.
+- Labeled notes.
+- Reminders, including recurring reminders.
 - Search text across all notes.
 - Light and dark theme support.
-- Open source and in active development.
+- Customizable interface.
+- Open source app.
