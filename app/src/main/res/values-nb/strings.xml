@@ -14,7 +14,7 @@
   limitations under the License.
   -->
 
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
     <!-- Can be translated to provided a sensible localized name for a "Notes" app -->
     <string name="app_name_short">Notater</string>
@@ -191,11 +191,11 @@
     <string name="date_rel_today">I dag, %s</string>
     <string name="date_rel_yesterday">I går, %s</string>
     <string name="date_rel_tomorrow">I morgen, %s</string>
-    <plurals name="date_rel_days_past">
+    <plurals name="date_rel_days_past" tools:ignore="MissingQuantity">
         <!-- used with quantity >= 2, format values: number of days, time -->
         <item quantity="other">%d dager siden, %s</item>
     </plurals>
-    <plurals name="date_rel_days_future">
+    <plurals name="date_rel_days_future" tools:ignore="MissingQuantity">
         <!-- used with quantity >= 2, format values: number of days, time -->
         <item quantity="other">Om %d dager, %s</item>
     </plurals>
