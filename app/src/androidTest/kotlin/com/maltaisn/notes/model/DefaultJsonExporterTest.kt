@@ -99,7 +99,7 @@ class DefaultJsonExporterTest {
         ))
 
         assertEquals("""
-{"notes":{"1":{"type":0,"title":"note","content":"content","metadata":"{\"type\":\"blank\"}",
+{"version":3,"notes":{"1":{"type":0,"title":"note","content":"content","metadata":"{\"type\":\"blank\"}",
 "added":"2020-01-01T05:00:00.000Z","modified":"2020-02-01T05:00:00.000Z","status":0,"pinned":2,
 "reminder":{"start":"2020-03-01T05:00:00.000Z","recurrence":"RRULE:FREQ=DAILY",
 "next":"2020-03-02T05:00:00.000Z","count":1,"done":false},"labels":[1,10]},"9":{"type":1,
