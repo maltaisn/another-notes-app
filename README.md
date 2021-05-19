@@ -6,8 +6,9 @@ This is a simple Android app for taking notes, like there have been tens of thou
 The app has Material UI, was built following MVVM architecture, uses Dagger and some Jetpack
 components. Download is available on:
 
-- [Google Play Store](https://play.google.com/store/apps/details?id=com.maltaisn.notes.sync)
+- [F-Droid](https://f-droid.org/en/packages/com.maltaisn.notes.sync/)
 - [Direct APK download](https://github.com/maltaisn/another-notes-app/releases/latest)
+- [Google Play Store](https://play.google.com/store/apps/details?id=com.maltaisn.notes.sync)
 
 #### Features
 - Text and list notes.
