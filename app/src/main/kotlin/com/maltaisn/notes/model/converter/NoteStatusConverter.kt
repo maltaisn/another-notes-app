@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Nicolas Maltais
+ * Copyright 2021 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package com.maltaisn.notes.model.converter
 
 import androidx.room.TypeConverter
+import com.maltaisn.notes.model.BadDataException
 import com.maltaisn.notes.model.entity.NoteStatus
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializer
@@ -35,7 +36,7 @@ object NoteStatusConverter : KSerializer<NoteStatus> {
     @TypeConverter
     @JvmStatic
     fun toStatus(value: Int) = NoteStatus.values().find { it.value == value }
-        ?: error("Unknown note status value")
+        ?: throw BadDataException("Unknown note status value")
 
     override val descriptor = PrimitiveSerialDescriptor("NoteStatus", PrimitiveKind.INT)
 

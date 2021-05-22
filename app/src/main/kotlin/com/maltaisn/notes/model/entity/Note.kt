@@ -14,9 +14,6 @@
  * limitations under the License.
  */
 
-@file:UseSerializers(DateTimeConverter::class, NoteTypeConverter::class,
-    NoteStatusConverter::class, NoteMetadataConverter::class, PinnedStatusConverter::class)
-
 package com.maltaisn.notes.model.entity
 
 import androidx.room.ColumnInfo
@@ -25,18 +22,10 @@ import androidx.room.Entity
 import androidx.room.Junction
 import androidx.room.PrimaryKey
 import androidx.room.Relation
-import com.maltaisn.notes.model.converter.DateTimeConverter
 import com.maltaisn.notes.model.converter.NoteMetadataConverter
-import com.maltaisn.notes.model.converter.NoteStatusConverter
-import com.maltaisn.notes.model.converter.NoteTypeConverter
-import com.maltaisn.notes.model.converter.PinnedStatusConverter
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
-import kotlinx.serialization.UseSerializers
 import java.util.Date
 
-@Serializable
 @Entity(tableName = "notes")
 data class Note(
     /**
@@ -53,21 +42,18 @@ data class Note(
      * Note type, determines the type of metadata.
      */
     @ColumnInfo(name = "type")
-    @SerialName("type")
     val type: NoteType,
 
     /**
      * Note title, can be used for search.
      */
     @ColumnInfo(name = "title")
-    @SerialName("title")
     val title: String,
 
     /**
      * Note text content, can be used for search.
      */
     @ColumnInfo(name = "content")
-    @SerialName("content")
     val content: String,
 
     /**
@@ -75,14 +61,12 @@ data class Note(
      * @see NoteMetadataConverter
      */
     @ColumnInfo(name = "metadata")
-    @SerialName("metadata")
     val metadata: NoteMetadata,
 
     /**
      * Creation date of the note, in UTC time.
      */
     @ColumnInfo(name = "added_date")
-    @SerialName("added")
     val addedDate: Date,
 
     /**
@@ -90,14 +74,12 @@ data class Note(
      * Change of [status] changes last modified date too.
      */
     @ColumnInfo(name = "modified_date")
-    @SerialName("modified")
     val lastModifiedDate: Date,
 
     /**
      * Status of the note, i.e. its location in the user interface.
      */
     @ColumnInfo(name = "status")
-    @SerialName("status")
     val status: NoteStatus,
 
     /**
@@ -106,7 +88,6 @@ data class Note(
      * Other notes should be set to [PinnedStatus.CANT_PIN].
      */
     @ColumnInfo(name = "pinned")
-    @SerialName("pinned")
     val pinned: PinnedStatus,
 
     /**
@@ -134,7 +115,7 @@ data class Note(
             "Archived or deleted note must not be pinnable."
         }
 
-        require(status != NoteStatus.DELETED || reminder ==  null) {
+        require(status != NoteStatus.DELETED || reminder == null) {
             "Deleted note cannot have a reminder."
         }
     }

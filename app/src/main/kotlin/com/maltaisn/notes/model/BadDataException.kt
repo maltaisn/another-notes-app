@@ -14,29 +14,12 @@
  * limitations under the License.
  */
 
-package com.maltaisn.notes.model.entity
-
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
-
-@Serializable
-sealed class NoteMetadata
+package com.maltaisn.notes.model
 
 /**
- * Metadata with no information, for a text note.
+ * Exception that should be thrown for any error expected to occur
+ * during deserialization of data from a future version of the app.
+ * This is used to catch forward compatibility fails.
  */
-@Serializable
-@SerialName("blank")
-object BlankNoteMetadata : NoteMetadata() {
-    override fun toString() = "none"
-}
-
-/**
- * Metadata to keep the checked state of each item, for a list note.
- */
-@Serializable
-@SerialName("list")
-data class ListNoteMetadata(
-    @SerialName("checked")
-    val checked: List<Boolean>
-) : NoteMetadata()
+class BadDataException(message: String = "", cause: Throwable? = null)
+    : IllegalStateException(message, cause)

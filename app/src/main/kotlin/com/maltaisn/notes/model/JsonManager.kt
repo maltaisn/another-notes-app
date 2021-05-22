@@ -16,11 +16,17 @@
 
 package com.maltaisn.notes.model
 
-interface JsonExporter {
+interface JsonManager {
 
     /**
      * Export all the app data to a JSON string.
      */
     suspend fun exportJsonData(): String
+
+    /**
+     * Import notes data from JSON, merging with existing data.
+     * Returns true if import was succesfull, false otherwise.
+     */
+    suspend fun importJsonData(data: String): DefaultJsonManager.ImportResult
 
 }

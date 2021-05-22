@@ -19,10 +19,10 @@ package com.maltaisn.notes.di
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.preference.PreferenceManager
-import com.maltaisn.notes.model.DefaultJsonExporter
+import com.maltaisn.notes.model.DefaultJsonManager
 import com.maltaisn.notes.model.DefaultLabelsRepository
 import com.maltaisn.notes.model.DefaultNotesRepository
-import com.maltaisn.notes.model.JsonExporter
+import com.maltaisn.notes.model.JsonManager
 import com.maltaisn.notes.model.LabelsRepository
 import com.maltaisn.notes.model.NotesRepository
 import com.maltaisn.notes.model.ReminderAlarmCallback
@@ -48,7 +48,7 @@ abstract class AppModule {
     abstract val DefaultLabelsRepository.bindLabelsRepository: LabelsRepository
 
     @get:Binds
-    abstract val DefaultJsonExporter.bindJsonExporter: JsonExporter
+    abstract val DefaultJsonManager.bindJsonManager: JsonManager
 
     @get:Binds
     abstract val ReceiverAlarmCallback.bindAlarmCallback: ReminderAlarmCallback
@@ -60,6 +60,9 @@ abstract class AppModule {
 
         @get:Provides
         val json
-            get() = Json {}
+            get() = Json {
+                encodeDefaults = false
+                ignoreUnknownKeys = true
+            }
     }
 }

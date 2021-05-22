@@ -54,7 +54,7 @@ class LabelEditViewModel @Inject constructor(
     }
 
     fun onNameChanged(name: String) {
-        labelName = name
+        labelName = name.trim().replace("""\s+""".toRegex(), " ")
         viewModelScope.launch {
             // Label name must not be empty and must not exist.
             // Ignore name clash if label is the one being edited.

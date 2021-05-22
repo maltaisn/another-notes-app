@@ -20,7 +20,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.maltaisn.notes.model.JsonExporter
+import com.maltaisn.notes.model.JsonManager
 import com.maltaisn.notes.model.LabelsRepository
 import com.maltaisn.notes.model.NotesRepository
 import com.maltaisn.notes.sync.R
@@ -32,7 +32,7 @@ import javax.inject.Inject
 class SettingsViewModel @Inject constructor(
     private val notesRepository: NotesRepository,
     private val labelsRepository: LabelsRepository,
-    private val jsonExporter: JsonExporter,
+    private val jsonManager: JsonManager,
 ) : ViewModel() {
 
     private val _messageEvent = MutableLiveData<Event<Int>>()
@@ -45,7 +45,7 @@ class SettingsViewModel @Inject constructor(
 
     fun exportData() {
         viewModelScope.launch {
-            _exportDataEvent.send(jsonExporter.exportJsonData())
+            _exportDataEvent.send(jsonManager.exportJsonData())
         }
     }
 

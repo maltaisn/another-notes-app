@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Nicolas Maltais
+ * Copyright 2021 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,8 +17,10 @@
 package com.maltaisn.notes.model.converter
 
 import androidx.room.TypeConverter
+import com.maltaisn.notes.model.BadDataException
 import com.maltaisn.notes.model.entity.NoteMetadata
 import kotlinx.serialization.KSerializer
+import kotlinx.serialization.SerializationException
 import kotlinx.serialization.Serializer
 import kotlinx.serialization.descriptors.PrimitiveKind
 import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
@@ -38,7 +40,11 @@ object NoteMetadataConverter : KSerializer<NoteMetadata> {
 
     @TypeConverter
     @JvmStatic
-    fun toMetadata(str: String) = json.decodeFromString(NoteMetadata.serializer(), str)
+    fun toMetadata(str: String) = try {
+        json.decodeFromString(NoteMetadata.serializer(), str)
+    } catch (e: SerializationException) {
+        throw BadDataException(cause = e)
+    }
 
     @TypeConverter
     @JvmStatic

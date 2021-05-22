@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Nicolas Maltais
+ * Copyright 2021 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,7 +38,7 @@ fun testNote(
     content: String = "content",
     metadata: NoteMetadata = BlankNoteMetadata,
     added: Date = Date(),
-    modified: Date = Date(),
+    modified: Date = added,
     status: NoteStatus = NoteStatus.ACTIVE,
     pinned: PinnedStatus = defaultPinnedStatusForStatus(status),
     reminder: Reminder? = null
@@ -49,7 +49,7 @@ fun listNote(
     id: Long = Note.NO_ID,
     title: String = "note",
     added: Date = Date(),
-    modified: Date = Date(),
+    modified: Date = added,
     status: NoteStatus = NoteStatus.ACTIVE,
     pinned: PinnedStatus = defaultPinnedStatusForStatus(status),
     reminder: Reminder? = null
