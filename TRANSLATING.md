@@ -5,9 +5,15 @@ and translate each string. Note that some strings are to be used in constrained 
 and in this case it's entirely fine to slightly change the meaning.
 You can use the English version of the app to know which string appears where.
 
-Optionally, the app listing can be translated if you want:
+There are a few additionnal steps to consider, but they are not mandatory:
 
-- Create a folder in `app/src/main/play/listings` with the locale code. The locale code must be
+- The app also relies on a library, [recurpickerlib](https://github.com/maltaisn/recurpickerlib) (which I
+  maintain), so you might want to make sure it's also available in the new language.
+
+- Add the locale code in `app/build.gradle`, on the `resConfigs` line.
+
+- Optionally, the app listing can be translated.
+  Create a folder in `app/src/main/play/listings` with the locale code. The locale code must be
   one [supported by Google Play][play_store_locales]. The folder must contain the following:
     - `graphics/phone-screenshots` subfolders, will eventually contain screenshots.
     - `title.txt`: app title (max 50 chars).
@@ -15,7 +21,7 @@ Optionally, the app listing can be translated if you want:
     - `full-description.txt`: full app description (max 4000 chars).
     - See the `en-US` folder for reference content.
 
-- Screenshots are generated automatically. However some notes are shown in each screenshot
+  Screenshots are generated automatically. However some notes are shown in each screenshot
   and these should ideally be translated to match the listing language. It can be done by
   translating the [`strings.xml`][strings_xml_screenshots] located in the `androidTest` source set,
   exactly like the main set of strings was translated. There are some instructions to follow in the XML file.

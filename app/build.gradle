@@ -37,7 +37,9 @@ android {
             }
         }
 
-        resConfigs "en", "fr"
+        // prevent half-translated app, for example if recurpickerlib is available is one language,
+        // but the app is not, then the app should show entirely in one language.
+        resConfigs "en", "fr", "nb"
     }
 
     buildFeatures {
