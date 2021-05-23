@@ -20,6 +20,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.maltaisn.notes.model.DefaultJsonManager.ImportResult
 import com.maltaisn.notes.model.JsonManager
 import com.maltaisn.notes.model.LabelsRepository
 import com.maltaisn.notes.model.NotesRepository
@@ -29,6 +30,7 @@ import com.maltaisn.notes.ui.Event
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.IOException
+import java.io.InputStream
 import java.io.OutputStream
 import javax.inject.Inject
 
@@ -81,6 +83,24 @@ class SettingsViewModel @Inject constructor(
             } catch (e: IOException) {
                 showMessage(R.string.export_fail)
             }
+        }
+    }
+
+    fun importData(input: InputStream) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val jsonData = try {
+                input.reader().readText()
+            } catch (e: IOException) {
+                showMessage(R.string.import_bad_input)
+                return@launch
+            }
+            val result = jsonManager.importJsonData(jsonData)
+            showMessage(when (result) {
+                ImportResult.BAD_FORMAT -> R.string.import_bad_format
+                ImportResult.BAD_DATA -> R.string.import_bad_data
+                ImportResult.FUTURE_VERSION -> R.string.import_future_version
+                ImportResult.SUCCESS -> R.string.import_success
+            })
         }
     }
 

@@ -94,6 +94,13 @@
             />
 
         <Preference
+            app:icon="@drawable/ic_import"
+            app:key="import_data"
+            app:summary="@string/pref_data_import_summary"
+            app:title="@string/pref_data_import"
+            />
+
+        <Preference
             app:key="clear_data"
             app:title="@string/pref_data_clear"
             />

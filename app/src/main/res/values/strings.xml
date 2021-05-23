@@ -180,6 +180,8 @@
     <string name="pref_data_auto_export">Automatic data export</string>
     <string name="pref_data_auto_export_summary">Automatically export the app\'s data to a file, once a day.</string>
     <string name="pref_data_auto_export_date">(Last exported on %s)</string>
+    <string name="pref_data_import">Import data</string>
+    <string name="pref_data_import_summary">Import previously exported JSON data, merging with existing data.</string>
     <string name="pref_data_clear">Clear all data</string>
     <string name="pref_data_clear_confirm_message">All notes data will be cleared permanently! This cannot be undone.</string>
     <string name="pref_data_clear_success_message">All data was cleared successfully.</string>
@@ -192,6 +194,13 @@
     <!-- Import/export data messages -->
     <string name="export_success">Data exported successfully!</string>
     <string name="export_fail">An error occurred during data export.</string>
+    <string name="import_success">Data imported successfully!</string>
+    <string name="import_future_version">Data imported successfully! Note that some information may
+        have been lost because the data originates from a later version.</string>
+    <string name="import_bad_input">An error occurred while attempting to read this file.</string>
+    <string name="import_bad_format">Could not import data, JSON data is invalid.</string>
+    <string name="import_bad_data">Could not import data, some fields have invalid values.
+        This can happen if importing data from a later version, try updating the app.</string>
     <string name="auto_export_message">To enable automatic export, a file must be chosen to
         save the data. The app\'s data will be exported once a day when the app is opened.
         A message will appear on the main screen should the export fail. Click OK to proceed.</string>

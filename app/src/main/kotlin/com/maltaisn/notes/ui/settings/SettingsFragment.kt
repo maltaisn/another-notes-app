@@ -57,6 +57,7 @@ class SettingsFragment : PreferenceFragmentCompat(), ConfirmDialog.Callback {
 
     private var exportDataLauncher: ActivityResultLauncher<Intent>? = null
     private var autoExportLauncher: ActivityResultLauncher<Intent>? = null
+    private var importDataLauncher: ActivityResultLauncher<Intent>? = null
 
     override fun onCreate(state: Bundle?) {
         super.onCreate(state)
@@ -96,6 +97,23 @@ class SettingsFragment : PreferenceFragmentCompat(), ConfirmDialog.Callback {
                 } else {
                     showMessage(R.string.export_fail)
                     autoExportPref.isChecked = false
+                }
+            }
+        }
+
+        importDataLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            val uri = result.data?.data
+            if (result.resultCode == Activity.RESULT_OK && uri != null) {
+                val input = try {
+                    context.contentResolver.openInputStream(uri)
+                } catch (e: IOException) {
+                    Log.i(TAG, "Data import failed", e)
+                    null
+                }
+                if (input != null) {
+                    viewModel.importData(input)
+                } else {
+                    showMessage(R.string.import_bad_input)
                 }
             }
         }
@@ -155,6 +173,17 @@ class SettingsFragment : PreferenceFragmentCompat(), ConfirmDialog.Callback {
             } else {
                 updateAutoExportSummary(false)
             }
+            true
+        }
+
+        requirePreference<Preference>(PrefsManager.IMPORT_DATA).setOnPreferenceClickListener {
+            val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
+                .setType("application/json")
+                .putExtra("android.content.extra.SHOW_ADVANCED", true)
+                .putExtra("android.content.extra.FANCY", true)
+                .putExtra("android.content.extra.SHOW_FILESIZE", true)
+                .addCategory(Intent.CATEGORY_OPENABLE)
+            importDataLauncher?.launch(intent)
             true
         }
 
