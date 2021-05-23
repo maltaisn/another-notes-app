@@ -164,7 +164,8 @@
     <string name="pref_shown_date_none">No date shown</string>
 
     <string name="pref_preview_lines">Maximum lines in previews</string>
-    <string name="pref_preview_lines_summary">Configure how many lines and items are shown on notes, for each layout mode and note type</string>
+    <string name="pref_preview_lines_summary">Configure how many lines and items are shown on notes,
+        for each layout mode and note type</string>
     <string name="pref_preview_lines_grid_layout">Grid layout</string>
     <string name="pref_preview_lines_list_layout">List layout</string>
     <string name="pref_preview_lines_text">Lines in text note preview</string>
@@ -183,7 +184,8 @@
     <string name="pref_data_import">Import data</string>
     <string name="pref_data_import_summary">Import previously exported JSON data, merging with existing data.</string>
     <string name="pref_data_clear">Clear all data</string>
-    <string name="pref_data_clear_confirm_message">All notes data will be cleared permanently! This cannot be undone.</string>
+    <string name="pref_data_clear_confirm_message">All notes data will be cleared permanently!
+        This cannot be undone.</string>
     <string name="pref_data_clear_success_message">All data was cleared successfully.</string>
 
     <string name="pref_group_about">About</string>
@@ -202,8 +204,8 @@
     <string name="import_bad_data">Could not import data, some fields have invalid values.
         This can happen if importing data from a later version, try updating the app.</string>
     <string name="auto_export_message">To enable automatic export, a file must be chosen to
-        save the data. The app\'s data will be exported once a day when the app is opened.
-        A message will appear on the main screen should the export fail. Click OK to proceed.</string>
+        save the data. The app\'s data will be exported once a day while the app is opened.
+        Click OK to proceed.</string>
     <string name="auto_export_fail">Failed to export data automatically. Make sure the export location
         still exists and is accessible, then reconfigure automatic export.</string>
 
