@@ -16,9 +16,13 @@
 
 package com.maltaisn.notes.ui.settings
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.StringRes
 import androidx.core.os.bundleOf
 import androidx.navigation.fragment.findNavController
 import androidx.preference.DropDownPreference
@@ -46,9 +50,24 @@ class SettingsFragment : PreferenceFragmentCompat(), ConfirmDialog.Callback {
 
     private val viewModel by viewModel { viewModelProvider.get() }
 
+    private var exportDataLauncher: ActivityResultLauncher<Intent>? = null
+
     override fun onCreate(state: Bundle?) {
         super.onCreate(state)
-        (requireContext().applicationContext as App).appComponent.inject(this)
+        val context = requireContext()
+        (context.applicationContext as App).appComponent.inject(this)
+
+        exportDataLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            val uri = result.data?.data
+            if (result.resultCode == Activity.RESULT_OK && uri != null) {
+                val output = context.contentResolver.openOutputStream(uri)
+                if (output != null) {
+                    viewModel.exportData(output)
+                } else {
+                    showMessage(R.string.export_fail)
+                }
+            }
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -63,27 +82,15 @@ class SettingsFragment : PreferenceFragmentCompat(), ConfirmDialog.Callback {
     }
 
     private fun setupViewModelObservers() {
-        viewModel.messageEvent.observeEvent(viewLifecycleOwner) { messageId ->
-            Snackbar.make(requireView(), messageId, Snackbar.LENGTH_SHORT).show()
-        }
-
-        viewModel.exportDataEvent.observeEvent(viewLifecycleOwner) { data ->
-            val title = getString(R.string.pref_data_export_title)
-            val intent = Intent(Intent.ACTION_SEND)
-            intent.type = "application/json"
-            intent.putExtra(Intent.EXTRA_SUBJECT, title)
-            intent.putExtra(Intent.EXTRA_TITLE, title)
-            intent.putExtra(Intent.EXTRA_TEXT, data)
-            startActivity(Intent.createChooser(intent, null))
-        }
+        viewModel.messageEvent.observeEvent(viewLifecycleOwner, ::showMessage)
     }
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
+        val context = requireContext()
         setPreferencesFromResource(R.xml.prefs, rootKey)
 
         requirePreference<DropDownPreference>(PrefsManager.THEME).setOnPreferenceChangeListener { _, theme ->
-            (requireContext().applicationContext as App)
-                .updateTheme(AppTheme.values().find { it.value == theme }!!)
+            (context.applicationContext as App).updateTheme(AppTheme.values().find { it.value == theme }!!)
             true
         }
 
@@ -94,7 +101,13 @@ class SettingsFragment : PreferenceFragmentCompat(), ConfirmDialog.Callback {
         }
 
         requirePreference<Preference>(PrefsManager.EXPORT_DATA).setOnPreferenceClickListener {
-            viewModel.exportData()
+            val intent = Intent(Intent.ACTION_CREATE_DOCUMENT)
+                .setType("application/json")
+                .putExtra("android.content.extra.SHOW_ADVANCED", true)
+                .putExtra("android.content.extra.FANCY", true)
+                .putExtra("android.content.extra.SHOW_FILESIZE", true)
+                .addCategory(Intent.CATEGORY_OPENABLE)
+            exportDataLauncher?.launch(intent)
             true
         }
 
@@ -121,6 +134,15 @@ class SettingsFragment : PreferenceFragmentCompat(), ConfirmDialog.Callback {
 
         // Set version name as summary text for version preference
         requirePreference<Preference>(PrefsManager.VERSION).summary = BuildConfig.VERSION_NAME
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        exportDataLauncher = null
+    }
+
+    private fun showMessage(@StringRes messageId: Int) {
+        Snackbar.make(requireView(), messageId, Snackbar.LENGTH_SHORT).show()
     }
 
     private fun <T : Preference> requirePreference(key: CharSequence) =

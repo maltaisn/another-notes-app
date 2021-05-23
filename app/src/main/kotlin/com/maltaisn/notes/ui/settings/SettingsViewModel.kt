@@ -26,7 +26,11 @@ import com.maltaisn.notes.model.NotesRepository
 import com.maltaisn.notes.sync.R
 import com.maltaisn.notes.ui.Event
 import com.maltaisn.notes.ui.send
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.io.IOException
+import java.io.OutputStream
 import javax.inject.Inject
 
 class SettingsViewModel @Inject constructor(
@@ -39,13 +43,17 @@ class SettingsViewModel @Inject constructor(
     val messageEvent: LiveData<Event<Int>>
         get() = _messageEvent
 
-    private val _exportDataEvent = MutableLiveData<Event<String>>()
-    val exportDataEvent: LiveData<Event<String>>
-        get() = _exportDataEvent
-
-    fun exportData() {
-        viewModelScope.launch {
-            _exportDataEvent.send(jsonManager.exportJsonData())
+    fun exportData(output: OutputStream) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val jsonData = jsonManager.exportJsonData()
+            try {
+                output.use {
+                    output.write(jsonData.toByteArray())
+                }
+                showMessage(R.string.export_success)
+            } catch (e: IOException) {
+                showMessage(R.string.export_fail)
+            }
         }
     }
 
@@ -53,7 +61,11 @@ class SettingsViewModel @Inject constructor(
         viewModelScope.launch {
             notesRepository.clearAllData()
             labelsRepository.clearAllData()
-            _messageEvent.send(R.string.pref_data_clear_success_message)
+            showMessage(R.string.pref_data_clear_success_message)
         }
+    }
+
+    private suspend fun showMessage(messageId: Int) = withContext(Dispatchers.Main) {
+        _messageEvent.send(messageId)
     }
 }

@@ -186,6 +186,10 @@
     <string name="pref_about_view_licenses">Open source licenses</string>
     <string name="pref_about_version">Version</string>
 
+    <!-- Import/export data messages -->
+    <string name="export_success">Data exported successfully!</string>
+    <string name="export_fail">An error occurred during data export.</string>
+
     <!-- Content description -->
     <string name="content_descrp_open_drawer">Open drawer</string>
     <string name="content_descrp_back">Go back</string>
