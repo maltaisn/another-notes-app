@@ -23,12 +23,11 @@ import androidx.lifecycle.viewModelScope
 import com.maltaisn.notes.model.JsonManager
 import com.maltaisn.notes.model.LabelsRepository
 import com.maltaisn.notes.model.NotesRepository
+import com.maltaisn.notes.model.PrefsManager
 import com.maltaisn.notes.sync.R
 import com.maltaisn.notes.ui.Event
-import com.maltaisn.notes.ui.send
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.io.IOException
 import java.io.OutputStream
 import javax.inject.Inject
@@ -36,12 +35,21 @@ import javax.inject.Inject
 class SettingsViewModel @Inject constructor(
     private val notesRepository: NotesRepository,
     private val labelsRepository: LabelsRepository,
+    private val prefsManager: PrefsManager,
     private val jsonManager: JsonManager,
 ) : ViewModel() {
 
     private val _messageEvent = MutableLiveData<Event<Int>>()
     val messageEvent: LiveData<Event<Int>>
         get() = _messageEvent
+
+    private val _lastAutoExport = MutableLiveData<Long>()
+    val lastAutoExport: LiveData<Long>
+        get() = _lastAutoExport
+
+    init {
+        _lastAutoExport.value = prefsManager.lastAutoExportTime
+    }
 
     fun exportData(output: OutputStream) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -57,6 +65,25 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
+    fun setupAutoExport(output: OutputStream, uri: String) {
+        prefsManager.autoExportUri = uri
+        viewModelScope.launch(Dispatchers.IO) {
+            val jsonData = jsonManager.exportJsonData()
+            try {
+                output.use {
+                    output.write(jsonData.toByteArray())
+                }
+                showMessage(R.string.export_success)
+
+                val now = System.currentTimeMillis()
+                prefsManager.lastAutoExportTime = now
+                _lastAutoExport.postValue(now)
+            } catch (e: IOException) {
+                showMessage(R.string.export_fail)
+            }
+        }
+    }
+
     fun clearData() {
         viewModelScope.launch {
             notesRepository.clearAllData()
@@ -65,7 +92,7 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
-    private suspend fun showMessage(messageId: Int) = withContext(Dispatchers.Main) {
-        _messageEvent.send(messageId)
+    private fun showMessage(messageId: Int) {
+        _messageEvent.postValue(Event(messageId))
     }
 }

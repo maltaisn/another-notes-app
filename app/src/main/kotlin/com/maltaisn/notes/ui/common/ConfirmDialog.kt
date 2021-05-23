@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Nicolas Maltais
+ * Copyright 2021 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package com.maltaisn.notes.ui.common
 
 import android.app.Dialog
+import android.content.DialogInterface
 import android.os.Bundle
 import androidx.annotation.StringRes
 import androidx.core.os.bundleOf
@@ -35,10 +36,10 @@ class ConfirmDialog : DialogFragment() {
         val builder = MaterialAlertDialogBuilder(context)
             .setTitle(args.getInt(ARG_TITLE))
             .setPositiveButton(args.getInt(ARG_BTN_POSITIVE)) { _, _ ->
-                callback.onDialogConfirmed(tag)
+                callback.onDialogPositiveButtonClicked(tag)
             }
             .setNegativeButton(args.getInt(ARG_BTN_NEGATIVE)) { _, _ ->
-                callback.onDialogCancelled(tag)
+                callback.onDialogNegativeButtonClicked(tag)
             }
 
         // Set message if there's one.
@@ -47,7 +48,14 @@ class ConfirmDialog : DialogFragment() {
             builder.setMessage(message)
         }
 
-        return builder.create()
+        val dialog = builder.create()
+        dialog.setCanceledOnTouchOutside(true)
+        return dialog
+    }
+
+    override fun onCancel(dialog: DialogInterface) {
+        super.onCancel(dialog)
+        callback.onDialogCancelled(tag)
     }
 
     private val callback: Callback
@@ -56,7 +64,8 @@ class ConfirmDialog : DialogFragment() {
             ?: error("No callback for ConfirmDialog")
 
     interface Callback {
-        fun onDialogConfirmed(tag: String?) = Unit
+        fun onDialogPositiveButtonClicked(tag: String?) = Unit
+        fun onDialogNegativeButtonClicked(tag: String?) = Unit
         fun onDialogCancelled(tag: String?) = Unit
     }
 

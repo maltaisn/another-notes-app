@@ -211,7 +211,7 @@ class LabelFragment : DialogFragment(), Toolbar.OnMenuItemClickListener,
         viewModel.clearSelection()
     }
 
-    override fun onDialogConfirmed(tag: String?) {
+    override fun onDialogPositiveButtonClicked(tag: String?) {
         if (tag == DELETE_CONFIRM_DIALOG_TAG) {
             viewModel.deleteSelection()
         }

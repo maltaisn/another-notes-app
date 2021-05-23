@@ -328,7 +328,7 @@ abstract class NoteFragment : Fragment(), ActionMode.Callback, ConfirmDialog.Cal
         }
     }
 
-    override fun onDialogConfirmed(tag: String?) {
+    override fun onDialogPositiveButtonClicked(tag: String?) {
         if (tag == DELETE_CONFIRM_DIALOG_TAG) {
             viewModel.deleteSelectedNotes()
         }

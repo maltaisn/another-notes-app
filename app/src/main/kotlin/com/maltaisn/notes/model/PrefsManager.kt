@@ -72,6 +72,21 @@ class PrefsManager @Inject constructor(
     val maximumPreviewLabels: Int
         get() = prefs.getInt(PREVIEW_LABELS, 0)
 
+    val shouldAutoExport: Boolean
+        get() = prefs.getBoolean(AUTO_EXPORT, false)
+
+    var autoExportUri: String
+        get() = prefs.getString(AUTO_EXPORT_URI, "") ?: ""
+        set(value) = prefs.edit { putString(AUTO_EXPORT_URI, value) }
+
+    var autoExportFailed: Boolean
+        get() = prefs.getBoolean(AUTO_EXPORT_FAILED, false)
+        set(value) = prefs.edit { putBoolean(AUTO_EXPORT_FAILED, value) }
+
+    var lastAutoExportTime: Long
+        get() = prefs.getLong(LAST_AUTO_EXPORT_TIME, 0)
+        set(value) = prefs.edit { putLong(LAST_AUTO_EXPORT_TIME, value) }
+
     var lastTrashReminderTime: Long
         get() = prefs.getLong(LAST_TRASH_REMIND_TIME, 0)
         set(value) = prefs.edit { putLong(LAST_TRASH_REMIND_TIME, value) }
@@ -124,15 +139,19 @@ class PrefsManager @Inject constructor(
         const val SHOWN_DATE = "shown_date"
         const val SWIPE_ACTION = "swipe_action"
         const val EXPORT_DATA = "export_data"
+        const val AUTO_EXPORT = "auto_export"
         const val CLEAR_DATA = "clear_data"
         const val VIEW_LICENSES = "view_licenses"
         const val VERSION = "version"
 
         // Other keys
+        private const val AUTO_EXPORT_URI = "auto_export_uri"
         private const val LIST_LAYOUT_MODE = "is_in_list_layout"
         private const val LAST_TRASH_REMIND_TIME = "last_deleted_remind_time"
         private const val LAST_RESTRICTED_BATTERY_REMIND_TIME =
             "last_restricted_battery_remind_time"
+        private const val LAST_AUTO_EXPORT_TIME = "last_auto_export_time"
+        private const val AUTO_EXPORT_FAILED = "auto_export_failed"
 
         private val PREFS_XML = listOf(
             R.xml.prefs,
@@ -154,5 +173,10 @@ class PrefsManager @Inject constructor(
          * reminders, after user dismisses it.
          */
         val RESTRICTED_BATTERY_REMINDER_DELAY = 60.days
+
+        /**
+         * Minimum delay between each automatic export.
+         */
+        val AUTO_EXPORT_DELAY = 1.days
     }
 }

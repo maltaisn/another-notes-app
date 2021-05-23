@@ -188,8 +188,8 @@ class HomeFragment : NoteFragment(), Toolbar.OnMenuItemClickListener {
         drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
     }
 
-    override fun onDialogConfirmed(tag: String?) {
-        super.onDialogConfirmed(tag)
+    override fun onDialogPositiveButtonClicked(tag: String?) {
+        super.onDialogPositiveButtonClicked(tag)
         if (tag == EMPTY_TRASH_DIALOG_TAG) {
             viewModel.emptyTrash()
         }

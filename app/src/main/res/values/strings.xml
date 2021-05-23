@@ -177,6 +177,9 @@
     <string name="pref_data_export">Export data</string>
     <string name="pref_data_export_summary">Export notes data as JSON</string>
     <string name="pref_data_export_title">Exported notes data</string>
+    <string name="pref_data_auto_export">Automatic data export</string>
+    <string name="pref_data_auto_export_summary">Automatically export the app\'s data to a file, once a day.</string>
+    <string name="pref_data_auto_export_date">(Last exported on %s)</string>
     <string name="pref_data_clear">Clear all data</string>
     <string name="pref_data_clear_confirm_message">All notes data will be cleared permanently! This cannot be undone.</string>
     <string name="pref_data_clear_success_message">All data was cleared successfully.</string>
@@ -189,6 +192,11 @@
     <!-- Import/export data messages -->
     <string name="export_success">Data exported successfully!</string>
     <string name="export_fail">An error occurred during data export.</string>
+    <string name="auto_export_message">To enable automatic export, a file must be chosen to
+        save the data. The app\'s data will be exported once a day when the app is opened.
+        A message will appear on the main screen should the export fail. Click OK to proceed.</string>
+    <string name="auto_export_fail">Failed to export data automatically. Make sure the export location
+        still exists and is accessible, then reconfigure automatic export.</string>
 
     <!-- Content description -->
     <string name="content_descrp_open_drawer">Open drawer</string>

@@ -19,6 +19,7 @@ package com.maltaisn.notes.ui.settings
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -28,8 +29,10 @@ import androidx.navigation.fragment.findNavController
 import androidx.preference.DropDownPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
+import androidx.preference.SwitchPreferenceCompat
 import com.google.android.material.snackbar.Snackbar
 import com.maltaisn.notes.App
+import com.maltaisn.notes.TAG
 import com.maltaisn.notes.model.PrefsManager
 import com.maltaisn.notes.navigateSafe
 import com.maltaisn.notes.sync.BuildConfig
@@ -40,6 +43,8 @@ import com.maltaisn.notes.ui.common.ConfirmDialog
 import com.maltaisn.notes.ui.observeEvent
 import com.maltaisn.notes.ui.viewModel
 import com.mikepenz.aboutlibraries.LibsBuilder
+import java.io.IOException
+import java.text.DateFormat
 import javax.inject.Inject
 import javax.inject.Provider
 
@@ -51,6 +56,7 @@ class SettingsFragment : PreferenceFragmentCompat(), ConfirmDialog.Callback {
     private val viewModel by viewModel { viewModelProvider.get() }
 
     private var exportDataLauncher: ActivityResultLauncher<Intent>? = null
+    private var autoExportLauncher: ActivityResultLauncher<Intent>? = null
 
     override fun onCreate(state: Bundle?) {
         super.onCreate(state)
@@ -60,11 +66,36 @@ class SettingsFragment : PreferenceFragmentCompat(), ConfirmDialog.Callback {
         exportDataLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             val uri = result.data?.data
             if (result.resultCode == Activity.RESULT_OK && uri != null) {
-                val output = context.contentResolver.openOutputStream(uri)
+                val output = try {
+                    context.contentResolver.openOutputStream(uri)
+                } catch (e: IOException) {
+                    Log.i(TAG, "Data export failed", e)
+                    null
+                }
                 if (output != null) {
                     viewModel.exportData(output)
                 } else {
                     showMessage(R.string.export_fail)
+                }
+            }
+        }
+
+        autoExportLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            val uri = result.data?.data
+            if (result.resultCode == Activity.RESULT_OK && uri != null) {
+                val output = try {
+                    val cr = context.contentResolver
+                    cr.takePersistableUriPermission(uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+                    cr.openOutputStream(uri)
+                } catch (e: IOException) {
+                    Log.i(TAG, "Data export failed", e)
+                    null
+                }
+                if (output != null) {
+                    viewModel.setupAutoExport(output, uri.toString())
+                } else {
+                    showMessage(R.string.export_fail)
+                    autoExportPref.isChecked = false
                 }
             }
         }
@@ -83,6 +114,9 @@ class SettingsFragment : PreferenceFragmentCompat(), ConfirmDialog.Callback {
 
     private fun setupViewModelObservers() {
         viewModel.messageEvent.observeEvent(viewLifecycleOwner, ::showMessage)
+        viewModel.lastAutoExport.observe(viewLifecycleOwner) { date ->
+            updateAutoExportSummary(autoExportPref.isChecked, date)
+        }
     }
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
@@ -108,6 +142,19 @@ class SettingsFragment : PreferenceFragmentCompat(), ConfirmDialog.Callback {
                 .putExtra("android.content.extra.SHOW_FILESIZE", true)
                 .addCategory(Intent.CATEGORY_OPENABLE)
             exportDataLauncher?.launch(intent)
+            true
+        }
+
+        autoExportPref.setOnPreferenceChangeListener { _, newValue ->
+            if (newValue == true) {
+                ConfirmDialog.newInstance(
+                    title = R.string.pref_data_auto_export,
+                    message = R.string.auto_export_message,
+                    btnPositive = R.string.action_ok
+                ).show(childFragmentManager, AUTOMATIC_EXPORT_DIALOG_TAG)
+            } else {
+                updateAutoExportSummary(false)
+            }
             true
         }
 
@@ -139,6 +186,7 @@ class SettingsFragment : PreferenceFragmentCompat(), ConfirmDialog.Callback {
     override fun onDestroy() {
         super.onDestroy()
         exportDataLauncher = null
+        autoExportLauncher = null
     }
 
     private fun showMessage(@StringRes messageId: Int) {
@@ -148,13 +196,56 @@ class SettingsFragment : PreferenceFragmentCompat(), ConfirmDialog.Callback {
     private fun <T : Preference> requirePreference(key: CharSequence) =
         checkNotNull(findPreference<T>(key)) { "Could not find preference with key '$key'." }
 
-    override fun onDialogConfirmed(tag: String?) {
-        if (tag == CLEAR_DATA_DIALOG_TAG) {
-            viewModel.clearData()
+    private val autoExportPref: SwitchPreferenceCompat
+        get() = requirePreference(PrefsManager.AUTO_EXPORT)
+
+    private fun updateAutoExportSummary(enabled: Boolean, date: Long = 0) {
+        if (enabled) {
+            autoExportPref.summary = buildString {
+                appendLine(getString(R.string.pref_data_auto_export_summary))
+                append(getString(R.string.pref_data_auto_export_date,
+                    DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT).format(date)))
+            }
+        } else {
+            autoExportPref.summary = getString(R.string.pref_data_auto_export_summary)
+        }
+    }
+
+    override fun onDialogPositiveButtonClicked(tag: String?) {
+        when (tag) {
+            CLEAR_DATA_DIALOG_TAG -> {
+                viewModel.clearData()
+            }
+            AUTOMATIC_EXPORT_DIALOG_TAG -> {
+                val intent = Intent(Intent.ACTION_CREATE_DOCUMENT)
+                    .setType("application/json")
+                    .putExtra("android.content.extra.SHOW_ADVANCED", true)
+                    .putExtra("android.content.extra.FANCY", true)
+                    .putExtra("android.content.extra.SHOW_FILESIZE", true)
+                    .addCategory(Intent.CATEGORY_OPENABLE)
+                    .addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+                    .addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION)
+                autoExportLauncher?.launch(intent)
+            }
+        }
+    }
+
+    override fun onDialogNegativeButtonClicked(tag: String?) {
+        if (tag == AUTOMATIC_EXPORT_DIALOG_TAG) {
+            // No file chosen for auto export, disable it.
+            autoExportPref.isChecked = false
+        }
+    }
+
+    override fun onDialogCancelled(tag: String?) {
+        if (tag == AUTOMATIC_EXPORT_DIALOG_TAG) {
+            // No file chosen for auto export, disable it.
+            autoExportPref.isChecked = false
         }
     }
 
     companion object {
         private const val CLEAR_DATA_DIALOG_TAG = "clear_data_dialog"
+        private const val AUTOMATIC_EXPORT_DIALOG_TAG = "automatic_export_dialog"
     }
 }

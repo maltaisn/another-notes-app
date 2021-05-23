@@ -17,7 +17,9 @@
 package com.maltaisn.notes.ui.main
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
@@ -25,6 +27,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.fragment.NavHostFragment
 import com.maltaisn.notes.App
+import com.maltaisn.notes.TAG
 import com.maltaisn.notes.model.converter.NoteTypeConverter
 import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.model.entity.NoteType
@@ -38,6 +41,7 @@ import com.maltaisn.notes.ui.navGraphViewModel
 import com.maltaisn.notes.ui.navigation.HomeDestination
 import com.maltaisn.notes.ui.observeEvent
 import com.maltaisn.notes.ui.viewModel
+import java.io.IOException
 import javax.inject.Inject
 import javax.inject.Provider
 
@@ -81,6 +85,15 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
     private fun setupViewModelObservers() {
         viewModel.editItemEvent.observeEvent(this) { noteId ->
             navController.navigateSafe(NavGraphMainDirections.actionEditNote(noteId))
+        }
+
+        viewModel.autoExportEvent.observeEvent(this) { uri ->
+            viewModel.autoExport(try {
+                contentResolver.openOutputStream(Uri.parse(uri))
+            } catch (e: IOException) {
+                Log.i(TAG, "Auto data export failed", e)
+                null
+            })
         }
     }
 

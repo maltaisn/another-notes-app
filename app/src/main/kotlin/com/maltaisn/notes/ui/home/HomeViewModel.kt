@@ -220,6 +220,10 @@ class HomeViewModel @AssistedInject constructor(
     }
 
     private fun createActiveListItems(notes: List<NoteWithLabels>): List<NoteListItem> = buildList {
+        if (prefs.autoExportFailed) {
+            this += MessageItem(AUTO_EXPORT_FAIL_ITEM_ID, R.string.auto_export_fail)
+        }
+
         // Separate pinned and not pinned notes with headers
         var addedPinnedHeader = false
         var addedNotPinnedHeader = false
@@ -372,7 +376,8 @@ class HomeViewModel @AssistedInject constructor(
 
     companion object {
         private const val TRASH_REMINDER_ITEM_ID = -1L
-        private const val BATTERY_RESTRICTED_ITEM_ID = -7L
+        private const val BATTERY_RESTRICTED_ITEM_ID = -8L
+        private const val AUTO_EXPORT_FAIL_ITEM_ID = -9L
 
         val PINNED_HEADER_ITEM = HeaderItem(-2, R.string.note_pinned)
         val NOT_PINNED_HEADER_ITEM = HeaderItem(-3, R.string.note_not_pinned)

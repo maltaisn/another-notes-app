@@ -86,6 +86,13 @@
             app:title="@string/pref_data_export"
             />
 
+        <SwitchPreferenceCompat
+            app:defaultValue="false"
+            app:key="auto_export"
+            app:summary="@string/pref_data_auto_export_summary"
+            app:title="@string/pref_data_auto_export"
+            />
+
         <Preference
             app:key="clear_data"
             app:title="@string/pref_data_clear"

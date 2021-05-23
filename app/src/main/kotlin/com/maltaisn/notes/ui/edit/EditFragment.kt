@@ -315,14 +315,14 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener, ConfirmDialog.
         return true
     }
 
-    override fun onDialogConfirmed(tag: String?) {
+    override fun onDialogPositiveButtonClicked(tag: String?) {
         when (tag) {
             DELETE_CONFIRM_DIALOG_TAG -> viewModel.deleteNoteForeverAndExit()
             REMOVE_CHECKED_CONFIRM_DIALOG_TAG -> viewModel.convertToText(false)
         }
     }
 
-    override fun onDialogCancelled(tag: String?) {
+    override fun onDialogNegativeButtonClicked(tag: String?) {
         if (tag == REMOVE_CHECKED_CONFIRM_DIALOG_TAG) {
             viewModel.convertToText(true)
         }

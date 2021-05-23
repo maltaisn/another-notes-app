@@ -20,7 +20,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.maltaisn.notes.model.JsonManager
 import com.maltaisn.notes.model.NotesRepository
+import com.maltaisn.notes.model.PrefsManager
 import com.maltaisn.notes.model.entity.BlankNoteMetadata
 import com.maltaisn.notes.model.entity.ListNoteMetadata
 import com.maltaisn.notes.model.entity.Note
@@ -29,26 +31,43 @@ import com.maltaisn.notes.model.entity.NoteType
 import com.maltaisn.notes.model.entity.PinnedStatus
 import com.maltaisn.notes.ui.Event
 import com.maltaisn.notes.ui.send
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.io.IOException
+import java.io.OutputStream
 import java.util.Date
 import javax.inject.Inject
 import kotlin.time.hours
 
 class MainViewModel @Inject constructor(
-    private val notesRepository: NotesRepository
+    private val notesRepository: NotesRepository,
+    private val prefsManager: PrefsManager,
+    private val jsonManager: JsonManager,
 ) : ViewModel() {
 
     private val _editNoteEvent = MutableLiveData<Event<Long>>()
     val editItemEvent: LiveData<Event<Long>>
         get() = _editNoteEvent
 
+    private val _autoExportEvent = MutableLiveData<Event<String>>()
+    val autoExportEvent: LiveData<Event<String>>
+        get() = _autoExportEvent
+
     init {
         viewModelScope.launch {
-            // Periodically remove old notes in trash
+            // Periodically remove old notes in trash, and auto export if needed.
             while (true) {
                 notesRepository.deleteOldNotesInTrash()
-                delay(TRASH_AUTO_DELETE_INTERVAL.toLongMilliseconds())
+
+                if (prefsManager.shouldAutoExport &&
+                    System.currentTimeMillis() - prefsManager.lastAutoExportTime >
+                    PrefsManager.AUTO_EXPORT_DELAY.toLongMilliseconds()
+                ) {
+                    _autoExportEvent.send(prefsManager.autoExportUri)
+                }
+
+                delay(PERIODIC_TASK_INTERVAL.toLongMilliseconds())
             }
         }
     }
@@ -85,7 +104,26 @@ class MainViewModel @Inject constructor(
         _editNoteEvent.send(id)
     }
 
+    fun autoExport(output: OutputStream?) {
+        if (output != null) {
+            viewModelScope.launch(Dispatchers.IO) {
+                val jsonData = jsonManager.exportJsonData()
+                prefsManager.autoExportFailed = try {
+                    output.use {
+                        output.write(jsonData.toByteArray())
+                    }
+                    prefsManager.lastAutoExportTime = System.currentTimeMillis()
+                    false
+                } catch (e: IOException) {
+                    true
+                }
+            }
+        } else {
+            prefsManager.autoExportFailed = true
+        }
+    }
+
     companion object {
-        private val TRASH_AUTO_DELETE_INTERVAL = 1.hours
+        private val PERIODIC_TASK_INTERVAL = 1.hours
     }
 }
