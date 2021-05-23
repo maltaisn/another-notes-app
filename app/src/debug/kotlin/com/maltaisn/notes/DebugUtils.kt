@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Nicolas Maltais
+ * Copyright 2021 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,9 +24,8 @@ import com.maltaisn.notes.model.entity.NoteStatus
 import com.maltaisn.notes.model.entity.NoteType
 import com.maltaisn.notes.model.entity.PinnedStatus
 import java.util.Date
-import java.util.Locale
 import kotlin.random.Random
-import kotlin.time.days
+import kotlin.time.Duration
 
 /**
  * This is used to generate random notes for testing debug builds.
@@ -80,12 +79,12 @@ object DebugUtils {
             end++
         }
         return LOREM_IPSUM.substring(start + 1, end)
-            .trim().capitalize(Locale.getDefault())
+            .trim().replaceFirstChar { it.titlecaseChar() }
     }
 
     private fun getRandomDate(min: Date? = null): Date {
         val current = System.currentTimeMillis()
-        val minDate = min?.time ?: (current - 5.days.toLongMilliseconds())
+        val minDate = min?.time ?: (current - Duration.days(5).inWholeMilliseconds)
         return Date((minDate..current).random())
     }
 

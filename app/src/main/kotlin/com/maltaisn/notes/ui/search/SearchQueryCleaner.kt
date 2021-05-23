@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Nicolas Maltais
+ * Copyright 2021 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,7 +55,7 @@ object SearchQueryCleaner {
                 }
                 else -> {
                     // Lowercase char to disable MATCH keywords.
-                    append(c.toLowerCase())
+                    append(c.lowercaseChar())
                     inSearchTerm = true
                 }
             }

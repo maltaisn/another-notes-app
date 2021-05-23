@@ -173,7 +173,6 @@
     <string name="pref_group_data">Data</string>
     <string name="pref_data_export">Eksporter data</string>
     <string name="pref_data_export_summary">Eksporter notatdata som JSON</string>
-    <string name="pref_data_export_title">Eksporterte notatdata</string>
     <string name="pref_data_clear">Fjern alle data</string>
     <string name="pref_data_clear_confirm_message">Alle notatdata blir fjernet permanent! Dette kan ikke bli omgjort.</string>
     <string name="pref_data_clear_success_message">Alle data ble fjernet.</string>

@@ -53,13 +53,13 @@ class RelativeDateFormatterTest {
             }
         }
         formatter = RelativeDateFormatter(resources) { date ->
-            DateFormat.getDateInstance(DateFormat.SHORT).format(date)
+            DateFormat.getDateInstance(DateFormat.SHORT, Locale.CANADA).format(date)
         }
     }
 
     @Test
     fun `should return today date time`() {
-        assertEquals("today, 12:34 PM", formatter.format(
+        assertEquals("today, 12:34 p.m.", formatter.format(
             dateFor("2020-01-01T12:34:56.000").time,
             dateFor("2020-01-01T10:00:00.000").time,
             6
@@ -68,7 +68,7 @@ class RelativeDateFormatterTest {
 
     @Test
     fun `should return tomorrow date time`() {
-        assertEquals("tomorrow, 11:00 AM", formatter.format(
+        assertEquals("tomorrow, 11:00 a.m.", formatter.format(
             dateFor("2020-01-02T11:00:00.000").time,
             dateFor("2020-01-01T10:00:00.000").time,
             6
@@ -77,7 +77,7 @@ class RelativeDateFormatterTest {
 
     @Test
     fun `should return yesterday date time`() {
-        assertEquals("yesterday, 11:59 PM", formatter.format(
+        assertEquals("yesterday, 11:59 p.m.", formatter.format(
             dateFor("2019-12-31T23:59:59.999").time,
             dateFor("2020-01-01T00:00:00.000").time,
             6
@@ -86,7 +86,7 @@ class RelativeDateFormatterTest {
 
     @Test
     fun `should return relative future date time`() {
-        assertEquals("in 6 days, 12:00 AM", formatter.format(
+        assertEquals("in 6 days, 12:00 a.m.", formatter.format(
             dateFor("2020-01-07T00:00:00.000").time,
             dateFor("2020-01-01T00:00:00.000").time,
             6
@@ -95,7 +95,7 @@ class RelativeDateFormatterTest {
 
     @Test
     fun `should return relative past date time`() {
-        assertEquals("6 days ago, 12:00 AM", formatter.format(
+        assertEquals("6 days ago, 12:00 a.m.", formatter.format(
             dateFor("2020-01-01T00:00:00.000").time,
             dateFor("2020-01-07T00:00:00.000").time,
             6
@@ -104,7 +104,7 @@ class RelativeDateFormatterTest {
 
     @Test
     fun `should return absolute date time (future)`() {
-        assertEquals("05/01/20, 12:00 AM", formatter.format(
+        assertEquals("2020-01-05, 12:00 a.m.", formatter.format(
             dateFor("2020-01-05T00:00:00.000").time,
             dateFor("2020-01-01T00:00:00.000").time,
             3
@@ -113,7 +113,7 @@ class RelativeDateFormatterTest {
 
     @Test
     fun `should return absolute date time (past)`() {
-        assertEquals("27/12/19, 12:00 AM", formatter.format(
+        assertEquals("2019-12-27, 12:00 a.m.", formatter.format(
             dateFor("2019-12-27T00:00:00.000").time,
             dateFor("2020-01-01T00:00:00.000").time,
             3

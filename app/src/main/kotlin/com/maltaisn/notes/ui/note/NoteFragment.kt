@@ -61,7 +61,7 @@ abstract class NoteFragment : Fragment(), ActionMode.Callback, ConfirmDialog.Cal
 
     @Inject
     lateinit var sharedViewModelProvider: Provider<SharedViewModel>
-    val sharedViewModel by navGraphViewModel(R.id.nav_graph_main) { sharedViewModelProvider.get() }
+    val sharedViewModel: SharedViewModel by navGraphViewModel(R.id.nav_graph_main) { sharedViewModelProvider.get() }
 
     @Inject
     lateinit var prefsManager: PrefsManager

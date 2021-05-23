@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Nicolas Maltais
+ * Copyright 2021 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,12 +24,11 @@ import java.util.concurrent.TimeoutException
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.time.Duration
-import kotlin.time.seconds
 
 /**
  * Gets the value of a [LiveData] or waits for it to have one, with a timeout.
  */
-fun <T> LiveData<T>.getOrAwaitValue(time: Duration = 1.seconds): T {
+fun <T> LiveData<T>.getOrAwaitValue(time: Duration = Duration.seconds(1)): T {
     var data: T? = null
     val latch = CountDownLatch(1)
     val observer = object : Observer<T> {
@@ -43,7 +42,7 @@ fun <T> LiveData<T>.getOrAwaitValue(time: Duration = 1.seconds): T {
 
     try {
         // Don't wait indefinitely if the LiveData is not set.
-        if (!latch.await(time.toLongMilliseconds(), TimeUnit.MILLISECONDS)) {
+        if (!latch.await(time.inWholeMilliseconds, TimeUnit.MILLISECONDS)) {
             this.removeObserver(observer)
             throw TimeoutException("LiveData value was never set.")
         }

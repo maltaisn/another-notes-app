@@ -26,7 +26,7 @@ import kotlinx.parcelize.Parcelize
 /**
  * Different destinations accessible from the navigation drawer.
  */
-interface NavigationDestination {
+sealed interface NavigationDestination {
     /**
      * Destination to navigate to another fragment in the navigation graph.
      */
@@ -36,7 +36,7 @@ interface NavigationDestination {
 /**
  * A destination accessible only by changing the content of the [HomeFragment].
  */
-interface HomeDestination : NavigationDestination, Parcelable {
+sealed interface HomeDestination : NavigationDestination, Parcelable {
     /**
      * Destination to view all notes of with a specific [status].
      */

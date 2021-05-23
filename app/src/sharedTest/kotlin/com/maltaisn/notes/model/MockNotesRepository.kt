@@ -195,7 +195,7 @@ class MockNotesRepository(private val labelsRepository: MockLabelsRepository) :
         notes.entries.removeIf { (_, note) ->
             note.status == NoteStatus.DELETED &&
                     (System.currentTimeMillis() - note.lastModifiedDate.time) >
-                    PrefsManager.TRASH_AUTO_DELETE_DELAY.toLongMilliseconds()
+                    PrefsManager.TRASH_AUTO_DELETE_DELAY.inWholeMilliseconds
         }
         changeFlow.emit(Unit)
     }

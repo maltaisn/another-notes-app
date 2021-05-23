@@ -151,7 +151,7 @@ class HomeViewModelTest {
 
         assertEquals(listOf(
             MessageItem(-1, R.string.trash_reminder_message,
-                listOf(PrefsManager.TRASH_AUTO_DELETE_DELAY.inDays.toInt())),
+                listOf(PrefsManager.TRASH_AUTO_DELETE_DELAY.inWholeDays)),
             NoteItem(4, note)
         ), viewModel.noteItems.getOrAwaitValue())
     }

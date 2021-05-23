@@ -173,7 +173,6 @@
     <string name="pref_group_data">Données</string>
     <string name="pref_data_export">Exporter les données</string>
     <string name="pref_data_export_summary">Exporter les données en format JSON</string>
-    <string name="pref_data_export_title">Données exportées</string>
     <string name="pref_data_auto_export">Exportation automatique</string>
     <string name="pref_data_auto_export_summary">Exporter automatiquement les données vers un fichier, une fois par jour.</string>
     <string name="pref_data_auto_export_date">(Dernière exportation le %s)</string>

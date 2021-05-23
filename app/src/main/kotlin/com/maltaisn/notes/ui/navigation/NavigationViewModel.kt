@@ -86,7 +86,7 @@ class NavigationViewModel @AssistedInject constructor(
         }
     }
 
-    private fun createListItems(labels: List<Label>) = buildList<NavigationItem> {
+    private fun createListItems(labels: List<Label>) = buildList {
         this += NavigationTopItem(ITEM_ID_TOP)
 
         this += NavigationDestinationItem(

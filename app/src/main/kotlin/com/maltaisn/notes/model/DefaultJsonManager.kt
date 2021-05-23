@@ -128,15 +128,19 @@ class DefaultJsonManager @Inject constructor(
             val note = Note(id, ns.type, ns.title, ns.content, ns.metadata, ns.addedDate,
                 ns.lastModifiedDate, ns.status, ns.pinned, ns.reminder)
             val existingNote = existingNotes[noteId]
-            if (existingNote == null) {
-                notesDao.insert(note)
-            } else if (existingNote.addedDate == note.addedDate) {
-                // existing note has same creation date as the data, assume this is the same
-                // same that was exported in the first place.
-                notesDao.update(note)
-            } else {
-                // ID clash, assign new ID.
-                noteId = notesDao.insert(note.copy(id = Note.NO_ID))
+            when {
+                existingNote == null -> {
+                    notesDao.insert(note)
+                }
+                existingNote.addedDate == note.addedDate -> {
+                    // existing note has same creation date as the data, assume this is the same
+                    // same that was exported in the first place.
+                    notesDao.update(note)
+                }
+                else -> {
+                    // ID clash, assign new ID.
+                    noteId = notesDao.insert(note.copy(id = Note.NO_ID))
+                }
             }
 
             // Add label references, remapping labels appropriately and discarding unresolved label IDs.

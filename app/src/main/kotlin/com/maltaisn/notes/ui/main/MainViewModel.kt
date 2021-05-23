@@ -38,7 +38,7 @@ import java.io.IOException
 import java.io.OutputStream
 import java.util.Date
 import javax.inject.Inject
-import kotlin.time.hours
+import kotlin.time.Duration
 
 class MainViewModel @Inject constructor(
     private val notesRepository: NotesRepository,
@@ -62,12 +62,12 @@ class MainViewModel @Inject constructor(
 
                 if (prefsManager.shouldAutoExport &&
                     System.currentTimeMillis() - prefsManager.lastAutoExportTime >
-                    PrefsManager.AUTO_EXPORT_DELAY.toLongMilliseconds()
+                    PrefsManager.AUTO_EXPORT_DELAY.inWholeMilliseconds
                 ) {
                     _autoExportEvent.send(prefsManager.autoExportUri)
                 }
 
-                delay(PERIODIC_TASK_INTERVAL.toLongMilliseconds())
+                delay(PERIODIC_TASK_INTERVAL.inWholeMilliseconds)
             }
         }
     }
@@ -124,6 +124,6 @@ class MainViewModel @Inject constructor(
     }
 
     companion object {
-        private val PERIODIC_TASK_INTERVAL = 1.hours
+        private val PERIODIC_TASK_INTERVAL = Duration.hours(1)
     }
 }

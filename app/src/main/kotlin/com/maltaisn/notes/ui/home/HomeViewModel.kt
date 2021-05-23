@@ -254,11 +254,11 @@ class HomeViewModel @AssistedInject constructor(
         // If needed, add reminder that notes get auto-deleted when in trash.
         if (notes.isNotEmpty() &&
             System.currentTimeMillis() - prefs.lastTrashReminderTime >
-            PrefsManager.TRASH_REMINDER_DELAY.toLongMilliseconds()
+            PrefsManager.TRASH_REMINDER_DELAY.inWholeMilliseconds
         ) {
             this += MessageItem(TRASH_REMINDER_ITEM_ID,
                 R.string.trash_reminder_message,
-                listOf(PrefsManager.TRASH_AUTO_DELETE_DELAY.inDays.toInt()))
+                listOf(PrefsManager.TRASH_AUTO_DELETE_DELAY.inWholeDays))
         }
 
         for (note in notes) {
@@ -310,7 +310,7 @@ class HomeViewModel @AssistedInject constructor(
         // If needed, add reminder that notifications won't work properly if battery is restricted.
         if (batteryRestricted && notes.isNotEmpty() &&
             now - prefs.lastRestrictedBatteryReminderTime >
-            PrefsManager.RESTRICTED_BATTERY_REMINDER_DELAY.inMilliseconds
+            PrefsManager.RESTRICTED_BATTERY_REMINDER_DELAY.inWholeMilliseconds
         ) {
             this += MessageItem(BATTERY_RESTRICTED_ITEM_ID,
                 R.string.reminder_restricted_battery)

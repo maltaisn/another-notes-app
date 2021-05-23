@@ -129,7 +129,7 @@ class ScreenshotTestRule : TestRule {
     }
 
     /**
-     * Change the device locale to [locale] at runtime.
+     * Change the device locales to [locales] at runtime.
      * Taken from [https://stackoverflow.com/a/4683532/5288316],
      * and [https://github.com/fastlane/fastlane/blob/master/screengrab/screengrab-lib/src/main/java/tools.fastlane.screengrab/locale/LocaleUtil.java]
      * Requires `android.permission.CHANGE_CONFIGURATION` permission.

@@ -69,7 +69,7 @@ class DefaultNotesRepository @Inject constructor(
     }
 
     override suspend fun deleteOldNotesInTrash() {
-        val delay = PrefsManager.TRASH_AUTO_DELETE_DELAY.toLongMilliseconds()
+        val delay = PrefsManager.TRASH_AUTO_DELETE_DELAY.inWholeMilliseconds
         val minDate = System.currentTimeMillis() - delay
         notesDao.deleteNotesByStatusAndDate(NoteStatus.DELETED, minDate)
     }

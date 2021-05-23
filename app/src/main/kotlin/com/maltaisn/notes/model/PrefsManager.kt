@@ -28,7 +28,7 @@ import com.maltaisn.notes.ui.note.ShownDateField
 import com.maltaisn.notes.ui.note.SwipeAction
 import com.maltaisn.notes.ui.note.adapter.NoteListLayoutMode
 import javax.inject.Inject
-import kotlin.time.days
+import kotlin.time.Duration
 
 /**
  * Base preference manager. This class interacts with [SharedPreferences]
@@ -149,8 +149,7 @@ class PrefsManager @Inject constructor(
         private const val AUTO_EXPORT_URI = "auto_export_uri"
         private const val LIST_LAYOUT_MODE = "is_in_list_layout"
         private const val LAST_TRASH_REMIND_TIME = "last_deleted_remind_time"
-        private const val LAST_RESTRICTED_BATTERY_REMIND_TIME =
-            "last_restricted_battery_remind_time"
+        private const val LAST_RESTRICTED_BATTERY_REMIND_TIME = "last_restricted_battery_remind_time"
         private const val LAST_AUTO_EXPORT_TIME = "last_auto_export_time"
         private const val AUTO_EXPORT_FAILED = "auto_export_failed"
 
@@ -162,22 +161,22 @@ class PrefsManager @Inject constructor(
         /**
          * Delay after which notes in trash are automatically deleted forever.
          */
-        val TRASH_AUTO_DELETE_DELAY = 7.days
+        val TRASH_AUTO_DELETE_DELAY = Duration.days(7)
 
         /**
          * Required delay before showing the trash reminder delay after user dismisses it.
          */
-        val TRASH_REMINDER_DELAY = 60.days
+        val TRASH_REMINDER_DELAY = Duration.days(60)
 
         /**
          * Required delay before showing a notice that restricted battery mode will impact
          * reminders, after user dismisses it.
          */
-        val RESTRICTED_BATTERY_REMINDER_DELAY = 60.days
+        val RESTRICTED_BATTERY_REMINDER_DELAY = Duration.days(60)
 
         /**
          * Minimum delay between each automatic export.
          */
-        val AUTO_EXPORT_DELAY = 1.days
+        val AUTO_EXPORT_DELAY = Duration.days(1)
     }
 }
