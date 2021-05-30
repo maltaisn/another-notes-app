@@ -18,6 +18,7 @@ package com.maltaisn.notes.ui.settings
 
 import android.app.Activity
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -134,6 +135,15 @@ class SettingsFragment : PreferenceFragmentCompat(), ConfirmDialog.Callback {
         viewModel.lastAutoExport.observe(viewLifecycleOwner) { date ->
             updateAutoExportSummary(autoExportPref.isChecked, date)
         }
+        viewModel.releasePersistableUriEvent.observeEvent(viewLifecycleOwner) { uri ->
+            try {
+                requireContext().contentResolver.releasePersistableUriPermission(Uri.parse(uri),
+                    Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+            } catch (e: Exception) {
+                // Permission was revoked? will probably happen sometimes
+                Log.i(TAG, "Failed to release persistable URI permission", e)
+            }
+        }
     }
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
@@ -152,12 +162,7 @@ class SettingsFragment : PreferenceFragmentCompat(), ConfirmDialog.Callback {
         }
 
         requirePreference<Preference>(PrefsManager.EXPORT_DATA).setOnPreferenceClickListener {
-            val intent = Intent(Intent.ACTION_CREATE_DOCUMENT)
-                .setType("application/json")
-                .putExtra("android.content.extra.SHOW_ADVANCED", true)
-                .putExtra("android.content.extra.FANCY", true)
-                .putExtra("android.content.extra.SHOW_FILESIZE", true)
-                .addCategory(Intent.CATEGORY_OPENABLE)
+            val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).addExportImportExtras()
             exportDataLauncher?.launch(intent)
             true
         }
@@ -171,17 +176,13 @@ class SettingsFragment : PreferenceFragmentCompat(), ConfirmDialog.Callback {
                 ).show(childFragmentManager, AUTOMATIC_EXPORT_DIALOG_TAG)
             } else {
                 updateAutoExportSummary(false)
+                viewModel.disableAutoExport()
             }
             true
         }
 
         requirePreference<Preference>(PrefsManager.IMPORT_DATA).setOnPreferenceClickListener {
-            val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
-                .setType("application/json")
-                .putExtra("android.content.extra.SHOW_ADVANCED", true)
-                .putExtra("android.content.extra.FANCY", true)
-                .putExtra("android.content.extra.SHOW_FILESIZE", true)
-                .addCategory(Intent.CATEGORY_OPENABLE)
+            val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).addExportImportExtras()
             importDataLauncher?.launch(intent)
             true
         }
@@ -210,6 +211,13 @@ class SettingsFragment : PreferenceFragmentCompat(), ConfirmDialog.Callback {
         // Set version name as summary text for version preference
         requirePreference<Preference>(PrefsManager.VERSION).summary = BuildConfig.VERSION_NAME
     }
+
+    private fun Intent.addExportImportExtras() =
+        this.setType("application/json")
+            .putExtra("android.content.extra.SHOW_ADVANCED", true)
+            .putExtra("android.content.extra.FANCY", true)
+            .putExtra("android.content.extra.SHOW_FILESIZE", true)
+            .addCategory(Intent.CATEGORY_OPENABLE)
 
     override fun onDestroy() {
         super.onDestroy()

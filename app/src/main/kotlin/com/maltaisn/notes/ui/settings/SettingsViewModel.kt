@@ -27,6 +27,7 @@ import com.maltaisn.notes.model.NotesRepository
 import com.maltaisn.notes.model.PrefsManager
 import com.maltaisn.notes.sync.R
 import com.maltaisn.notes.ui.Event
+import com.maltaisn.notes.ui.send
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.InputStream
@@ -47,6 +48,10 @@ class SettingsViewModel @Inject constructor(
     private val _lastAutoExport = MutableLiveData<Long>()
     val lastAutoExport: LiveData<Long>
         get() = _lastAutoExport
+
+    private val _releasePersistableUriEvent = MutableLiveData<Event<String>>()
+    val releasePersistableUriEvent: LiveData<Event<String>>
+        get() = _releasePersistableUriEvent
 
     init {
         _lastAutoExport.value = prefsManager.lastAutoExportTime
@@ -83,6 +88,13 @@ class SettingsViewModel @Inject constructor(
                 showMessage(R.string.export_fail)
             }
         }
+    }
+
+    fun disableAutoExport() {
+        prefsManager.lastAutoExportTime = 0
+        prefsManager.autoExportFailed = false
+        _releasePersistableUriEvent.send(prefsManager.autoExportUri)
+        prefsManager.autoExportUri = ""
     }
 
     fun importData(input: InputStream) {
