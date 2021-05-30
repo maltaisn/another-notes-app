@@ -121,8 +121,8 @@
     <string name="edit_convert_keep_checked">Effacer les éléments cochés?</string>
 
     <plurals name="edit_checked_items">
-        <item quantity="one">%d item coché</item>
-        <item quantity="other">%d items cochés</item>
+        <item quantity="one">%d élément coché</item>
+        <item quantity="other">%d élément cochés</item>
     </plurals>
 
     <!-- Reminder -->
@@ -166,15 +166,15 @@
     <string name="pref_shown_date_none">Aucune date</string>
 
     <string name="pref_preview_lines">Maximum de lignes dans l\'aperçu</string>
-    <string name="pref_preview_lines_summary">Configure le nombre de lignes ou d\'items affichés, pour chaque disposition et chaque type de note</string>
+    <string name="pref_preview_lines_summary">Configure le nombre de lignes ou d\'éléments affichés, pour chaque disposition et chaque type de note</string>
     <string name="pref_preview_lines_grid_layout">Disposition grille</string>
     <string name="pref_preview_lines_list_layout">Disposition liste</string>
     <string name="pref_preview_lines_text">Lignes dans les notes textuelles</string>
-    <string name="pref_preview_lines_list">Items dans les listes</string>
+    <string name="pref_preview_lines_list">Éléments dans les listes</string>
 
     <string name="pref_group_behavior">Comportement</string>
     <string name="pref_behavior_swipe_action">Action de glissement</string>
-    <string name="pref_behavior_move_checked">Déplacer les items cochés vers le bas</string>
+    <string name="pref_behavior_move_checked">Déplacer les éléments cochés vers le bas</string>
 
     <string name="pref_group_data">Données</string>
     <string name="pref_data_export">Exporter les données</string>
