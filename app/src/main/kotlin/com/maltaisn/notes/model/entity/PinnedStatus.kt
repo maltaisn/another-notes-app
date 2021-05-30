@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Nicolas Maltais
+ * Copyright 2021 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,12 @@
 
 package com.maltaisn.notes.model.entity
 
+import com.maltaisn.notes.model.ValueEnum
+
 /**
  * Describes how a note or a group of notes are pinned.
  */
-enum class PinnedStatus(val value: Int) {
+enum class PinnedStatus(override val value: Int) : ValueEnum<Int> {
     CANT_PIN(0),
     UNPINNED(1),
     PINNED(2)

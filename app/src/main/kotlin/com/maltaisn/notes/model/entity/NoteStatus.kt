@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Nicolas Maltais
+ * Copyright 2021 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,9 @@
 
 package com.maltaisn.notes.model.entity
 
-enum class NoteStatus(val value: Int) {
+import com.maltaisn.notes.model.ValueEnum
+
+enum class NoteStatus(override val value: Int) : ValueEnum<Int> {
     ACTIVE(0),
     ARCHIVED(1),
     DELETED(2)

@@ -16,13 +16,14 @@
 
 package com.maltaisn.notes.ui.note
 
+import com.maltaisn.notes.model.ValueEnum
 import com.maltaisn.notes.sync.R
 
 /**
  * Enum for different swipe action.
  * [value] is from [R.array.pref_swipe_action_values].
  */
-enum class SwipeAction(val value: String) {
+enum class SwipeAction(override val value: String) : ValueEnum<String> {
     ARCHIVE("archive"),
     DELETE("delete"),
     NONE("none"),

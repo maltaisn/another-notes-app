@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-package com.maltaisn.notes.model.entity
+package com.maltaisn.notes.model
 
-import com.maltaisn.notes.model.ValueEnum
-
-enum class NoteType(override val value: Int) : ValueEnum<Int> {
-    TEXT(0),
-    LIST(1)
+/**
+ * Enum with a value, so that it can be stored in future-proof manner
+ * without relying on the field name or ordinal.
+ */
+interface ValueEnum<T> {
+    val value: T
 }

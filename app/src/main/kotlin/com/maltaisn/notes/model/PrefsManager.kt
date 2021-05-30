@@ -27,7 +27,10 @@ import com.maltaisn.notes.ui.AppTheme
 import com.maltaisn.notes.ui.note.ShownDateField
 import com.maltaisn.notes.ui.note.SwipeAction
 import com.maltaisn.notes.ui.note.adapter.NoteListLayoutMode
+import org.jetbrains.annotations.TestOnly
 import javax.inject.Inject
+import kotlin.properties.ReadWriteProperty
+import kotlin.reflect.KProperty
 import kotlin.time.Duration
 
 /**
@@ -39,64 +42,21 @@ class PrefsManager @Inject constructor(
     private val prefs: SharedPreferences
 ) {
 
-    val theme: AppTheme
-        get() {
-            val value = prefs.getString(THEME, AppTheme.SYSTEM.value)
-            return AppTheme.values().find { it.value == value }!!
-        }
+    val theme: AppTheme by enumPreference(THEME, AppTheme.SYSTEM)
+    val strikethroughChecked: Boolean by preference(STRIKETHROUGH_CHECKED, false)
+    val moveCheckedToBottom: Boolean by preference(MOVE_CHECKED_TO_BOTTOM, false)
+    var listLayoutMode: NoteListLayoutMode by enumPreference(LIST_LAYOUT_MODE, NoteListLayoutMode.LIST)
+    val swipeAction: SwipeAction by enumPreference(SWIPE_ACTION, SwipeAction.ARCHIVE)
+    val shownDateField: ShownDateField by enumPreference(SHOWN_DATE, ShownDateField.NONE)
+    val maximumPreviewLabels: Int by preference(PREVIEW_LABELS, 0)
 
-    val strikethroughChecked: Boolean
-        get() = prefs.getBoolean(STRIKETHROUGH_CHECKED, true)
+    val shouldAutoExport: Boolean by preference(AUTO_EXPORT, false)
+    var autoExportUri: String by preference(AUTO_EXPORT_URI, "")
+    var autoExportFailed: Boolean by preference(AUTO_EXPORT_FAILED, false)
+    var lastAutoExportTime: Long by preference(LAST_AUTO_EXPORT_TIME, 0)
 
-    val moveCheckedToBottom: Boolean
-        get() = prefs.getBoolean(MOVE_CHECKED_TO_BOTTOM, false)
-
-    var listLayoutMode: NoteListLayoutMode
-        get() {
-            val value = prefs.getInt(LIST_LAYOUT_MODE, NoteListLayoutMode.LIST.value)
-            return NoteListLayoutMode.values().find { it.value == value }!!
-        }
-        set(value) {
-            prefs.edit { putInt(LIST_LAYOUT_MODE, value.value) }
-        }
-
-    val swipeAction: SwipeAction
-        get() {
-            val value = prefs.getString(SWIPE_ACTION, SwipeAction.ARCHIVE.value)
-            return SwipeAction.values().find { it.value == value }!!
-        }
-
-    val shownDateField: ShownDateField
-        get() {
-            val value = prefs.getString(SHOWN_DATE, ShownDateField.NONE.value)
-            return ShownDateField.values().find { it.value == value }!!
-        }
-
-    val maximumPreviewLabels: Int
-        get() = prefs.getInt(PREVIEW_LABELS, 0)
-
-    val shouldAutoExport: Boolean
-        get() = prefs.getBoolean(AUTO_EXPORT, false)
-
-    var autoExportUri: String
-        get() = prefs.getString(AUTO_EXPORT_URI, "") ?: ""
-        set(value) = prefs.edit { putString(AUTO_EXPORT_URI, value) }
-
-    var autoExportFailed: Boolean
-        get() = prefs.getBoolean(AUTO_EXPORT_FAILED, false)
-        set(value) = prefs.edit { putBoolean(AUTO_EXPORT_FAILED, value) }
-
-    var lastAutoExportTime: Long
-        get() = prefs.getLong(LAST_AUTO_EXPORT_TIME, 0)
-        set(value) = prefs.edit { putLong(LAST_AUTO_EXPORT_TIME, value) }
-
-    var lastTrashReminderTime: Long
-        get() = prefs.getLong(LAST_TRASH_REMIND_TIME, 0)
-        set(value) = prefs.edit { putLong(LAST_TRASH_REMIND_TIME, value) }
-
-    var lastRestrictedBatteryReminderTime: Long
-        get() = prefs.getLong(LAST_RESTRICTED_BATTERY_REMIND_TIME, 0)
-        set(value) = prefs.edit { putLong(LAST_RESTRICTED_BATTERY_REMIND_TIME, value) }
+    var lastTrashReminderTime: Long by preference(LAST_TRASH_REMIND_TIME, 0)
+    var lastRestrictedBatteryReminderTime: Long by preference(LAST_RESTRICTED_BATTERY_REMIND_TIME, 0)
 
     fun getMaximumPreviewLines(layoutMode: NoteListLayoutMode, noteType: NoteType): Int {
         val key = when (layoutMode) {
@@ -121,13 +81,50 @@ class PrefsManager @Inject constructor(
         }
     }
 
-    // only used for testing
+    @TestOnly
     fun clear(context: Context) {
         for (prefsRes in PREFS_XML) {
             PreferenceManager.getDefaultSharedPreferences(context).edit().clear().apply()
         }
         setDefaults(context)
     }
+
+    private fun <T> preference(key: String, default: T) =
+        object : ReadWriteProperty<PrefsManager, T> {
+            @Suppress("UNCHECKED_CAST")
+            override fun getValue(thisRef: PrefsManager, property: KProperty<*>) =
+                thisRef.prefs.all.getOrElse(key) { default } as T
+
+            override fun setValue(thisRef: PrefsManager, property: KProperty<*>, value: T) {
+                thisRef.prefs.edit {
+                    when (value) {
+                        is Boolean -> putBoolean(key, value)
+                        is Int -> putInt(key, value)
+                        is Long -> putLong(key, value)
+                        is String -> putString(key, value)
+                        else -> error("Unsupported preference type")
+                    }
+                }
+            }
+        }
+
+    private inline fun <reified T> enumPreference(key: String, default: T) where T : ValueEnum<*>, T : Enum<T> =
+        object : ReadWriteProperty<PrefsManager, T> {
+            override fun getValue(thisRef: PrefsManager, property: KProperty<*>): T {
+                val value = thisRef.prefs.all.getOrElse(key) { default.value }
+                return enumValues<T>().first { it.value == value }
+            }
+
+            override fun setValue(thisRef: PrefsManager, property: KProperty<*>, value: T) {
+                prefs.edit {
+                    when (val v = value.value) {
+                        is Int -> putInt(key, v)
+                        is String -> putString(key, v)
+                        else -> error("Unsupported enum preference value type")
+                    }
+                }
+            }
+        }
 
     companion object {
         // Settings keys
@@ -184,3 +181,4 @@ class PrefsManager @Inject constructor(
         val AUTO_EXPORT_DELAY = Duration.days(1)
     }
 }
+

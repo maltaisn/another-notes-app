@@ -16,10 +16,12 @@
 
 package com.maltaisn.notes.ui.note.adapter
 
+import com.maltaisn.notes.model.ValueEnum
+
 /**
  * A note list layout mode.
  */
-enum class NoteListLayoutMode(val value: Int) {
+enum class NoteListLayoutMode(override val value: Int): ValueEnum<Int> {
     LIST(0),
     GRID(1)
 }

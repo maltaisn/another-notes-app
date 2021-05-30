@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Nicolas Maltais
+ * Copyright 2021 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +16,14 @@
 
 package com.maltaisn.notes.ui
 
+import com.maltaisn.notes.model.ValueEnum
 import com.maltaisn.notes.sync.R
 
 /**
  * Enum for different app themes.
  * [value] is from [R.array.pref_theme_values].
  */
-enum class AppTheme(val value: String) {
+enum class AppTheme(override val value: String) : ValueEnum<String> {
     LIGHT("light"),
     DARK("dark"),
     SYSTEM("system")
