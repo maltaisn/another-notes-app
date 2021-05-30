@@ -85,6 +85,11 @@
         <item quantity="other">+ %d other list items</item>
     </plurals>
 
+    <plurals name="note_list_item_info_checked">
+        <item quantity="one">+ %d checked item</item>
+        <item quantity="other">+ %d checked items</item>
+    </plurals>
+
     <string name="trash_reminder_message">Notes in recycle bin are automatically deleted after %d days.</string>
     <string name="trash_delete_message">This note will be permanently deleted.</string>
     <string name="trash_delete_selected_message">Selected notes will be permanently deleted.</string>

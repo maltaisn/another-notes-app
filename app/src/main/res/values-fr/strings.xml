@@ -81,6 +81,11 @@
         <item quantity="other">+ %d autres éléments</item>
     </plurals>
 
+    <plurals name="note_list_item_info_checked">
+        <item quantity="one">+ %d élément coché</item>
+        <item quantity="other">+ %d éléments cochés</item>
+    </plurals>
+
     <string name="trash_reminder_message">Les notes dans la corbeille sont supprimées automatiquement après %d jours.</string>
     <string name="trash_delete_message">Cette note sera supprimée définitivement.</string>
     <string name="trash_delete_selected_message">Les notes sélectionnées seront supprimées définitivement.</string>

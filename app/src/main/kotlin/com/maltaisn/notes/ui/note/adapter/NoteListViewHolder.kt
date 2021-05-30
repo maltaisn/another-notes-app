@@ -43,7 +43,6 @@ import com.maltaisn.notes.ui.note.HighlightHelper
 import com.maltaisn.notes.ui.note.ShownDateField
 import com.maltaisn.notes.utils.RelativeDateFormatter
 import java.text.DateFormat
-import kotlin.math.min
 
 /**
  * Maximum number of days in the past or the future for which
@@ -51,6 +50,13 @@ import kotlin.math.min
  * Also maximum days for creation date.
  */
 private const val MAXIMUM_RELATIVE_DATE_DAYS = 6
+
+/**
+ * If checked items are moved to the bottom and hidden in preview,
+ * this is the minimum number of items shown in a list note preview.
+ * So if all items are checked, this number of items will be shown, even if they're checked.
+ */
+private const val MINIMUM_LIST_NOTE_ITEMS = 2
 
 sealed class NoteViewHolder(itemView: View) :
     RecyclerView.ViewHolder(itemView) {
@@ -217,6 +223,7 @@ class ListNoteViewHolder(private val binding: ItemNoteListBinding) : NoteViewHol
 
     override fun bind(adapter: NoteAdapter, item: NoteItem) {
         super.bind(adapter, item)
+
         require(item.note.type == NoteType.LIST)
         require(itemViewHolders.isEmpty())
 
@@ -226,23 +233,50 @@ class ListNoteViewHolder(private val binding: ItemNoteListBinding) : NoteViewHol
         itemsLayout.isVisible = noteItems.isNotEmpty()
 
         // Add the first few items in list note using view holders in pool.
+        // If not moving checked items to the bottom, show items in order.
+        // Otherwise, show only unchecked items and move the rest to overflow (+N checked items).
         val maxItems = adapter.getMaximumPreviewLines(NoteType.LIST)
+        val minItems = minOf(MINIMUM_LIST_NOTE_ITEMS, maxItems)
+        val showChecked = !adapter.prefsManager.moveCheckedToBottom
         val itemHighlights = HighlightHelper.splitListNoteHighlightsByItem(noteItems, item.contentHighlights)
-        for (i in 0 until min(maxItems, noteItems.size)) {
-            val noteItem = noteItems[i]
-            val viewHolder = adapter.obtainListNoteItemViewHolder()
-            itemViewHolders += viewHolder
-            viewHolder.bind(adapter, noteItem, itemHighlights[i])
-            itemsLayout.addView(viewHolder.binding.root, i)
+        var onlyCheckedInOverflow = true
+        for ((i, noteItem) in noteItems.withIndex()) {
+            if (itemViewHolders.size < maxItems && (showChecked || !noteItem.checked)) {
+                val viewHolder = adapter.obtainListNoteItemViewHolder()
+                viewHolder.bind(adapter, noteItem, itemHighlights[i])
+                itemsLayout.addView(viewHolder.binding.root, itemViewHolders.size)
+                itemViewHolders += viewHolder
+            } else if (!noteItem.checked) {
+                onlyCheckedInOverflow = false
+            }
+        }
+
+        if (!showChecked && itemViewHolders.size < minItems) {
+            // Checked items were omitted, but that leaves too few items, add some checked items
+            for ((i, noteItem) in noteItems.withIndex()) {
+                if (noteItem.checked) {
+                    val viewHolder = adapter.obtainListNoteItemViewHolder()
+                    viewHolder.bind(adapter, noteItem, itemHighlights[i])
+                    itemsLayout.addView(viewHolder.binding.root, itemViewHolders.size)
+                    itemViewHolders += viewHolder
+                    if (itemViewHolders.size == minItems) {
+                        break
+                    }
+                }
+            }
         }
 
         // Show a label indicating the number of items not shown.
         val infoTxv = binding.infoTxv
-        val overflowCount = noteItems.size - maxItems
+        val overflowCount = noteItems.size - itemViewHolders.size
         infoTxv.isVisible = overflowCount > 0
         if (overflowCount > 0) {
             infoTxv.text = adapter.context.resources.getQuantityString(
-                R.plurals.note_list_item_info, overflowCount, overflowCount)
+                if (onlyCheckedInOverflow) {
+                    R.plurals.note_list_item_info_checked
+                } else {
+                    R.plurals.note_list_item_info
+                }, overflowCount, overflowCount)
         }
     }
 
