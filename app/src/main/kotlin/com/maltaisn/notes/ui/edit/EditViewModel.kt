@@ -40,6 +40,7 @@ import com.maltaisn.notes.ui.Event
 import com.maltaisn.notes.ui.ShareData
 import com.maltaisn.notes.ui.StatusChange
 import com.maltaisn.notes.ui.edit.adapter.EditAdapter
+import com.maltaisn.notes.ui.edit.adapter.EditCheckedHeaderItem
 import com.maltaisn.notes.ui.edit.adapter.EditContentItem
 import com.maltaisn.notes.ui.edit.adapter.EditDateItem
 import com.maltaisn.notes.ui.edit.adapter.EditItemAddItem
@@ -105,7 +106,7 @@ class EditViewModel @AssistedInject constructor(
     private var reminder: Reminder? = null
 
     /**
-     * The currently displayed list items created in [updateListItems].
+     * The currently displayed list items created in [recreateListItems].
      *
      * While this list is mutable, any in place changes should be reported to the adapter! This is used in the case
      * of moving items, where the view model updates the list but the adapter already knows of the move.
@@ -115,12 +116,12 @@ class EditViewModel @AssistedInject constructor(
      * and animations, which would rely on ID. Instead, the diff callback was made to rely on identity so that
      * add/remove animations take place correctly. The recycler view was also set up to not animate item appearance,
      * so that if the list is completely recreated, no animation will occur despite all items identity being lost.
+     *
+     * To allow restoring list note items original positions when checking and unchecking (if move to bottom is set),
+     * each list note item carries an `actualPos` field which is the item actual position in the list note.
+     * This field must be kept up-to-date after all changes to the list!
      */
-    private var listItems: MutableList<EditListItem> = mutableListOf()
-        set(value) {
-            field = value
-            _editItems.value = value
-        }
+    private val listItems: MutableList<EditListItem> = mutableListOf()
 
     private val _noteType = MutableLiveData<NoteType>()
     val noteType: LiveData<NoteType>
@@ -138,8 +139,8 @@ class EditViewModel @AssistedInject constructor(
     val noteReminder: LiveData<Reminder?>
         get() = _noteReminder
 
-    private val _editItems = MutableLiveData<List<EditListItem>>()
-    val editItems: LiveData<List<EditListItem>>
+    private val _editItems = MutableLiveData<MutableList<EditListItem>>()
+    val editItems: LiveData<out List<EditListItem>>
         get() = _editItems
 
     private val _focusEvent = MutableLiveData<Event<FocusChange>>()
@@ -265,7 +266,7 @@ class EditViewModel @AssistedInject constructor(
             _notePinned.value = pinned
             _noteReminder.value = reminder
 
-            updateListItems()
+            recreateListItems()
 
             if (isFirstStart && isNewNote) {
                 // Focus on text content
@@ -341,7 +342,7 @@ class EditViewModel @AssistedInject constructor(
         _noteType.value = note.type
 
         // Update list items
-        updateListItems()
+        recreateListItems()
     }
 
     fun togglePin() {
@@ -371,7 +372,7 @@ class EditViewModel @AssistedInject constructor(
         _noteType.value = NoteType.TEXT
 
         // Update list items
-        updateListItems()
+        recreateListItems()
     }
 
     fun moveNoteAndExit() {
@@ -391,7 +392,7 @@ class EditViewModel @AssistedInject constructor(
         _notePinned.value = pinned
 
         // Recreate list items so that they are editable.
-        updateListItems()
+        recreateListItems()
 
         _messageEvent.send(EditMessage.RESTORED_NOTE)
     }
@@ -450,19 +451,31 @@ class EditViewModel @AssistedInject constructor(
     }
 
     fun uncheckAllItems() {
-        changeListItems { list ->
-            for ((i, item) in list.withIndex()) {
-                if (item is EditItemItem && item.checked) {
-                    list[i] = item.copy(checked = false)
-                }
+        for ((i, item) in listItems.withIndex()) {
+            if (item is EditItemItem && item.checked) {
+                // FIXME breaks animation
+                listItems[i] = item.copy(checked = false)
             }
         }
+        moveCheckedItemsToBottom()
     }
 
     fun deleteCheckedItems() {
-        changeListItems { list ->
-            list.removeAll { it is EditItemItem && it.checked }
+        listItems.removeAll { it is EditItemItem && it.checked }
+
+        // Update actual pos of items by shifting down
+        val itemsByActualPos = listItems.asSequence()
+            .filterIsInstance<EditItemItem>()
+            .sortedBy { it.actualPos }
+        var lastActualPos = -1
+        for (item in itemsByActualPos) {
+            if (item.actualPos != lastActualPos + 1) {
+                item.actualPos = lastActualPos + 1
+            }
+            lastActualPos = item.actualPos
         }
+
+        moveCheckedItemsToBottom()
     }
 
     private fun changeNoteStatusAndExit(newStatus: NoteStatus) {
@@ -512,9 +525,15 @@ class EditViewModel @AssistedInject constructor(
                 metadata = BlankNoteMetadata
             }
             NoteType.LIST -> {
-                val items = listItems.filterIsInstance<EditItemItem>()
-                content = items.joinToString("\n") { it.content.text }
-                metadata = ListNoteMetadata(items.map { it.checked })
+                // Add items in the correct actual order
+                val items = arrayOfNulls<EditItemItem>(listItems.count { it is EditItemItem })
+                for (item in listItems) {
+                    if (item is EditItemItem) {
+                        items[item.actualPos] = item
+                    }
+                }
+                content = items.joinToString("\n") { it!!.content.text }
+                metadata = ListNoteMetadata(items.map { it!!.checked })
             }
         }
         note = note.copy(title = title, content = content,
@@ -524,15 +543,18 @@ class EditViewModel @AssistedInject constructor(
     /**
      * Create label refs for a note ID from [labels].
      */
-    private fun createLabelRefs(noteId: Long) =
-        labels.map { LabelRef(noteId, it.id) }
+    private fun createLabelRefs(noteId: Long) = labels.map { LabelRef(noteId, it.id) }
 
-    private fun createListItems() = mutableListOf<EditListItem>().apply {
+    /**
+     * Update list items to match content of [note].
+     */
+    private fun recreateListItems() {
+        listItems.clear()
         val canEdit = !isNoteInTrash
 
         // Date item
         if (shouldShowDate) {
-            this += EditDateItem(when (prefs.shownDateField) {
+            listItems += EditDateItem(when (prefs.shownDateField) {
                 ShownDateField.ADDED -> note.addedDate.time
                 ShownDateField.MODIFIED -> note.lastModifiedDate.time
                 else -> 0L  // never happens
@@ -540,55 +562,80 @@ class EditViewModel @AssistedInject constructor(
         }
 
         // Title item
-        val titleItem = EditTitleItem(DefaultEditableText(note.title), canEdit)
-        this += titleItem
+        listItems += EditTitleItem(DefaultEditableText(note.title), canEdit)
 
         when (note.type) {
             NoteType.TEXT -> {
                 // Content item
-                val contentItem = EditContentItem(DefaultEditableText(note.content), canEdit)
-                this += contentItem
+                listItems += EditContentItem(DefaultEditableText(note.content), canEdit)
             }
             NoteType.LIST -> {
-                // List items
-                val items = note.listItems
-                for (item in items) {
-                    this += EditItemItem(DefaultEditableText(item.content),
-                        item.checked,
-                        canEdit)
-                }
+                val noteItems = note.listItems
+                if (prefs.moveCheckedToBottom) {
+                    // Unchecked list items
+                    for ((i, item) in noteItems.withIndex()) {
+                        if (!item.checked) {
+                            listItems += EditItemItem(DefaultEditableText(item.content), item.checked, canEdit, i)
+                        }
+                    }
 
-                // Item add item
-                if (canEdit) {
-                    this += EditItemAddItem
+                    // Item add item
+                    if (canEdit) {
+                        listItems += EditItemAddItem
+                    }
+
+                    // Checked list items
+                    val checkCount = noteItems.count { it.checked }
+                    if (checkCount > 0) {
+                        listItems += EditCheckedHeaderItem(checkCount)
+                        for ((i, item) in noteItems.withIndex()) {
+                            if (item.checked) {
+                                listItems += EditItemItem(DefaultEditableText(item.content), item.checked, canEdit, i)
+                            }
+                        }
+                    }
+                } else {
+                    // List items
+                    for ((i, item) in noteItems.withIndex()) {
+                        listItems += EditItemItem(DefaultEditableText(item.content), item.checked, canEdit, i)
+                    }
+
+                    // Item add item
+                    if (canEdit) {
+                        listItems += EditItemAddItem
+                    }
                 }
             }
         }
 
         if (labels.isNotEmpty()) {
-            this += EditItemLabelsItem(labels)
+            listItems += EditItemLabelsItem(labels)
         }
+
+        updateListItems()
     }
 
-    /**
-     * Update list items to match the [note] data.
-     * [updateNote] might need to be called first for that data to be up-to-date.
-     */
     private fun updateListItems() {
-        listItems = createListItems()
+        _editItems.value = listItems.toMutableList()
     }
 
-    override fun onNoteItemChanged(item: EditItemItem, pos: Int, isPaste: Boolean) {
+    override fun onNoteItemChanged(pos: Int, isPaste: Boolean) {
+        val item = listItems[pos] as EditItemItem
         if ('\n' in item.content.text) {
             // User inserted line breaks in list items, split it into multiple items.
             val lines = item.content.text.split('\n')
             item.content.replaceAll(lines.first())
-            changeListItems { list ->
-                for (i in 1 until lines.size) {
-                    list.add(pos + i, EditItemItem(DefaultEditableText(lines[i]),
-                        checked = false, editable = true))
+            for (listItem in listItems) {
+                if (listItem is EditItemItem && listItem.actualPos > item.actualPos) {
+                    listItem.actualPos += lines.size - 1
                 }
             }
+            for (i in 1 until lines.size) {
+                listItems.add(pos + i, EditItemItem(DefaultEditableText(lines[i]),
+                    checked = false, editable = true, item.actualPos + i))
+            }
+
+            updateListItems()
 
             // If text was pasted, set focus at the end of last items pasted.
             // If a single linebreak was inserted, focus on the new item.
@@ -596,15 +643,23 @@ class EditViewModel @AssistedInject constructor(
         }
     }
 
-    override fun onNoteItemBackspacePressed(item: EditItemItem, pos: Int) {
+    override fun onNoteItemCheckChanged(pos: Int, checked: Boolean) {
+        val item = listItems[pos] as EditItemItem
+        if (item.checked != checked) {
+            item.checked = checked
+            moveCheckedItemsToBottom()
+        }
+    }
+
+    override fun onNoteItemBackspacePressed(pos: Int) {
         val prevItem = listItems[pos - 1]
         if (prevItem is EditItemItem) {
             // Previous item is also a note list item. Merge the two items content,
             // and delete the current item.
             val prevText = prevItem.content
             val prevLength = prevText.text.length
-            prevText.append(item.content.text)
-            changeListItems { it.removeAt(pos) }
+            prevText.append((listItems[pos] as EditItemItem).content.text)
+            deleteListItemAt(pos)
 
             // Set focus on merge boundary.
             focusItemAt(pos - 1, prevLength, true)
@@ -617,22 +672,22 @@ class EditViewModel @AssistedInject constructor(
             // Set focus at the end of previous item.
             focusItemAt(pos - 1, prevItem.content.text.length, true)
         } else {
-            val nextItem = listItems[pos + 1]
+            val nextItem = listItems.getOrNull(pos + 1)
             if (nextItem is EditItemItem) {
                 // Set focus at the end of next item.
                 focusItemAt(pos + 1, nextItem.content.text.length, true)
             }
         }
 
-        // Delete item in list.
-        changeListItems { it.removeAt(pos) }
+        deleteListItemAt(pos)
     }
 
     override fun onNoteItemAddClicked(pos: Int) {
         // pos is the position of EditItemAdd item, which is also the position to insert the new item.
-        changeListItems { list ->
-            list.add(pos, EditItemItem(DefaultEditableText(), checked = false, editable = true))
-        }
+        // The new item is added last, so the actual pos is the maximum plus one.
+        val actualPos = listItems.maxOf { (it as? EditItemItem)?.actualPos ?: -1 } + 1
+        listItems.add(pos, EditItemItem(DefaultEditableText(), checked = false, editable = true, actualPos))
+        updateListItems()
         focusItemAt(pos, 0, false)
     }
 
@@ -653,21 +708,81 @@ class EditViewModel @AssistedInject constructor(
         get() = !isNoteInTrash && listItems.count { it is EditItemItem } > 1
 
     override fun onNoteItemSwapped(from: Int, to: Int) {
-        // Avoid updating live data, adapter was notified of the change already.
+        // Swap items actual positions in list note
+        val fromItem = listItems[from] as EditItemItem
+        val toItem = listItems[to] as EditItemItem
+        val actualPosTemp = fromItem.actualPos
+        fromItem.actualPos = toItem.actualPos
+        toItem.actualPos = actualPosTemp
+
+        // Don't update live data, adapter was notified of the change already.
+        // However the live data value must be updated!
         Collections.swap(listItems, from, to)
+        Collections.swap(_editItems.value!!, from, to)
     }
 
     override val strikethroughCheckedItems: Boolean
         get() = prefs.strikethroughChecked
 
+    override val moveCheckedToBottom: Boolean
+        get() = prefs.moveCheckedToBottom
+
     private fun focusItemAt(pos: Int, textPos: Int, itemExists: Boolean) {
         _focusEvent.send(FocusChange(pos, textPos, itemExists))
     }
 
-    private inline fun changeListItems(change: (MutableList<EditListItem>) -> Unit) {
-        val newList = listItems.toMutableList()
-        change(newList)
-        listItems = newList
+    private fun deleteListItemAt(pos: Int) {
+        val listItem = listItems[pos] as EditItemItem
+        listItems.removeAt(pos)
+        // Shift the actual pos of all items after this one
+        for (item in listItems) {
+            if (item is EditItemItem && item.actualPos > listItem.actualPos) {
+                item.actualPos--
+            }
+        }
+        // Update checked/unchecked sections in cast this was the only checked item
+        moveCheckedItemsToBottom()
+    }
+
+    /**
+     * If configured so, move checked items to a separate section at the bottom,
+     * and update the checked header count. If no items are checked, the section is removed.
+     * Always calls [updateListItems].
+     */
+    private fun moveCheckedItemsToBottom() {
+        if (prefs.moveCheckedToBottom) {
+            // Remove the whole checked group
+            val checkedItems = listItems.asSequence().filterIsInstance<EditItemItem>()
+                .filter { it.checked }.toMutableList()
+            listItems.removeAll(checkedItems)
+            listItems.removeAll { it is EditCheckedHeaderItem }
+            listItems.remove(EditItemAddItem)
+
+            // Sort unchecked items by actual pos
+            var lastUncheckedPos = listItems.indexOfLast { it is EditItemItem }
+            if (lastUncheckedPos != -1) {
+                lastUncheckedPos++
+                val firstUncheckedPos = listItems.indexOfFirst { it is EditItemItem }
+                listItems.subList(firstUncheckedPos, lastUncheckedPos).sortBy { (it as EditItemItem).actualPos }
+            } else {
+               lastUncheckedPos = findItemPos<EditTitleItem>() + 1
+            }
+
+            // Re-add the checked group if any checked items, items sorted by actual pos
+            var pos = lastUncheckedPos
+            listItems.add(pos, EditItemAddItem)
+            pos++
+            if (checkedItems.isNotEmpty()) {
+                listItems.add(pos, EditCheckedHeaderItem(checkedItems.size))
+                pos++
+                checkedItems.sortBy { it.actualPos }
+                for (item in checkedItems) {
+                    listItems.add(pos, item)
+                    pos++
+                }
+            }
+        }
+        updateListItems()
     }
 
     private inline fun <reified T : EditListItem> findItem(): T {

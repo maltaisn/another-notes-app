@@ -29,10 +29,12 @@ import androidx.core.view.isInvisible
 import androidx.core.widget.doOnTextChanged
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.chip.Chip
+import com.maltaisn.notes.hideKeyboard
 import com.maltaisn.notes.strikethroughText
 import com.maltaisn.notes.sync.R
 import com.maltaisn.notes.sync.databinding.ItemEditContentBinding
 import com.maltaisn.notes.sync.databinding.ItemEditDateBinding
+import com.maltaisn.notes.sync.databinding.ItemEditHeaderBinding
 import com.maltaisn.notes.sync.databinding.ItemEditItemAddBinding
 import com.maltaisn.notes.sync.databinding.ItemEditItemBinding
 import com.maltaisn.notes.sync.databinding.ItemEditLabelsBinding
@@ -127,20 +129,27 @@ class EditContentViewHolder(binding: ItemEditContentBinding, callback: EditAdapt
     }
 }
 
-class EditItemViewHolder(val binding: ItemEditItemBinding, callback: EditAdapter.Callback) :
+class EditItemViewHolder(binding: ItemEditItemBinding, callback: EditAdapter.Callback) :
     RecyclerView.ViewHolder(binding.root), EditFocusableViewHolder {
 
+    val dragImv = binding.dragImv
     private val itemCheck = binding.itemChk
     private val itemEdt = binding.contentEdt
     private val deleteImv = binding.deleteImv
 
     private lateinit var item: EditItemItem
 
+    val isChecked: Boolean
+        get() = itemCheck.isChecked
+
     init {
         itemCheck.setOnCheckedChangeListener { _, isChecked ->
-            item.checked = isChecked
+            itemEdt.clearFocus()
+            itemEdt.hideKeyboard()
             itemEdt.strikethroughText = isChecked && callback.strikethroughCheckedItems
             itemEdt.isActivated = !isChecked // Controls text color selector.
+            dragImv.isInvisible = isChecked && callback.moveCheckedToBottom
+            callback.onNoteItemCheckChanged(bindingAdapterPosition, isChecked)
         }
 
         itemEdt.addTextChangedListener(clearSpansTextWatcher)
@@ -150,7 +159,7 @@ class EditItemViewHolder(val binding: ItemEditItemBinding, callback: EditAdapter
             // item can be split into multiple items. When user enters a single line break,
             // selection is set at the beginning of new item. On paste, i.e. when more than one
             // character is entered, selection is set at the end of last new item.
-            callback.onNoteItemChanged(item, bindingAdapterPosition, count > 1)
+            callback.onNoteItemChanged(bindingAdapterPosition, count > 1)
         }
         itemEdt.setOnFocusChangeListener { _, hasFocus ->
             // Only show delete icon for currently focused item.
@@ -163,7 +172,7 @@ class EditItemViewHolder(val binding: ItemEditItemBinding, callback: EditAdapter
                 // will be merged with previous.
                 val pos = bindingAdapterPosition
                 if (pos != RecyclerView.NO_POSITION) {
-                    callback.onNoteItemBackspacePressed(item, pos)
+                    callback.onNoteItemBackspacePressed(pos)
                 }
             }
             false
@@ -213,6 +222,17 @@ class EditItemAddViewHolder(binding: ItemEditItemAddBinding, callback: EditAdapt
         itemView.setOnClickListener {
             callback.onNoteItemAddClicked(bindingAdapterPosition)
         }
+    }
+}
+
+class EditHeaderViewHolder(binding: ItemEditHeaderBinding) :
+    RecyclerView.ViewHolder(binding.root) {
+
+    private val titleTxv = binding.titleTxv
+
+    fun bind(item: EditCheckedHeaderItem) {
+        titleTxv.text = titleTxv.context.resources.getQuantityString(
+            R.plurals.edit_checked_items, item.count, item.count)
     }
 }
 

@@ -27,6 +27,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.maltaisn.notes.hideKeyboard
 import com.maltaisn.notes.sync.databinding.ItemEditContentBinding
 import com.maltaisn.notes.sync.databinding.ItemEditDateBinding
+import com.maltaisn.notes.sync.databinding.ItemEditHeaderBinding
 import com.maltaisn.notes.sync.databinding.ItemEditItemAddBinding
 import com.maltaisn.notes.sync.databinding.ItemEditItemBinding
 import com.maltaisn.notes.sync.databinding.ItemEditLabelsBinding
@@ -38,7 +39,8 @@ class EditAdapter(val context: Context, val callback: Callback) :
 
     private var recyclerView: RecyclerView? = null
 
-    private val itemTouchHelper = ItemTouchHelper(DragTouchHelperCallback(context) { from, to ->
+    private val itemTouchHelper = ItemTouchHelper(DragTouchHelperCallback(
+        context, callback.moveCheckedToBottom) { from, to ->
         // submitList is not used here, since it results in a very unresponsive design.
         // Adapter and dataset are updated manually.
         notifyItemMoved(from, to)
@@ -72,12 +74,14 @@ class EditAdapter(val context: Context, val callback: Callback) :
                 .inflate(inflater, parent, false), callback)
             ViewType.ITEM_ADD.ordinal -> EditItemAddViewHolder(ItemEditItemAddBinding
                 .inflate(inflater, parent, false), callback)
+            ViewType.ITEM_CHECKED_HEADER.ordinal -> EditHeaderViewHolder(ItemEditHeaderBinding
+                .inflate(inflater, parent, false))
             ViewType.ITEM_LABELS.ordinal -> EditItemLabelsViewHolder(ItemEditLabelsBinding
                 .inflate(inflater, parent, false), callback)
             ViewType.ITEM.ordinal -> {
                 val viewHolder = EditItemViewHolder(ItemEditItemBinding
                     .inflate(inflater, parent, false), callback)
-                viewHolder.binding.dragImv.setOnTouchListener { view, event ->
+                viewHolder.dragImv.setOnTouchListener { view, event ->
                     if (event.action == MotionEvent.ACTION_DOWN && callback.isNoteDragEnabled) {
                         // Drag handle was touched. Hide keyboard and start dragging.
                         viewHolder.clearFocus()
@@ -99,6 +103,7 @@ class EditAdapter(val context: Context, val callback: Callback) :
             is EditTitleViewHolder -> holder.bind(item as EditTitleItem)
             is EditContentViewHolder -> holder.bind(item as EditContentItem)
             is EditItemViewHolder -> holder.bind(item as EditItemItem)
+            is EditHeaderViewHolder -> holder.bind(item as EditCheckedHeaderItem)
             is EditItemLabelsViewHolder -> holder.bind(item as EditItemLabelsItem)
         }
         if (holder is EditFocusableViewHolder && position == pendingFocusChange?.itemPos) {
@@ -135,6 +140,7 @@ class EditAdapter(val context: Context, val callback: Callback) :
         CONTENT,
         ITEM,
         ITEM_ADD,
+        ITEM_CHECKED_HEADER,
         ITEM_LABELS,
     }
 
@@ -143,13 +149,16 @@ class EditAdapter(val context: Context, val callback: Callback) :
          * Called when an [EditItemItem] at [pos] text is changed by user,
          * either from the keyboard or from a paste event.
          */
-        fun onNoteItemChanged(item: EditItemItem, pos: Int, isPaste: Boolean)
+        fun onNoteItemChanged(pos: Int, isPaste: Boolean)
+
+        /** Called when an [EditItemItem] at [pos] is checked or unchecked by user. */
+        fun onNoteItemCheckChanged(pos: Int, checked: Boolean)
 
         /**
          * Called when backspace is pressed when EditText selection
          * is a position 0 in an [EditItemItem] at [pos].
          */
-        fun onNoteItemBackspacePressed(item: EditItemItem, pos: Int)
+        fun onNoteItemBackspacePressed(pos: Int)
 
         /** Called when the delete button is clicked on an [EditItemItem].*/
         fun onNoteItemDeleteClicked(pos: Int)
@@ -171,5 +180,8 @@ class EditAdapter(val context: Context, val callback: Callback) :
 
         /** Whether strikethrough should be added to checked items or not. */
         val strikethroughCheckedItems: Boolean
+
+        /** Whether checked items are moved to the bottom or not. */
+        val moveCheckedToBottom: Boolean
     }
 }

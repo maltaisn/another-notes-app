@@ -29,7 +29,8 @@ import com.maltaisn.notes.sync.R
  */
 class DragTouchHelperCallback(
     context: Context,
-    private val onMove: (from: Int, to: Int) -> Unit
+    private val moveCheckedToBottom: Boolean,
+    private val onMove: (from: Int, to: Int) -> Unit,
 ) : ItemTouchHelper.Callback() {
 
     private val dragElevation = context.resources.getDimensionPixelSize(
@@ -46,7 +47,15 @@ class DragTouchHelperCallback(
         recyclerView: RecyclerView,
         current: RecyclerView.ViewHolder,
         target: RecyclerView.ViewHolder
-    ) = target is EditItemViewHolder
+    ): Boolean {
+        return if (moveCheckedToBottom) {
+            // Only unchecked items are moveable, and can't move into checked group.
+            current is EditItemViewHolder && target is EditItemViewHolder &&
+                    !current.isChecked && !target.isChecked
+        } else {
+            target is EditItemViewHolder
+        }
+    }
 
     override fun onChildDraw(
         c: Canvas,

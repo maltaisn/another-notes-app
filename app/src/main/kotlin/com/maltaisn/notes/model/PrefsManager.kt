@@ -31,7 +31,7 @@ import javax.inject.Inject
 import kotlin.time.Duration
 
 /**
- * Base preference manager. This class interacts with [SharedPreferences]
+ * Preference manager. This class interacts with [SharedPreferences]
  * so that other classes don't need knowledge of the keys and their associated type.
  */
 @OpenForTesting
@@ -47,6 +47,9 @@ class PrefsManager @Inject constructor(
 
     val strikethroughChecked: Boolean
         get() = prefs.getBoolean(STRIKETHROUGH_CHECKED, true)
+
+    val moveCheckedToBottom: Boolean
+        get() = prefs.getBoolean(MOVE_CHECKED_TO_BOTTOM, false)
 
     var listLayoutMode: NoteListLayoutMode
         get() {
@@ -136,6 +139,7 @@ class PrefsManager @Inject constructor(
         const val PREVIEW_LINES_TEXT_GRID = "preview_lines_text_grid"
         const val PREVIEW_LINES_LIST_GRID = "preview_lines_list_grid"
         const val STRIKETHROUGH_CHECKED = "strikethrough_checked"
+        const val MOVE_CHECKED_TO_BOTTOM = "move_checked_to_bottom"
         const val SHOWN_DATE = "shown_date"
         const val SWIPE_ACTION = "swipe_action"
         const val EXPORT_DATA = "export_data"

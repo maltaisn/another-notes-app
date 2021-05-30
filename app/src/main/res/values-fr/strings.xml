@@ -120,6 +120,11 @@
 
     <string name="edit_convert_keep_checked">Effacer les éléments cochés?</string>
 
+    <plurals name="edit_checked_items">
+        <item quantity="one">%d item coché</item>
+        <item quantity="other">%d items cochés</item>
+    </plurals>
+
     <!-- Reminder -->
     <string name="note_reminders">Rappels</string>
     <string name="reminder_upcoming">À venir</string>
@@ -169,6 +174,7 @@
 
     <string name="pref_group_behavior">Comportement</string>
     <string name="pref_behavior_swipe_action">Action de glissement</string>
+    <string name="pref_behavior_move_checked">Déplacer les items cochés vers le bas</string>
 
     <string name="pref_group_data">Données</string>
     <string name="pref_data_export">Exporter les données</string>

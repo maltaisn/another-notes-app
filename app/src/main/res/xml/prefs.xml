@@ -75,6 +75,12 @@
             app:useSimpleSummaryProvider="true"
             />
 
+        <SwitchPreferenceCompat
+            app:defaultValue="false"
+            app:key="move_checked_to_bottom"
+            app:title="@string/pref_behavior_move_checked"
+            />
+
     </PreferenceCategory>
 
     <PreferenceCategory app:title="@string/pref_group_data">

@@ -49,7 +49,8 @@ data class EditContentItem(
 data class EditItemItem(
     var content: EditableText,
     var checked: Boolean,
-    val editable: Boolean
+    val editable: Boolean,
+    var actualPos: Int,
 ) : EditListItem() {
 
     override val type get() = ViewType.ITEM
@@ -58,6 +59,13 @@ data class EditItemItem(
 object EditItemAddItem : EditListItem() {
 
     override val type get() = ViewType.ITEM_ADD
+}
+
+data class EditCheckedHeaderItem(
+    var count: Int
+) : EditListItem() {
+
+    override val type get() = ViewType.ITEM_CHECKED_HEADER
 }
 
 data class EditItemLabelsItem(

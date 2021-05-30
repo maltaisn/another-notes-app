@@ -124,6 +124,11 @@
 
     <string name="edit_convert_keep_checked">Remove checked items?</string>
 
+    <plurals name="edit_checked_items">
+        <item quantity="one">%d checked item</item>
+        <item quantity="other">%d checked items</item>
+    </plurals>
+
     <!-- Reminder -->
     <string name="note_reminders">Reminders</string>
     <string name="reminder_upcoming">Upcoming</string>
@@ -173,6 +178,7 @@
 
     <string name="pref_group_behavior">Behavior</string>
     <string name="pref_behavior_swipe_action">Swipe action</string>
+    <string name="pref_behavior_move_checked">Move checked items to the bottom</string>
 
     <string name="pref_group_data">Data</string>
     <string name="pref_data_export">Export data</string>
