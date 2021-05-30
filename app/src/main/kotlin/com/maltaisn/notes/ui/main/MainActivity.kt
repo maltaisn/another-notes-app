@@ -41,7 +41,6 @@ import com.maltaisn.notes.ui.navGraphViewModel
 import com.maltaisn.notes.ui.navigation.HomeDestination
 import com.maltaisn.notes.ui.observeEvent
 import com.maltaisn.notes.ui.viewModel
-import java.io.IOException
 import javax.inject.Inject
 import javax.inject.Provider
 
@@ -90,7 +89,7 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
         viewModel.autoExportEvent.observeEvent(this) { uri ->
             viewModel.autoExport(try {
                 contentResolver.openOutputStream(Uri.parse(uri))
-            } catch (e: IOException) {
+            } catch (e: Exception) {
                 Log.i(TAG, "Auto data export failed", e)
                 null
             })

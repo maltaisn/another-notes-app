@@ -34,7 +34,6 @@ import com.maltaisn.notes.ui.send
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import java.io.IOException
 import java.io.OutputStream
 import java.util.Date
 import javax.inject.Inject
@@ -114,7 +113,7 @@ class MainViewModel @Inject constructor(
                     }
                     prefsManager.lastAutoExportTime = System.currentTimeMillis()
                     false
-                } catch (e: IOException) {
+                } catch (e: Exception) {
                     true
                 }
             }

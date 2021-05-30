@@ -43,7 +43,6 @@ import com.maltaisn.notes.ui.common.ConfirmDialog
 import com.maltaisn.notes.ui.observeEvent
 import com.maltaisn.notes.ui.viewModel
 import com.mikepenz.aboutlibraries.LibsBuilder
-import java.io.IOException
 import java.text.DateFormat
 import javax.inject.Inject
 import javax.inject.Provider
@@ -69,7 +68,7 @@ class SettingsFragment : PreferenceFragmentCompat(), ConfirmDialog.Callback {
             if (result.resultCode == Activity.RESULT_OK && uri != null) {
                 val output = try {
                     context.contentResolver.openOutputStream(uri)
-                } catch (e: IOException) {
+                } catch (e: Exception) {
                     Log.i(TAG, "Data export failed", e)
                     null
                 }
@@ -88,7 +87,7 @@ class SettingsFragment : PreferenceFragmentCompat(), ConfirmDialog.Callback {
                     val cr = context.contentResolver
                     cr.takePersistableUriPermission(uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
                     cr.openOutputStream(uri)
-                } catch (e: IOException) {
+                } catch (e: Exception) {
                     Log.i(TAG, "Data export failed", e)
                     null
                 }
@@ -106,7 +105,7 @@ class SettingsFragment : PreferenceFragmentCompat(), ConfirmDialog.Callback {
             if (result.resultCode == Activity.RESULT_OK && uri != null) {
                 val input = try {
                     context.contentResolver.openInputStream(uri)
-                } catch (e: IOException) {
+                } catch (e: Exception) {
                     Log.i(TAG, "Data import failed", e)
                     null
                 }

@@ -29,7 +29,6 @@ import com.maltaisn.notes.sync.R
 import com.maltaisn.notes.ui.Event
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
 import javax.inject.Inject
@@ -61,7 +60,7 @@ class SettingsViewModel @Inject constructor(
                     output.write(jsonData.toByteArray())
                 }
                 showMessage(R.string.export_success)
-            } catch (e: IOException) {
+            } catch (e: Exception) {
                 showMessage(R.string.export_fail)
             }
         }
@@ -80,7 +79,7 @@ class SettingsViewModel @Inject constructor(
                 val now = System.currentTimeMillis()
                 prefsManager.lastAutoExportTime = now
                 _lastAutoExport.postValue(now)
-            } catch (e: IOException) {
+            } catch (e: Exception) {
                 showMessage(R.string.export_fail)
             }
         }
@@ -90,7 +89,7 @@ class SettingsViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             val jsonData = try {
                 input.reader().readText()
-            } catch (e: IOException) {
+            } catch (e: Exception) {
                 showMessage(R.string.import_bad_input)
                 return@launch
             }
