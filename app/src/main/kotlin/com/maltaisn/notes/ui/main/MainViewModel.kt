@@ -55,6 +55,11 @@ class MainViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
+            if (prefsManager.shouldAutoExport && prefsManager.autoExportUri == PrefsManager.AUTO_EXPORT_NO_URI) {
+                // Auto export was enabled, but setup was not completed, disable it.
+                prefsManager.disableAutoExport()
+            }
+
             // Periodically remove old notes in trash, and auto export if needed.
             while (true) {
                 notesRepository.deleteOldNotesInTrash()

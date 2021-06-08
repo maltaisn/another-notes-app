@@ -91,10 +91,8 @@ class SettingsViewModel @Inject constructor(
     }
 
     fun disableAutoExport() {
-        prefsManager.lastAutoExportTime = 0
-        prefsManager.autoExportFailed = false
+        prefsManager.disableAutoExport()
         _releasePersistableUriEvent.send(prefsManager.autoExportUri)
-        prefsManager.autoExportUri = ""
     }
 
     fun importData(input: InputStream) {

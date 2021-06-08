@@ -50,7 +50,7 @@ class PrefsManager @Inject constructor(
     val shownDateField: ShownDateField by enumPreference(SHOWN_DATE, ShownDateField.NONE)
     val maximumPreviewLabels: Int by preference(PREVIEW_LABELS, 0)
 
-    val shouldAutoExport: Boolean by preference(AUTO_EXPORT, false)
+    var shouldAutoExport: Boolean by preference(AUTO_EXPORT, false)
     var autoExportUri: String by preference(AUTO_EXPORT_URI, "")
     var autoExportFailed: Boolean by preference(AUTO_EXPORT_FAILED, false)
     var lastAutoExportTime: Long by preference(LAST_AUTO_EXPORT_TIME, 0)
@@ -79,6 +79,13 @@ class PrefsManager @Inject constructor(
             // will have no effect (or that's what I presumed at least, since it didn't work).
             PreferenceManager.setDefaultValues(context, prefsRes, true)
         }
+    }
+
+    fun disableAutoExport() {
+        shouldAutoExport = false
+        lastAutoExportTime = 0
+        autoExportFailed = false
+        autoExportUri = AUTO_EXPORT_NO_URI
     }
 
     @TestOnly
@@ -179,6 +186,8 @@ class PrefsManager @Inject constructor(
          * Minimum delay between each automatic export.
          */
         val AUTO_EXPORT_DELAY = Duration.days(1)
+
+        val AUTO_EXPORT_NO_URI = ""
     }
 }
 
