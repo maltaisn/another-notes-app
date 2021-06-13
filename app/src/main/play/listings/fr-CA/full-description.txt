@@ -11,6 +11,7 @@ Fonctionnalités:
 - Étiquettes sur les notes.
 - Rappels, y compris des rappels récurrents.
 - Recherche parmi vos notes.
+- Importation et exportation de base.
 - Thèmes clair et sombre.
 - Interface personnalisable.
 - Application open source.

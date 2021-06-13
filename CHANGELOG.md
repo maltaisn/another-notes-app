@@ -1,3 +1,11 @@
+## v1.3.0
+- Add import data feature, from exported JSON data (#11).
+- Add periodical auto export feature.
+- Add option to separate checked and unchecked items in list notes.
+- Fixed export data crash (#18).
+- Attenuated impact of potential bug where recurring alarms are not set.
+  If this happens now, launching the app will set the alarm correctly again.
+
 ## v1.2.0
 - Added reminders with notifications
     - Reminder can be added from main screen or edit screen

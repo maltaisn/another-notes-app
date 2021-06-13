@@ -9,6 +9,7 @@ Features:
 - Labeled notes.
 - Reminders, including recurring reminders.
 - Search text across all notes.
+- Basic import and export.
 - Light and dark theme support.
 - Customizable interface.
 - Open source app.

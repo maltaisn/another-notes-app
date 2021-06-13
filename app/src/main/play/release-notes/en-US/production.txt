@@ -1,9 +1,4 @@
-Many new features:
-- Reminders including recurring reminders.
-- Labels on notes.
-- Pinned notes.
-- Show date in preview.
-- More customization settings.
-- App shortcuts.
-
-A lot of bugs were fixed too.
+- Fixed export feature causing crash.
+- Add import feature for JSON data.
+- Add periodical auto export feature to a JSON file.
+- Add option to separate checked and unchecked items in list note.
