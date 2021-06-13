@@ -623,6 +623,7 @@ class EditViewModel @AssistedInject constructor(
         val item = listItems[pos] as EditItemItem
         if ('\n' in item.content.text) {
             // User inserted line breaks in list items, split it into multiple items.
+            // If this happens in the checked group when moving checked to the bottom, new items will be checked.
             val lines = item.content.text.split('\n')
             item.content.replaceAll(lines.first())
             for (listItem in listItems) {
@@ -632,9 +633,10 @@ class EditViewModel @AssistedInject constructor(
             }
             for (i in 1 until lines.size) {
                 listItems.add(pos + i, EditItemItem(DefaultEditableText(lines[i]),
-                    checked = false, editable = true, item.actualPos + i))
+                    checked = item.checked && moveCheckedToBottom, editable = true, item.actualPos + i))
             }
 
+            moveCheckedItemsToBottom() // just to update checked count
             updateListItems()
 
             // If text was pasted, set focus at the end of last items pasted.

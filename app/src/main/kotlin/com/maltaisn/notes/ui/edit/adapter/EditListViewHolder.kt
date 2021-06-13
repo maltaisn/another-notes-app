@@ -149,7 +149,11 @@ class EditItemViewHolder(binding: ItemEditItemBinding, callback: EditAdapter.Cal
             itemEdt.strikethroughText = isChecked && callback.strikethroughCheckedItems
             itemEdt.isActivated = !isChecked // Controls text color selector.
             dragImv.isInvisible = isChecked && callback.moveCheckedToBottom
-            callback.onNoteItemCheckChanged(bindingAdapterPosition, isChecked)
+
+            val pos = bindingAdapterPosition
+            if (pos != RecyclerView.NO_POSITION) {
+                callback.onNoteItemCheckChanged(pos, isChecked)
+            }
         }
 
         itemEdt.addTextChangedListener(clearSpansTextWatcher)
@@ -159,7 +163,10 @@ class EditItemViewHolder(binding: ItemEditItemBinding, callback: EditAdapter.Cal
             // item can be split into multiple items. When user enters a single line break,
             // selection is set at the beginning of new item. On paste, i.e. when more than one
             // character is entered, selection is set at the end of last new item.
-            callback.onNoteItemChanged(bindingAdapterPosition, count > 1)
+            val pos = bindingAdapterPosition
+            if (pos != RecyclerView.NO_POSITION) {
+                callback.onNoteItemChanged(pos, count > 1)
+            }
         }
         itemEdt.setOnFocusChangeListener { _, hasFocus ->
             // Only show delete icon for currently focused item.

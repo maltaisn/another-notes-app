@@ -1024,6 +1024,28 @@ class EditViewModelTest {
     }
 
     @Test
+    fun `should add new checked items if newlines inserted in checked section`() = mainCoroutineRule.runBlockingTest {
+        whenever(prefs.moveCheckedToBottom) doReturn true
+        viewModel.start(2)
+
+        val item = viewModel.editItems.getOrAwaitValue()[5] as EditItemItem
+        item.content.append("\n")
+
+        viewModel.onNoteItemChanged(5, false)
+
+        assertEquals(listOf(
+            EditDateItem(dateFor("2020-03-30").time),
+            EditTitleItem("title".e, true),
+            EditItemItem("item 2".e, checked = false, editable = true, 2),
+            EditItemAddItem,
+            EditCheckedHeaderItem(2),
+            EditItemItem("item 1".e, checked = true, editable = true, 0),
+            EditItemItem("".e, checked = true, editable = true, 1),
+            EditItemLabelsItem(listOf(labelsRepo.requireLabelById(1))),
+        ), viewModel.editItems.getOrAwaitValue())
+    }
+
+    @Test
     fun `should delete checked items in list note (move checked to bottom)`() = mainCoroutineRule.runBlockingTest {
         viewModel.start(7)
         viewModel.deleteCheckedItems()
