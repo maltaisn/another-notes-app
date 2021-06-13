@@ -259,8 +259,6 @@ class SettingsFragment : PreferenceFragmentCompat(), ConfirmDialog.Callback {
                     .putExtra("android.content.extra.FANCY", true)
                     .putExtra("android.content.extra.SHOW_FILESIZE", true)
                     .addCategory(Intent.CATEGORY_OPENABLE)
-                    .addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION or
-                        Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION)
                 autoExportLauncher?.launch(intent)
             }
         }

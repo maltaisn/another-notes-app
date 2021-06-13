@@ -223,6 +223,7 @@ class ListNoteViewHolder(private val binding: ItemNoteListBinding) : NoteViewHol
 
     override fun bind(adapter: NoteAdapter, item: NoteItem) {
         super.bind(adapter, item)
+        // TODO some logi
 
         require(item.note.type == NoteType.LIST)
         require(itemViewHolders.isEmpty())

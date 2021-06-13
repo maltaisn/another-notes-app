@@ -23,6 +23,7 @@ import androidx.lifecycle.viewModelScope
 import com.maltaisn.notes.model.JsonManager
 import com.maltaisn.notes.model.NotesRepository
 import com.maltaisn.notes.model.PrefsManager
+import com.maltaisn.notes.model.ReminderAlarmManager
 import com.maltaisn.notes.model.entity.BlankNoteMetadata
 import com.maltaisn.notes.model.entity.ListNoteMetadata
 import com.maltaisn.notes.model.entity.Note
@@ -43,6 +44,7 @@ class MainViewModel @Inject constructor(
     private val notesRepository: NotesRepository,
     private val prefsManager: PrefsManager,
     private val jsonManager: JsonManager,
+    private val reminderAlarmManager: ReminderAlarmManager
 ) : ViewModel() {
 
     private val _editNoteEvent = MutableLiveData<Event<Long>>()
@@ -59,6 +61,10 @@ class MainViewModel @Inject constructor(
                 // Auto export was enabled, but setup was not completed, disable it.
                 prefsManager.disableAutoExport()
             }
+
+            // Update all alarms for recurring reminders in case the previous alarm wasn't triggered.
+            // This shouldn't technically happen, but there have been cases where recurring reminders failed.
+            reminderAlarmManager.updateAllAlarms()
 
             // Periodically remove old notes in trash, and auto export if needed.
             while (true) {

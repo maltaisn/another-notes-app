@@ -26,6 +26,7 @@ import kotlinx.coroutines.test.TestCoroutineScope
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Before
 import org.junit.Test
+import java.util.Calendar
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
@@ -57,6 +58,9 @@ class ReminderAlarmManagerTest {
         notesRepo.addNote(testNote(id = 6,
             reminder = Reminder.create(dateFor("2000-03-01"),
                 Recurrence(Recurrence.Period.YEARLY) { frequency = 100 }, recurFinder)))
+        notesRepo.addNote(testNote(id = 7,
+            reminder = Reminder.create(dateFor("2000-12-31T23:59:59.999"),
+                Recurrence(Recurrence.Period.YEARLY), recurFinder)))
 
         alarmCallback = MockAlarmCallback()
 
@@ -89,16 +93,17 @@ class ReminderAlarmManagerTest {
         }
 
     @Test
-    fun `should set next alarm for recurring reminder`() =
-        coroutineScope.runBlockingTest {
+    fun `should set next alarm for recurring reminder (same event)`() = coroutineScope.runBlockingTest {
             alarmManager.setNextNoteReminderAlarm(notesRepo.requireNoteById(2))
-            assertEquals(dateFor("2100-01-02").time, alarmCallback.alarms[2])
+            assertEquals(dateFor("2100-01-01").time, alarmCallback.alarms[2])
             alarmCallback.removeAlarm(2)
-            alarmManager.setNextNoteReminderAlarm(notesRepo.requireNoteById(2))
-            assertEquals(dateFor("2100-01-03").time, alarmCallback.alarms[2])
-            alarmCallback.removeAlarm(2)
-            alarmManager.setNextNoteReminderAlarm(notesRepo.requireNoteById(2))
-            assertNull(alarmCallback.alarms[2])
+        }
+
+    @Test
+    fun `should set next alarm for recurring reminder (skipping events)`() = coroutineScope.runBlockingTest {
+            alarmManager.setNextNoteReminderAlarm(notesRepo.requireNoteById(7))
+            val year = Calendar.getInstance()[Calendar.YEAR]
+            assertEquals(dateFor("$year-12-31T23:59:59.999").time, alarmCallback.alarms[7])
         }
 
     @Test

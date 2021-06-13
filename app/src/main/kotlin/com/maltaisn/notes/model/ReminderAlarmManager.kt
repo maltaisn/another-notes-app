@@ -30,36 +30,11 @@ class ReminderAlarmManager @Inject constructor(
     private val recurrenceFinder = RecurrenceFinder()
 
     suspend fun updateAllAlarms() {
-        val now = Date()
-        val notesToUpdate = mutableListOf<Note>()
-        val notes = notesRepository.getNotesWithReminder().first().asSequence().map { it.note }
-        for (note in notes) {
-            var reminder = note.reminder!!
-
-            // For recurring reminders, skip all past events and
-            // find first event that hasn't happened yet, or last event.
-            while (reminder.next.before(now)) {
-                val nextReminder = reminder.findNextReminder(recurrenceFinder)
-                if (nextReminder !== reminder) {
-                    reminder = nextReminder
-                } else {
-                    // Recurrence done, or not recurring.
-                    // Reminder will appear as overdue.
-                    break
-                }
-            }
-            if (reminder !== note.reminder) {
-                // Reminder changed, update note in database.
-                notesToUpdate += note.copy(reminder = reminder)
-            }
-
-            if (reminder.next.after(now)) {
-                alarmCallback.addAlarm(note.id, reminder.next.time)
-            } else {
-                alarmCallback.removeAlarm(note.id)
-            }
+        val updatedNotes = mutableListOf<Note>()
+        for (note in notesRepository.getNotesWithReminder().first()) {
+            updatedNotes += setNextNoteReminderAlarmInternal(note.note) ?: continue
         }
-        notesRepository.updateNotes(notesToUpdate)
+        notesRepository.updateNotes(updatedNotes)
     }
 
     fun setNoteReminderAlarm(note: Note) {
@@ -72,11 +47,40 @@ class ReminderAlarmManager @Inject constructor(
     }
 
     suspend fun setNextNoteReminderAlarm(note: Note) {
+        val updatedNote = setNextNoteReminderAlarmInternal(note)
+        if (updatedNote != null) {
+            notesRepository.updateNote(updatedNote)
+        }
+    }
+
+    private fun setNextNoteReminderAlarmInternal(note: Note): Note? {
         // Update note in database if reminder is recurring
-        val nextReminder = note.reminder?.findNextReminder(recurrenceFinder)
-        if (nextReminder != null && nextReminder !== note.reminder) {
-            notesRepository.updateNote(note.copy(reminder = nextReminder))
-            alarmCallback.addAlarm(note.id, nextReminder.next.time)
+        val now = Date()
+        var reminder = note.reminder ?: return null
+
+        // For recurring reminders, skip all past events and
+        // find first event that hasn't happened yet, or last event.
+        while (reminder.next.before(now)) {
+            val nextReminder = reminder.findNextReminder(recurrenceFinder)
+            if (nextReminder !== reminder) {
+                reminder = nextReminder
+            } else {
+                // Recurrence done, or not recurring.
+                // Reminder will appear as overdue.
+                break
+            }
+        }
+        if (reminder.next.after(now)) {
+            alarmCallback.addAlarm(note.id, reminder.next.time)
+        } else {
+            alarmCallback.removeAlarm(note.id)
+        }
+
+        return if (reminder !== note.reminder) {
+            // Reminder changed, update note in database.
+            note.copy(reminder = reminder)
+        } else {
+            null
         }
     }
 
