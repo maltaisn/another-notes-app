@@ -17,7 +17,7 @@ repositories {
 
 android {
     compileSdkVersion 30
-    buildToolsVersion "30.0.2"
+    buildToolsVersion "30.0.3"
 
     def schemasLocation = "$projectDir/schemas"
 
@@ -27,8 +27,8 @@ android {
         applicationId "com.maltaisn.notes.sync"
         minSdkVersion 21
         targetSdkVersion 30
-        versionCode appVersion.split(/\./).collect { it.padLeft(2, "0") }.sum().toInteger()
-        versionName appVersion
+        versionCode 10300
+        versionName "1.3.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
         kapt {
