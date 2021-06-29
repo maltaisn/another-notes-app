@@ -67,7 +67,7 @@
     <!-- Home -->
     <string name="note_location_active">Notater</string>
     <string name="note_location_archived">Arkivert</string>
-    <string name="note_location_deleted">Slettet</string>
+    <string name="note_location_deleted">Papirkurv</string>
     <string name="note_location_labels">Etiketter</string>
 
     <string name="note_pinned">Festet</string>
@@ -80,6 +80,11 @@
     <plurals name="note_list_item_info">
         <item quantity="one">+ %d annet listeelement</item>
         <item quantity="other">+ %d andre listeelementer</item>
+    </plurals>
+
+    <plurals name="note_list_item_info_checked">
+        <item quantity="one">+ %d avmerket element</item>
+        <item quantity="other">+ %d avmerkede elementer</item>
     </plurals>
 
     <string name="trash_reminder_message">Notater i papirkurv blir automatisk slettet etter %d dager.</string>
@@ -121,6 +126,11 @@
 
     <string name="edit_convert_keep_checked">Fjerne avmerkede elementer?</string>
 
+    <plurals name="edit_checked_items">
+        <item quantity="one">%d avmerket element</item>
+        <item quantity="other">%d avmerkede elementer</item>
+    </plurals>
+
     <!-- Reminder -->
     <string name="note_reminders">Påminnelser</string>
     <string name="reminder_upcoming">Kommende</string>
@@ -152,7 +162,7 @@
     <string name="pref_theme_light">Lyst</string>
     <string name="pref_theme_dark">Mørkt</string>
     <string name="pref_theme_system">Følg system</string>
-    <string name="pref_strikethrough_checked">Gjennomstrekmerkede listeelementer</string>
+    <string name="pref_strikethrough_checked">Gjennomstrek avmerkede listeelementer</string>
     <string name="pref_preview_labels">Maks antall etiketter i forhåndsvisning</string>
 
     <string name="pref_shown_date">Dato vist for notater</string>
@@ -169,10 +179,16 @@
 
     <string name="pref_group_behavior">Virkemåte</string>
     <string name="pref_behavior_swipe_action">Sveipehandling</string>
+    <string name="pref_behavior_move_checked">Flytt avmerkede elementer til bunnen</string>
 
     <string name="pref_group_data">Data</string>
     <string name="pref_data_export">Eksporter data</string>
     <string name="pref_data_export_summary">Eksporter notatdata som JSON</string>
+    <string name="pref_data_auto_export">Automatisk dataeksport</string>
+    <string name="pref_data_auto_export_summary">Eksporter automatisk appens data til en fil, en gang om dagen.</string>
+    <string name="pref_data_auto_export_date">(Sist eksportert %s)</string>
+    <string name="pref_data_import">Importer data</string>
+    <string name="pref_data_import_summary">Importer tidligere eksporterte JSON-data, slåes sammen med eksisterende data.</string>
     <string name="pref_data_clear">Fjern alle data</string>
     <string name="pref_data_clear_confirm_message">Alle notatdata blir fjernet permanent! Dette kan ikke bli omgjort.</string>
     <string name="pref_data_clear_success_message">Alle data ble fjernet.</string>
@@ -181,6 +197,22 @@
     <string name="pref_about_view_source">Vis på Github</string>
     <string name="pref_about_view_licenses">Åpen kildekodelisenser</string>
     <string name="pref_about_version">Versjon</string>
+
+    <!-- Import/export data messages -->
+    <string name="export_success">Data vellykket eksportert!</string>
+    <string name="export_fail">En feil oppstod under dataeksport.</string>
+    <string name="import_success">Data vellykket importert!</string>
+    <string name="import_future_version">Data ble vellykket importert! Merk at noe informasjon kan
+        ha gått tapt fordi dataene stammer fra en senere versjon.</string>
+    <string name="import_bad_input">En feil oppstod under forsøk på å lese denne filen.</string>
+    <string name="import_bad_format">Kunne ikke importere data, JSON-data er ugyldige.</string>
+    <string name="import_bad_data">Kunne ikke importere data. Noen felt har ugyldige verdier.
+        Dette kan skje hvis du importerer data fra en senere versjon, prøv å oppdatere appen.</string>
+    <string name="auto_export_message">For å aktivere automatisk eksport må en fil velges
+        for å lagre dataene. Appens data blir eksportert en gang om dagen når appen er åpnet.
+        Trykk OK for å fortsette.</string>
+    <string name="auto_export_fail">Kunne ikke eksportere data automatisk. Forsikre deg om at eksportstedet
+        fortsatt eksisterer og er tilgjengelig, så still inn automatisk eksport på nytt.</string>
 
     <!-- Content description -->
     <string name="content_descrp_open_drawer">Åpne navigeringsmeny</string>
