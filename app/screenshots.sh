@@ -1,18 +1,45 @@
 #!/bin/bash
 
+#
+# Copyright 2021 Nicolas Maltais
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
 # script to take screenshots using android emulator.
 # an androidTest class is used to take the screenshots, this is only a launcher.
 # note that the Screenshots test must be run from AS at least once before using this script.
 # also note that it will only work on Unix operating systems due to some of the commands used.
 
+# - the selected build type should be "debug"
+# - the script must be run from the app/ directory
+# - Screenshots test may have to be installed prior to running
+# - uncomment @Ignore annotation in Screenshots test
+# - set keyboard to GBoard
+
 # most of it was taken from fastlane's screengrab, but this script is easier
 # for me than to deal with their obscure configuration, plus I already use gradle play publisher.
 
+# to debug commands
+#set -x
+
 # locales for which to take screenshots
 # a directory with the locale name will be created in main/play/listings
+# comment locales to not take screenshot for them
 LOCALES=(
-  "en-US"
-  "fr-CA"
+#  "en-US"
+#  "fr-CA"
+  "es-ES"
 )
 # adb executable
 ADB=adb
@@ -22,12 +49,12 @@ PACKAGE=com.maltaisn.notes.sync.debug
 TEST_CLASS=com.maltaisn.notes.screenshot.Screenshots
 # test runner, leave empty for auto-detection
 # auto-detection might fail if multiple test apps are installed
-TEST_RUNNER= #$PACKAGE.debug.test/androidx.test.runner.AndroidJUnitRunner
+TEST_RUNNER=$PACKAGE.test/androidx.test.runner.AndroidJUnitRunner
 # adb device, leave empty for auto-detection
 # if no device is connected on startup, script will wait
 ADB_DEVICE=
 # destination folder, concatenated with locale folder in between
-DESTINATION1=temp
+DESTINATION1=src/main/play/listings
 DESTINATION2=graphics/phone-screenshots
 
 # set taking_screenshots environment variable that will be picked up by the build.gradle script
