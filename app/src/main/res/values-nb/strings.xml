@@ -151,6 +151,7 @@
     <string name="label_manage">Behandle etiketter</string>
     <string name="label_select">Velg etiketter</string>
     <string name="label_already_exists">En etikett med dette navnet finnes allerede.</string>
+    <string name="label_hidden_option">Skjul notater med denne etiketten fra de aktive og arkiverte notatseksjoner</string>
     <string name="label_empty_placeholder">Ingen etiketter opprettet</string>
     <string name="label_delete_message">Valgte etiketter blir slettet, men notatene assosiert
     til dem blir beholdt.</string>
@@ -217,6 +218,7 @@
     <!-- Content description -->
     <string name="content_descrp_open_drawer">Åpne navigeringsmeny</string>
     <string name="content_descrp_back">Gå tilbake</string>
+    <string name="content_descrp_label_hidden">Notater med denne etiketten er skjulte</string>
 
     <!-- Relative date time format -->
     <string name="date_rel_today">I dag, %s</string>
