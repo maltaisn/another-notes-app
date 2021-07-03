@@ -154,6 +154,7 @@
     <string name="label_manage">Manage labels</string>
     <string name="label_select">Select labels</string>
     <string name="label_already_exists">A label with this name already exists.</string>
+    <string name="label_hidden_option">Hide notes with this label from the active and archived note sections</string>
     <string name="label_empty_placeholder">No labels created</string>
     <string name="label_delete_message">Selected labels will be deleted, but the notes associated
     to them will be kept.</string>
@@ -222,6 +223,7 @@
     <!-- Content description -->
     <string name="content_descrp_open_drawer">Open drawer</string>
     <string name="content_descrp_back">Go back</string>
+    <string name="content_descrp_label_hidden">Notes with this label are hidden</string>
 
     <!-- Relative date time format -->
     <string name="date_rel_today">Today, %s</string>

@@ -32,13 +32,12 @@ import com.maltaisn.notes.sync.databinding.DialogLabelEditBinding
 import com.maltaisn.notes.ui.observeEvent
 import com.maltaisn.notes.ui.viewModel
 import javax.inject.Inject
-import javax.inject.Provider
 
 class LabelEditDialog : DialogFragment() {
 
     @Inject
-    lateinit var viewModelProvider: Provider<LabelEditViewModel>
-    private val viewModel by viewModel { viewModelProvider.get() }
+    lateinit var viewModelFactory: LabelEditViewModel.Factory
+    val viewModel by viewModel { viewModelFactory.create(it) }
 
     private val args: LabelEditDialogArgs by navArgs()
 
@@ -51,10 +50,14 @@ class LabelEditDialog : DialogFragment() {
         val context = requireContext()
         val binding = DialogLabelEditBinding.inflate(LayoutInflater.from(context), null, false)
 
+        val nameInput = binding.labelInput
+        val nameInputLayout = binding.labelInputLayout
+        val hiddenCheck = binding.labelHiddenChk
+
         val dialog = MaterialAlertDialogBuilder(context)
             .setView(binding.root)
             .setPositiveButton(R.string.action_ok) { _, _ ->
-                viewModel.addLabel()
+                viewModel.addLabel(hiddenCheck.isChecked)
             }
             .setNegativeButton(R.string.action_cancel, null)
             .setTitle(if (args.labelId == Label.NO_ID) {
@@ -69,37 +72,37 @@ class LabelEditDialog : DialogFragment() {
         dialog.setOnShowListener {
             val okBtn = dialog.getButton(DialogInterface.BUTTON_POSITIVE)
             viewModel.nameError.observe(this) { error ->
-                okBtn.isEnabled = !error
-                binding.labelInputLayout.error =
-                    if (error && binding.labelInput.length() > 0) {
-                        // don't show error for empty label name
-                        getString(R.string.label_already_exists)
-                    } else {
-                        null
-                    }
+                okBtn.isEnabled = error == LabelEditViewModel.Error.NONE
+                nameInputLayout.isErrorEnabled = error == LabelEditViewModel.Error.DUPLICATE
+                if (error == LabelEditViewModel.Error.DUPLICATE) {
+                    nameInputLayout.error = getString(R.string.label_already_exists)
+                }
             }
+        }
+
+        hiddenCheck.setOnCheckedChangeListener { _, isChecked ->
+            viewModel.onHiddenChanged(isChecked)
         }
 
         // Cursor must be hidden when dialog is dimissed to prevent memory leak
         // See [https://stackoverflow.com/questions/36842805/dialogfragment-leaking-memory]
-        binding.labelInput.isCursorVisible = true
+        nameInput.isCursorVisible = true
         dialog.setOnDismissListener {
-            binding.labelInput.isCursorVisible = false
+            nameInput.isCursorVisible = false
         }
 
-        val nameInput = binding.labelInput
         nameInput.doAfterTextChanged {
             viewModel.onNameChanged(it?.toString() ?: "")
         }
         nameInput.requestFocus()
-        viewModel.changeNameEvent.observeEvent(this)  { name ->
-            nameInput.setText(name)
-            nameInput.setSelection(name.length)  // put cursor at the end
+        viewModel.setLabelEvent.observeEvent(this) { label ->
+            nameInput.setText(label.name)
+            nameInput.setSelection(label.name.length)  // put cursor at the end
+            hiddenCheck.isChecked = label.hidden
         }
 
         viewModel.start(args.labelId)
 
         return dialog
     }
-
 }

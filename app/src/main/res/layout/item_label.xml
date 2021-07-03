@@ -64,6 +64,18 @@
         tools:text="Tasks"
         />
 
+    <ImageView
+        android:id="@+id/hidden_imv"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_weight="0"
+        android:layout_gravity="center_vertical"
+        android:src="@drawable/ic_eye_off"
+        app:tint="@color/material_on_surface_emphasis_medium"
+        android:tintMode="src_in"
+        android:contentDescription="@string/content_descrp_label_hidden"
+        />
+
     </LinearLayout>
 
 </FrameLayout>

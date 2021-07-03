@@ -145,7 +145,6 @@ class HomeFragment : NoteFragment(), Toolbar.OnMenuItemClickListener {
             }
             is HomeDestination.Labels -> destination.label.name
             is HomeDestination.Reminders -> getString(R.string.note_reminders)
-            else -> error("Unknown destination")
         }
     }
 

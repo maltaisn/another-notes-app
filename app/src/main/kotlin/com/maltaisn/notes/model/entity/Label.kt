@@ -44,11 +44,14 @@ data class Label(
      */
     @ColumnInfo(name = "name", index = true)
     val name: String,
-) : Parcelable {
 
-    init {
-        require(name.isNotBlank()) { "Blank label name" }
-    }
+    /**
+     * Whether the notes with this label will be hidden from active/archived destinations.
+     * These notes will only be visible in the label destinations.
+     */
+    @ColumnInfo(name = "hidden")
+    val hidden: Boolean = false,
+) : Parcelable {
 
     companion object {
         const val NO_ID = 0L

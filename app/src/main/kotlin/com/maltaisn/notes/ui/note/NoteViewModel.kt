@@ -131,6 +131,7 @@ abstract class NoteViewModel(
     val showDeleteConfirmEvent: LiveData<Event<Unit>>
         get() = _showDeletedForeverConfirmEvent
 
+    protected var noteListJob: Job? = null
     private var restoreStateJob: Job? = null
 
     init {
@@ -157,6 +158,15 @@ abstract class NoteViewModel(
 
     protected suspend fun waitForRestoredState() {
         restoreStateJob?.join()
+    }
+
+    /**
+     * Stop updating list. This is called when the fragment view is destroyed to
+     * prevent useless updates when the fragment isn't visible but the view model still exists.
+     */
+    fun stopUpdatingList() {
+        noteListJob?.cancel()
+        noteListJob = null
     }
 
     /**

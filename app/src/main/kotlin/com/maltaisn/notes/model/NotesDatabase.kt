@@ -56,7 +56,7 @@ abstract class NotesDatabase : RoomDatabase() {
 
     @Suppress("MagicNumber")
     companion object {
-        const val VERSION = 3
+        const val VERSION = 4
 
         val MIGRATION_1_2 = object : Migration(1, 2) {
             override fun migrate(database: SupportSQLiteDatabase) {
@@ -105,9 +105,19 @@ abstract class NotesDatabase : RoomDatabase() {
             }
         }
 
+        val MIGRATION_3_4 = object : Migration(3, 4) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.apply {
+                    // Add hidden attribute for labels
+                    execSQL("ALTER TABLE labels ADD COLUMN hidden INTEGER NOT NULL DEFAULT 0")
+                }
+            }
+        }
+
         val ALL_MIGRATIONS = arrayOf(
             MIGRATION_1_2,
             MIGRATION_2_3,
+            MIGRATION_3_4,
         )
     }
 }

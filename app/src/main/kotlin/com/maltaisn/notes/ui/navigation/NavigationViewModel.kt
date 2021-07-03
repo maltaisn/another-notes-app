@@ -154,21 +154,23 @@ class NavigationViewModel @AssistedInject constructor(
     }
 
     private fun restoreSelection(list: MutableList<NavigationItem>) {
-        var selectionFound = false
         for ((i, item) in list.withIndex()) {
             if (item is NavigationDestinationItem && item.id == checkedId) {
                 list[i] = item.copy(checked = true)
-                selectionFound = true
-                break
+                if (item.destination is HomeDestination) {
+                    // Set destination again to make sure observers have the update destination value.
+                    // For example in the case a label, it could become hidden or change name.
+                    _currentHomeDestination.value = item.destination
+                }
+                return
             }
         }
-        if (!selectionFound) {
-            // There's no checked destination. Only way this can happen is a checked label was
-            // removed. Go back to active notes.
-            checkedId = ITEM_ID_ACTIVE
-            list[1] = (list[1] as NavigationDestinationItem).copy(checked = true)
-            _currentHomeDestination.value = HomeDestination.Status(NoteStatus.ACTIVE)
-        }
+
+        // There's no checked destination. Only way this can happen is a checked label was
+        // removed. Go back to active notes.
+        checkedId = ITEM_ID_ACTIVE
+        list[1] = (list[1] as NavigationDestinationItem).copy(checked = true)
+        HomeDestination.Status(NoteStatus.ACTIVE)
     }
 
     private fun MutableList<NavigationItem>.addDivider() {

@@ -14,42 +14,57 @@
   limitations under the License.
   -->
 
-<FrameLayout
+<ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:paddingTop="8dp"
+    app:backgroundInsetTop="30dp"
+    app:backgroundInsetBottom="30dp"
     >
-
-    <!-- The dialog is unusable in landscape mode
-         with keyboard shown, but there's not much to do about it. -->
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/label_input_layout"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginTop="8dp"
-        app:errorEnabled="true"
-        app:hintEnabled="false"
+        android:paddingTop="8dp"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:orientation="vertical"
         >
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/label_input"
+        <!-- The dialog is unusable in landscape mode
+             with keyboard shown, but there's not much to do about it. -->
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/label_input_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            tools:text="Label text"
-            android:paddingBottom="16dp"
-            android:paddingTop="16dp"
-            android:imeOptions="actionDone|flagNoExtractUi"
-            android:singleLine="true"
-            android:maxLines="1"
-            android:maxLength="50"
-            android:nextFocusDown="@android:id/button1"
-            />
-    </com.google.android.material.textfield.TextInputLayout>
+            app:hintEnabled="false"
+            >
 
-</FrameLayout>
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/label_input"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                tools:text="Label text"
+                android:paddingBottom="16dp"
+                android:paddingTop="16dp"
+                android:imeOptions="actionDone|flagNoExtractUi"
+                android:singleLine="true"
+                android:maxLines="1"
+                android:maxLength="50"
+                android:nextFocusDown="@android:id/button1"
+                />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <CheckBox
+            android:id="@+id/label_hidden_chk"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/label_hidden_option"
+            />
+
+    </LinearLayout>
+</ScrollView>

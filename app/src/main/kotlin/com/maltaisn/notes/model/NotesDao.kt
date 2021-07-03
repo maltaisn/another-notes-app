@@ -78,10 +78,15 @@ interface NotesDao {
 
     /**
      * Get all notes with a [status], sorted by last modified date, with pinned notes first.
-     * This is used to display notes for each status.
+     * Exclude notes with a label marked as hidden, except if the note is deleted.
+     * This is used to display notes for each status destination.
      */
     @Transaction
-    @Query("SELECT * FROM notes WHERE status == :status ORDER BY pinned DESC, modified_date DESC, id")
+    @Query("""SELECT * FROM notes WHERE status == :status AND (:status == 2 OR id NOT IN 
+        (SELECT DISTINCT notes.id FROM notes JOIN label_refs ON noteId == notes.id 
+        JOIN labels ON labelId == labels.id WHERE labels.hidden == 1))
+        ORDER BY pinned DESC, modified_date DESC, id
+    """)
     fun getByStatus(status: NoteStatus): Flow<List<NoteWithLabels>>
 
     /**

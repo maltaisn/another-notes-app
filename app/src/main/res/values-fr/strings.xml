@@ -151,6 +151,7 @@
     <string name="label_manage">Étiquettes</string>
     <string name="label_select">Sélectionner</string>
     <string name="label_already_exists">Une étiquette porte déjà ce nom.</string>
+    <string name="label_hidden_option">Ne pas afficher les notes avec cette étiquette dans la section des notes actives et archivées.</string>
     <string name="label_empty_placeholder">Aucune étiquette créée</string>
     <string name="label_delete_message">Les étiquettes sélectionnées seront supprimées, mais
     les notes y étant associées seront gardées.</string>
@@ -220,6 +221,7 @@
     <!-- Content description -->
     <string name="content_descrp_open_drawer">Ouvrir la navigation</string>
     <string name="content_descrp_back">Revenir en arrière</string>
+    <string name="content_descrp_label_hidden">Les notes avec cette étiquette sont cachées</string>
 
     <!-- Relative date time format -->
     <string name="date_rel_today">Aujourd\'hui, %s</string>

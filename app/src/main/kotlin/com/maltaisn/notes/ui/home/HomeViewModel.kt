@@ -43,7 +43,6 @@ import com.maltaisn.notes.ui.note.adapter.NoteListItem
 import com.maltaisn.notes.ui.send
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import java.util.Calendar
@@ -57,8 +56,6 @@ class HomeViewModel @AssistedInject constructor(
     private val buildTypeBehavior: BuildTypeBehavior,
 ) : NoteViewModel(savedStateHandle, notesRepository, labelsRepository, prefs, reminderAlarmManager),
     NoteAdapter.Callback {
-
-    private var noteListJob: Job? = null
 
     var currentDestination: HomeDestination = HomeDestination.Status(NoteStatus.ACTIVE)
         private set
@@ -293,7 +290,8 @@ class HomeViewModel @AssistedInject constructor(
 
             val checked = isNoteSelected(note)
             // Omit the filtered label from the note since all notes have it.
-            this += NoteItem(note.id, note, noteWithLabels.labels - label, checked)
+            val labels = noteWithLabels.labels - label
+            this += NoteItem(note.id, note, labels, checked)
         }
     }
 

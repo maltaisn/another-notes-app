@@ -34,7 +34,6 @@ import com.maltaisn.notes.ui.note.adapter.NoteAdapter
 import com.maltaisn.notes.ui.note.adapter.NoteItem
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
@@ -51,8 +50,6 @@ class SearchViewModel @AssistedInject constructor(
     // No need to save this is a saved state handle, SearchView will
     // call query changed listener after it's been recreated.
     private var lastQuery = ""
-
-    private var noteListJob: Job? = null
 
     init {
         viewModelScope.launch {

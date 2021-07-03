@@ -273,6 +273,8 @@ abstract class NoteFragment : Fragment(), ActionMode.Callback, ConfirmDialog.Cal
         super.onDestroyView()
         _binding = null
 
+        viewModel.stopUpdatingList()
+
         // If navigating to another fragment while there is a selection (action mode shown),
         // action mode will stay shown on top of new fragment, it has to be destroyed.
         // `actionMode.finish` calls `onDestroyActionMode`, but we don't want to clear the

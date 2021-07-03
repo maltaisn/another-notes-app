@@ -1,7 +1,14 @@
+## v1.4.0
+- Added a label attribute to hide all notes with that label in active & archive destinations.
+The notes are still visible in the trash and in the label's destination.
+- Added Spanish translation
+- Fixed bug allowing to create two labels with the same name, and blank labels.
+- Fixed bug where the label chip showed in that label's destination after its name was changed.
+
 ## v1.3.0
-- Add import data feature, from exported JSON data (#11).
-- Add periodical auto export feature.
-- Add option to separate checked and unchecked items in list notes.
+- Added import data feature, from exported JSON data (#11).
+- Added periodical auto export feature.
+- Added option to separate checked and unchecked items in list notes.
 - Fixed export data crash (#18).
 - Attenuated impact of potential bug where recurring alarms are not set.
   If this happens now, launching the app will set the alarm correctly again.

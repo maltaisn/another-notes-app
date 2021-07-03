@@ -166,7 +166,7 @@ class DefaultJsonManager @Inject constructor(
     }
 
     companion object {
-        private const val VERSION = 3
+        private const val VERSION = 4
         private const val FIRST_VERSION = 3
     }
 }

@@ -50,7 +50,7 @@ class MigrationTest {
     @Test
     @Throws(IOException::class)
     fun migrate2To3() {
-        // Test that pinned default value is `false`.
+        // Test that pinned default value is `false`, new reminder columns defaults
         helper.createDatabase(DB_NAME, 2).apply {
             execSQL("""
                 INSERT INTO notes (id, type, title, content, metadata, added_date, modified_date, status) 
@@ -71,6 +71,26 @@ class MigrationTest {
         assertNull(cursor.getIntOrNull(4))
         assertNull(cursor.getIntOrNull(5))
         cursor.moveToNext()
+        assertEquals(0, cursor.getInt(0))
+        cursor.close()
+
+        db.close()
+    }
+
+    @Test
+    @Throws(IOException::class)
+    fun migrate3To4() {
+        // Test that default hidden status for label is false
+        helper.createDatabase(DB_NAME, 3).apply {
+            execSQL("""
+                INSERT INTO labels (id, name) VALUES (1, 'label')
+                """.trimIndent())
+            close()
+        }
+        val db = helper.runMigrationsAndValidate(DB_NAME, 4, true, NotesDatabase.MIGRATION_3_4)
+
+        val cursor = db.query("""SELECT hidden FROM labels""")
+        cursor.moveToFirst()
         assertEquals(0, cursor.getInt(0))
         cursor.close()
 

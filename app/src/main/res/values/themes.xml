@@ -61,11 +61,23 @@
         <!-- This is needed to avoid dialogs getting shrunk when in split-screen. -->
         <item name="windowMinWidthMajor">100%</item>
         <item name="windowMinWidthMinor">65%</item>
+
+        <item name="materialAlertDialogTheme">@style/MaterialAlertDialogThemeOverlay</item>
     </style>
 
     <style name="WindowAnimationTransition">
         <item name="android:windowEnterAnimation">@android:anim/fade_in</item>
         <item name="android:windowExitAnimation">@android:anim/fade_out</item>
+    </style>
+
+    <style name="MaterialAlertDialogThemeOverlay" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
+        <item name="alertDialogStyle">@style/MaterialAlertDialogStyle</item>
+    </style>
+
+    <style name="MaterialAlertDialogStyle" parent="MaterialAlertDialog.MaterialComponents">
+        <!-- Material Components set 80dp vertical inset by default. Unusable! -->
+        <item name="backgroundInsetTop">16dp</item>
+        <item name="backgroundInsetBottom">16dp</item>
     </style>
 
     <style name="ActionModeStyle" parent="Widget.AppCompat.ActionMode">

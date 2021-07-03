@@ -18,37 +18,58 @@ package com.maltaisn.notes.ui.labels
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.maltaisn.notes.model.LabelsRepository
 import com.maltaisn.notes.model.entity.Label
+import com.maltaisn.notes.ui.AssistedSavedStateViewModelFactory
 import com.maltaisn.notes.ui.Event
 import com.maltaisn.notes.ui.send
+import com.squareup.inject.assisted.Assisted
+import com.squareup.inject.assisted.AssistedInject
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
-class LabelEditViewModel @Inject constructor(
+class LabelEditViewModel @AssistedInject constructor(
     private val labelsRepository: LabelsRepository,
+    @Assisted private val savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
-    private val _changeNameEvent = MutableLiveData<Event<String>>()
-    val changeNameEvent: LiveData<Event<String>>
-        get() = _changeNameEvent
+    private val _setLabelEvent = MutableLiveData<Event<Label>>()
+    val setLabelEvent: LiveData<Event<Label>>
+        get() = _setLabelEvent
 
-    private val _nameError = MutableLiveData(true)
-    val nameError: LiveData<Boolean>
-        get() = _nameError
+    private val _labelError = MutableLiveData(Error.NONE)
+    val nameError: LiveData<Error>
+        get() = _labelError
 
-    private var label = NO_LABEL
-    private var labelName = ""
+    private var labelId = Label.NO_ID
+
+    private var labelName = savedStateHandle[KEY_NAME] ?: ""
+        set(value) {
+            field = value
+            savedStateHandle[KEY_NAME] = value
+        }
+
+    private var hidden = savedStateHandle[KEY_HIDDEN] ?: false
+        set(value) {
+            field = value
+            savedStateHandle[KEY_HIDDEN] = value
+        }
 
     fun start(labelId: Long) {
-        viewModelScope.launch {
-            val label = labelsRepository.getLabelById(labelId)
-            if (label != null) {
-                // Edit label, set name initially
-                this@LabelEditViewModel.label = label
-                _changeNameEvent.send(label.name)
+        this.labelId = labelId
+        if (KEY_NAME in savedStateHandle) {
+            _setLabelEvent.send(Label(labelId, labelName, hidden))
+        } else {
+            viewModelScope.launch {
+                val label = labelsRepository.getLabelById(labelId)
+                if (label != null) {
+                    // Edit label, set name initially
+                    _setLabelEvent.send(label)
+                } else {
+                    _setLabelEvent.send(Label(Label.NO_ID, "", false))
+                }
             }
         }
     }
@@ -58,24 +79,47 @@ class LabelEditViewModel @Inject constructor(
         viewModelScope.launch {
             // Label name must not be empty and must not exist.
             // Ignore name clash if label is the one being edited.
-            val existingLabel = labelsRepository.getLabelByName(name)
-            _nameError.value = (name.isEmpty() ||
-                    existingLabel != null && existingLabel.id != label.id)
-        }
-    }
-
-    fun addLabel() {
-        viewModelScope.launch {
-            if (label == NO_LABEL) {
-                labelsRepository.insertLabel(Label(Label.NO_ID, labelName))
+            _labelError.value = if (labelName.isEmpty()) {
+                Error.BLANK
             } else {
-                labelsRepository.updateLabel(label.copy(name = labelName))
+                val existingLabel = labelsRepository.getLabelByName(labelName)
+                if (existingLabel != null && existingLabel.id != labelId) {
+                    Error.DUPLICATE
+                } else {
+                    Error.NONE
+                }
             }
         }
     }
 
-    companion object {
-        private val NO_LABEL = Label(Label.NO_ID, "_")
+    fun onHiddenChanged(hidden: Boolean) {
+        this.hidden = hidden
     }
 
+    fun addLabel(hidden: Boolean) {
+        viewModelScope.launch {
+            if (labelId == Label.NO_ID) {
+                labelsRepository.insertLabel(Label(Label.NO_ID, labelName, hidden))
+            } else {
+                // Must use update, using insert will remove the label references despite being update on conflict.
+                labelsRepository.updateLabel(Label(labelId, labelName, hidden))
+            }
+        }
+    }
+
+    enum class Error {
+        NONE,
+        DUPLICATE,
+        BLANK
+    }
+
+    @AssistedInject.Factory
+    interface Factory : AssistedSavedStateViewModelFactory<LabelEditViewModel> {
+        override fun create(savedStateHandle: SavedStateHandle): LabelEditViewModel
+    }
+
+    companion object {
+        private val KEY_NAME = "name"
+        private val KEY_HIDDEN = "hidden"
+    }
 }
