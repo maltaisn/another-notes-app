@@ -343,6 +343,18 @@ class EditViewModel @AssistedInject constructor(
 
         // Update list items
         recreateListItems()
+
+        // Go to first focusable item
+        when (note.type) {
+            NoteType.TEXT -> {
+                val contentPos = listItems.indexOfLast { it is EditContentItem }
+                focusItemAt(contentPos, (listItems[contentPos] as EditContentItem).content.text.length, false)
+            }
+            NoteType.LIST -> {
+                val lastItemPos = listItems.indexOfLast { it is EditItemItem }
+                focusItemAt(lastItemPos, (listItems[lastItemPos] as EditItemItem).content.text.length, false)
+            }
+        }
     }
 
     fun togglePin() {

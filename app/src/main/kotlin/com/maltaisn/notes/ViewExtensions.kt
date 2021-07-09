@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Nicolas Maltais
+ * Copyright 2021 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,11 +33,14 @@ fun View.hideKeyboard() {
 
 /**
  * Try to show the keyboard from [this] view.
+ * The keyboard is shown with a 200 ms delay by default, otherwise it often doesn't work.
  */
-fun View.showKeyboard() {
+fun View.showKeyboard(delay: Long = 200L) {
     val context = this.context ?: return
-    val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-    imm.showSoftInput(this.findFocus(), 0)
+    this.postDelayed({
+        val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.showSoftInput(this.findFocus(), 0)
+    }, delay)
 }
 
 /**

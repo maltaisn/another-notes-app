@@ -24,7 +24,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.addCallback
 import androidx.appcompat.widget.Toolbar
-import androidx.core.view.postDelayed
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
@@ -102,9 +101,7 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener, ConfirmDialog.
                 viewModel.exit()
             }
             setTitle(if (args.noteId == Note.NO_ID) {
-                view.postDelayed(SHOW_KEYBOARD_INITIAL_DELAY) {
-                    view.showKeyboard()
-                }
+                view.showKeyboard()
                 R.string.edit_add_title
             } else {
                 R.string.edit_change_title
@@ -334,6 +331,5 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener, ConfirmDialog.
 
         private const val CANT_EDIT_SNACKBAR_DURATION = 5000
 
-        private const val SHOW_KEYBOARD_INITIAL_DELAY = 200L
     }
 }

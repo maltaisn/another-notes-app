@@ -301,6 +301,8 @@ class EditViewModelTest {
             EditItemAddItem,
             EditItemLabelsItem(listOf(labelsRepo.requireLabelById(1))),
         ), viewModel.editItems.getOrAwaitValue())
+
+        assertLiveDataEventSent(viewModel.focusEvent, EditViewModel.FocusChange(2, 7, false))
     }
 
     @Test
@@ -315,6 +317,8 @@ class EditViewModelTest {
             EditItemLabelsItem(listOf(labelsRepo.requireLabelById(1),
                 labelsRepo.requireLabelById(2)))
         ), viewModel.editItems.getOrAwaitValue())
+
+        assertLiveDataEventSent(viewModel.focusEvent, EditViewModel.FocusChange(2, 17, false))
     }
 
     @Test

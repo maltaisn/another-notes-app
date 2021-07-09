@@ -30,6 +30,7 @@ import androidx.core.widget.doOnTextChanged
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.chip.Chip
 import com.maltaisn.notes.hideKeyboard
+import com.maltaisn.notes.showKeyboard
 import com.maltaisn.notes.strikethroughText
 import com.maltaisn.notes.sync.R
 import com.maltaisn.notes.sync.databinding.ItemEditContentBinding
@@ -126,6 +127,7 @@ class EditContentViewHolder(binding: ItemEditContentBinding, callback: EditAdapt
     override fun setFocus(pos: Int) {
         contentEdt.requestFocus()
         contentEdt.setSelection(pos)
+        contentEdt.showKeyboard()
     }
 }
 
@@ -215,6 +217,7 @@ class EditItemViewHolder(binding: ItemEditItemBinding, callback: EditAdapter.Cal
     override fun setFocus(pos: Int) {
         itemEdt.requestFocus()
         itemEdt.setSelection(pos)
+        itemEdt.showKeyboard()
     }
 
     fun clearFocus() {

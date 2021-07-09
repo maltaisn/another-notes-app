@@ -2,8 +2,10 @@
 - Added a label attribute to hide all notes with that label in active & archive destinations.
 The notes are still visible in the trash and in the label's destination.
 - Added Spanish translation
+- Show keyboard when note is converted to text or list.
 - Fixed bug allowing to create two labels with the same name, and blank labels.
 - Fixed bug where the label chip showed in that label's destination after its name was changed.
+- Fixed keyboard not showing up on focus changes in edit screen.
 
 ## v1.3.0
 - Added import data feature, from exported JSON data (#11).

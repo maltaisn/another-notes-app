@@ -61,21 +61,46 @@ class LabelEditViewModel @AssistedInject constructor(
         this.labelId = labelId
         if (KEY_NAME in savedStateHandle) {
             _setLabelEvent.send(Label(labelId, labelName, hidden))
+            updateError()
         } else {
             viewModelScope.launch {
                 val label = labelsRepository.getLabelById(labelId)
                 if (label != null) {
                     // Edit label, set name initially
+                    labelName = label.name
+                    hidden = label.hidden
                     _setLabelEvent.send(label)
                 } else {
+                    labelName = ""
+                    hidden = false
                     _setLabelEvent.send(Label(Label.NO_ID, "", false))
                 }
+                updateError()
             }
         }
     }
 
     fun onNameChanged(name: String) {
         labelName = name.trim().replace("""\s+""".toRegex(), " ")
+        updateError()
+    }
+
+    fun onHiddenChanged(hidden: Boolean) {
+        this.hidden = hidden
+    }
+
+    fun addLabel() {
+        viewModelScope.launch {
+            if (labelId == Label.NO_ID) {
+                labelsRepository.insertLabel(Label(Label.NO_ID, labelName, hidden))
+            } else {
+                // Must use update, using insert will remove the label references despite being update on conflict.
+                labelsRepository.updateLabel(Label(labelId, labelName, hidden))
+            }
+        }
+    }
+
+    private fun updateError(){
         viewModelScope.launch {
             // Label name must not be empty and must not exist.
             // Ignore name clash if label is the one being edited.
@@ -88,21 +113,6 @@ class LabelEditViewModel @AssistedInject constructor(
                 } else {
                     Error.NONE
                 }
-            }
-        }
-    }
-
-    fun onHiddenChanged(hidden: Boolean) {
-        this.hidden = hidden
-    }
-
-    fun addLabel(hidden: Boolean) {
-        viewModelScope.launch {
-            if (labelId == Label.NO_ID) {
-                labelsRepository.insertLabel(Label(Label.NO_ID, labelName, hidden))
-            } else {
-                // Must use update, using insert will remove the label references despite being update on conflict.
-                labelsRepository.updateLabel(Label(labelId, labelName, hidden))
             }
         }
     }

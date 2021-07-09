@@ -57,7 +57,7 @@ class LabelEditDialog : DialogFragment() {
         val dialog = MaterialAlertDialogBuilder(context)
             .setView(binding.root)
             .setPositiveButton(R.string.action_ok) { _, _ ->
-                viewModel.addLabel(hiddenCheck.isChecked)
+                viewModel.addLabel()
             }
             .setNegativeButton(R.string.action_cancel, null)
             .setTitle(if (args.labelId == Label.NO_ID) {
