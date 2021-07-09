@@ -94,8 +94,8 @@ class DefaultJsonManagerTest {
             reminder = null
         ))
 
-        labelsDao.insert(Label(1, "label0"))
-        labelsDao.insert(Label(10, "label2"))
+        labelsDao.insert(Label(1, "label0", false))
+        labelsDao.insert(Label(10, "label2", true))
 
         labelsDao.insertRefs(listOf(
             LabelRef(1, 1),
@@ -104,13 +104,13 @@ class DefaultJsonManagerTest {
 
         val jsonData = jsonManager.exportJsonData()
         assertEquals("""
-{"version":3,"notes":{"1":{"type":0,"title":"note","content":"content","metadata":"{\"type\":\"blank\"}",
+{"version":4,"notes":{"1":{"type":0,"title":"note","content":"content","metadata":"{\"type\":\"blank\"}",
 "added":"2020-01-01T05:00:00.000Z","modified":"2020-02-01T05:00:00.000Z","status":0,"pinned":2,
 "reminder":{"start":"2020-03-01T05:00:00.000Z","recurrence":"RRULE:FREQ=DAILY",
 "next":"2020-03-02T05:00:00.000Z","count":1,"done":false},"labels":[1,10]},"9":{"type":1,
 "title":"list","content":"item 1\nitem 2","metadata":"{\"type\":\"list\",\"checked\":[false,true]}",
 "added":"2019-01-01T05:00:00.000Z","modified":"2019-02-01T05:00:00.000Z","status":1,"pinned":0}},
-"labels":{"1":{"name":"label0"},"10":{"name":"label2"}}}
+"labels":{"1":{"name":"label0"},"10":{"name":"label2","hidden":true}}}
         """.trim().replace("\n", ""), jsonData)
     }
 

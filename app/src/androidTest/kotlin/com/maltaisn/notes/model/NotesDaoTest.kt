@@ -147,6 +147,38 @@ class NotesDaoTest {
         assertEquals(activeNotes, noteFlow.first())
     }
 
+    @Test
+    fun getByStatusHiddenTest() = runBlocking {
+        // If a note has at least one hidden label, it shouldn't be returned by the query.
+        val labels = listOf(
+            Label(1, "label1", false),
+            Label(2, "label2", true),
+            Label(3, "label3", true),
+        )
+        for (label in labels) {
+            labelsDao.insert(label)
+        }
+
+        val labelIds = listOf(
+            listOf(),
+            listOf(1L),
+            listOf(2L),
+            listOf(3L),
+            listOf(1L, 2L),
+            listOf(2L, 3L),
+            listOf(1L, 3L),
+            listOf(1L, 2L, 3L),
+        )
+        val note = testNote(status = NoteStatus.ACTIVE)
+        for ((i, ids) in labelIds.withIndex()) {
+            val noteId = i + 1L
+            notesDao.insert(note.copy(id = noteId))
+            labelsDao.insertRefs(ids.map { LabelRef(noteId, it) })
+        }
+
+        assertEquals(listOf(1L, 2L), notesDao.getByStatus(NoteStatus.ACTIVE).first().map { it.note.id })
+    }
+
     private suspend fun insertNotesAndLabels(): List<NoteWithLabels> {
         // insert 5 notes, the first note having label1 only,
         // and each note having one more label, so that note 5 has labels 1-5.
