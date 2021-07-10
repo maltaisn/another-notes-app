@@ -62,7 +62,7 @@ class SettingsViewModel @Inject constructor(
             val jsonData = jsonManager.exportJsonData()
             try {
                 output.use {
-                    output.write(jsonData.toByteArray())
+                    output.bufferedWriter().write(jsonData)
                 }
                 showMessage(R.string.export_success)
             } catch (e: Exception) {
@@ -98,7 +98,7 @@ class SettingsViewModel @Inject constructor(
     fun importData(input: InputStream) {
         viewModelScope.launch(Dispatchers.IO) {
             val jsonData = try {
-                input.reader().readText()
+                input.bufferedReader().readText()
             } catch (e: Exception) {
                 showMessage(R.string.import_bad_input)
                 return@launch

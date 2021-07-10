@@ -76,7 +76,7 @@ interface LabelsDao {
     @Query("SELECT * FROM labels WHERE name == :name")
     suspend fun getLabelByName(name: String): Label?
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertRefs(refs: List<LabelRef>)
 
     @Delete

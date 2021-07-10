@@ -213,10 +213,11 @@ class SettingsFragment : PreferenceFragmentCompat(), ConfirmDialog.Callback {
     }
 
     private fun Intent.addExportImportExtras() =
-        this.setType("application/json")
-            .putExtra("android.content.extra.SHOW_ADVANCED", true)
-            .putExtra("android.content.extra.FANCY", true)
-            .putExtra("android.content.extra.SHOW_FILESIZE", true)
+        this.setType("*/*")
+//            .setType("application/json")
+//            .putExtra("android.content.extra.SHOW_ADVANCED", true)
+//            .putExtra("android.content.extra.FANCY", true)
+//            .putExtra("android.content.extra.SHOW_FILESIZE", true)
             .addCategory(Intent.CATEGORY_OPENABLE)
 
     override fun onDestroy() {
