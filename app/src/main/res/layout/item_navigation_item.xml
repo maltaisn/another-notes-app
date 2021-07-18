@@ -60,6 +60,7 @@
             android:layout_gravity="center_vertical"
             android:layout_marginStart="32dp"
             android:textAppearance="?textAppearanceSubtitle2"
+            android:textAlignment="viewStart"
             android:textColor="@color/color_fg_navigation_item"
             tools:textColor="?colorOnBackground"
             tools:text="Navigation item"

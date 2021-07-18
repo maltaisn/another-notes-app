@@ -26,7 +26,6 @@ import android.view.ViewGroup
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.isVisible
 import androidx.fragment.app.DialogFragment
-import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -86,7 +85,7 @@ class LabelFragment : DialogFragment(), Toolbar.OnMenuItemClickListener,
 
         binding.toolbar.apply {
             setOnMenuItemClickListener(this@LabelFragment)
-            setNavigationIcon(R.drawable.ic_arrow_left)
+            setNavigationIcon(R.drawable.ic_arrow_start)
             setNavigationOnClickListener {
                 findNavController().popBackStack()
             }

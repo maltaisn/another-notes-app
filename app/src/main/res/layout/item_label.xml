@@ -30,7 +30,7 @@
     android:focusable="true"
     >
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/label_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -41,41 +41,52 @@
         android:paddingBottom="16dp"
         >
 
-    <ImageView
-        android:id="@+id/label_imv"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:layout_weight="0"
-        android:layout_gravity="center_vertical"
-        android:src="@drawable/ic_label_outline"
-        app:tint="@color/material_on_surface_emphasis_medium"
-        android:tintMode="src_in"
-        tools:ignore="ContentDescription"
-        />
+        <ImageView
+            android:id="@+id/label_imv"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_weight="0"
+            android:src="@drawable/ic_label_outline"
+            app:tint="@color/material_on_surface_emphasis_medium"
+            android:tintMode="src_in"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            tools:ignore="ContentDescription"
+            />
 
-    <TextView
-        android:id="@+id/label_txv"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:layout_gravity="center_vertical"
-        android:layout_marginStart="32dp"
-        android:textAppearance="?textAppearanceBody1"
-        tools:text="Tasks"
-        />
+        <TextView
+            android:id="@+id/label_txv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="32dp"
+            android:layout_marginEnd="32dp"
+            android:textAppearance="?textAppearanceBody1"
+            android:textAlignment="viewStart"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@id/label_imv"
+            app:layout_constraintEnd_toStartOf="@id/hidden_imv"
+            app:layout_constraintHorizontal_bias="0"
+            app:layout_constrainedWidth="true"
+            tools:text="Tasks"
+            />
 
-    <ImageView
-        android:id="@+id/hidden_imv"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:layout_weight="0"
-        android:layout_gravity="center_vertical"
-        android:src="@drawable/ic_eye_off"
-        app:tint="@color/material_on_surface_emphasis_medium"
-        android:tintMode="src_in"
-        android:contentDescription="@string/content_descrp_label_hidden"
-        />
+        <ImageView
+            android:id="@+id/hidden_imv"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_weight="0"
+            android:src="@drawable/ic_eye_off"
+            app:tint="@color/material_on_surface_emphasis_medium"
+            android:tintMode="src_in"
+            android:contentDescription="@string/content_descrp_label_hidden"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            />
 
-    </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </FrameLayout>

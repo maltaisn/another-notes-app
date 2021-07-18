@@ -1,5 +1,5 @@
 <!--
-  Copyright 2020 Nicolas Maltais
+  Copyright 2021 Nicolas Maltais
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -14,6 +14,7 @@
   limitations under the License.
   -->
 
+<!-- This is a RTL-correct back arrow, it points towards the "start" direction. -->
 <vector
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:height="24dp"
@@ -21,6 +22,7 @@
     android:viewportHeight="24"
     android:viewportWidth="24"
     android:width="24dp"
+    android:autoMirrored="true"
     >
     <path
         android:fillColor="#FF000000"

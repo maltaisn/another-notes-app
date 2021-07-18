@@ -37,7 +37,7 @@
             android:layout_width="match_parent"
             android:layout_height="?actionBarSize"
             android:contentDescription="@string/content_descrp_back"
-            app:navigationIcon="@drawable/ic_arrow_left"
+            app:navigationIcon="@drawable/ic_arrow_start"
             app:title="@string/action_settings"
             app:titleTextColor="?colorControlNormal"
             />

@@ -38,7 +38,7 @@
             android:layout_height="?actionBarSize"
             app:menu="@menu/toolbar_edit"
             app:titleTextColor="?colorControlNormal"
-            app:navigationIcon="@drawable/ic_arrow_left"
+            app:navigationIcon="@drawable/ic_arrow_start"
             tools:title="@string/edit_add_title"
             />
 

@@ -51,7 +51,7 @@ class SearchFragment : NoteFragment() {
         val toolbar = binding.toolbar
         toolbar.apply {
             inflateMenu(R.menu.toolbar_search)
-            setNavigationIcon(R.drawable.ic_arrow_left)
+            setNavigationIcon(R.drawable.ic_arrow_start)
             setNavigationContentDescription(R.string.content_descrp_back)
             setNavigationOnClickListener {
                 view.hideKeyboard()

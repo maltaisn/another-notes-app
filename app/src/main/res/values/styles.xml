@@ -130,4 +130,15 @@
         <item name="android:inputType">none|textNoSuggestions</item>
     </style>
 
+    <style name="MaterialAlertDialogStyle" parent="MaterialAlertDialog.MaterialComponents">
+        <!-- Material Components set 80dp vertical inset by default. Unusable! -->
+        <item name="backgroundInsetTop">16dp</item>
+        <item name="backgroundInsetBottom">16dp</item>
+    </style>
+
+    <style name="ActionModeStyle" parent="Widget.AppCompat.ActionMode">
+        <item name="background">?colorPrimary</item>
+        <item name="titleTextStyle">@style/ActionModeTitleStyle</item>
+    </style>
+
 </resources>
