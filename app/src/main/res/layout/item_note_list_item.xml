@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?><!--
-  Copyright 2020 Nicolas Maltais
+  Copyright 2021 Nicolas Maltais
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -49,8 +49,10 @@
         android:ellipsize="end"
         android:maxLines="1"
         android:textAppearance="?textAppearanceBody2"
+        android:textDirection="anyRtl"
         android:textColor="@color/material_on_background_emphasis_medium"
         tools:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+        tools:ignore="RtlCompat"
         />
 
 </LinearLayout>

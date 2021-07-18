@@ -31,4 +31,6 @@
     android:maxLines="1"
     android:singleLine="true"
     android:textAppearance="?textAppearanceHeadline6"
+    android:textAlignment="viewStart"
+    android:textDirection="anyRtl"
     />

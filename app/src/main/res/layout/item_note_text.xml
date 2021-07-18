@@ -81,6 +81,7 @@
             android:textAppearance="?textAppearanceBody2"
             android:textColor="@color/material_on_background_emphasis_medium"
             android:textAlignment="viewStart"
+            android:textDirection="anyRtl"
             tools:maxLines="5"
             tools:text="Mauris rutrum massa placerat felis pharetra tristique. Nulla sed urna a dui vehicula euismod. Aenean sit amet velit feugiat, aliquet leo sed, sodales risus. Donec non justo et nisi lobortis sodales sed eget erat. Donec ac libero ut enim porta porta id at sem. Aliquam erat volutpat. In eu turpis quis eros posuere porta."
             tools:visibility="visible"

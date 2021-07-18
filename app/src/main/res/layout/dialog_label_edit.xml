@@ -55,6 +55,8 @@
                 android:maxLines="1"
                 android:maxLength="50"
                 android:nextFocusDown="@android:id/button1"
+                android:textAlignment="viewStart"
+                android:textDirection="anyRtl"
                 />
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -64,6 +66,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:text="@string/label_hidden_option"
+            android:textAlignment="viewStart"
             />
 
     </LinearLayout>
