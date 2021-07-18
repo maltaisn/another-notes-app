@@ -47,23 +47,28 @@
         <item name="android:minHeight">48dp</item>
     </style>
 
-    <style name="NoteReminderChipStyle">
-        <item name="android:textColor">@color/item_note_reminder_fg_color</item>
-        <item name="android:focusable">false</item>
-        <item name="android:clickable">false</item>
-        <item name="rippleColor">@android:color/transparent</item>
+    <style name="NoteReminderChipStyleBase">
         <item name="android:textAppearance">?textAppearanceCaption</item>
-        <item name="android:textSize">11sp</item>
-        <item name="android:ellipsize">end</item>
+        <item name="android:textColor">@color/item_note_reminder_fg_color</item>
         <item name="chipBackgroundColor">@null</item>
-        <item name="chipStartPadding">8dp</item>
-        <item name="chipMinHeight">28dp</item>
         <item name="chipStrokeColor">@color/item_note_reminder_stroke_color</item>
         <item name="chipStrokeWidth">0.7dp</item>
         <item name="chipIconSize">16dp</item>
+        <item name="chipStartPadding">8dp</item>
         <item name="chipIconTint">@color/item_note_reminder_fg_color</item>
+    </style>
+
+    <style name="NoteReminderChipStyle" parent="NoteReminderChipStyleBase">
+        <item name="android:focusable">false</item>
+        <item name="android:clickable">false</item>
+        <item name="rippleColor">@android:color/transparent</item>
+        <item name="android:textSize">11sp</item>
+        <item name="android:ellipsize">end</item>
+        <item name="chipMinHeight">28dp</item>
         <item name="chipMinTouchTargetSize">0dp</item>
     </style>
+
+    <style name="NoteReminderEditChipStyle" parent="NoteReminderChipStyleBase"/>
 
     <style name="NoteLabelChipStyle">
         <item name="android:focusable">false</item>

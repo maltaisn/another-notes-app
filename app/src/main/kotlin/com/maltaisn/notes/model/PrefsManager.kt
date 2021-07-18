@@ -188,6 +188,12 @@ class PrefsManager @Inject constructor(
         val AUTO_EXPORT_DELAY = Duration.days(1)
 
         val AUTO_EXPORT_NO_URI = ""
+
+        /**
+         * Maximum number of days in the past or the future for which
+         * the creation/modification date and reminder date are displayed in relative format.
+         */
+        const val MAXIMUM_RELATIVE_DATE_DAYS = 6
     }
 }
 

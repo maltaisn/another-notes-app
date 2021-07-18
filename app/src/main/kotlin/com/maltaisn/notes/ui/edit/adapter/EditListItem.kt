@@ -16,7 +16,6 @@
 
 package com.maltaisn.notes.ui.edit.adapter
 
-import com.maltaisn.notes.model.entity.Label
 import com.maltaisn.notes.ui.edit.adapter.EditAdapter.ViewType
 
 sealed class EditListItem {
@@ -68,11 +67,12 @@ data class EditCheckedHeaderItem(
     override val type get() = ViewType.ITEM_CHECKED_HEADER
 }
 
-data class EditItemLabelsItem(
-    val labels: List<Label>
+data class EditChipsItem(
+    // Chips can be Label or Reminder
+    val chips: List<Any>
 ) : EditListItem() {
 
-    override val type get() = ViewType.ITEM_LABELS
+    override val type get() = ViewType.ITEM_CHIPS
 }
 
 /**

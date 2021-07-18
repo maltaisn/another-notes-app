@@ -76,7 +76,7 @@ class EditAdapter(val context: Context, val callback: Callback) :
                 .inflate(inflater, parent, false), callback)
             ViewType.ITEM_CHECKED_HEADER.ordinal -> EditHeaderViewHolder(ItemEditHeaderBinding
                 .inflate(inflater, parent, false))
-            ViewType.ITEM_LABELS.ordinal -> EditItemLabelsViewHolder(ItemEditLabelsBinding
+            ViewType.ITEM_CHIPS.ordinal -> EditItemLabelsViewHolder(ItemEditLabelsBinding
                 .inflate(inflater, parent, false), callback)
             ViewType.ITEM.ordinal -> {
                 val viewHolder = EditItemViewHolder(ItemEditItemBinding
@@ -104,7 +104,7 @@ class EditAdapter(val context: Context, val callback: Callback) :
             is EditContentViewHolder -> holder.bind(item as EditContentItem)
             is EditItemViewHolder -> holder.bind(item as EditItemItem)
             is EditHeaderViewHolder -> holder.bind(item as EditCheckedHeaderItem)
-            is EditItemLabelsViewHolder -> holder.bind(item as EditItemLabelsItem)
+            is EditItemLabelsViewHolder -> holder.bind(item as EditChipsItem)
         }
         if (holder is EditFocusableViewHolder && position == pendingFocusChange?.itemPos) {
             // Apply pending focus change event.
@@ -141,7 +141,7 @@ class EditAdapter(val context: Context, val callback: Callback) :
         ITEM,
         ITEM_ADD,
         ITEM_CHECKED_HEADER,
-        ITEM_LABELS,
+        ITEM_CHIPS,
     }
 
     interface Callback {
@@ -166,8 +166,9 @@ class EditAdapter(val context: Context, val callback: Callback) :
         /** Called when [EditItemAddItem] is clicked.*/
         fun onNoteItemAddClicked(pos: Int)
 
-        /** Called when a chip in [EditItemLabelsItem] is clicked. */
+        /** Called when a chip in [EditChipsItem] is clicked. */
         fun onNoteLabelClicked()
+        fun onNoteReminderClicked()
 
         /** Called when any item is clicked on to start editing.*/
         fun onNoteClickedToEdit()

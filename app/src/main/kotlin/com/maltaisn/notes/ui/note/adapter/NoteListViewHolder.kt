@@ -27,6 +27,7 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
+import com.maltaisn.notes.model.PrefsManager
 import com.maltaisn.notes.model.entity.Label
 import com.maltaisn.notes.model.entity.ListNoteItem
 import com.maltaisn.notes.model.entity.NoteType
@@ -43,13 +44,6 @@ import com.maltaisn.notes.ui.note.HighlightHelper
 import com.maltaisn.notes.ui.note.ShownDateField
 import com.maltaisn.notes.utils.RelativeDateFormatter
 import java.text.DateFormat
-
-/**
- * Maximum number of days in the past or the future for which
- * the reminder date is displayed in relative format.
- * Also maximum days for creation date.
- */
-private const val MAXIMUM_RELATIVE_DATE_DAYS = 6
 
 /**
  * If checked items are moved to the bottom and hidden in preview,
@@ -115,7 +109,7 @@ sealed class NoteViewHolder(itemView: View) :
             ShownDateField.MODIFIED -> note.lastModifiedDate.time
             ShownDateField.NONE -> 0L
         }
-        dateTxv.text = dateFormatter.format(date, System.currentTimeMillis(), MAXIMUM_RELATIVE_DATE_DAYS)
+        dateTxv.text = dateFormatter.format(date, System.currentTimeMillis(), PrefsManager.MAXIMUM_RELATIVE_DATE_DAYS)
         dateTxv.isGone = (dateField == ShownDateField.NONE)
     }
 
@@ -124,7 +118,7 @@ sealed class NoteViewHolder(itemView: View) :
         reminderChip.isVisible = note.reminder != null
         if (note.reminder != null) {
             reminderChip.text = reminderDateFormatter.format(note.reminder.next.time,
-                System.currentTimeMillis(), MAXIMUM_RELATIVE_DATE_DAYS)
+                System.currentTimeMillis(), PrefsManager.MAXIMUM_RELATIVE_DATE_DAYS)
             reminderChip.strikethroughText = note.reminder.done
             reminderChip.isActivated = !note.reminder.done
             reminderChip.setChipIconResource(if (note.reminder.recurrence != null)

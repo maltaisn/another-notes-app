@@ -24,12 +24,14 @@ import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import androidx.core.text.getSpans
-import androidx.core.view.get
 import androidx.core.view.isInvisible
 import androidx.core.widget.doOnTextChanged
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.chip.Chip
 import com.maltaisn.notes.hideKeyboard
+import com.maltaisn.notes.model.PrefsManager
+import com.maltaisn.notes.model.entity.Label
+import com.maltaisn.notes.model.entity.Reminder
 import com.maltaisn.notes.showKeyboard
 import com.maltaisn.notes.strikethroughText
 import com.maltaisn.notes.sync.R
@@ -42,12 +44,7 @@ import com.maltaisn.notes.sync.databinding.ItemEditLabelsBinding
 import com.maltaisn.notes.sync.databinding.ItemEditTitleBinding
 import com.maltaisn.notes.ui.edit.BulletTextWatcher
 import com.maltaisn.notes.utils.RelativeDateFormatter
-
-/**
- * Maximum number of days in the past or the future for which
- * the creation date is displayed in relative format.
- */
-private const val MAXIMUM_RELATIVE_DATE_DAYS = 6
+import java.text.DateFormat
 
 /**
  * Interface implemented by any item that can have its focus position changed.
@@ -68,7 +65,7 @@ class EditDateViewHolder(binding: ItemEditDateBinding) :
 
     fun bind(item: EditDateItem) {
         dateEdt.text = dateFormatter.format(item.date, System.currentTimeMillis(),
-            MAXIMUM_RELATIVE_DATE_DAYS)
+            PrefsManager.MAXIMUM_RELATIVE_DATE_DAYS)
     }
 }
 
@@ -250,27 +247,40 @@ class EditItemLabelsViewHolder(binding: ItemEditLabelsBinding, callback: EditAda
     RecyclerView.ViewHolder(binding.root) {
 
     private val chipGroup = binding.chipGroup
-    private val chipClickListener = View.OnClickListener {
+    private val labelClickListener = View.OnClickListener {
         callback.onNoteLabelClicked()
     }
+    private val reminderClickListener = View.OnClickListener {
+        callback.onNoteReminderClicked()
+    }
 
-    fun bind(item: EditItemLabelsItem) {
-        // Reuse previously inflated chips and create new ones if needed
+    private val reminderDateFormatter = RelativeDateFormatter(itemView.resources) { date ->
+        DateFormat.getDateInstance(DateFormat.SHORT).format(date)
+    }
+
+    fun bind(item: EditChipsItem) {
         val layoutInflater = LayoutInflater.from(chipGroup.context)
-        for ((i, label) in item.labels.withIndex()) {
-            val chip = if (i < chipGroup.childCount) {
-                chipGroup[i] as Chip
-            } else {
-                val c =
-                    layoutInflater.inflate(R.layout.view_label_chip_edit, chipGroup, false) as Chip
-                chipGroup.addView(c)
-                c
+        chipGroup.removeAllViews()
+        for (chip in item.chips) {
+            when (chip) {
+                is Label -> {
+                    val view = layoutInflater.inflate(R.layout.view_edit_chip_label, chipGroup, false) as Chip
+                    chipGroup.addView(view)
+                    view.text = chip.name
+                    view.setOnClickListener(labelClickListener)
+                }
+                is Reminder -> {
+                    val view = layoutInflater.inflate(R.layout.view_edit_chip_reminder, chipGroup, false) as Chip
+                    chipGroup.addView(view)
+                    view.text = reminderDateFormatter.format(chip.next.time,
+                        System.currentTimeMillis(), PrefsManager.MAXIMUM_RELATIVE_DATE_DAYS)
+                    view.strikethroughText = chip.done
+                    view.isActivated = !chip.done
+                    view.setChipIconResource(if (chip.recurrence != null) R.drawable.ic_repeat else R.drawable.ic_alarm)
+                    view.setOnClickListener(reminderClickListener)
+                }
+                else -> error("Unknown chip type")
             }
-            chip.text = label.name
-            chip.setOnClickListener(chipClickListener)
-        }
-        if (chipGroup.childCount > item.labels.size) {
-            chipGroup.removeViews(item.labels.size, chipGroup.childCount - item.labels.size)
         }
     }
 }

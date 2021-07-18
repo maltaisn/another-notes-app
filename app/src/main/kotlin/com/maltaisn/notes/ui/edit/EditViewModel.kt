@@ -41,11 +41,11 @@ import com.maltaisn.notes.ui.ShareData
 import com.maltaisn.notes.ui.StatusChange
 import com.maltaisn.notes.ui.edit.adapter.EditAdapter
 import com.maltaisn.notes.ui.edit.adapter.EditCheckedHeaderItem
+import com.maltaisn.notes.ui.edit.adapter.EditChipsItem
 import com.maltaisn.notes.ui.edit.adapter.EditContentItem
 import com.maltaisn.notes.ui.edit.adapter.EditDateItem
 import com.maltaisn.notes.ui.edit.adapter.EditItemAddItem
 import com.maltaisn.notes.ui.edit.adapter.EditItemItem
-import com.maltaisn.notes.ui.edit.adapter.EditItemLabelsItem
 import com.maltaisn.notes.ui.edit.adapter.EditListItem
 import com.maltaisn.notes.ui.edit.adapter.EditTitleItem
 import com.maltaisn.notes.ui.edit.adapter.EditableText
@@ -377,6 +377,9 @@ class EditViewModel @AssistedInject constructor(
     fun onReminderChange(reminder: Reminder?) {
         this.reminder = reminder
         _noteReminder.value = reminder
+
+        // Update reminder chip
+        recreateListItems()
     }
 
     fun convertToText(keepCheckedItems: Boolean) {
@@ -620,8 +623,13 @@ class EditViewModel @AssistedInject constructor(
             }
         }
 
-        if (labels.isNotEmpty()) {
-            listItems += EditItemLabelsItem(labels)
+        val chips = mutableListOf<Any>()
+        if (reminder != null) {
+            chips += reminder!!
+        }
+        chips.addAll(labels)
+        if (chips.isNotEmpty()) {
+            listItems += EditChipsItem(chips)
         }
 
         updateListItems()
@@ -707,6 +715,10 @@ class EditViewModel @AssistedInject constructor(
 
     override fun onNoteLabelClicked() {
         changeLabels()
+    }
+
+    override fun onNoteReminderClicked() {
+        changeReminder()
     }
 
     override fun onNoteClickedToEdit() {

@@ -40,11 +40,11 @@ import com.maltaisn.notes.ui.StatusChange
 import com.maltaisn.notes.ui.assertLiveDataEventSent
 import com.maltaisn.notes.ui.edit.EditViewModel.DefaultEditableText
 import com.maltaisn.notes.ui.edit.adapter.EditCheckedHeaderItem
+import com.maltaisn.notes.ui.edit.adapter.EditChipsItem
 import com.maltaisn.notes.ui.edit.adapter.EditContentItem
 import com.maltaisn.notes.ui.edit.adapter.EditDateItem
 import com.maltaisn.notes.ui.edit.adapter.EditItemAddItem
 import com.maltaisn.notes.ui.edit.adapter.EditItemItem
-import com.maltaisn.notes.ui.edit.adapter.EditItemLabelsItem
 import com.maltaisn.notes.ui.edit.adapter.EditTitleItem
 import com.maltaisn.notes.ui.edit.adapter.EditableText
 import com.maltaisn.notes.ui.getOrAwaitValue
@@ -172,7 +172,7 @@ class EditViewModelTest {
         assertEquals(listOf(
             EditTitleItem("".e, true),
             EditContentItem("".e, true),
-            EditItemLabelsItem(listOf(labelsRepo.requireLabelById(1))),
+            EditChipsItem(listOf(labelsRepo.requireLabelById(1))),
         ), viewModel.editItems.getOrAwaitValue())
     }
 
@@ -187,7 +187,7 @@ class EditViewModelTest {
             EditDateItem(dateFor("2018-01-01").time),
             EditTitleItem("title".e, true),
             EditContentItem("content".e, true),
-            EditItemLabelsItem(listOf(labelsRepo.requireLabelById(1))),
+            EditChipsItem(listOf(labelsRepo.requireLabelById(1))),
         ), viewModel.editItems.getOrAwaitValue())
     }
 
@@ -204,7 +204,7 @@ class EditViewModelTest {
             EditItemItem("item 1".e, checked = true, editable = true, 0),
             EditItemItem("item 2".e, checked = false, editable = true, 1),
             EditItemAddItem,
-            EditItemLabelsItem(listOf(labelsRepo.requireLabelById(1))),
+            EditChipsItem(listOf(labelsRepo.requireLabelById(1))),
         ), viewModel.editItems.getOrAwaitValue())
     }
 
@@ -299,7 +299,7 @@ class EditViewModelTest {
             EditTitleItem("title".e, true),
             EditItemItem("content".e, checked = false, editable = true, 0),
             EditItemAddItem,
-            EditItemLabelsItem(listOf(labelsRepo.requireLabelById(1))),
+            EditChipsItem(listOf(labelsRepo.requireLabelById(1))),
         ), viewModel.editItems.getOrAwaitValue())
 
         assertLiveDataEventSent(viewModel.focusEvent, EditViewModel.FocusChange(2, 7, false))
@@ -314,7 +314,7 @@ class EditViewModelTest {
             EditDateItem(dateFor("2020-03-30").time),
             EditTitleItem("title".e, true),
             EditContentItem("- item 1\n- item 2".e, true),
-            EditItemLabelsItem(listOf(labelsRepo.requireLabelById(1),
+            EditChipsItem(listOf(labelsRepo.requireLabelById(1),
                 labelsRepo.requireLabelById(2)))
         ), viewModel.editItems.getOrAwaitValue())
 
@@ -339,7 +339,7 @@ class EditViewModelTest {
             EditDateItem(dateFor("2020-03-30").time),
             EditTitleItem("title".e, true),
             EditContentItem("- item 2".e, true),
-            EditItemLabelsItem(listOf(labelsRepo.requireLabelById(1))),
+            EditChipsItem(listOf(labelsRepo.requireLabelById(1))),
         ), viewModel.editItems.getOrAwaitValue())
     }
 
@@ -352,7 +352,7 @@ class EditViewModelTest {
             EditDateItem(dateFor("2020-03-30").time),
             EditTitleItem("title".e, true),
             EditContentItem("- item 1\n- item 2".e, true),
-            EditItemLabelsItem(listOf(labelsRepo.requireLabelById(1))),
+            EditChipsItem(listOf(labelsRepo.requireLabelById(1))),
         ), viewModel.editItems.getOrAwaitValue())
     }
 
@@ -455,7 +455,7 @@ class EditViewModelTest {
             EditItemItem("item 1".e, checked = false, editable = true, 0),
             EditItemItem("item 2".e, checked = false, editable = true, 1),
             EditItemAddItem,
-            EditItemLabelsItem(listOf(labelsRepo.requireLabelById(1),
+            EditChipsItem(listOf(labelsRepo.requireLabelById(1),
                 labelsRepo.requireLabelById(2))),
         ), viewModel.editItems.getOrAwaitValue())
         assertLiveDataEventSent(viewModel.focusEvent, EditViewModel.FocusChange(1, 12, true))
@@ -546,7 +546,7 @@ class EditViewModelTest {
             EditItemItem("item 1".e, checked = false, editable = true, 0),
             EditItemItem("item 2".e, checked = false, editable = true, 1),
             EditItemAddItem,
-            EditItemLabelsItem(listOf(labelsRepo.requireLabelById(1))),
+            EditChipsItem(listOf(labelsRepo.requireLabelById(1))),
         ), viewModel.editItems.getOrAwaitValue())
     }
 
@@ -560,7 +560,7 @@ class EditViewModelTest {
             EditTitleItem("title".e, true),
             EditItemItem("item 2".e, checked = false, editable = true, 0),
             EditItemAddItem,
-            EditItemLabelsItem(listOf(labelsRepo.requireLabelById(1))),
+            EditChipsItem(listOf(labelsRepo.requireLabelById(1))),
         ), viewModel.editItems.getOrAwaitValue())
     }
 
@@ -580,7 +580,7 @@ class EditViewModelTest {
             EditItemItem("".e, checked = false, editable = true, 1),
             EditItemItem("item 2".e, checked = false, editable = true, 2),
             EditItemAddItem,
-            EditItemLabelsItem(listOf(labelsRepo.requireLabelById(1))),
+            EditChipsItem(listOf(labelsRepo.requireLabelById(1))),
         ), viewModel.editItems.getOrAwaitValue())
         assertLiveDataEventSent(viewModel.focusEvent,
             EditViewModel.FocusChange(3, 0, false))
@@ -604,7 +604,7 @@ class EditViewModelTest {
                 EditItemItem("new item second".e, checked = false, editable = true, 2),
                 EditItemItem("item 2".e, checked = false, editable = true, 3),
                 EditItemAddItem,
-                EditItemLabelsItem(listOf(labelsRepo.requireLabelById(1))),
+                EditChipsItem(listOf(labelsRepo.requireLabelById(1))),
             ), viewModel.editItems.getOrAwaitValue())
             assertLiveDataEventSent(viewModel.focusEvent,
                 EditViewModel.FocusChange(4, 15, false))
@@ -621,7 +621,7 @@ class EditViewModelTest {
                 EditTitleItem("title".e, true),
                 EditItemItem("item 1item 2".e, checked = true, editable = true, 0),
                 EditItemAddItem,
-                EditItemLabelsItem(listOf(labelsRepo.requireLabelById(1))),
+                EditChipsItem(listOf(labelsRepo.requireLabelById(1))),
             ), viewModel.editItems.getOrAwaitValue())
             assertLiveDataEventSent(viewModel.focusEvent,
                 EditViewModel.FocusChange(2, 6, true))
@@ -639,7 +639,7 @@ class EditViewModelTest {
                 EditItemItem("item 1".e, checked = true, editable = true, 0),
                 EditItemItem("item 2".e, checked = false, editable = true, 1),
                 EditItemAddItem,
-                EditItemLabelsItem(listOf(labelsRepo.requireLabelById(1))),
+                EditChipsItem(listOf(labelsRepo.requireLabelById(1))),
             ), viewModel.editItems.getOrAwaitValue())
         }
 
@@ -653,7 +653,7 @@ class EditViewModelTest {
             EditTitleItem("title".e, true),
             EditItemItem("item 1".e, checked = true, editable = true, 0),
             EditItemAddItem,
-            EditItemLabelsItem(listOf(labelsRepo.requireLabelById(1))),
+            EditChipsItem(listOf(labelsRepo.requireLabelById(1))),
         ), viewModel.editItems.getOrAwaitValue())
         assertLiveDataEventSent(viewModel.focusEvent,
             EditViewModel.FocusChange(2, 6, true))
@@ -669,7 +669,7 @@ class EditViewModelTest {
             EditTitleItem("title".e, true),
             EditItemItem("item 2".e, checked = false, editable = true, 0),
             EditItemAddItem,
-            EditItemLabelsItem(listOf(labelsRepo.requireLabelById(1))),
+            EditChipsItem(listOf(labelsRepo.requireLabelById(1))),
         ), viewModel.editItems.getOrAwaitValue())
         assertLiveDataEventSent(viewModel.focusEvent,
             EditViewModel.FocusChange(3, 6, true))
@@ -687,7 +687,7 @@ class EditViewModelTest {
             EditItemItem("item 2".e, checked = false, editable = true, 1),
             EditItemItem("".e, checked = false, editable = true, 2),
             EditItemAddItem,
-            EditItemLabelsItem(listOf(labelsRepo.requireLabelById(1))),
+            EditChipsItem(listOf(labelsRepo.requireLabelById(1))),
         ), viewModel.editItems.getOrAwaitValue())
         assertLiveDataEventSent(viewModel.focusEvent,
             EditViewModel.FocusChange(4, 0, false))
@@ -734,7 +734,7 @@ class EditViewModelTest {
             EditItemItem("item 1".e, checked = true, editable = true, 1),
             EditItemItem("".e, checked = false, editable = true, 2),
             EditItemAddItem,
-            EditItemLabelsItem(listOf(labelsRepo.requireLabelById(1))),
+            EditChipsItem(listOf(labelsRepo.requireLabelById(1))),
         ), viewModel.editItems.getOrAwaitValue())
 
         assertEquals(listOf(
@@ -788,7 +788,7 @@ class EditViewModelTest {
                 EditDateItem(dateFor("2019-01-01").time),
                 EditTitleItem("title".e, true),
                 EditContentItem("content".e, true),
-                EditItemLabelsItem(listOf(labelsRepo.requireLabelById(1))),
+                EditChipsItem(listOf(labelsRepo.requireLabelById(1))),
             ), viewModel.editItems.getOrAwaitValue())
         }
 
@@ -803,7 +803,7 @@ class EditViewModelTest {
         assertEquals(listOf(
             EditTitleItem("title".e, true),
             EditContentItem("content".e, true),
-            EditItemLabelsItem(listOf(labelsRepo.requireLabelById(1))),
+            EditChipsItem(listOf(labelsRepo.requireLabelById(1))),
         ), viewModel.editItems.getOrAwaitValue())
     }
 
@@ -819,7 +819,7 @@ class EditViewModelTest {
             EditItemAddItem,
             EditCheckedHeaderItem(1),
             EditItemItem("item 1".e, checked = true, editable = true, 0),
-            EditItemLabelsItem(listOf(labelsRepo.requireLabelById(1))),
+            EditChipsItem(listOf(labelsRepo.requireLabelById(1))),
         ), viewModel.editItems.getOrAwaitValue())
     }
 
@@ -834,7 +834,7 @@ class EditViewModelTest {
             EditItemItem("item 1".e, checked = false, editable = true, 0),
             EditItemItem("item 2".e, checked = false, editable = true, 1),
             EditItemAddItem,
-            EditItemLabelsItem(listOf(labelsRepo.requireLabelById(1), labelsRepo.requireLabelById(2))),
+            EditChipsItem(listOf(labelsRepo.requireLabelById(1), labelsRepo.requireLabelById(2))),
         ), viewModel.editItems.getOrAwaitValue())
     }
 
@@ -863,7 +863,7 @@ class EditViewModelTest {
             EditTitleItem("title".e, true),
             EditItemItem("item 2".e, checked = false, editable = true, 0),
             EditItemAddItem,
-            EditItemLabelsItem(listOf(labelsRepo.requireLabelById(1))),
+            EditChipsItem(listOf(labelsRepo.requireLabelById(1))),
         ), viewModel.editItems.getOrAwaitValue())
     }
 
@@ -879,7 +879,7 @@ class EditViewModelTest {
             EditItemItem("item 1".e, checked = false, editable = true, 0),
             EditItemItem("item 2".e, checked = false, editable = true, 1),
             EditItemAddItem,
-            EditItemLabelsItem(listOf(labelsRepo.requireLabelById(1))),
+            EditChipsItem(listOf(labelsRepo.requireLabelById(1))),
         ), viewModel.editItems.getOrAwaitValue())
     }
 
@@ -913,7 +913,7 @@ class EditViewModelTest {
             EditItemAddItem,
             EditCheckedHeaderItem(1),
             EditItemItem("item 1".e, checked = true, editable = true, 0),
-            EditItemLabelsItem(listOf(labelsRepo.requireLabelById(1), labelsRepo.requireLabelById(2))),
+            EditChipsItem(listOf(labelsRepo.requireLabelById(1), labelsRepo.requireLabelById(2))),
         ), viewModel.editItems.getOrAwaitValue())
     }
 
@@ -1023,7 +1023,7 @@ class EditViewModelTest {
             EditItemAddItem,
             EditCheckedHeaderItem(1),
             EditItemItem("item 1".e, checked = true, editable = true, 0),
-            EditItemLabelsItem(listOf(labelsRepo.requireLabelById(1))),
+            EditChipsItem(listOf(labelsRepo.requireLabelById(1))),
         ), viewModel.editItems.getOrAwaitValue())
     }
 
@@ -1045,7 +1045,7 @@ class EditViewModelTest {
             EditCheckedHeaderItem(2),
             EditItemItem("item 1".e, checked = true, editable = true, 0),
             EditItemItem("".e, checked = true, editable = true, 1),
-            EditItemLabelsItem(listOf(labelsRepo.requireLabelById(1))),
+            EditChipsItem(listOf(labelsRepo.requireLabelById(1))),
         ), viewModel.editItems.getOrAwaitValue())
     }
 
