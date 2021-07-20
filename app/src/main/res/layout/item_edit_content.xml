@@ -27,7 +27,6 @@
     android:hint="@string/edit_hint_note_content"
     android:imeOptions="flagNoExtractUi"
     android:importantForAutofill="no"
-    android:textAlignment="viewStart"
     android:textDirection="anyRtl"
     android:inputType="textMultiLine|textLongMessage|textCapSentences|textAutoCorrect"
     android:textAppearance="?textAppearanceBody1"

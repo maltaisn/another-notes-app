@@ -20,13 +20,12 @@
         <item name="android:ellipsize">end</item>
         <item name="android:maxLines">2</item>
         <item name="android:textAppearance">?textAppearanceSubtitle1</item>
-        <item name="android:textAlignment">viewStart</item>
+        <item name="android:textDirection">anyRtl</item>
     </style>
 
     <style name="NoteDateStyle">
         <item name="android:textAppearance">?textAppearanceCaption</item>
         <item name="android:ellipsize">end</item>
-        <item name="android:textAlignment">viewStart</item>
         <item name="android:textColor">@color/material_on_surface_emphasis_medium</item>
     </style>
 

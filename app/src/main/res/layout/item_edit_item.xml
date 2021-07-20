@@ -61,11 +61,10 @@
         android:importantForAutofill="no"
         android:inputType="textMultiLine|textCapSentences|textAutoCorrect"
         android:textAppearance="?textAppearanceBody1"
-        android:textAlignment="viewStart"
         android:textDirection="anyRtl"
         android:textColor="@color/item_edit_item_text_color"
         android:textSize="15sp"
-        tools:ignore="LabelFor,RtlCompat"
+        tools:ignore="LabelFor"
         tools:text="Mauris rutrum massa placerat felis pharetra tristique. Nulla sed urna a dui vehicula euismod."
         />
 

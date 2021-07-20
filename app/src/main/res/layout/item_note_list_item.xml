@@ -52,7 +52,6 @@
         android:textDirection="anyRtl"
         android:textColor="@color/material_on_background_emphasis_medium"
         tools:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
-        tools:ignore="RtlCompat"
         />
 
 </LinearLayout>

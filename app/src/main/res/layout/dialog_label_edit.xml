@@ -55,7 +55,6 @@
                 android:maxLines="1"
                 android:maxLength="50"
                 android:nextFocusDown="@android:id/button1"
-                android:textAlignment="viewStart"
                 android:textDirection="anyRtl"
                 />
         </com.google.android.material.textfield.TextInputLayout>
