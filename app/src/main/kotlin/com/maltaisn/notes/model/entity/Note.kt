@@ -190,7 +190,7 @@ data class Note(
         NoteType.LIST -> this
         NoteType.TEXT -> {
             // Convert each list item to a text line.
-            val lines = content.split('\n')
+            val lines = content.trim().split('\n')
             val content = if (lines.all { it.isNotEmpty() && it.first() in BULLET_CHARS }) {
                 // All lines start with a bullet point, remove them.
                 buildString {

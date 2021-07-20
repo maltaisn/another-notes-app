@@ -9,6 +9,7 @@ The notes are still visible in the trash and in the label's destination.
 - Fixed crash on import due to existing label reference conflict.
 - Fixed reminder alarms not updated on data import and when all data is cleared.
 - Fixed disabled RTL layout & RTL layout improvements.
+- Fixed note conversion from text with bullets to list not removing bullets if note had whitespace before first item.
 
 ## v1.3.0
 - Added import data feature, from exported JSON data (#11).

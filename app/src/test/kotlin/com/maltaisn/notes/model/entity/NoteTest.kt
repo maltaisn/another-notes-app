@@ -142,6 +142,17 @@ class NoteTest {
         assertNoteEquals(listNote, textNote.asListNote(), ignoreId = false)
     }
 
+
+    @Test
+    fun `should convert text note with bullets to list (pre trim)`() {
+        val textNote = testNote(content = "\t\n     - 0\n* 1\n+ 2\n\n")
+        val listNote = listNote(listOf(
+            ListNoteItem("0", false),
+            ListNoteItem("1", false),
+            ListNoteItem("2", false)))
+        assertNoteEquals(listNote, textNote.asListNote(), ignoreId = false)
+    }
+
     @Test
     fun `should convert empty list note with bullet to text`() {
         val listNote = listNote(listOf(
