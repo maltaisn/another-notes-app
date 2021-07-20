@@ -46,6 +46,7 @@ class DefaultJsonManager @Inject constructor(
     private val notesDao: NotesDao,
     private val labelsDao: LabelsDao,
     private val json: Json,
+    private val reminderAlarmManager: ReminderAlarmManager,
 ) : JsonManager {
 
     override suspend fun exportJsonData(): String {
@@ -149,6 +150,9 @@ class DefaultJsonManager @Inject constructor(
             }
         }
         labelsDao.insertRefs(labelRefs)
+
+        // Update all reminders
+        reminderAlarmManager.updateAllAlarms()
 
         return if (notesData.version > VERSION) {
             // data comes from future version of app

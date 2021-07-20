@@ -25,6 +25,7 @@ import com.maltaisn.notes.model.JsonManager
 import com.maltaisn.notes.model.LabelsRepository
 import com.maltaisn.notes.model.NotesRepository
 import com.maltaisn.notes.model.PrefsManager
+import com.maltaisn.notes.model.ReminderAlarmManager
 import com.maltaisn.notes.sync.R
 import com.maltaisn.notes.ui.Event
 import com.maltaisn.notes.ui.send
@@ -39,6 +40,7 @@ class SettingsViewModel @Inject constructor(
     private val labelsRepository: LabelsRepository,
     private val prefsManager: PrefsManager,
     private val jsonManager: JsonManager,
+    private val reminderAlarmManager: ReminderAlarmManager,
 ) : ViewModel() {
 
     private val _messageEvent = MutableLiveData<Event<Int>>()
@@ -62,7 +64,8 @@ class SettingsViewModel @Inject constructor(
             val jsonData = jsonManager.exportJsonData()
             try {
                 output.use {
-                    output.bufferedWriter().write(jsonData)
+                    // bufferedWriter().write fails here for some reason...
+                    output.write(jsonData.toByteArray())
                 }
                 showMessage(R.string.export_success)
             } catch (e: Exception) {
@@ -117,6 +120,7 @@ class SettingsViewModel @Inject constructor(
         viewModelScope.launch {
             notesRepository.clearAllData()
             labelsRepository.clearAllData()
+            reminderAlarmManager.removeAllAlarms()
             showMessage(R.string.pref_data_clear_success_message)
         }
     }

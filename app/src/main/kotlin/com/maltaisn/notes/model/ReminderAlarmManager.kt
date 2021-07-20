@@ -93,6 +93,13 @@ class ReminderAlarmManager @Inject constructor(
         alarmCallback.removeAlarm(noteId)
     }
 
+    suspend fun removeAllAlarms() {
+        val notes = notesRepository.getNotesWithReminder().first()
+        for (note in notes) {
+            removeAlarm(note.note.id)
+        }
+    }
+
 }
 
 interface ReminderAlarmCallback {

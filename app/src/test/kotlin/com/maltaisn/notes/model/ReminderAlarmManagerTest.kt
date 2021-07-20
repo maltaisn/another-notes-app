@@ -131,4 +131,15 @@ class ReminderAlarmManagerTest {
             assertEquals(dateFor("2100-03-01"), notesRepo.requireNoteById(6).reminder!!.next)
         }
 
+    @Test
+    fun `should remove all alarms`() =
+        coroutineScope.runBlockingTest {
+            alarmCallback.addAlarm(1, dateFor("2021-01-01").time)
+            alarmCallback.addAlarm(6, dateFor("2000-03-01").time)
+
+            alarmManager.removeAllAlarms()
+
+            assertEquals(0, alarmCallback.alarms.size)
+        }
+
 }

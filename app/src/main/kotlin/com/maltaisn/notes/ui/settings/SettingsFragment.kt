@@ -162,7 +162,8 @@ class SettingsFragment : PreferenceFragmentCompat(), ConfirmDialog.Callback {
         }
 
         requirePreference<Preference>(PrefsManager.EXPORT_DATA).setOnPreferenceClickListener {
-            val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).addExportImportExtras()
+            val intent = Intent(Intent.ACTION_CREATE_DOCUMENT)
+                .setType("application/json").addCategory(Intent.CATEGORY_OPENABLE)
             exportDataLauncher?.launch(intent)
             true
         }
@@ -182,7 +183,9 @@ class SettingsFragment : PreferenceFragmentCompat(), ConfirmDialog.Callback {
         }
 
         requirePreference<Preference>(PrefsManager.IMPORT_DATA).setOnPreferenceClickListener {
-            val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).addExportImportExtras()
+            // note: explicit mimetype fails for some devices, see #11
+            val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
+                .setType("*/*").addCategory(Intent.CATEGORY_OPENABLE)
             importDataLauncher?.launch(intent)
             true
         }
@@ -211,14 +214,6 @@ class SettingsFragment : PreferenceFragmentCompat(), ConfirmDialog.Callback {
         // Set version name as summary text for version preference
         requirePreference<Preference>(PrefsManager.VERSION).summary = BuildConfig.VERSION_NAME
     }
-
-    private fun Intent.addExportImportExtras() =
-        this.setType("*/*")
-//            .setType("application/json")
-//            .putExtra("android.content.extra.SHOW_ADVANCED", true)
-//            .putExtra("android.content.extra.FANCY", true)
-//            .putExtra("android.content.extra.SHOW_FILESIZE", true)
-            .addCategory(Intent.CATEGORY_OPENABLE)
 
     override fun onDestroy() {
         super.onDestroy()
@@ -256,9 +251,6 @@ class SettingsFragment : PreferenceFragmentCompat(), ConfirmDialog.Callback {
             AUTOMATIC_EXPORT_DIALOG_TAG -> {
                 val intent = Intent(Intent.ACTION_CREATE_DOCUMENT)
                     .setType("application/json")
-                    .putExtra("android.content.extra.SHOW_ADVANCED", true)
-                    .putExtra("android.content.extra.FANCY", true)
-                    .putExtra("android.content.extra.SHOW_FILESIZE", true)
                     .addCategory(Intent.CATEGORY_OPENABLE)
                 autoExportLauncher?.launch(intent)
             }
