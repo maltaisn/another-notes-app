@@ -25,6 +25,8 @@ import android.view.ViewGroup
 import androidx.activity.addCallback
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.asFlow
+import androidx.lifecycle.asLiveData
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.DefaultItemAnimator
@@ -50,6 +52,7 @@ import com.maltaisn.notes.ui.navGraphViewModel
 import com.maltaisn.notes.ui.observeEvent
 import com.maltaisn.notes.ui.startSharingData
 import com.maltaisn.notes.ui.viewModel
+import kotlinx.coroutines.flow.combine
 import javax.inject.Inject
 import javax.inject.Provider
 
@@ -142,10 +145,14 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener, ConfirmDialog.
     private fun setupViewModelObservers(adapter: EditAdapter) {
         val navController = findNavController()
 
+        // Each observer must take care not to undo the work of another observer
+        // in case an attribute of a menu item is dependant on more than one criterion.
         viewModel.noteStatus.observe(viewLifecycleOwner, ::updateItemsForNoteStatus)
         viewModel.notePinned.observe(viewLifecycleOwner, ::updateItemsForPinnedStatus)
-        viewModel.noteReminder.observe(viewLifecycleOwner, ::updateItemsForReminder)
+        viewModel.noteReminder.observe(viewLifecycleOwner, ::updateItemsForStatusAndReminder)
         viewModel.noteType.observe(viewLifecycleOwner, ::updateItemsForNoteType)
+        viewModel.noteType.asFlow().combine(viewModel.noteStatus.asFlow()) { type, status -> status to type }
+            .asLiveData().observe(viewLifecycleOwner, ::updateItemsForStatusAndType)
 
         viewModel.editItems.observe(viewLifecycleOwner, adapter::submitList)
 
@@ -226,8 +233,6 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener, ConfirmDialog.
         menu.findItem(R.id.item_share).isVisible = !isTrash
         menu.findItem(R.id.item_copy).isVisible = !isTrash
         menu.findItem(R.id.item_reminder).isVisible = !isTrash
-        menu.findItem(R.id.item_uncheck_all).isVisible = !isTrash
-        menu.findItem(R.id.item_delete_checked).isVisible = !isTrash
         menu.findItem(R.id.item_delete).setTitle(if (isTrash) {
             R.string.action_delete_forever
         } else {
@@ -254,7 +259,7 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener, ConfirmDialog.
         }
     }
 
-    private fun updateItemsForReminder(reminder: Reminder?) {
+    private fun updateItemsForStatusAndReminder(reminder: Reminder?) {
         binding.toolbar.menu.findItem(R.id.item_reminder).setTitle(if (reminder != null) {
             R.string.action_reminder_edit
         } else {
@@ -264,10 +269,6 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener, ConfirmDialog.
 
     private fun updateItemsForNoteType(type: NoteType) {
         val menu = binding.toolbar.menu
-
-        val isList = type == NoteType.LIST
-        menu.findItem(R.id.item_uncheck_all).isVisible = isList
-        menu.findItem(R.id.item_delete_checked).isVisible = isList
 
         val typeItem = menu.findItem(R.id.item_type)
         when (type) {
@@ -280,6 +281,13 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener, ConfirmDialog.
                 typeItem.setTitle(R.string.action_convert_to_text)
             }
         }
+    }
+
+    private fun updateItemsForStatusAndType(state: Pair<NoteStatus, NoteType>) {
+        val menu = binding.toolbar.menu
+        val isEditableList = state.first != NoteStatus.DELETED && state.second == NoteType.LIST
+        menu.findItem(R.id.item_uncheck_all).isVisible = isEditableList
+        menu.findItem(R.id.item_delete_checked).isVisible = isEditableList
     }
 
     override fun onDestroyView() {
