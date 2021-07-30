@@ -42,7 +42,9 @@ Contributions are welcome, especially translations (see [`TRANSLATING.md`][trans
 - All code is licensed under Apache License 2.0.
 - Icons were mostly found at [Material Design Icons][mdi-icons], license can be found
 [here][mdi-icons-license].
-- Thanks to @FTno for the Norwegian translation.
+- Thanks to the following contributors for translations:
+    - Norwegian: @FTno
+    - Spanish: @urizev
 
 [changelog]: CHANGELOG.md
 [translating]: TRANSLATING.md
