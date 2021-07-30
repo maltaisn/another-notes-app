@@ -1,4 +1,4 @@
-- Fixed export feature causing crash.
-- Add import feature for JSON data.
-- Add periodical auto export feature to a JSON file.
-- Add option to separate checked and unchecked items in list note.
+- Added ability to hide all notes with a particular label.
+- Added clickable links to edit screen.
+- New Spanish translation.
+- Many bug fixes.

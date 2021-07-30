@@ -34,6 +34,7 @@ import com.maltaisn.notes.model.entity.PinnedStatus
 import com.maltaisn.notes.model.entity.Reminder
 import com.maltaisn.notes.testNote
 import com.maltaisn.recurpicker.Recurrence
+import com.nhaarman.mockitokotlin2.mock
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
 import org.junit.After
@@ -60,7 +61,7 @@ class DefaultJsonManagerTest {
         jsonManager = DefaultJsonManager(notesDao, labelsDao, Json {
             encodeDefaults = false
             ignoreUnknownKeys = true
-        })
+        }, mock())
     }
 
     @After

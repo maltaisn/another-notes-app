@@ -16,12 +16,14 @@
 
 package com.maltaisn.notes.model
 
+import com.maltaisn.notes.OpenForTesting
 import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.recurpicker.RecurrenceFinder
 import kotlinx.coroutines.flow.first
 import java.util.Date
 import javax.inject.Inject
 
+@OpenForTesting
 class ReminderAlarmManager @Inject constructor(
     private val notesRepository: NotesRepository,
     private val alarmCallback: ReminderAlarmCallback

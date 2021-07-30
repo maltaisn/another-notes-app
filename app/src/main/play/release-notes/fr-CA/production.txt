@@ -1,4 +1,4 @@
-- Correction du plantage lors de l'exportation des données.
-- Nouvelle fonctionnalité: importation des données JSON.
-- Nouvelle fonctionnalité: exportation périodique des données.
-- Nouvelle option: séparation des éléments cochés et non cochés dans les listes.
+- Ajout d'une fonctionnalité pour cacher les notes ayant une étiquette en particulier.
+- Ajout de liens cliquables lors de l'édition.
+- Nouvelle traduction en espagnol.
+- Plusieurs bugs corrigés.
