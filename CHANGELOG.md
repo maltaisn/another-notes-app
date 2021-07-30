@@ -1,6 +1,7 @@
 ## v1.4.0
 - Added a label attribute to hide all notes with that label in active & archive destinations.
 The notes are still visible in the trash and in the label's destination.
+- Added clickable links for website & email in edit screen.
 - Added Spanish translation
 - Show keyboard when note is converted to text or list.
 - Fixed bug allowing to create two labels with the same name, and blank labels.

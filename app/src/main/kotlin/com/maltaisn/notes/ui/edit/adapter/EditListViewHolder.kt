@@ -19,13 +19,17 @@ package com.maltaisn.notes.ui.edit.adapter
 import android.text.Editable
 import android.text.TextWatcher
 import android.text.format.DateUtils
+import android.text.method.LinkMovementMethod
 import android.text.style.CharacterStyle
+import android.text.util.Linkify
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import androidx.core.text.getSpans
+import androidx.core.text.util.LinkifyCompat
 import androidx.core.view.isInvisible
-import androidx.core.widget.doOnTextChanged
+import androidx.core.widget.addTextChangedListener
+import androidx.core.widget.doAfterTextChanged
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.chip.Chip
 import com.maltaisn.notes.hideKeyboard
@@ -95,6 +99,7 @@ class EditTitleViewHolder(binding: ItemEditTitleBinding, callback: EditAdapter.C
     override fun setFocus(pos: Int) {
         titleEdt.requestFocus()
         titleEdt.setSelection(pos)
+        titleEdt.showKeyboard()
     }
 }
 
@@ -106,6 +111,13 @@ class EditContentViewHolder(binding: ItemEditContentBinding, callback: EditAdapt
     init {
         contentEdt.addTextChangedListener(BulletTextWatcher())
         contentEdt.addTextChangedListener(clearSpansTextWatcher)
+        contentEdt.doAfterTextChanged { editable ->
+            // Add new links
+            LinkifyCompat.addLinks(editable ?: return@doAfterTextChanged,
+                Linkify.WEB_URLS or Linkify.EMAIL_ADDRESSES)
+        }
+        contentEdt.movementMethod = LinkMovementMethod.getInstance()  // Clickable links
+
         contentEdt.setOnClickListener {
             callback.onNoteClickedToEdit()
         }
@@ -157,16 +169,24 @@ class EditItemViewHolder(binding: ItemEditItemBinding, callback: EditAdapter.Cal
 
         itemEdt.addTextChangedListener(clearSpansTextWatcher)
 
-        itemEdt.doOnTextChanged { _, _, _, count ->
-            // This is used to detect when user enters line breaks into the input, so the
-            // item can be split into multiple items. When user enters a single line break,
-            // selection is set at the beginning of new item. On paste, i.e. when more than one
-            // character is entered, selection is set at the end of last new item.
-            val pos = bindingAdapterPosition
-            if (pos != RecyclerView.NO_POSITION) {
-                callback.onNoteItemChanged(pos, count > 1)
-            }
-        }
+        itemEdt.addTextChangedListener(
+            beforeTextChanged = { _, _, _, _ -> },
+            onTextChanged = { _, _, _, count ->
+                // This is used to detect when user enters line breaks into the input, so the
+                // item can be split into multiple items. When user enters a single line break,
+                // selection is set at the beginning of new item. On paste, i.e. when more than one
+                // character is entered, selection is set at the end of last new item.
+                val pos = bindingAdapterPosition
+                if (pos != RecyclerView.NO_POSITION) {
+                    callback.onNoteItemChanged(pos, count > 1)
+                }
+            },
+            afterTextChanged = { editable ->
+                // Add new links
+                LinkifyCompat.addLinks(editable ?: return@addTextChangedListener,
+                    Linkify.WEB_URLS or Linkify.EMAIL_ADDRESSES)
+            })
+        itemEdt.movementMethod = LinkMovementMethod.getInstance()  // Clickable links
         itemEdt.setOnFocusChangeListener { _, hasFocus ->
             // Only show delete icon for currently focused item.
             deleteImv.isInvisible = !hasFocus

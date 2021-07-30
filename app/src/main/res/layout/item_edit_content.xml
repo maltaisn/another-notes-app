@@ -31,4 +31,6 @@
     android:inputType="textMultiLine|textLongMessage|textCapSentences|textAutoCorrect"
     android:textAppearance="?textAppearanceBody1"
     android:textSize="15sp"
+    android:autoLink="web|email"
+    android:linksClickable="true"
     />

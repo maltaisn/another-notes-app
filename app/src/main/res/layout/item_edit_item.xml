@@ -64,6 +64,8 @@
         android:textDirection="anyRtl"
         android:textColor="@color/item_edit_item_text_color"
         android:textSize="15sp"
+        android:autoLink="web|email"
+        android:linksClickable="true"
         tools:ignore="LabelFor"
         tools:text="Mauris rutrum massa placerat felis pharetra tristique. Nulla sed urna a dui vehicula euismod."
         />
