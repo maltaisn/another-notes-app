@@ -10,8 +10,6 @@ There are a few additionnal steps to consider, but they are not mandatory:
 - The app also relies on a library, [recurpickerlib](https://github.com/maltaisn/recurpickerlib) (which I
   maintain), so you might want to make sure it's also available in the new language.
 
-- Add the locale code in `app/build.gradle`, on the `resConfigs` line.
-
 - Optionally, the app listing can be translated.
   Create a folder in `app/src/main/play/listings` with the locale code. The locale code must be
   one [supported by Google Play][play_store_locales]. The folder must contain the following:

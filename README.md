@@ -45,6 +45,7 @@ Contributions are welcome, especially translations (see [`TRANSLATING.md`][trans
 - Thanks to the following contributors for translations:
     - Norwegian: @FTno
     - Spanish: @urizev
+    - German: Erich Hansen
 
 [changelog]: CHANGELOG.md
 [translating]: TRANSLATING.md
