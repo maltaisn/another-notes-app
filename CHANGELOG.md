@@ -1,4 +1,5 @@
 ## Planned release
+- Fixed text change not registered in edit screen when pasting changes the Editable instance.
 - Fixed backpress not deselecting notes after opening note in edit screen.
 
 ## v1.4.0

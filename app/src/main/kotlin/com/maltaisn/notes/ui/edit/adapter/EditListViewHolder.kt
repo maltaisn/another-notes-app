@@ -77,23 +77,27 @@ class EditTitleViewHolder(binding: ItemEditTitleBinding, callback: EditAdapter.C
     RecyclerView.ViewHolder(binding.root), EditFocusableViewHolder {
 
     private val titleEdt = binding.titleEdt
+    private var item: EditTitleItem? = null
 
     init {
         titleEdt.setOnClickListener {
             callback.onNoteClickedToEdit()
         }
         titleEdt.addTextChangedListener(clearSpansTextWatcher)
+        titleEdt.doAfterTextChanged {  editable ->
+            if (editable != item?.title?.text) {
+                item?.title = AndroidEditableText(editable ?: return@doAfterTextChanged)
+            }
+        }
         titleEdt.setHorizontallyScrolling(false)
         titleEdt.maxLines = Integer.MAX_VALUE
     }
 
     fun bind(item: EditTitleItem) {
+        this.item = item
         titleEdt.isFocusable = item.editable
         titleEdt.isFocusableInTouchMode = item.editable
-
-        // Set text and change to AndroidEditableText so view model can see changes to it.
         titleEdt.setText(item.title.text)
-        item.title = AndroidEditableText(titleEdt.text)
     }
 
     override fun setFocus(pos: Int) {
@@ -107,16 +111,21 @@ class EditContentViewHolder(binding: ItemEditContentBinding, callback: EditAdapt
     RecyclerView.ViewHolder(binding.root), EditFocusableViewHolder {
 
     private val contentEdt = binding.contentEdt
+    private var item: EditContentItem? = null
 
     init {
         contentEdt.addTextChangedListener(BulletTextWatcher())
         contentEdt.addTextChangedListener(clearSpansTextWatcher)
+        contentEdt.movementMethod = LinkMovementMethod.getInstance()  // Clickable links
         contentEdt.doAfterTextChanged { editable ->
             // Add new links
             LinkifyCompat.addLinks(editable ?: return@doAfterTextChanged,
                 Linkify.WEB_URLS or Linkify.EMAIL_ADDRESSES)
+
+            if (editable != item?.content?.text) {
+                item?.content = AndroidEditableText(editable)
+            }
         }
-        contentEdt.movementMethod = LinkMovementMethod.getInstance()  // Clickable links
 
         contentEdt.setOnClickListener {
             callback.onNoteClickedToEdit()
@@ -124,13 +133,10 @@ class EditContentViewHolder(binding: ItemEditContentBinding, callback: EditAdapt
     }
 
     fun bind(item: EditContentItem) {
-        // Change note content to the EditText editable text so view model can change it.
+        this.item = item
         contentEdt.isFocusable = item.editable
         contentEdt.isFocusableInTouchMode = item.editable
-
-        // Set text and change to AndroidEditableText so view model can see changes to it.
         contentEdt.setText(item.content.text)
-        item.content = AndroidEditableText(contentEdt.text)
     }
 
     override fun setFocus(pos: Int) {
@@ -148,7 +154,7 @@ class EditItemViewHolder(binding: ItemEditItemBinding, callback: EditAdapter.Cal
     private val itemEdt = binding.contentEdt
     private val deleteImv = binding.deleteImv
 
-    private lateinit var item: EditItemItem
+    private var item: EditItemItem? = null
 
     val isChecked: Boolean
         get() = itemCheck.isChecked
@@ -172,6 +178,10 @@ class EditItemViewHolder(binding: ItemEditItemBinding, callback: EditAdapter.Cal
         itemEdt.addTextChangedListener(
             beforeTextChanged = { _, _, _, _ -> },
             onTextChanged = { _, _, _, count ->
+                if (itemEdt.text != item?.content?.text) {
+                    item?.content = AndroidEditableText(itemEdt.text)
+                }
+
                 // This is used to detect when user enters line breaks into the input, so the
                 // item can be split into multiple items. When user enters a single line break,
                 // selection is set at the beginning of new item. On paste, i.e. when more than one
@@ -218,17 +228,13 @@ class EditItemViewHolder(binding: ItemEditItemBinding, callback: EditAdapter.Cal
     fun bind(item: EditItemItem) {
         this.item = item
 
-        // Change item content to the EditText editable text so view model can change it.
         itemEdt.isFocusable = item.editable
         itemEdt.isFocusableInTouchMode = item.editable
-
-        // Set text and change to AndroidEditableText so view model can see changes to it.
         itemEdt.setText(item.content.text)
-        item.content = AndroidEditableText(itemEdt.text)
+        itemEdt.isActivated = !item.checked
 
         itemCheck.isChecked = item.checked
         itemCheck.isEnabled = item.editable
-        itemEdt.isActivated = !item.checked
     }
 
     override fun setFocus(pos: Int) {
@@ -305,6 +311,10 @@ class EditItemLabelsViewHolder(binding: ItemEditLabelsBinding, callback: EditAda
     }
 }
 
+// Wrapper around Editable to allow transparent access to text content from ViewModel.
+// Editable items have a EditableText field which is set by a text watcher added to the
+// EditText and called when text is set when item is bound.
+// Note that the Editable instance can change during the EditText lifetime.
 private class AndroidEditableText(override val text: Editable) : EditableText {
 
     override fun append(text: CharSequence) {
