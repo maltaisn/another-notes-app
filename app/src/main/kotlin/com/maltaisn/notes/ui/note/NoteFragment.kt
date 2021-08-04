@@ -276,11 +276,11 @@ abstract class NoteFragment : Fragment(), ActionMode.Callback, ConfirmDialog.Cal
         viewModel.stopUpdatingList()
 
         // If navigating to another fragment while there is a selection (action mode shown),
-        // action mode will stay shown on top of new fragment, it has to be destroyed.
+        // action mode will stay shown on top of new fragment. It has to be destroyed to hide it.
         // `actionMode.finish` calls `onDestroyActionMode`, but we don't want to clear the
         // selection, hence the `hideActionMode` flag.
-        // When view is recreated, selection observer will be fired and action mode reshown.
-        hideActionMode = true
+        // When view is recreated, the selection observer will be fired and action mode reshown.
+        hideActionMode = (actionMode != null)
         actionMode?.finish()
 
         findNavController().removeOnDestinationChangedListener(this)

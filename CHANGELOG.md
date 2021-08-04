@@ -1,3 +1,6 @@
+## Planned release
+- Fixed backpress not deselecting notes after opening note in edit screen.
+
 ## v1.4.0
 - Added a label attribute to hide all notes with that label in active & archive destinations.
 The notes are still visible in the trash and in the label's destination.
