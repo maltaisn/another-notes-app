@@ -132,14 +132,18 @@ class ReminderViewModel @AssistedInject constructor(
                 date = reminder.start.time
                 recurrence = reminder.recurrence ?: Recurrence.DOES_NOT_REPEAT
             } else {
-                // Default reminder set for tomorrow at some time.
-                calendar.apply {
-                    timeInMillis = System.currentTimeMillis()
-                    add(Calendar.DATE, 1)
-                    this[Calendar.HOUR_OF_DAY] = DEFAULT_REMINDER_HOUR
-                    this[Calendar.MINUTE] = DEFAULT_REMINDER_MIN
-                    this[Calendar.SECOND] = 0
-                    this[Calendar.MILLISECOND] = 0
+                // Check preset hours for today
+                calendar.timeInMillis = System.currentTimeMillis()
+                val currHour = calendar[Calendar.HOUR_OF_DAY]
+                val todayReminderHour = DEFAULT_REMINDER_HOURS.find { it > currHour + REMINDER_HOUR_MIN_DISTANCE }
+                calendar[Calendar.HOUR_OF_DAY] = todayReminderHour ?:
+                        DEFAULT_REMINDER_HOURS.first { it > currHour + REMINDER_HOUR_MIN_DISTANCE - 24 }
+                calendar[Calendar.MINUTE] = 0
+                calendar[Calendar.SECOND] = 0
+                calendar[Calendar.MILLISECOND] = 0
+                if (todayReminderHour == null) {
+                    // All preset hours past for today, use first preset for tomorrow
+                    calendar.add(Calendar.DATE, 1)
                 }
 
                 date = calendar.timeInMillis
@@ -326,8 +330,11 @@ class ReminderViewModel @AssistedInject constructor(
     }
 
     companion object {
-        private const val DEFAULT_REMINDER_HOUR = 8
-        private const val DEFAULT_REMINDER_MIN = 0
+        // By default, reminder will be today at the first of these preset hours not yet past,
+        // and at least REMINDER_HOUR_MIN_DISTANCE hours in the future.
+        // If no hour is applicable, then the reminder is set for tomorrow.
+        private val DEFAULT_REMINDER_HOURS = listOf(8, 13, 18, 20)
+        private const val REMINDER_HOUR_MIN_DISTANCE = 3
 
         private const val KEY_DATE = "date"
         private const val KEY_RECURRENCE = "recurrence"

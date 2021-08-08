@@ -1,4 +1,5 @@
 ## Planned release
+- Set the initial reminder time from a list of presets instead of the same hour every time.
 - Fixed text change not registered in edit screen when pasting changes the Editable instance.
 - Fixed backpress not deselecting notes after opening note in edit screen.
 
