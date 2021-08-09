@@ -214,7 +214,7 @@ class EditViewModel @AssistedInject constructor(
      * @param noteId Can be [Note.NO_ID] to create a new blank note.
      * @param labelId Can be different from [Label.NO_ID] to initially set a label on a new note.
      */
-    fun start(noteId: Long = Note.NO_ID, labelId: Long = Label.NO_ID) {
+    fun start(noteId: Long = Note.NO_ID, labelId: Long = Label.NO_ID, changeReminder: Boolean = false) {
         viewModelScope.launch {
             // If fragment was very briefly destroyed then recreated, it's possible that this job is launched
             // before the job to save the note on fragment destruction is called.
@@ -271,6 +271,10 @@ class EditViewModel @AssistedInject constructor(
             if (isFirstStart && isNewNote) {
                 // Focus on text content
                 focusItemAt(findItemPos<EditContentItem>(), 0, false)
+
+                if (changeReminder) {
+                    changeReminder()
+                }
             }
         }
     }

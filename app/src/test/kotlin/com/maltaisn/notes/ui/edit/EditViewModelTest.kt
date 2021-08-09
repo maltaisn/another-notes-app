@@ -177,6 +177,12 @@ class EditViewModelTest {
     }
 
     @Test
+    fun `should create new blank note and change reminder`() = mainCoroutineRule.runBlockingTest {
+        viewModel.start(changeReminder = true)
+        assertLiveDataEventSent(viewModel.showReminderDialogEvent, notesRepo.lastNoteId)
+    }
+
+    @Test
     fun `should edit existing text note`() = mainCoroutineRule.runBlockingTest {
         viewModel.start(1)
 

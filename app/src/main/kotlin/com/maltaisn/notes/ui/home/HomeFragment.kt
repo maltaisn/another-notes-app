@@ -117,8 +117,9 @@ class HomeFragment : NoteFragment(), Toolbar.OnMenuItemClickListener {
             }
         }
 
-        viewModel.createNoteEvent.observeEvent(viewLifecycleOwner) { labelId ->
-            findNavController().navigateSafe(NavGraphMainDirections.actionEditNote(labelId = labelId))
+        viewModel.createNoteEvent.observeEvent(viewLifecycleOwner) { settings ->
+            findNavController().navigateSafe(NavGraphMainDirections.actionEditNote(
+                labelId = settings.labelId, changeReminder = settings.initialReminder))
         }
 
         viewModel.showEmptyTrashDialogEvent.observeEvent(viewLifecycleOwner) {

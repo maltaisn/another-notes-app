@@ -70,8 +70,8 @@ class HomeViewModel @AssistedInject constructor(
     val messageEvent: LiveData<Event<Int>>
         get() = _messageEvent
 
-    private val _createNoteEvent = MutableLiveData<Event<Long>>()
-    val createNoteEvent: LiveData<Event<Long>>
+    private val _createNoteEvent = MutableLiveData<Event<NewNoteSettings>>()
+    val createNoteEvent: LiveData<Event<NewNoteSettings>>
         get() = _createNoteEvent
 
     private val _showEmptyTrashDialogEvent = MutableLiveData<Event<Unit>>()
@@ -119,11 +119,10 @@ class HomeViewModel @AssistedInject constructor(
     /** When user clicks on FAB. */
     fun createNote() {
         val destination = currentDestination
-        _createNoteEvent.send(if (destination is HomeDestination.Labels) {
-            destination.label.id
-        } else {
-            Label.NO_ID
-        })
+        _createNoteEvent.send(NewNoteSettings(
+            if (destination is HomeDestination.Labels) destination.label.id else Label.NO_ID,
+            destination is HomeDestination.Reminders
+        ))
     }
 
     /** When user clicks on empty trash. */
@@ -366,6 +365,8 @@ class HomeViewModel @AssistedInject constructor(
         }
         else -> error("Unknown destination")
     }
+
+    data class NewNoteSettings(val labelId: Long, val initialReminder: Boolean)
 
     @AssistedInject.Factory
     interface Factory : AssistedSavedStateViewModelFactory<HomeViewModel> {

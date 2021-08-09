@@ -38,8 +38,9 @@ fun View.hideKeyboard() {
 fun View.showKeyboard(delay: Long = 200L) {
     val context = this.context ?: return
     this.postDelayed({
+        val focus = this.findFocus() ?: return@postDelayed
         val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-        imm.showSoftInput(this.findFocus(), 0)
+        imm.showSoftInput(focus, 0)
     }, delay)
 }
 

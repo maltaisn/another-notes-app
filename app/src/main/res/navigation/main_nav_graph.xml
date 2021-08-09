@@ -64,6 +64,11 @@
             android:defaultValue="0L"
             app:argType="long"
             />
+        <argument
+            android:name="changeReminder"
+            android:defaultValue="false"
+            app:argType="boolean"
+            />
     </fragment>
 
     <fragment
