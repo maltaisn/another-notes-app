@@ -190,7 +190,8 @@ data class Note(
         NoteType.LIST -> this
         NoteType.TEXT -> {
             // Convert each list item to a text line.
-            val lines = content.trim().split('\n')
+            val text = content.trim()
+            val lines = text.split('\n')
             val content = if (lines.all { it.isNotEmpty() && it.first() in BULLET_CHARS }) {
                 // All lines start with a bullet point, remove them.
                 buildString {
@@ -201,7 +202,7 @@ data class Note(
                 }
             } else {
                 // List note items content are separated by line breaks, and this is already the case.
-                this.content
+                text
             }
             val metadata = ListNoteMetadata(List(lines.size) { false })
             copy(type = NoteType.LIST, content = content, metadata = metadata)

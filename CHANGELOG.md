@@ -5,6 +5,7 @@
 - Fixed text change not registered in edit screen when pasting changes the Editable instance.
 - Fixed backpress not deselecting notes after opening note in edit screen.
 - Fixed NPE in showKeyboard due to missing view focus during configuration change.
+- Fixed corrupted internal state when converting text note with trimmable blank lines to list (#38).
 
 ## v1.4.0
 - Added a label attribute to hide all notes with that label in active & archive destinations.
