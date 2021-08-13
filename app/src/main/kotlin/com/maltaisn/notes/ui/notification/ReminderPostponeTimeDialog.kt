@@ -18,6 +18,7 @@ package com.maltaisn.notes.ui.notification
 
 import android.app.Dialog
 import android.app.TimePickerDialog
+import android.content.DialogInterface
 import android.os.Bundle
 import android.text.format.DateFormat
 import androidx.fragment.app.DialogFragment
@@ -51,9 +52,17 @@ class ReminderPostponeTimeDialog : DialogFragment() {
             viewModel.setPostponeTime(hour, minute)
         }, calendar[Calendar.HOUR_OF_DAY], calendar[Calendar.MINUTE],
             DateFormat.is24HourFormat(context))
-        dialog.setOnCancelListener {
-            viewModel.cancelPostpone()
+
+        dialog.setOnShowListener {
+            dialog.getButton(DialogInterface.BUTTON_NEGATIVE).setOnClickListener {
+                viewModel.cancelPostpone()
+            }
         }
         return dialog
+    }
+
+    override fun onCancel(dialog: DialogInterface) {
+        super.onCancel(dialog)
+        viewModel.cancelPostpone()
     }
 }

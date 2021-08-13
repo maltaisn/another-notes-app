@@ -100,11 +100,12 @@ class AlarmReceiver : BroadcastReceiver() {
             val postponeIntent = Intent(context, NotificationActivity::class.java).apply {
                 action = NotificationActivity.INTENT_ACTION_POSTPONE
                 putExtra(EXTRA_NOTE_ID, noteId)
+                setFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
             }
             builder.addAction(R.drawable.ic_calendar,
                 context.getString(R.string.action_postpone),
                 PendingIntent.getActivity(context, noteId.toInt(), postponeIntent,
-                    PendingIntent.FLAG_UPDATE_CURRENT))
+                     PendingIntent.FLAG_UPDATE_CURRENT))
         }
 
         NotificationManagerCompat.from(context).notify(noteId.toInt(), builder.build())

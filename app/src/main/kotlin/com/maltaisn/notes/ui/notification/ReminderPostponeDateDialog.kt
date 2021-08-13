@@ -18,6 +18,7 @@ package com.maltaisn.notes.ui.notification
 
 import android.app.DatePickerDialog
 import android.app.Dialog
+import android.content.DialogInterface
 import android.os.Bundle
 import androidx.fragment.app.DialogFragment
 import androidx.navigation.fragment.navArgs
@@ -51,9 +52,16 @@ class ReminderPostponeDateDialog : DialogFragment() {
         }, calendar[Calendar.YEAR], calendar[Calendar.MONTH], calendar[Calendar.DATE])
         dialog.datePicker.minDate = System.currentTimeMillis()
 
-        dialog.setOnCancelListener {
-            viewModel.cancelPostpone()
+        dialog.setOnShowListener {
+            dialog.getButton(DialogInterface.BUTTON_NEGATIVE).setOnClickListener {
+                viewModel.cancelPostpone()
+            }
         }
         return dialog
+    }
+
+    override fun onCancel(dialog: DialogInterface) {
+        super.onCancel(dialog)
+        viewModel.cancelPostpone()
     }
 }

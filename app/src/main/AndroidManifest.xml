@@ -65,6 +65,8 @@
         <activity
             android:name="com.maltaisn.notes.ui.notification.NotificationActivity"
             android:theme="@style/TransparentActivity"
+            android:taskAffinity=""
+            android:excludeFromRecents="true"
             android:label="@string/app_name_short"
             >
             <intent-filter>
