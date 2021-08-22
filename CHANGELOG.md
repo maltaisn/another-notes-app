@@ -6,11 +6,14 @@
 - Fixed backpress not deselecting notes after opening note in edit screen.
 - Fixed NPE in showKeyboard due to missing view focus during configuration change.
 - Fixed corrupted internal state when converting text note with trimmable blank lines to list (#38).
+- Fixed loss of changes after changing reminder in edit screen (#40).
+- Fixed screen not responding after cancelling reminder postpone (#41).
 
 ## v1.4.0
 - Added a label attribute to hide all notes with that label in active & archive destinations.
 The notes are still visible in the trash and in the label's destination.
 - Added clickable links for website & email in edit screen.
+- Added reminder chip in edit screen.
 - Added Spanish translation
 - Show keyboard when note is converted to text or list.
 - Fixed bug allowing to create two labels with the same name, and blank labels.

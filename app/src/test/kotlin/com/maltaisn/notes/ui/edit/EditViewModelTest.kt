@@ -1071,6 +1071,42 @@ class EditViewModelTest {
         ), viewModel.editItems.getOrAwaitValue())
     }
 
+    @Test
+    fun `should keep note changes on conversion`() = mainCoroutineRule.runBlockingTest {
+        viewModel.start(1)
+
+        val contentItem = viewModel.editItems.getOrAwaitValue()[2] as EditContentItem
+        contentItem.content.replaceAll("modified")
+
+        viewModel.toggleNoteType()
+
+        assertEquals(listOf(
+            EditDateItem(dateFor("2018-01-01").time),
+            EditTitleItem("title".e, true),
+            EditItemItem("modified".e, checked = false, editable = true, 0),
+            EditItemAddItem,
+            EditChipsItem(listOf(labelsRepo.requireLabelById(1))),
+        ), viewModel.editItems.getOrAwaitValue())
+    }
+
+    @Test
+    fun `should keep note changes on reminder change`() = mainCoroutineRule.runBlockingTest {
+        viewModel.start(1)
+
+        val contentItem = viewModel.editItems.getOrAwaitValue()[2] as EditContentItem
+        contentItem.content.replaceAll("modified")
+
+        val reminder = Reminder(dateFor("2020-01-01"), null, dateFor("2020-01-01"), 1, false)
+        viewModel.onReminderChange(reminder)
+
+        assertEquals(listOf(
+            EditDateItem(dateFor("2018-01-01").time),
+            EditTitleItem("title".e, true),
+            EditContentItem("modified".e, true),
+            EditChipsItem(listOf(reminder, labelsRepo.requireLabelById(1))),
+        ), viewModel.editItems.getOrAwaitValue())
+    }
+
     private val String.e: EditableText
         get() = DefaultEditableText(this)
 

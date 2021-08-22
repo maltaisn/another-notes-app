@@ -383,6 +383,7 @@ class EditViewModel @AssistedInject constructor(
         _noteReminder.value = reminder
 
         // Update reminder chip
+        updateNote()
         recreateListItems()
     }
 
@@ -390,7 +391,7 @@ class EditViewModel @AssistedInject constructor(
         note = note.asTextNote(keepCheckedItems)
         _noteType.value = NoteType.TEXT
 
-        // Update list items
+        // Update list items (updateNote previously called in toggleNoteType)
         recreateListItems()
     }
 
@@ -566,6 +567,7 @@ class EditViewModel @AssistedInject constructor(
 
     /**
      * Update list items to match content of [note].
+     * It's important to make sure [updateNote] was called beforehand so that [note] matches UI content!
      */
     private fun recreateListItems() {
         listItems.clear()
