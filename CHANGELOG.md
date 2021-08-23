@@ -8,6 +8,9 @@
 - Fixed corrupted internal state when converting text note with trimmable blank lines to list (#38).
 - Fixed loss of changes after changing reminder in edit screen (#40).
 - Fixed screen not responding after cancelling reminder postpone (#41).
+- Fixed simultaneous notifications all opening the same note (#43).
+- Fixed notification click not working if already editing a note.
+- Fixed notification creating new note if clicked after note is deleted.
 
 ## v1.4.0
 - Added a label attribute to hide all notes with that label in active & archive destinations.

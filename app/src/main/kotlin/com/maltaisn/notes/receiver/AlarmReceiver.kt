@@ -83,7 +83,7 @@ class AlarmReceiver : BroadcastReceiver() {
             action = MainActivity.INTENT_ACTION_EDIT
             putExtra(EXTRA_NOTE_ID, noteId)
         }
-        builder.setContentIntent(PendingIntent.getActivity(context, 0, notifIntent, 0))
+        builder.setContentIntent(PendingIntent.getActivity(context, noteId.toInt(), notifIntent, 0))
 
         // Add actions for non-recurring reminders
         if (note.reminder?.recurrence == null) {

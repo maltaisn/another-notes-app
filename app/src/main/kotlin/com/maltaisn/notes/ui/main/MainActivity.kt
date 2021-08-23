@@ -84,7 +84,9 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
 
     private fun setupViewModelObservers() {
         viewModel.editItemEvent.observeEvent(this) { noteId ->
-            navController.navigateSafe(NavGraphMainDirections.actionEditNote(noteId))
+            // Allow navigating to same destination, in case notification is clicked while already editing a note.
+            // In this case the EditFragment will be opened multiple times.
+            navController.navigateSafe(NavGraphMainDirections.actionEditNote(noteId), true)
         }
 
         viewModel.autoExportEvent.observeEvent(this) { uri ->

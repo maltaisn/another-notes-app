@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Nicolas Maltais
+ * Copyright 2021 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,8 +23,9 @@ import androidx.navigation.NavGraph
 /**
  * Navigate safely to another destination with [directions], the action must be registered on current destination.
  * This will also prevent adding the same destination to the backstack more than once.
+ * @param [allowSameDest] Whether to allow navigating from the current destination to itself.
  */
-fun NavController.navigateSafe(directions: NavDirections) {
+fun NavController.navigateSafe(directions: NavDirections, allowSameDest: Boolean = false) {
     // Get action by ID. If action doesn't exist, return.
     val action = (currentDestination ?: graph).getAction(directions.actionId) ?: return
     var destId = action.destinationId
@@ -34,7 +35,7 @@ fun NavController.navigateSafe(directions: NavDirections) {
         // The real destination is the start destination of that graph so resolve it.
         destId = dest.startDestination
     }
-    if (currentDestination?.id != destId) {
+    if (allowSameDest || currentDestination?.id != destId) {
         navigate(directions)
     }
 }

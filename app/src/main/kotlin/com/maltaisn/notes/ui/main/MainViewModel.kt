@@ -111,7 +111,12 @@ class MainViewModel @Inject constructor(
     }
 
     fun editNote(id: Long) {
-        _editNoteEvent.send(id)
+        viewModelScope.launch {
+            // If note doesn't exist, EditFragment would be opened to create a new note without this check.
+            if (notesRepository.getNoteById(id) != null) {
+                _editNoteEvent.send(id)
+            }
+        }
     }
 
     fun autoExport(output: OutputStream?) {
