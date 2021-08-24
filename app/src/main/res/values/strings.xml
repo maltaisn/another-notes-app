@@ -98,6 +98,15 @@
     <string name="search_hint">Search notes</string>
     <string name="search_empty_placeholder">No notes found for your query.</string>
 
+    <string name="sort_title">Sort options</string>
+    <string name="sort_direction">Sort direction</string>
+    <string name="sort_direction_ascending">Ascending</string>
+    <string name="sort_direction_descending">Descending</string>
+    <string name="sort_field">Sort by</string>
+    <string name="sort_field_created">Date created</string>
+    <string name="sort_field_modified">Date modified</string>
+    <string name="sort_field_title">Title</string>
+
     <!-- Edit -->
     <string name="edit_add_title">Create note</string>
     <string name="edit_change_title">Edit note</string>

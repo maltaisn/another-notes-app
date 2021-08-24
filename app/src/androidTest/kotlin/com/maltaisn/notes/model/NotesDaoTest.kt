@@ -28,6 +28,7 @@ import com.maltaisn.notes.model.entity.NoteWithLabels
 import com.maltaisn.notes.model.entity.PinnedStatus
 import com.maltaisn.notes.model.entity.Reminder
 import com.maltaisn.notes.testNote
+import com.maltaisn.notes.ui.search.SearchQueryCleaner
 import com.maltaisn.recurpicker.RecurrenceFinder
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
@@ -139,7 +140,8 @@ class NotesDaoTest {
             }
         }
 
-        val noteFlow = notesDao.getByStatus(NoteStatus.ACTIVE)
+        val noteFlow = notesDao.getByStatus(NoteStatus.ACTIVE,
+            SortSettings(SortField.MODIFIED_DATE, SortDirection.DESCENDING))
         assertEquals(activeNotes, noteFlow.first())
 
         // Delete any note to see if flow is updated.
@@ -176,7 +178,9 @@ class NotesDaoTest {
             labelsDao.insertRefs(ids.map { LabelRef(noteId, it) })
         }
 
-        assertEquals(listOf(1L, 2L), notesDao.getByStatus(NoteStatus.ACTIVE).first().map { it.note.id })
+        val notes = notesDao.getByStatus(NoteStatus.ACTIVE,
+            SortSettings(SortField.MODIFIED_DATE, SortDirection.DESCENDING))
+        assertEquals(listOf(1L, 2L), notes.first().map { it.note.id })
     }
 
     private suspend fun insertNotesAndLabels(): List<NoteWithLabels> {
@@ -206,10 +210,11 @@ class NotesDaoTest {
         notes[3] = notes[3].copy(notes[3].note.copy(pinned = PinnedStatus.PINNED))
         notesDao.update(notes[3].note)
 
-        assertEquals(setOf(notes[4]), notesDao.getByLabel(5).first().toSet())
-        assertEquals(listOf(notes[3], notes[4], notes[2]), notesDao.getByLabel(3).first())
+        val sortSettings = SortSettings(SortField.MODIFIED_DATE, SortDirection.DESCENDING)
+        assertEquals(setOf(notes[4]), notesDao.getByLabel(5, sortSettings).first().toSet())
+        assertEquals(listOf(notes[3], notes[4], notes[2]), notesDao.getByLabel(3, sortSettings).first())
 
-        val label1Flow = notesDao.getByLabel(1)
+        val label1Flow = notesDao.getByLabel(1, sortSettings)
         assertEquals(listOf(notes[3], notes[4], notes[2], notes[1], notes[0]), label1Flow.first())
 
         // verify that label refs are deleted in cascade and that flow is updated
@@ -284,7 +289,7 @@ class NotesDaoTest {
         labelsDao.insert(Label(1, "label 1"))
         labelsDao.insertRefs(listOf(LabelRef(1, 1)))
 
-        val noteFlow = notesDao.search("content")
+        val noteFlow = notesDao.search("content", SortSettings(SortField.MODIFIED_DATE, SortDirection.DESCENDING))
         assertEquals(listOf(NoteWithLabels(note0, listOf(labelsDao.getById(1)!!))),
             noteFlow.first())
 
@@ -298,4 +303,63 @@ class NotesDaoTest {
         assertEquals(listOf(note1, note0, note2), noteFlow.first().map { it.note })
     }
 
+    @Test
+    fun getByStatusSortTest() = runBlocking {
+        // getByStatus should be sorted correctly.
+        notesDao.insert(testNote(id = 1, title = "A"))
+        notesDao.insert(testNote(id = 2, title = "b"))
+        notesDao.insert(testNote(id = 3, title = "C", modified = dateFor("2100-01-01")))
+
+        val notes = listOf(
+            notesDao.getByIdWithLabels(1),
+            notesDao.getByIdWithLabels(2),
+            notesDao.getByIdWithLabels(3),
+        )
+
+        val noteFlow = notesDao.getByStatus(NoteStatus.ACTIVE,
+            SortSettings(SortField.TITLE, SortDirection.ASCENDING))
+        assertEquals(notes, noteFlow.first())
+    }
+
+    @Test
+    fun getByLabelSortTest() = runBlocking {
+        // getByLabel should be sorted correctly.
+        labelsDao.insert(Label(1, "label"))
+        notesDao.insert(testNote(id = 1, added = dateFor("2000-01-01")))
+        notesDao.insert(testNote(id = 2, added = dateFor("2001-01-01")))
+        notesDao.insert(testNote(id = 3, added = dateFor("2002-01-01")))
+        labelsDao.insertRefs(listOf(
+            LabelRef(1, 1),
+            LabelRef(2, 1),
+            LabelRef(3, 1),
+        ))
+
+        val notes = listOf(
+            notesDao.getByIdWithLabels(1),
+            notesDao.getByIdWithLabels(2),
+            notesDao.getByIdWithLabels(3),
+        )
+
+        val noteFlow = notesDao.getByLabel(1,
+            SortSettings(SortField.ADDED_DATE, SortDirection.ASCENDING))
+        assertEquals(notes, noteFlow.first())
+    }
+
+    @Test
+    fun searchSortTest() = runBlocking {
+        // search should be sorted correctly.
+        notesDao.insert(testNote(id = 1, title = "Aaa", content = "foo"))
+        notesDao.insert(testNote(id = 2, title = "bBB", content = "foobar"))
+        notesDao.insert(testNote(id = 3, title = "z", content = "foobarbaz"))
+
+        val notes = listOf(
+            notesDao.getByIdWithLabels(3),
+            notesDao.getByIdWithLabels(2),
+            notesDao.getByIdWithLabels(1),
+        )
+
+        val noteFlow = notesDao.search(SearchQueryCleaner.clean("foo"),
+            SortSettings(SortField.TITLE, SortDirection.DESCENDING))
+        assertEquals(notes, noteFlow.first())
+    }
 }

@@ -24,6 +24,7 @@ import javax.inject.Inject
 
 class DefaultNotesRepository @Inject constructor(
     private val notesDao: NotesDao,
+    private val prefs: PrefsManager,
 ) : NotesRepository {
 
     // Data modification methods are wrapped in non-cancellable context
@@ -54,13 +55,13 @@ class DefaultNotesRepository @Inject constructor(
 
     override suspend fun getNoteByIdWithLabels(id: Long) = notesDao.getByIdWithLabels(id)
 
-    override fun getNotesByStatus(status: NoteStatus) = notesDao.getByStatus(status)
+    override fun getNotesByStatus(status: NoteStatus) = notesDao.getByStatus(status, prefs.sortSettings)
 
-    override fun getNotesByLabel(labelId: Long) = notesDao.getByLabel(labelId)
+    override fun getNotesByLabel(labelId: Long) = notesDao.getByLabel(labelId, prefs.sortSettings)
 
     override fun getNotesWithReminder() = notesDao.getAllWithReminder()
 
-    override fun searchNotes(query: String) = notesDao.search(query)
+    override fun searchNotes(query: String) = notesDao.search(query, prefs.sortSettings)
 
     override suspend fun emptyTrash() {
         withContext(NonCancellable) {

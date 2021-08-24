@@ -94,6 +94,15 @@
     <string name="search_hint">Rechercher dans vos notes</string>
     <string name="search_empty_placeholder">Aucune note trouvée pour cette recherche.</string>
 
+    <string name="sort_title">Options de tri</string>
+    <string name="sort_direction">Sens du tri</string>
+    <string name="sort_direction_ascending">Ordre croissant</string>
+    <string name="sort_direction_descending">Ordre décroissant</string>
+    <string name="sort_field">Trier par</string>
+    <string name="sort_field_created">Date de création</string>
+    <string name="sort_field_modified">Date de modification</string>
+    <string name="sort_field_title">Titre</string>
+
     <!-- Edit -->
     <string name="edit_add_title">Ajouter</string>
     <string name="edit_change_title">Modifier</string>

@@ -39,7 +39,7 @@ import kotlin.time.Duration
  */
 @OpenForTesting
 class PrefsManager @Inject constructor(
-    private val prefs: SharedPreferences
+    private val prefs: SharedPreferences,
 ) {
 
     val theme: AppTheme by enumPreference(THEME, AppTheme.SYSTEM)
@@ -50,6 +50,9 @@ class PrefsManager @Inject constructor(
     val shownDateField: ShownDateField by enumPreference(SHOWN_DATE, ShownDateField.NONE)
     val maximumPreviewLabels: Int by preference(PREVIEW_LABELS, 0)
 
+    var sortField: SortField by enumPreference(SORT_FIELD, SortField.MODIFIED_DATE)
+    var sortDirection: SortDirection by enumPreference(SORT_DIRECTION, SortDirection.DESCENDING)
+
     var shouldAutoExport: Boolean by preference(AUTO_EXPORT, false)
     var autoExportUri: String by preference(AUTO_EXPORT_URI, "")
     var autoExportFailed: Boolean by preference(AUTO_EXPORT_FAILED, false)
@@ -57,6 +60,9 @@ class PrefsManager @Inject constructor(
 
     var lastTrashReminderTime: Long by preference(LAST_TRASH_REMIND_TIME, 0)
     var lastRestrictedBatteryReminderTime: Long by preference(LAST_RESTRICTED_BATTERY_REMIND_TIME, 0)
+
+    val sortSettings: SortSettings
+        get() = SortSettings(sortField, sortDirection)
 
     fun getMaximumPreviewLines(layoutMode: NoteListLayoutMode, noteType: NoteType): Int {
         val key = when (layoutMode) {
@@ -156,6 +162,8 @@ class PrefsManager @Inject constructor(
         // Other keys
         private const val AUTO_EXPORT_URI = "auto_export_uri"
         private const val LIST_LAYOUT_MODE = "is_in_list_layout"
+        private const val SORT_FIELD = "sort_field"
+        private const val SORT_DIRECTION = "sort_direction"
         private const val LAST_TRASH_REMIND_TIME = "last_deleted_remind_time"
         private const val LAST_RESTRICTED_BATTERY_REMIND_TIME = "last_restricted_battery_remind_time"
         private const val LAST_AUTO_EXPORT_TIME = "last_auto_export_time"
@@ -187,7 +195,7 @@ class PrefsManager @Inject constructor(
          */
         val AUTO_EXPORT_DELAY = Duration.days(1)
 
-        val AUTO_EXPORT_NO_URI = ""
+        const val AUTO_EXPORT_NO_URI = ""
 
         /**
          * Maximum number of days in the past or the future for which

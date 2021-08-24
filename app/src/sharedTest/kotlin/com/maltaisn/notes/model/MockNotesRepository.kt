@@ -35,9 +35,11 @@ import kotlinx.coroutines.flow.merge
  * There is most likely a way to use Room database from unit testing so this shouldn't be
  * really needed. At least it gives better introspection facilities by allowing to add test methods
  * accessing the data directly and non-suspending methods for convenience.
+ *
+ * Not supported:
+ * - Notes with hidden labels.
  */
-class MockNotesRepository(private val labelsRepository: MockLabelsRepository) :
-    NotesRepository {
+class MockNotesRepository(private val labelsRepository: MockLabelsRepository) : NotesRepository {
 
     private val notes = mutableMapOf<Long, Note>()
 
@@ -56,6 +58,9 @@ class MockNotesRepository(private val labelsRepository: MockLabelsRepository) :
     val notesCount: Int
         get() = notes.size
 
+    var sortField = SortField.MODIFIED_DATE
+    var sortDirection = SortDirection.DESCENDING
+
     /**
      * Flow that emits when notes change.
      */
@@ -66,6 +71,19 @@ class MockNotesRepository(private val labelsRepository: MockLabelsRepository) :
      */
     private val noteWithLabelsChangeFlow =
         merge(changeFlow, labelsRepository.changeFlow, labelsRepository.refsChangeFlow)
+
+    private val sortComparator: Comparator<Note>
+        get() {
+            val noteField = when (sortField) {
+                SortField.ADDED_DATE -> Note::addedDate
+                SortField.MODIFIED_DATE -> Note::lastModifiedDate
+                SortField.TITLE -> { note -> note.title.lowercase() }
+            }
+            return when (sortDirection) {
+                SortDirection.ASCENDING -> compareBy(noteField)
+                SortDirection.DESCENDING -> compareByDescending(noteField)
+            }
+        }
 
     private fun addNoteInternal(note: Note): Long {
         val id = if (note.id != Note.NO_ID) {
@@ -150,7 +168,7 @@ class MockNotesRepository(private val labelsRepository: MockLabelsRepository) :
         notes.values.asSequence()
             .filter { it.status == status }
             .sortedWith(compareByDescending(Note::pinned)
-                .thenByDescending(Note::lastModifiedDate)
+                .thenBy(sortComparator) { it }
                 .thenBy(Note::id))
             .map(labelsRepository::getNoteWithLabels)
             .toList()
@@ -162,7 +180,7 @@ class MockNotesRepository(private val labelsRepository: MockLabelsRepository) :
             .filter { it.status != NoteStatus.DELETED }
             .sortedWith(compareBy(Note::status)
                 .thenByDescending(Note::pinned)
-                .thenByDescending(Note::lastModifiedDate))
+                .thenBy(sortComparator) { it })
             .map(labelsRepository::getNoteWithLabels)
             .toList()
     }.distinctUntilChanged()
@@ -177,7 +195,7 @@ class MockNotesRepository(private val labelsRepository: MockLabelsRepository) :
                     .filter { it.status != NoteStatus.DELETED }
                     .filter { (queryNoFtsSyntax in it.title || queryNoFtsSyntax in it.content) }
                     .sortedWith(compareBy(Note::status)
-                        .thenByDescending(Note::lastModifiedDate))
+                        .thenBy(sortComparator) { it })
                     .map(labelsRepository::getNoteWithLabels)
                     .toList()
             }.distinctUntilChanged()
@@ -212,5 +230,4 @@ class MockNotesRepository(private val labelsRepository: MockLabelsRepository) :
             .map(labelsRepository::getNoteWithLabels)
             .toList()
     }.distinctUntilChanged()
-
 }

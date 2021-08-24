@@ -19,10 +19,14 @@ package com.maltaisn.notes.ui.home
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.SavedStateHandle
 import com.maltaisn.notes.MainCoroutineRule
+import com.maltaisn.notes.dateFor
 import com.maltaisn.notes.model.MockLabelsRepository
 import com.maltaisn.notes.model.MockNotesRepository
 import com.maltaisn.notes.model.PrefsManager
 import com.maltaisn.notes.model.ReminderAlarmManager
+import com.maltaisn.notes.model.SortDirection
+import com.maltaisn.notes.model.SortField
+import com.maltaisn.notes.model.SortSettings
 import com.maltaisn.notes.model.entity.Label
 import com.maltaisn.notes.model.entity.LabelRef
 import com.maltaisn.notes.model.entity.NoteStatus
@@ -76,10 +80,11 @@ class HomeViewModelTest {
         labelsRepo.addLabelRefs(listOf(LabelRef(3, 1)))
 
         notesRepo = MockNotesRepository(labelsRepo)
-        notesRepo.addNote(testNote(id = 1,
-            status = NoteStatus.ACTIVE,
+        notesRepo.addNote(testNote(id = 1, title = "b", status = NoteStatus.ACTIVE,
             pinned = PinnedStatus.PINNED))
-        notesRepo.addNote(testNote(id = 2, status = NoteStatus.ACTIVE))
+        notesRepo.addNote(testNote(id = 2, title = "b", status = NoteStatus.ACTIVE,
+            added = dateFor("2100-01-01"), modified = dateFor("2100-01-01")))
+        notesRepo.addNote(testNote(id = 5, title = "A", status = NoteStatus.ACTIVE))
         notesRepo.addNote(testNote(id = 3, status = NoteStatus.ARCHIVED))
         notesRepo.addNote(testNote(id = 4, status = NoteStatus.DELETED))
 
@@ -96,22 +101,22 @@ class HomeViewModelTest {
     @Test
     fun `should show only active notes (both pinned and unpinned)`() =
         mainCoroutineRule.runBlockingTest {
-            val note1 = notesRepo.requireNoteById(1)
-            val note2 = notesRepo.requireNoteById(2)
             viewModel.setDestination(HomeDestination.Status(NoteStatus.ACTIVE))
             assertTrue(viewModel.fabShown.getOrAwaitValue())
 
             assertEquals(listOf(
                 HomeViewModel.PINNED_HEADER_ITEM,
-                NoteItem(1, note1),
+                NoteItem(1, notesRepo.requireNoteById(1)),
                 HomeViewModel.NOT_PINNED_HEADER_ITEM,
-                NoteItem(2, note2)
+                NoteItem(2, notesRepo.requireNoteById(2)),
+                NoteItem(5, notesRepo.requireNoteById(5))
             ), viewModel.noteItems.getOrAwaitValue())
         }
 
     @Test
     fun `should show only active notes (pinned only)`() = mainCoroutineRule.runBlockingTest {
         notesRepo.deleteNote(2)
+        notesRepo.deleteNote(5)
         val note = notesRepo.requireNoteById(1)
         viewModel.setDestination(HomeDestination.Status(NoteStatus.ACTIVE))
 
@@ -124,11 +129,11 @@ class HomeViewModelTest {
     @Test
     fun `should show only active notes (unpinned only)`() = mainCoroutineRule.runBlockingTest {
         notesRepo.deleteNote(1)
-        val note = notesRepo.requireNoteById(2)
         viewModel.setDestination(HomeDestination.Status(NoteStatus.ACTIVE))
 
         assertEquals(listOf(
-            NoteItem(2, note)
+            NoteItem(2, notesRepo.requireNoteById(2)),
+            NoteItem(5, notesRepo.requireNoteById(5)),
         ), viewModel.noteItems.getOrAwaitValue())
     }
 
@@ -158,8 +163,6 @@ class HomeViewModelTest {
 
     @Test
     fun `should update list when data is changed`() = mainCoroutineRule.runBlockingTest {
-        val note1 = notesRepo.requireNoteById(1)
-        val note2 = notesRepo.requireNoteById(2)
         viewModel.setDestination(HomeDestination.Status(NoteStatus.ACTIVE))
 
         notesRepo.insertNote(testNote(status = NoteStatus.ACTIVE))
@@ -167,24 +170,24 @@ class HomeViewModelTest {
 
         assertEquals(listOf(
             HomeViewModel.PINNED_HEADER_ITEM,
-            NoteItem(note1.id, note1),
+            NoteItem(1, notesRepo.requireNoteById(1)),
             HomeViewModel.NOT_PINNED_HEADER_ITEM,
+            NoteItem(2, notesRepo.requireNoteById(2)),
             NoteItem(newNote.id, newNote),
-            NoteItem(note2.id, note2),
+            NoteItem(5, notesRepo.requireNoteById(5)),
         ), viewModel.noteItems.getOrAwaitValue())
     }
 
     @Test
     fun `should update list when trash reminder item is dismissed`() =
         mainCoroutineRule.runBlockingTest {
-            val note = notesRepo.requireNoteById(4)
             viewModel.setDestination(HomeDestination.Status(NoteStatus.DELETED))
             viewModel.onMessageItemDismissed(MessageItem(-1, 0, emptyList()), 0)
 
             verify(prefs).lastTrashReminderTime = any()
 
             assertEquals(listOf(
-                NoteItem(4, note)
+                NoteItem(4, notesRepo.requireNoteById(4))
             ), viewModel.noteItems.getOrAwaitValue())
         }
 
@@ -296,6 +299,23 @@ class HomeViewModelTest {
                 NoteStatus.DELETED, PinnedStatus.CANT_PIN, false),
                 viewModel.currentSelection.getOrAwaitValue())
         }
+
+    @Test
+    fun `should update list when sort settings are changed`() = mainCoroutineRule.runBlockingTest {
+        viewModel.setDestination(HomeDestination.Status(NoteStatus.ACTIVE))
+
+        notesRepo.sortField = SortField.TITLE
+        notesRepo.sortDirection = SortDirection.ASCENDING
+        viewModel.changeSort(SortSettings(notesRepo.sortField, notesRepo.sortDirection))
+
+        assertEquals(listOf(
+            HomeViewModel.PINNED_HEADER_ITEM,
+            NoteItem(1, notesRepo.requireNoteById(1)),
+            HomeViewModel.NOT_PINNED_HEADER_ITEM,
+            NoteItem(5, notesRepo.requireNoteById(5)),
+            NoteItem(2, notesRepo.requireNoteById(2)),
+        ), viewModel.noteItems.getOrAwaitValue())
+    }
 
     private fun getNoteItemAt(pos: Int) = viewModel.noteItems.getOrAwaitValue()[pos] as NoteItem
 }

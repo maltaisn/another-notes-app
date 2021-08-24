@@ -1,4 +1,5 @@
 ## Planned release
+- Added dialog to change sort field and direction (#31).
 - Set the initial reminder time from a list of presets instead of the same hour every time.
 - Trim text notes whitespace in preview.
 - Automatically show reminder dialog when creating note in reminder section.

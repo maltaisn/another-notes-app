@@ -50,6 +50,9 @@ class LabelEditDialog : DialogFragment() {
         val context = requireContext()
         val binding = DialogLabelEditBinding.inflate(LayoutInflater.from(context), null, false)
 
+        // Using `this` as lifecycle owner, cannot show dialog twice with same instance to avoid double observation.
+        check(!viewModel.setLabelEvent.hasObservers()) { "Dialog was shown twice with same instance." }
+
         val nameInput = binding.labelInput
         val nameInputLayout = binding.labelInputLayout
         val hiddenCheck = binding.labelHiddenChk

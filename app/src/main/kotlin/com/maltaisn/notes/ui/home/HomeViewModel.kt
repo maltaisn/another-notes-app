@@ -24,6 +24,7 @@ import com.maltaisn.notes.model.LabelsRepository
 import com.maltaisn.notes.model.NotesRepository
 import com.maltaisn.notes.model.PrefsManager
 import com.maltaisn.notes.model.ReminderAlarmManager
+import com.maltaisn.notes.model.SortSettings
 import com.maltaisn.notes.model.entity.Label
 import com.maltaisn.notes.model.entity.NoteStatus
 import com.maltaisn.notes.model.entity.NoteWithLabels
@@ -84,8 +85,13 @@ class HomeViewModel @AssistedInject constructor(
 
     fun setDestination(destination: HomeDestination) {
         currentDestination = destination
+        updateNoteList()
+        updateFabVisibility()
+    }
 
+    private fun updateNoteList() {
         // Update note items live data when database flow emits a list.
+        val destination = currentDestination
         noteListJob?.cancel()
         noteListJob = viewModelScope.launch {
             waitForRestoredState()
@@ -112,8 +118,6 @@ class HomeViewModel @AssistedInject constructor(
                 }
             }
         }
-
-        updateFabVisibility()
     }
 
     /** When user clicks on FAB. */
@@ -123,6 +127,13 @@ class HomeViewModel @AssistedInject constructor(
             if (destination is HomeDestination.Labels) destination.label.id else Label.NO_ID,
             destination is HomeDestination.Reminders
         ))
+    }
+
+    fun changeSort(settings: SortSettings) {
+        prefs.sortField = settings.field
+        prefs.sortDirection = settings.direction
+        // Updating sorting preferences doesn't trigger the database Flow, update manually.
+        updateNoteList()
     }
 
     /** When user clicks on empty trash. */

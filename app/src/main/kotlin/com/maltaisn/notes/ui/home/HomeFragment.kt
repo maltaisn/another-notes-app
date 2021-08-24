@@ -130,6 +130,8 @@ class HomeFragment : NoteFragment(), Toolbar.OnMenuItemClickListener {
             viewModel.setDestination(destination)
             updateToolbarForDestination(destination)
         }
+
+        sharedViewModel.sortChangeEvent.observeEvent(viewLifecycleOwner, viewModel::changeSort)
     }
 
     private fun updateToolbarForDestination(destination: HomeDestination) {
@@ -173,9 +175,9 @@ class HomeFragment : NoteFragment(), Toolbar.OnMenuItemClickListener {
 
     override fun onMenuItemClick(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.item_search -> findNavController().navigateSafe(
-                HomeFragmentDirections.actionHomeToSearch())
+            R.id.item_search -> findNavController().navigateSafe(HomeFragmentDirections.actionHomeToSearch())
             R.id.item_layout -> viewModel.toggleListLayoutMode()
+            R.id.item_sort -> findNavController().navigateSafe(HomeFragmentDirections.actionHomeToSort())
             R.id.item_empty_trash -> viewModel.emptyTrashPre()
             R.id.item_extra_action -> viewModel.doExtraAction()
             else -> return false

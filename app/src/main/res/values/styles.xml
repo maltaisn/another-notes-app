@@ -145,4 +145,10 @@
         <item name="titleTextStyle">@style/ActionModeTitleStyle</item>
     </style>
 
+    <style name="SortDialogOptionStyle" parent="Widget.AppCompat.CompoundButton.RadioButton">
+        <item name="android:minHeight">0dp</item>
+        <item name="android:paddingTop">4dp</item>
+        <item name="android:paddingBottom">4dp</item>
+    </style>
+
 </resources>

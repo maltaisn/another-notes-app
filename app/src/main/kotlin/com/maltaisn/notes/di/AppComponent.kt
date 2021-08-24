@@ -33,6 +33,7 @@ import com.maltaisn.notes.ui.reminder.ReminderDialog
 import com.maltaisn.notes.ui.reminder.ReminderTimeDialog
 import com.maltaisn.notes.ui.search.SearchFragment
 import com.maltaisn.notes.ui.settings.SettingsFragment
+import com.maltaisn.notes.ui.sort.SortDialog
 import dagger.BindsInstance
 import dagger.Component
 import javax.inject.Singleton
@@ -58,6 +59,7 @@ interface AppComponent {
     fun inject(dialog: ReminderPostponeDateDialog)
     fun inject(dialog: ReminderPostponeTimeDialog)
     fun inject(dialog: LabelEditDialog)
+    fun inject(dialog: SortDialog)
     fun inject(receiver: AlarmReceiver)
 
     @Component.Factory

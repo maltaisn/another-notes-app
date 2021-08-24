@@ -16,36 +16,36 @@
 
 <resources>
 
+    <!-- Associated with `AppTheme` enum -->
     <string-array name="pref_theme_entries">
         <item>@string/pref_theme_light</item>
         <item>@string/pref_theme_dark</item>
         <item>@string/pref_theme_system</item>
     </string-array>
-
     <string-array name="pref_theme_values">
         <item>light</item>
         <item>dark</item>
         <item>system</item>
     </string-array>
 
+    <!-- Associated with `SwipeAction` enum -->
     <string-array name="pref_swipe_action_entries">
         <item>@string/action_archive</item>
         <item>@string/action_delete</item>
         <item>@string/action_none</item>
     </string-array>
-
     <string-array name="pref_swipe_action_values">
         <item>archive</item>
         <item>delete</item>
         <item>none</item>
     </string-array>
 
+    <!-- Associated with `ShownDateField` enum -->
     <string-array name="pref_shown_date_entries">
         <item>@string/pref_shown_date_added</item>
         <item>@string/pref_shown_date_modified</item>
         <item>@string/pref_shown_date_none</item>
     </string-array>
-
     <string-array name="pref_shown_date_values">
         <item>added</item>
         <item>modified</item>

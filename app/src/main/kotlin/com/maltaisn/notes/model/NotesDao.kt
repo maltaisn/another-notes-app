@@ -21,8 +21,13 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.RawQuery
 import androidx.room.Transaction
 import androidx.room.Update
+import androidx.sqlite.db.SimpleSQLiteQuery
+import androidx.sqlite.db.SupportSQLiteQuery
+import com.maltaisn.notes.model.converter.NoteStatusConverter
+import com.maltaisn.notes.model.entity.Label
 import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.model.entity.NoteStatus
 import com.maltaisn.notes.model.entity.NoteWithLabels
@@ -81,24 +86,23 @@ interface NotesDao {
      * Exclude notes with a label marked as hidden, except if the note is deleted.
      * This is used to display notes for each status destination.
      */
-    @Transaction
-    @Query("""SELECT * FROM notes WHERE status == :status AND (:status == 2 OR id NOT IN 
-        (SELECT DISTINCT notes.id FROM notes JOIN label_refs ON noteId == notes.id 
-        JOIN labels ON labelId == labels.id WHERE labels.hidden == 1))
-        ORDER BY pinned DESC, modified_date DESC, id
-    """)
-    fun getByStatus(status: NoteStatus): Flow<List<NoteWithLabels>>
+    fun getByStatus(status: NoteStatus, sort: SortSettings) = sortedQuery("""
+            SELECT * FROM notes WHERE status == :status AND (:status == 2 OR id NOT IN 
+            (SELECT DISTINCT notes.id FROM notes JOIN label_refs ON noteId == notes.id 
+            JOIN labels ON labelId == labels.id WHERE labels.hidden == 1))
+            ORDER BY pinned DESC, :sort, id ASC
+        """, sort, NoteStatusConverter.toInt(status))
 
     /**
      * Get all notes tagged with a label ([labelId]), except deleted notes.
      * The notes are sorted by status then by pinned status (pinned first), then by last modified date.
      * This is used to display notes by label.
      */
-    @Transaction
-    @Query("""SELECT notes.* FROM notes JOIN 
-        (SELECT noteId FROM label_refs WHERE labelId == :labelId) ON noteId == id
-        WHERE status != 2 ORDER BY status ASC, pinned DESC, modified_date DESC""")
-    fun getByLabel(labelId: Long): Flow<List<NoteWithLabels>>
+    fun getByLabel(labelId: Long, sort: SortSettings) = sortedQuery("""
+            SELECT notes.* FROM notes JOIN 
+            (SELECT noteId FROM label_refs WHERE labelId == :labelId) ON noteId == id
+            WHERE status != 2 ORDER BY status ASC, pinned DESC, :sort, id ASC
+        """, sort, labelId)
 
     /**
      * Get all notes with a reminder set and reminder not done, sorted by ascending date.
@@ -112,11 +116,39 @@ interface NotesDao {
      * Search active and archived notes for a [query] using full-text search,
      * sorted by status first then by last modified date.
      */
+    fun search(query: String, sort: SortSettings) = sortedQuery("""
+            SELECT * FROM notes JOIN notes_fts ON notes_fts.rowid == notes.id
+            WHERE notes_fts MATCH :query AND status != 2
+            ORDER BY status ASC, :sort
+        """, sort, query)
+
+    /**
+     * For internal DAO use, to support query with variable sort field and direction.
+     */
     @Transaction
-    @Query("""SELECT * FROM notes JOIN notes_fts ON notes_fts.rowid == notes.id
-        WHERE notes_fts MATCH :query AND status != 2
-        ORDER BY status ASC, modified_date DESC""")
-    fun search(query: String): Flow<List<NoteWithLabels>>
+    @RawQuery(observedEntities = [Note::class, Label::class])
+    fun runtimeQuery(query: SupportSQLiteQuery): Flow<List<NoteWithLabels>>
+
+    /**
+     * Append [sort] settings at the end of a note with labels observable query, with a list of bindable [args]
+     * (only primitive values, not converted automatically). [query] should contain a `ORDER BY :sort` substring.
+     */
+    private fun sortedQuery(query: String, sort: SortSettings, vararg args: Any): Flow<List<NoteWithLabels>> {
+        val queryWithSort = query.replaceFirst(":sort", buildString {
+            append(when (sort.field) {
+                SortField.MODIFIED_DATE -> "notes.modified_date"
+                SortField.ADDED_DATE -> "notes.added_date"
+                SortField.TITLE -> "LOWER(notes.title)"
+            })
+            append(" ")
+            append(when (sort.direction) {
+                SortDirection.ASCENDING -> "ASC"
+                SortDirection.DESCENDING -> "DESC"
+            })
+
+        })
+        return runtimeQuery(SimpleSQLiteQuery(queryWithSort, args))
+    }
 
     /**
      * Delete notes with a [status] and older than a [date][minDate].
