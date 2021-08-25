@@ -52,6 +52,21 @@ import java.text.DateFormat
  */
 private const val MINIMUM_LIST_NOTE_ITEMS = 2
 
+// Constants for start ellipsis of note content to make sure highlight falls in preview.
+// These are approximate values, the perfect value varies according to device size, character width, font, etc.
+// The current implementation ignores these factors and only accounts for a few settings (list layout, preview lines)
+private const val START_ELLIPSIS_THRESHOLD_TITLE = 20
+private const val START_ELLIPSIS_DISTANCE_TITLE = 10
+private const val START_ELLIPSIS_THRESHOLD_ITEM = 10
+private const val START_ELLIPSIS_DISTANCE_ITEM = 4
+private const val START_ELLIPSIS_THRESHOLD_TEXT = 15  // per line of preview (-1)
+private const val START_ELLIPSIS_THRESHOLD_TEXT_FIRST = 5  // for first line of preview
+private const val START_ELLIPSIS_DISTANCE_TEXT = 20
+
+// Start ellipsis threshold is doubled in list layout mode
+fun getStartEllipsisThreshold(threshold: Int, adapter: NoteAdapter) =
+    threshold * (if (adapter.listLayoutMode == NoteListLayoutMode.GRID) 1 else 2)
+
 sealed class NoteViewHolder(itemView: View) :
     RecyclerView.ViewHolder(itemView) {
 
@@ -97,7 +112,9 @@ sealed class NoteViewHolder(itemView: View) :
             title += " (${note.id})"
         }
         titleTxv.text = HighlightHelper.getHighlightedText(title, item.titleHighlights,
-            adapter.highlightBackgroundColor, adapter.highlightForegroundColor)
+            adapter.highlightBackgroundColor, adapter.highlightForegroundColor,
+            getStartEllipsisThreshold(START_ELLIPSIS_THRESHOLD_TITLE, adapter),
+            START_ELLIPSIS_DISTANCE_TITLE)
         titleTxv.isVisible = title.isNotBlank()
     }
 
@@ -196,10 +213,14 @@ class TextNoteViewHolder(private val binding: ItemNoteTextBinding) :
         require(item.note.type == NoteType.TEXT)
 
         val contentTxv = binding.contentTxv
+        val maxLines = adapter.getMaximumPreviewLines(NoteType.TEXT)
+        val ellipsisThreshold = getStartEllipsisThreshold(START_ELLIPSIS_THRESHOLD_TEXT, adapter) *
+                (maxLines - 1) + START_ELLIPSIS_THRESHOLD_TEXT_FIRST
         contentTxv.isVisible = item.note.content.isNotBlank()
         contentTxv.text = HighlightHelper.getHighlightedText(item.note.content.trim(), item.contentHighlights,
-                adapter.highlightBackgroundColor, adapter.highlightForegroundColor)
-        contentTxv.maxLines = adapter.getMaximumPreviewLines(NoteType.TEXT)
+            adapter.highlightBackgroundColor, adapter.highlightForegroundColor,
+            ellipsisThreshold, START_ELLIPSIS_DISTANCE_TEXT)
+        contentTxv.maxLines = maxLines
     }
 }
 
@@ -317,7 +338,9 @@ class ListNoteItemViewHolder(val binding: ItemNoteListItemBinding) {
     fun bind(adapter: NoteAdapter, item: ListNoteItem, highlights: List<IntRange>) {
         binding.contentTxv.apply {
             text = HighlightHelper.getHighlightedText(item.content, highlights,
-                adapter.highlightBackgroundColor, adapter.highlightForegroundColor)
+                adapter.highlightBackgroundColor, adapter.highlightForegroundColor,
+                getStartEllipsisThreshold(START_ELLIPSIS_THRESHOLD_ITEM, adapter),
+                START_ELLIPSIS_DISTANCE_ITEM)
             strikethroughText = item.checked && adapter.callback.strikethroughCheckedItems
         }
 

@@ -1,5 +1,6 @@
-## Planned release
+## v1.5.0
 - Added dialog to change sort field and direction (#31).
+- Ellipsize start of content when search highlight falls outside of preview (#32).
 - Set the initial reminder time from a list of presets instead of the same hour every time.
 - Trim text notes whitespace in preview.
 - Automatically show reminder dialog when creating note in reminder section.
