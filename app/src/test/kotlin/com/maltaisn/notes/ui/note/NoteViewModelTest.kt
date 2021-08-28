@@ -21,12 +21,14 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.maltaisn.notes.MainCoroutineRule
 import com.maltaisn.notes.assertNoteEquals
+import com.maltaisn.notes.listNote
 import com.maltaisn.notes.model.MockLabelsRepository
 import com.maltaisn.notes.model.MockNotesRepository
 import com.maltaisn.notes.model.PrefsManager
 import com.maltaisn.notes.model.ReminderAlarmManager
 import com.maltaisn.notes.model.entity.Label
 import com.maltaisn.notes.model.entity.LabelRef
+import com.maltaisn.notes.model.entity.ListNoteItem
 import com.maltaisn.notes.model.entity.NoteStatus
 import com.maltaisn.notes.model.entity.PinnedStatus
 import com.maltaisn.notes.model.entity.Reminder
@@ -61,6 +63,7 @@ class NoteViewModelTest {
     private lateinit var labelsRepo: MockLabelsRepository
     private lateinit var notesRepo: MockNotesRepository
     private lateinit var prefs: PrefsManager
+    private lateinit var itemFactory: NoteItemFactory
 
     private lateinit var alarmCallback: MockAlarmCallback
 
@@ -89,11 +92,12 @@ class NoteViewModelTest {
             modified = Date(12)))
         notesRepo.addNote(testNote(id = 2, status = NoteStatus.ARCHIVED,
             added = Date(10), modified = Date(11)))
-        notesRepo.addNote(testNote(id = 3, status = NoteStatus.DELETED,
-            added = Date(10), modified = Date(10)))
+        notesRepo.addNote(listNote(listOf(ListNoteItem("item", false)),
+            id = 3, status = NoteStatus.DELETED, added = Date(10), modified = Date(10)))
         notesRepo.addNote(testNote(id = 4, status = NoteStatus.ACTIVE,
             added = Date(10), modified = Date(10), pinned = PinnedStatus.PINNED))
-        notesRepo.addNote(testNote(id = 5, status = NoteStatus.ACTIVE, title = "note",
+        notesRepo.addNote(listNote(listOf(ListNoteItem("item", false)),
+            id = 5, status = NoteStatus.ACTIVE, title = "note",
             added = Date(10), modified = Date(10),
             reminder = Reminder(Date(10), null, Date(10), 1, false)))
 
@@ -101,10 +105,12 @@ class NoteViewModelTest {
             on { listLayoutMode } doReturn NoteListLayoutMode.GRID
         }
 
+        itemFactory = NoteItemFactory(prefs)
+
         alarmCallback = MockAlarmCallback()
 
         viewModel = TestNoteViewModel(notesRepo, labelsRepo, prefs,
-            ReminderAlarmManager(notesRepo, alarmCallback))
+            ReminderAlarmManager(notesRepo, alarmCallback), itemFactory)
     }
 
     @Test
@@ -276,7 +282,8 @@ class NoteViewModelTest {
 
         // should not copy reminder but should copy labels
         assertEquals(listOf(1L, 2L), labelsRepo.getLabelIdsForNote(notesRepo.lastNoteId))
-        assertNoteEquals(testNote(id = 5, status = NoteStatus.ACTIVE, title = "note - Copy",
+        assertNoteEquals(listNote(listOf(ListNoteItem("item", false)), id = 5,
+            status = NoteStatus.ACTIVE, title = "note - Copy",
             added = Date(10), modified = Date(10)),
             notesRepo.lastAddedNote!!)
     }
@@ -373,7 +380,8 @@ class NoteViewModelTest {
         labelsRepo: MockLabelsRepository,
         prefs: PrefsManager,
         reminderAlarmManager: ReminderAlarmManager,
-    ) : NoteViewModel(SavedStateHandle(), notesRepo, labelsRepo, prefs, reminderAlarmManager) {
+        noteItemFactory: NoteItemFactory,
+    ) : NoteViewModel(SavedStateHandle(), notesRepo, labelsRepo, prefs, noteItemFactory, reminderAlarmManager) {
 
         override val selectedNoteStatus: NoteStatus?
             get() = when {
@@ -389,7 +397,7 @@ class NoteViewModelTest {
                 notesRepo.getAllNotesWithLabels().collect { notes ->
                     listItems = notes.map { noteWithLabels ->
                         val note = noteWithLabels.note
-                        NoteItem(note.id, note, noteWithLabels.labels, isNoteSelected(note))
+                        noteItemFactory.createItem(note, noteWithLabels.labels, isNoteSelected(note))
                     }
                 }
             }

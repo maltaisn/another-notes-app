@@ -25,12 +25,14 @@ import com.maltaisn.notes.model.PrefsManager
 import com.maltaisn.notes.model.ReminderAlarmManager
 import com.maltaisn.notes.model.entity.Label
 import com.maltaisn.notes.model.entity.LabelRef
+import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.model.entity.NoteStatus
 import com.maltaisn.notes.model.entity.PinnedStatus
 import com.maltaisn.notes.sync.R
 import com.maltaisn.notes.testNote
 import com.maltaisn.notes.ui.MockAlarmCallback
 import com.maltaisn.notes.ui.getOrAwaitValue
+import com.maltaisn.notes.ui.note.NoteItemFactory
 import com.maltaisn.notes.ui.note.NoteViewModel.NoteSelection
 import com.maltaisn.notes.ui.note.adapter.HeaderItem
 import com.maltaisn.notes.ui.note.adapter.NoteItem
@@ -51,6 +53,7 @@ class SearchViewModelTest {
     private lateinit var labelsRepo: MockLabelsRepository
     private lateinit var notesRepo: MockNotesRepository
     private lateinit var prefs: PrefsManager
+    private lateinit var itemFactory: NoteItemFactory
 
     @get:Rule
     var mainCoroutineRule = MainCoroutineRule()
@@ -73,8 +76,10 @@ class SearchViewModelTest {
             on { listLayoutMode } doReturn NoteListLayoutMode.LIST
         }
 
+        itemFactory = NoteItemFactory(prefs)
+
         viewModel = SearchViewModel(SavedStateHandle(), notesRepo, labelsRepo, prefs,
-            ReminderAlarmManager(notesRepo, MockAlarmCallback()))
+            ReminderAlarmManager(notesRepo, MockAlarmCallback()), itemFactory)
     }
 
     @Test
@@ -87,8 +92,7 @@ class SearchViewModelTest {
     fun `should show search results for query (only active)`() = mainCoroutineRule.runBlockingTest {
         searchNotesAndWait("1")
         assertEquals(listOf(
-            NoteItem(1, notesRepo.requireNoteById(1), listOf(labelsRepo.requireLabelById(1)),
-                false, listOf(0..1), emptyList())
+            noteItem(notesRepo.requireNoteById(1), listOf(labelsRepo.requireLabelById(1)))
         ), viewModel.noteItems.getOrAwaitValue())
     }
 
@@ -98,8 +102,7 @@ class SearchViewModelTest {
             searchNotesAndWait("2")
             assertEquals(listOf(
                 HeaderItem(-1, R.string.note_location_archived),
-                NoteItem(2, notesRepo.requireNoteById(2), emptyList(),
-                    false, listOf(0..1), emptyList())
+                noteItem(notesRepo.requireNoteById(2), emptyList())
             ), viewModel.noteItems.getOrAwaitValue())
         }
 
@@ -108,11 +111,9 @@ class SearchViewModelTest {
         mainCoroutineRule.runBlockingTest {
             searchNotesAndWait("3")
             assertEquals(listOf(
-                NoteItem(1, notesRepo.requireNoteById(1), listOf(labelsRepo.requireLabelById(1)),
-                    false, listOf(1..2), emptyList()),
+                noteItem(notesRepo.requireNoteById(1), listOf(labelsRepo.requireLabelById(1))),
                 HeaderItem(-1, R.string.note_location_archived),
-                NoteItem(2, notesRepo.requireNoteById(2), emptyList(),
-                    false, listOf(1..2), emptyList())
+                noteItem(notesRepo.requireNoteById(2), emptyList())
             ), viewModel.noteItems.getOrAwaitValue())
         }
 
@@ -157,4 +158,7 @@ class SearchViewModelTest {
     }
 
     private fun getNoteItemAt(pos: Int) = viewModel.noteItems.getOrAwaitValue()[pos] as NoteItem
+
+    private fun noteItem(note: Note, labels: List<Label>) =
+        itemFactory.createItem(note, labels, false, false)
 }

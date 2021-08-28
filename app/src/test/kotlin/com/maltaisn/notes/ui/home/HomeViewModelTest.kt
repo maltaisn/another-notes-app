@@ -29,6 +29,7 @@ import com.maltaisn.notes.model.SortField
 import com.maltaisn.notes.model.SortSettings
 import com.maltaisn.notes.model.entity.Label
 import com.maltaisn.notes.model.entity.LabelRef
+import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.model.entity.NoteStatus
 import com.maltaisn.notes.model.entity.PinnedStatus
 import com.maltaisn.notes.sync.R
@@ -38,6 +39,7 @@ import com.maltaisn.notes.ui.StatusChange
 import com.maltaisn.notes.ui.assertLiveDataEventSent
 import com.maltaisn.notes.ui.getOrAwaitValue
 import com.maltaisn.notes.ui.navigation.HomeDestination
+import com.maltaisn.notes.ui.note.NoteItemFactory
 import com.maltaisn.notes.ui.note.NoteViewModel
 import com.maltaisn.notes.ui.note.SwipeAction
 import com.maltaisn.notes.ui.note.adapter.MessageItem
@@ -64,6 +66,7 @@ class HomeViewModelTest {
     private lateinit var labelsRepo: MockLabelsRepository
     private lateinit var notesRepo: MockNotesRepository
     private lateinit var prefs: PrefsManager
+    private lateinit var itemFactory: NoteItemFactory
 
     private val buildTypeBehavior: BuildTypeBehavior = mock()
 
@@ -93,9 +96,10 @@ class HomeViewModelTest {
             on { lastTrashReminderTime } doReturn 0
         }
 
+        itemFactory = NoteItemFactory(prefs)
+
         viewModel = HomeViewModel(SavedStateHandle(), notesRepo, labelsRepo, prefs,
-            ReminderAlarmManager(notesRepo, MockAlarmCallback()),
-            buildTypeBehavior)
+            ReminderAlarmManager(notesRepo, MockAlarmCallback()), itemFactory, buildTypeBehavior)
     }
 
     @Test
@@ -106,10 +110,10 @@ class HomeViewModelTest {
 
             assertEquals(listOf(
                 HomeViewModel.PINNED_HEADER_ITEM,
-                NoteItem(1, notesRepo.requireNoteById(1)),
+                noteItem(notesRepo.requireNoteById(1)),
                 HomeViewModel.NOT_PINNED_HEADER_ITEM,
-                NoteItem(2, notesRepo.requireNoteById(2)),
-                NoteItem(5, notesRepo.requireNoteById(5))
+                noteItem(notesRepo.requireNoteById(2)),
+                noteItem(notesRepo.requireNoteById(5))
             ), viewModel.noteItems.getOrAwaitValue())
         }
 
@@ -122,7 +126,7 @@ class HomeViewModelTest {
 
         assertEquals(listOf(
             HomeViewModel.PINNED_HEADER_ITEM,
-            NoteItem(1, note)
+            noteItem(note)
         ), viewModel.noteItems.getOrAwaitValue())
     }
 
@@ -132,8 +136,8 @@ class HomeViewModelTest {
         viewModel.setDestination(HomeDestination.Status(NoteStatus.ACTIVE))
 
         assertEquals(listOf(
-            NoteItem(2, notesRepo.requireNoteById(2)),
-            NoteItem(5, notesRepo.requireNoteById(5)),
+            noteItem(notesRepo.requireNoteById(2)),
+            noteItem(notesRepo.requireNoteById(5)),
         ), viewModel.noteItems.getOrAwaitValue())
     }
 
@@ -144,7 +148,7 @@ class HomeViewModelTest {
         assertFalse(viewModel.fabShown.getOrAwaitValue())
 
         assertEquals(listOf(
-            NoteItem(3, note, listOf(labelsRepo.requireLabelById(1)))
+            noteItem(note, listOf(labelsRepo.requireLabelById(1)))
         ), viewModel.noteItems.getOrAwaitValue())
     }
 
@@ -157,7 +161,7 @@ class HomeViewModelTest {
         assertEquals(listOf(
             MessageItem(-1, R.string.trash_reminder_message,
                 listOf(PrefsManager.TRASH_AUTO_DELETE_DELAY.inWholeDays)),
-            NoteItem(4, note)
+            noteItem(note)
         ), viewModel.noteItems.getOrAwaitValue())
     }
 
@@ -170,11 +174,11 @@ class HomeViewModelTest {
 
         assertEquals(listOf(
             HomeViewModel.PINNED_HEADER_ITEM,
-            NoteItem(1, notesRepo.requireNoteById(1)),
+            noteItem(notesRepo.requireNoteById(1)),
             HomeViewModel.NOT_PINNED_HEADER_ITEM,
-            NoteItem(2, notesRepo.requireNoteById(2)),
-            NoteItem(newNote.id, newNote),
-            NoteItem(5, notesRepo.requireNoteById(5)),
+            noteItem(notesRepo.requireNoteById(2)),
+            noteItem(newNote),
+            noteItem(notesRepo.requireNoteById(5)),
         ), viewModel.noteItems.getOrAwaitValue())
     }
 
@@ -187,7 +191,7 @@ class HomeViewModelTest {
             verify(prefs).lastTrashReminderTime = any()
 
             assertEquals(listOf(
-                NoteItem(4, notesRepo.requireNoteById(4))
+                noteItem(notesRepo.requireNoteById(4))
             ), viewModel.noteItems.getOrAwaitValue())
         }
 
@@ -310,12 +314,15 @@ class HomeViewModelTest {
 
         assertEquals(listOf(
             HomeViewModel.PINNED_HEADER_ITEM,
-            NoteItem(1, notesRepo.requireNoteById(1)),
+            noteItem(notesRepo.requireNoteById(1)),
             HomeViewModel.NOT_PINNED_HEADER_ITEM,
-            NoteItem(5, notesRepo.requireNoteById(5)),
-            NoteItem(2, notesRepo.requireNoteById(2)),
+            noteItem(notesRepo.requireNoteById(5)),
+            noteItem(notesRepo.requireNoteById(2)),
         ), viewModel.noteItems.getOrAwaitValue())
     }
 
     private fun getNoteItemAt(pos: Int) = viewModel.noteItems.getOrAwaitValue()[pos] as NoteItem
+
+    private fun noteItem(note: Note, labels: List<Label> = emptyList()) =
+        itemFactory.createItem(note, labels, false)
 }

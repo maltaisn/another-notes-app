@@ -25,12 +25,14 @@ import com.maltaisn.notes.model.PrefsManager
 import com.maltaisn.notes.model.ReminderAlarmManager
 import com.maltaisn.notes.model.entity.Label
 import com.maltaisn.notes.model.entity.LabelRef
+import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.model.entity.NoteStatus
 import com.maltaisn.notes.model.entity.PinnedStatus
 import com.maltaisn.notes.testNote
 import com.maltaisn.notes.ui.MockAlarmCallback
 import com.maltaisn.notes.ui.getOrAwaitValue
 import com.maltaisn.notes.ui.navigation.HomeDestination
+import com.maltaisn.notes.ui.note.NoteItemFactory
 import com.maltaisn.notes.ui.note.NoteViewModel
 import com.maltaisn.notes.ui.note.adapter.NoteItem
 import com.maltaisn.notes.ui.note.adapter.NoteListLayoutMode
@@ -50,6 +52,7 @@ class HomeViewModelLabelsTest {
     private lateinit var labelsRepo: MockLabelsRepository
     private lateinit var notesRepo: MockNotesRepository
     private lateinit var prefs: PrefsManager
+    private lateinit var itemFactory: NoteItemFactory
 
     @get:Rule
     var mainCoroutineRule = MainCoroutineRule()
@@ -88,8 +91,10 @@ class HomeViewModelLabelsTest {
             on { listLayoutMode } doReturn NoteListLayoutMode.LIST
         }
 
+        itemFactory = NoteItemFactory(prefs)
+
         viewModel = HomeViewModel(SavedStateHandle(), notesRepo, labelsRepo, prefs,
-            ReminderAlarmManager(notesRepo, MockAlarmCallback()), mock())
+            ReminderAlarmManager(notesRepo, MockAlarmCallback()), itemFactory, mock())
     }
 
     @Test
@@ -100,11 +105,11 @@ class HomeViewModelLabelsTest {
 
             assertEquals(listOf(
                 HomeViewModel.PINNED_HEADER_ITEM,
-                NoteItem(1, notesRepo.requireNoteById(1), listOf(labelsRepo.requireLabelById(2))),
+                noteItem(notesRepo.requireNoteById(1), listOf(labelsRepo.requireLabelById(2))),
                 HomeViewModel.NOT_PINNED_HEADER_ITEM,
-                NoteItem(2, notesRepo.requireNoteById(2), listOf(labelsRepo.requireLabelById(3))),
+                noteItem(notesRepo.requireNoteById(2), listOf(labelsRepo.requireLabelById(3))),
                 HomeViewModel.ARCHIVED_HEADER_ITEM,
-                NoteItem(3, notesRepo.requireNoteById(3), listOf(
+                noteItem(notesRepo.requireNoteById(3), listOf(
                     labelsRepo.requireLabelById(2), labelsRepo.requireLabelById(3))),
             ), viewModel.noteItems.getOrAwaitValue())
         }
@@ -115,9 +120,9 @@ class HomeViewModelLabelsTest {
             viewModel.setDestination(HomeDestination.Labels(labelsRepo.requireLabelById(2)))
             assertEquals(listOf(
                 HomeViewModel.PINNED_HEADER_ITEM,
-                NoteItem(1, notesRepo.requireNoteById(1), listOf(labelsRepo.requireLabelById(1))),
+                noteItem(notesRepo.requireNoteById(1), listOf(labelsRepo.requireLabelById(1))),
                 HomeViewModel.ARCHIVED_HEADER_ITEM,
-                NoteItem(3, notesRepo.requireNoteById(3), listOf(
+                noteItem(notesRepo.requireNoteById(3), listOf(
                     labelsRepo.requireLabelById(1), labelsRepo.requireLabelById(3))),
             ), viewModel.noteItems.getOrAwaitValue())
         }
@@ -127,9 +132,9 @@ class HomeViewModelLabelsTest {
         mainCoroutineRule.runBlockingTest {
             viewModel.setDestination(HomeDestination.Labels(labelsRepo.requireLabelById(3)))
             assertEquals(listOf(
-                NoteItem(2, notesRepo.requireNoteById(2), listOf(labelsRepo.requireLabelById(1))),
+                noteItem(notesRepo.requireNoteById(2), listOf(labelsRepo.requireLabelById(1))),
                 HomeViewModel.ARCHIVED_HEADER_ITEM,
-                NoteItem(3, notesRepo.requireNoteById(3), listOf(
+                noteItem(notesRepo.requireNoteById(3), listOf(
                     labelsRepo.requireLabelById(1), labelsRepo.requireLabelById(2))),
             ), viewModel.noteItems.getOrAwaitValue())
         }
@@ -139,7 +144,7 @@ class HomeViewModelLabelsTest {
         viewModel.setDestination(HomeDestination.Labels(labelsRepo.requireLabelById(3)))
         labelsRepo.deleteLabelRefs(listOf(LabelRef(3, 3)))
         assertEquals(listOf(
-            NoteItem(2, notesRepo.requireNoteById(2), listOf(labelsRepo.requireLabelById(1))),
+            noteItem(notesRepo.requireNoteById(2), listOf(labelsRepo.requireLabelById(1))),
         ), viewModel.noteItems.getOrAwaitValue())
     }
 
@@ -178,5 +183,7 @@ class HomeViewModelLabelsTest {
     // the rest is already tested in NoteViewModelTest
 
     private fun getNoteItemAt(pos: Int) = viewModel.noteItems.getOrAwaitValue()[pos] as NoteItem
+
+    private fun noteItem(note: Note, labels: List<Label>) = itemFactory.createItem(note, labels, false)
 
 }

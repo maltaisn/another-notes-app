@@ -53,7 +53,7 @@ import java.text.DateFormat
 /**
  * Interface implemented by any item that can have its focus position changed.
  */
-interface EditFocusableViewHolder {
+sealed interface EditFocusableViewHolder {
     fun setFocus(pos: Int)
 }
 

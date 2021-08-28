@@ -50,6 +50,7 @@ abstract class NoteViewModel(
     protected val notesRepository: NotesRepository,
     protected val labelsRepository: LabelsRepository,
     protected val prefs: PrefsManager,
+    protected val noteItemFactory: NoteItemFactory,
     protected val reminderAlarmManager: ReminderAlarmManager,
 ) : ViewModel(), NoteAdapter.Callback {
 
@@ -286,7 +287,7 @@ abstract class NoteViewModel(
         changeListItems {
             for ((i, item) in it.withIndex()) {
                 if (item is NoteItem && item.checked != selected) {
-                    it[i] = item.copy(checked = selected)
+                    it[i] = item.withChecked(selected)
                 }
             }
         }
@@ -372,7 +373,7 @@ abstract class NoteViewModel(
     private fun toggleItemChecked(item: NoteItem, pos: Int) {
         // Set the item as checked and update the list.
         changeListItems {
-            it[pos] = item.copy(checked = !item.checked)
+            it[pos] = item.withChecked(!item.checked)
         }
     }
 

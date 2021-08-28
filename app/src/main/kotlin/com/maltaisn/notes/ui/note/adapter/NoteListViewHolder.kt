@@ -16,9 +16,13 @@
 
 package com.maltaisn.notes.ui.note.adapter
 
+import android.text.SpannableString
 import android.text.format.DateUtils
+import android.text.style.BackgroundColorSpan
+import android.text.style.ForegroundColorSpan
 import android.view.View
 import android.widget.TextView
+import androidx.core.text.set
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
@@ -29,10 +33,8 @@ import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 import com.maltaisn.notes.model.PrefsManager
 import com.maltaisn.notes.model.entity.Label
-import com.maltaisn.notes.model.entity.ListNoteItem
 import com.maltaisn.notes.model.entity.NoteType
 import com.maltaisn.notes.strikethroughText
-import com.maltaisn.notes.sync.BuildConfig
 import com.maltaisn.notes.sync.R
 import com.maltaisn.notes.sync.databinding.ItemHeaderBinding
 import com.maltaisn.notes.sync.databinding.ItemMessageBinding
@@ -40,34 +42,12 @@ import com.maltaisn.notes.sync.databinding.ItemNoteLabelBinding
 import com.maltaisn.notes.sync.databinding.ItemNoteListBinding
 import com.maltaisn.notes.sync.databinding.ItemNoteListItemBinding
 import com.maltaisn.notes.sync.databinding.ItemNoteTextBinding
-import com.maltaisn.notes.ui.note.HighlightHelper
+import com.maltaisn.notes.ui.note.Highlighted
 import com.maltaisn.notes.ui.note.ShownDateField
 import com.maltaisn.notes.utils.RelativeDateFormatter
 import java.text.DateFormat
 
-/**
- * If checked items are moved to the bottom and hidden in preview,
- * this is the minimum number of items shown in a list note preview.
- * So if all items are checked, this number of items will be shown, even if they're checked.
- */
-private const val MINIMUM_LIST_NOTE_ITEMS = 2
-
-// Constants for start ellipsis of note content to make sure highlight falls in preview.
-// These are approximate values, the perfect value varies according to device size, character width, font, etc.
-// The current implementation ignores these factors and only accounts for a few settings (list layout, preview lines)
-private const val START_ELLIPSIS_THRESHOLD_TITLE = 20
-private const val START_ELLIPSIS_DISTANCE_TITLE = 10
-private const val START_ELLIPSIS_THRESHOLD_ITEM = 10
-private const val START_ELLIPSIS_DISTANCE_ITEM = 4
-private const val START_ELLIPSIS_THRESHOLD_TEXT = 15  // per line of preview (-1)
-private const val START_ELLIPSIS_THRESHOLD_TEXT_FIRST = 5  // for first line of preview
-private const val START_ELLIPSIS_DISTANCE_TEXT = 20
-
-// Start ellipsis threshold is doubled in list layout mode
-fun getStartEllipsisThreshold(threshold: Int, adapter: NoteAdapter) =
-    threshold * (if (adapter.listLayoutMode == NoteListLayoutMode.GRID) 1 else 2)
-
-sealed class NoteViewHolder(itemView: View) :
+sealed class NoteViewHolder<T : NoteItem>(itemView: View) :
     RecyclerView.ViewHolder(itemView) {
 
     private val dateFormatter = RelativeDateFormatter(itemView.resources) { date ->
@@ -87,7 +67,7 @@ sealed class NoteViewHolder(itemView: View) :
 
     private val labelViewHolders = mutableListOf<LabelChipViewHolder>()
 
-    open fun bind(adapter: NoteAdapter, item: NoteItem) {
+    open fun bind(adapter: NoteAdapter, item: T) {
         bindTitle(adapter, item)
         bindDate(adapter, item)
         bindReminder(item)
@@ -106,16 +86,9 @@ sealed class NoteViewHolder(itemView: View) :
     }
 
     private fun bindTitle(adapter: NoteAdapter, item: NoteItem) {
-        val note = item.note
-        var title = note.title
-        if (BuildConfig.ENABLE_DEBUG_FEATURES) {
-            title += " (${note.id})"
-        }
-        titleTxv.text = HighlightHelper.getHighlightedText(title, item.titleHighlights,
-            adapter.highlightBackgroundColor, adapter.highlightForegroundColor,
-            getStartEllipsisThreshold(START_ELLIPSIS_THRESHOLD_TITLE, adapter),
-            START_ELLIPSIS_DISTANCE_TITLE)
-        titleTxv.isVisible = title.isNotBlank()
+        titleTxv.text = getHighlightedText(item.title,
+            adapter.highlightBackgroundColor, adapter.highlightForegroundColor)
+        titleTxv.isVisible = item.title.content.isNotBlank()
     }
 
     private fun bindDate(adapter: NoteAdapter, item: NoteItem) {
@@ -199,7 +172,7 @@ sealed class NoteViewHolder(itemView: View) :
 }
 
 class TextNoteViewHolder(private val binding: ItemNoteTextBinding) :
-    NoteViewHolder(binding.root) {
+    NoteViewHolder<NoteItemText>(binding.root) {
 
     override val cardView = binding.cardView
     override val titleTxv = binding.titleTxv
@@ -208,23 +181,19 @@ class TextNoteViewHolder(private val binding: ItemNoteTextBinding) :
     override val labelGroup = binding.labelGroup
     override val actionBtn = binding.actionBtn
 
-    override fun bind(adapter: NoteAdapter, item: NoteItem) {
+    override fun bind(adapter: NoteAdapter, item: NoteItemText) {
         super.bind(adapter, item)
-        require(item.note.type == NoteType.TEXT)
 
         val contentTxv = binding.contentTxv
-        val maxLines = adapter.getMaximumPreviewLines(NoteType.TEXT)
-        val ellipsisThreshold = getStartEllipsisThreshold(START_ELLIPSIS_THRESHOLD_TEXT, adapter) *
-                (maxLines - 1) + START_ELLIPSIS_THRESHOLD_TEXT_FIRST
         contentTxv.isVisible = item.note.content.isNotBlank()
-        contentTxv.text = HighlightHelper.getHighlightedText(item.note.content.trim(), item.contentHighlights,
-            adapter.highlightBackgroundColor, adapter.highlightForegroundColor,
-            ellipsisThreshold, START_ELLIPSIS_DISTANCE_TEXT)
-        contentTxv.maxLines = maxLines
+        contentTxv.text = getHighlightedText(item.content,
+            adapter.highlightBackgroundColor, adapter.highlightForegroundColor)
+        contentTxv.maxLines = adapter.prefsManager.getMaximumPreviewLines(NoteType.TEXT)
     }
 }
 
-class ListNoteViewHolder(private val binding: ItemNoteListBinding) : NoteViewHolder(binding.root) {
+class ListNoteViewHolder(private val binding: ItemNoteListBinding) :
+    NoteViewHolder<NoteItemList>(binding.root) {
 
     override val cardView = binding.cardView
     override val titleTxv = binding.titleTxv
@@ -235,63 +204,29 @@ class ListNoteViewHolder(private val binding: ItemNoteListBinding) : NoteViewHol
 
     private val itemViewHolders = mutableListOf<ListNoteItemViewHolder>()
 
-    override fun bind(adapter: NoteAdapter, item: NoteItem) {
+    override fun bind(adapter: NoteAdapter, item: NoteItemList) {
         super.bind(adapter, item)
-        // TODO some logi
 
-        require(item.note.type == NoteType.LIST)
-        require(itemViewHolders.isEmpty())
-
-        val noteItems = item.note.listItems
-
+        // Bind list note items
         val itemsLayout = binding.itemsLayout
-        itemsLayout.isVisible = noteItems.isNotEmpty()
-
-        // Add the first few items in list note using view holders in pool.
-        // If not moving checked items to the bottom, show items in order.
-        // Otherwise, show only unchecked items and move the rest to overflow (+N checked items).
-        val maxItems = adapter.getMaximumPreviewLines(NoteType.LIST)
-        val minItems = minOf(MINIMUM_LIST_NOTE_ITEMS, maxItems)
-        val showChecked = !adapter.prefsManager.moveCheckedToBottom
-        val itemHighlights = HighlightHelper.splitListNoteHighlightsByItem(noteItems, item.contentHighlights)
-        var onlyCheckedInOverflow = true
-        for ((i, noteItem) in noteItems.withIndex()) {
-            if (itemViewHolders.size < maxItems && (showChecked || !noteItem.checked)) {
-                val viewHolder = adapter.obtainListNoteItemViewHolder()
-                viewHolder.bind(adapter, noteItem, itemHighlights[i])
-                itemsLayout.addView(viewHolder.binding.root, itemViewHolders.size)
-                itemViewHolders += viewHolder
-            } else if (!noteItem.checked) {
-                onlyCheckedInOverflow = false
-            }
-        }
-
-        if (!showChecked && itemViewHolders.size < minItems) {
-            // Checked items were omitted, but that leaves too few items, add some checked items
-            for ((i, noteItem) in noteItems.withIndex()) {
-                if (noteItem.checked) {
-                    val viewHolder = adapter.obtainListNoteItemViewHolder()
-                    viewHolder.bind(adapter, noteItem, itemHighlights[i])
-                    itemsLayout.addView(viewHolder.binding.root, itemViewHolders.size)
-                    itemViewHolders += viewHolder
-                    if (itemViewHolders.size == minItems) {
-                        break
-                    }
-                }
-            }
+        itemsLayout.isVisible = item.items.isNotEmpty()
+        for ((i, noteItem) in item.items.withIndex()) {
+            val viewHolder = adapter.obtainListNoteItemViewHolder()
+            viewHolder.bind(adapter, noteItem, item.itemsChecked[i])
+            itemsLayout.addView(viewHolder.binding.root, itemViewHolders.size)
+            itemViewHolders += viewHolder
         }
 
         // Show a label indicating the number of items not shown.
         val infoTxv = binding.infoTxv
-        val overflowCount = noteItems.size - itemViewHolders.size
-        infoTxv.isVisible = overflowCount > 0
-        if (overflowCount > 0) {
+        infoTxv.isVisible = item.overflowCount > 0
+        if (item.overflowCount > 0) {
             infoTxv.text = adapter.context.resources.getQuantityString(
-                if (onlyCheckedInOverflow) {
+                if (item.onlyCheckedInOverflow) {
                     R.plurals.note_list_item_info_checked
                 } else {
                     R.plurals.note_list_item_info
-                }, overflowCount, overflowCount)
+                }, item.overflowCount, item.overflowCount)
         }
     }
 
@@ -335,16 +270,13 @@ class HeaderViewHolder(private val binding: ItemHeaderBinding) :
  */
 class ListNoteItemViewHolder(val binding: ItemNoteListItemBinding) {
 
-    fun bind(adapter: NoteAdapter, item: ListNoteItem, highlights: List<IntRange>) {
+    fun bind(adapter: NoteAdapter, item: Highlighted, checked: Boolean) {
         binding.contentTxv.apply {
-            text = HighlightHelper.getHighlightedText(item.content, highlights,
-                adapter.highlightBackgroundColor, adapter.highlightForegroundColor,
-                getStartEllipsisThreshold(START_ELLIPSIS_THRESHOLD_ITEM, adapter),
-                START_ELLIPSIS_DISTANCE_ITEM)
-            strikethroughText = item.checked && adapter.callback.strikethroughCheckedItems
+            text = getHighlightedText(item, adapter.highlightBackgroundColor, adapter.highlightForegroundColor)
+            strikethroughText = checked && adapter.callback.strikethroughCheckedItems
         }
 
-        binding.checkboxImv.setImageResource(if (item.checked) {
+        binding.checkboxImv.setImageResource(if (checked) {
             R.drawable.ic_checkbox_on
         } else {
             R.drawable.ic_checkbox_off
@@ -361,4 +293,20 @@ class LabelChipViewHolder(val binding: ItemNoteLabelBinding) {
     fun bind(label: Label) {
         binding.labelChip.text = label.name
     }
+}
+
+/**
+ * Creates a spannable string of a [text] with background spans of a [bgColor] and [fgColor]
+ * for all the highlights in it.
+ */
+fun getHighlightedText(text: Highlighted, bgColor: Int, fgColor: Int): CharSequence {
+    if (text.highlights.isEmpty()) {
+        return text.content
+    }
+    val highlightedText = SpannableString(text.content)
+    for (highlight in text.highlights) {
+        highlightedText[highlight] = BackgroundColorSpan(bgColor)
+        highlightedText[highlight] = ForegroundColorSpan(fgColor)
+    }
+    return highlightedText
 }

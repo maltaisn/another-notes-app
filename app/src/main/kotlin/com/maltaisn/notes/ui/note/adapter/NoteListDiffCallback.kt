@@ -44,6 +44,7 @@ class NoteListDiffCallback : DiffUtil.ItemCallback<NoteListItem>() {
                 val oldNote = old.note
                 val newNote = new.note
                 new.checked == old.checked &&
+                        newNote.type == oldNote.type &&
                         newNote.status == oldNote.status &&
                         newNote.pinned == oldNote.pinned &&
                         newNote.title == oldNote.title &&
@@ -51,9 +52,18 @@ class NoteListDiffCallback : DiffUtil.ItemCallback<NoteListItem>() {
                         newNote.metadata == oldNote.metadata &&
                         newNote.reminder == oldNote.reminder &&
                         new.labels == old.labels &&
-                        new.titleHighlights == old.titleHighlights &&
-                        new.contentHighlights == old.contentHighlights &&
-                        new.showMarkAsDone == old.showMarkAsDone
+                        new.showMarkAsDone == old.showMarkAsDone &&
+                        // At this point only content highlights can differ
+                        when (new) {
+                            is NoteItemText -> {
+                                old as NoteItemText
+                                new.content == old.content
+                            }
+                            is NoteItemList -> {
+                                old as NoteItemList
+                                new.items == old.items
+                            }
+                        }
             }
         }
     }

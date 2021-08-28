@@ -64,8 +64,8 @@ class PrefsManager @Inject constructor(
     val sortSettings: SortSettings
         get() = SortSettings(sortField, sortDirection)
 
-    fun getMaximumPreviewLines(layoutMode: NoteListLayoutMode, noteType: NoteType): Int {
-        val key = when (layoutMode) {
+    fun getMaximumPreviewLines(noteType: NoteType): Int {
+        val key = when (listLayoutMode) {
             NoteListLayoutMode.LIST -> when (noteType) {
                 NoteType.TEXT -> PREVIEW_LINES_TEXT_LIST
                 NoteType.LIST -> PREVIEW_LINES_LIST_LIST

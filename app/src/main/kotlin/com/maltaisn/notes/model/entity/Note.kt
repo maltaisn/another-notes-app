@@ -129,8 +129,9 @@ data class Note(
 
     /**
      * If note is a list note, returns a list of the items in it.
+     * The items text is trimmed.
      */
-    val listItems: List<ListNoteItem>
+    val listItems: MutableList<ListNoteItem>
         get() {
             check(type == NoteType.LIST) { "Cannot get list items for non-list note." }
 
@@ -138,13 +139,13 @@ data class Note(
             val items = content.split('\n')
             if (items.size == 1 && checked.isEmpty()) {
                 // No items
-                return emptyList()
+                return mutableListOf()
             }
 
             check(checked.size == items.size) { "Invalid list note data." }
 
-            return items.mapIndexed { i, text ->
-                ListNoteItem(text, checked[i])
+            return items.mapIndexedTo(mutableListOf()) { i, text ->
+                ListNoteItem(text.trim(), checked[i])
             }
         }
 

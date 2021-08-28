@@ -26,12 +26,11 @@ import com.maltaisn.notes.model.entity.NoteStatus
 import com.maltaisn.notes.model.entity.NoteWithLabels
 import com.maltaisn.notes.sync.R
 import com.maltaisn.notes.ui.AssistedSavedStateViewModelFactory
-import com.maltaisn.notes.ui.note.HighlightHelper
+import com.maltaisn.notes.ui.note.NoteItemFactory
 import com.maltaisn.notes.ui.note.NoteViewModel
 import com.maltaisn.notes.ui.note.PlaceholderData
 import com.maltaisn.notes.ui.note.adapter.HeaderItem
 import com.maltaisn.notes.ui.note.adapter.NoteAdapter
-import com.maltaisn.notes.ui.note.adapter.NoteItem
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
 import kotlinx.coroutines.delay
@@ -43,8 +42,9 @@ class SearchViewModel @AssistedInject constructor(
     notesRepository: NotesRepository,
     labelsRepository: LabelsRepository,
     prefs: PrefsManager,
-    reminderAlarmManager: ReminderAlarmManager
-) : NoteViewModel(savedStateHandle, notesRepository, labelsRepository, prefs, reminderAlarmManager),
+    reminderAlarmManager: ReminderAlarmManager,
+    noteItemFactory: NoteItemFactory,
+) : NoteViewModel(savedStateHandle, notesRepository, labelsRepository, prefs, noteItemFactory, reminderAlarmManager),
     NoteAdapter.Callback {
 
     // No need to save this is a saved state handle, SearchView will
@@ -59,6 +59,7 @@ class SearchViewModel @AssistedInject constructor(
 
     fun searchNotes(query: String) {
         lastQuery = query
+        noteItemFactory.query = query
 
         // Cancel previous flow collection / debounce
         noteListJob?.cancel()
@@ -97,13 +98,7 @@ class SearchViewModel @AssistedInject constructor(
                 }
 
                 val checked = isNoteSelected(note)
-                val titleHighlights = HighlightHelper.findHighlightsInString(
-                    note.title, lastQuery, MAX_HIGHLIGHTS_IN_TITLE)
-                val contentHighlights = HighlightHelper.findHighlightsInString(
-                    note.content, lastQuery, MAX_HIGHLIGHTS_IN_CONTENT)
-
-                this += NoteItem(note.id, note, noteWithLabels.labels,
-                    checked, titleHighlights, contentHighlights)
+                this += noteItemFactory.createItem(note, noteWithLabels.labels, checked)
             }
         }
     }
@@ -120,8 +115,5 @@ class SearchViewModel @AssistedInject constructor(
         val ARCHIVED_HEADER_ITEM = HeaderItem(-1, R.string.note_location_archived)
 
         private const val SEARCH_DEBOUNCE_DELAY = 100L
-
-        private const val MAX_HIGHLIGHTS_IN_TITLE = 2
-        private const val MAX_HIGHLIGHTS_IN_CONTENT = 10
     }
 }

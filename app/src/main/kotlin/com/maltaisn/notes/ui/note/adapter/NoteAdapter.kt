@@ -25,7 +25,6 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.maltaisn.notes.model.PrefsManager
-import com.maltaisn.notes.model.entity.NoteType
 import com.maltaisn.notes.sync.R
 import com.maltaisn.notes.sync.databinding.ItemHeaderBinding
 import com.maltaisn.notes.sync.databinding.ItemMessageBinding
@@ -55,12 +54,6 @@ class NoteAdapter(
      * **Should only be accessed on main thread.**
      */
     private val labelViewHolderPool = ArrayDeque<LabelChipViewHolder>()
-
-    var listLayoutMode = NoteListLayoutMode.LIST
-        set(value) {
-            field = value
-            notifyItemRangeChanged(0, itemCount)
-        }
 
     private val itemTouchHelper = ItemTouchHelper(SwipeTouchHelperCallback(callback))
 
@@ -96,11 +89,15 @@ class NoteAdapter(
         when (holder) {
             is MessageViewHolder -> holder.bind(item as MessageItem, this)
             is HeaderViewHolder -> holder.bind(item as HeaderItem)
-            is NoteViewHolder -> {
+            is TextNoteViewHolder -> {
                 // [onViewRecycled] is not always called so unbinding is also done here.
                 holder.unbind(this)
-
-                holder.bind(this, item as NoteItem)
+                holder.bind(this, item as NoteItemText)
+            }
+            is ListNoteViewHolder -> {
+                // [onViewRecycled] is not always called so unbinding is also done here.
+                holder.unbind(this)
+                holder.bind(this, item as NoteItemList)
             }
         }
     }
@@ -111,7 +108,7 @@ class NoteAdapter(
 
     override fun onViewRecycled(holder: RecyclerView.ViewHolder) {
         // Used to recycle secondary view holders
-        if (holder is NoteViewHolder) {
+        if (holder is NoteViewHolder<*>) {
             holder.unbind(this)
         }
     }
@@ -142,8 +139,10 @@ class NoteAdapter(
         labelViewHolderPool += viewHolder
     }
 
-    fun getMaximumPreviewLines(noteType: NoteType) =
-        prefsManager.getMaximumPreviewLines(listLayoutMode, noteType)
+    fun updateForListLayoutChange() {
+        // Number of preview lines have changed, must rebind all items
+        notifyItemRangeChanged(0, itemCount)
+    }
 
     enum class ViewType {
         MESSAGE,

@@ -53,7 +53,11 @@ fun listNote(
     status: NoteStatus = NoteStatus.ACTIVE,
     pinned: PinnedStatus = defaultPinnedStatusForStatus(status),
     reminder: Reminder? = null
-) = Note(id, NoteType.LIST, title, items.joinToString("\n") { it.content },
+) = Note(id, NoteType.LIST, title,
+    items.joinToString("\n") {
+        require('\n' !in it.content)
+        it.content
+    },
     ListNoteMetadata(items.map { it.checked }), added, modified, status, pinned, reminder)
 
 fun assertNoteEquals(

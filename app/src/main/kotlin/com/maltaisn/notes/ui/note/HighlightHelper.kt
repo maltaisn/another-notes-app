@@ -16,97 +16,63 @@
 
 package com.maltaisn.notes.ui.note
 
-import android.text.SpannableString
-import android.text.style.BackgroundColorSpan
-import android.text.style.ForegroundColorSpan
-import androidx.core.text.set
-import com.maltaisn.notes.model.entity.ListNoteItem
-
 /**
  * Helper class to add highlight spans on search results.
  */
 object HighlightHelper {
 
-    private const val START_ELLIPSIS = "\u2026\uFEFF"
+    const val START_ELLIPSIS = "\u2026\uFEFF"
 
     /**
      * Find a [max] of highlight positions for matches of a [query] in a [text].
      */
-    fun findHighlightsInString(text: String, query: String, max: Int = Int.MAX_VALUE) = buildList<IntRange> {
-        var i = 0
-        while (i < text.length) {
-            i = text.indexOf(query, i, ignoreCase = true)
-            if (i == -1) {
-                break
+    fun findHighlightsInString(text: String, query: String, max: Int = Int.MAX_VALUE): MutableList<IntRange> {
+        val highlights = mutableListOf<IntRange>()
+        if (max > 0) {
+            var i = 0
+            while (i < text.length) {
+                i = text.indexOf(query, i, ignoreCase = true)
+                if (i == -1) {
+                    break
+                }
+                highlights += i..(i + query.length)
+                if (highlights.size == max) {
+                    break
+                }
+                i++
             }
-            this += i..(i + query.length)
-            if (size == max) {
-                break
-            }
-            i++
         }
+        return highlights
     }
 
     /**
-     * Group highlights of a list note by item.
-     * Highlight indices are also shifted to the item's content.
+     * Ellipsize start of text of first highlight is beyond threshold.
+     * Leave a certain number of characters between the ellipsis and the highlight (the "distance")
+     * If start is ellipsized, highlights are shifted according, in place.
      */
-    fun splitListNoteHighlightsByItem(items: List<ListNoteItem>, highlights: List<IntRange>): List<List<IntRange>> {
-        var currHighlightIndex = 0
-        var contentStartPos = 0
-        val itemHighlights = mutableListOf<List<IntRange>>()
-        for (item in items) {
-            val contentEndPos = contentStartPos + item.content.length + 1
-            itemHighlights += buildList<IntRange> {
-                while (currHighlightIndex < highlights.size) {
-                    val highlight = highlights[currHighlightIndex]
-                    if (highlight.first >= contentStartPos && highlight.last < contentEndPos) {
-                        this += (highlight.first - contentStartPos)..(highlight.last - contentStartPos)
-                        currHighlightIndex++
-                    } else {
-                        break
+    fun getStartEllipsizedText(
+        text: String,
+        highlights: MutableList<IntRange>,
+        startEllipsisThreshold: Int,
+        startEllipsisDistance: Int
+    ): Highlighted {
+        var ellipsizedText = text
+        if (highlights.isNotEmpty()) {
+            val firstIndex = highlights.first().first
+            if (firstIndex > startEllipsisThreshold) {
+                var highlightShift = firstIndex - startEllipsisDistance
+                while (text[highlightShift].isWhitespace()) {
+                    highlightShift++
+                }
+                highlightShift -= START_ELLIPSIS.length
+                if (highlightShift > 0) {
+                    ellipsizedText = START_ELLIPSIS + text.substring(highlightShift + START_ELLIPSIS.length)
+                    for ((i, highlight) in highlights.withIndex()) {
+                        highlights[i] = (highlight.first - highlightShift)..(highlight.last - highlightShift)
                     }
                 }
             }
-            contentStartPos = contentEndPos
         }
-        return itemHighlights
+        return Highlighted(ellipsizedText, highlights)
     }
-
-    /**
-     * Creates a spannable string of a [text] with background spans of a [bgColor] for [highlights].
-     */
-    fun getHighlightedText(text: String, highlights: List<IntRange>, bgColor: Int, fgColor: Int,
-                           startEllipsisThreshold: Int, startEllipsisDistance: Int): CharSequence {
-        if (highlights.isEmpty()) {
-            return text
-        }
-
-        // Ellipsize start of text of first highlight is beyond threshold.
-        // Leave a certain number of characters between the ellipsis and the highlight (the "distance")
-        var textEllipsis = text
-        val firstIndex = highlights.first().first
-        var highlightShift = 0
-        if (firstIndex > startEllipsisThreshold) {
-            highlightShift = firstIndex - START_ELLIPSIS.length - startEllipsisDistance
-            if (highlightShift > 0) {
-                textEllipsis = START_ELLIPSIS + text.substring(firstIndex - startEllipsisDistance)
-            } else {
-                highlightShift = 0
-            }
-        }
-
-        val highlightedText = SpannableString(textEllipsis)
-        for (highlight in highlights) {
-            val range = if (highlightShift == 0) {
-                highlight
-            } else {
-                (highlight.first - highlightShift)..(highlight.last - highlightShift)
-            }
-            highlightedText[range] = BackgroundColorSpan(bgColor)
-            highlightedText[range] = ForegroundColorSpan(fgColor)
-        }
-        return highlightedText
-    }
-
 }

@@ -33,6 +33,7 @@ import com.maltaisn.notes.sync.R
 import com.maltaisn.notes.ui.AssistedSavedStateViewModelFactory
 import com.maltaisn.notes.ui.Event
 import com.maltaisn.notes.ui.navigation.HomeDestination
+import com.maltaisn.notes.ui.note.NoteItemFactory
 import com.maltaisn.notes.ui.note.NoteViewModel
 import com.maltaisn.notes.ui.note.PlaceholderData
 import com.maltaisn.notes.ui.note.SwipeAction
@@ -54,8 +55,9 @@ class HomeViewModel @AssistedInject constructor(
     labelsRepository: LabelsRepository,
     prefs: PrefsManager,
     reminderAlarmManager: ReminderAlarmManager,
+    noteItemFactory: NoteItemFactory,
     private val buildTypeBehavior: BuildTypeBehavior,
-) : NoteViewModel(savedStateHandle, notesRepository, labelsRepository, prefs, reminderAlarmManager),
+) : NoteViewModel(savedStateHandle, notesRepository, labelsRepository, prefs, noteItemFactory, reminderAlarmManager),
     NoteAdapter.Callback {
 
     var currentDestination: HomeDestination = HomeDestination.Status(NoteStatus.ACTIVE)
@@ -298,10 +300,8 @@ class HomeViewModel @AssistedInject constructor(
                 addedNotPinnedHeader = true
             }
 
-            val checked = isNoteSelected(note)
             // Omit the filtered label from the note since all notes have it.
-            val labels = noteWithLabels.labels - label
-            this += NoteItem(note.id, note, labels, checked)
+            addNoteItem(noteWithLabels, excludeLabel = label)
         }
     }
 
@@ -329,8 +329,7 @@ class HomeViewModel @AssistedInject constructor(
         var addedUpcomingHeader = false
 
         for (noteWithLabels in notes) {
-            val note = noteWithLabels.note
-            val reminderTime = (note.reminder ?: continue).next.time
+            val reminderTime = (noteWithLabels.note.reminder ?: continue).next.time
 
             if (!addedOverdueHeader && reminderTime <= now) {
                 // Reminder is past, add overdue header before it
@@ -347,16 +346,23 @@ class HomeViewModel @AssistedInject constructor(
             }
 
             // Show "Mark as done" action button.
-            val checked = isNoteSelected(note)
-            this += NoteItem(note.id, note, noteWithLabels.labels, checked,
-                showMarkAsDone = reminderTime <= now)
+            addNoteItem(noteWithLabels, showMarkAsDone = reminderTime <= now)
         }
     }
 
-    private fun MutableList<NoteListItem>.addNoteItem(noteWithLabels: NoteWithLabels) {
+    private fun MutableList<NoteListItem>.addNoteItem(
+        noteWithLabels: NoteWithLabels,
+        showMarkAsDone: Boolean = false,
+        excludeLabel: Label? = null
+    ) {
         val note = noteWithLabels.note
         val checked = isNoteSelected(note)
-        this += NoteItem(note.id, note, noteWithLabels.labels, checked)
+        val labels = if (excludeLabel == null) {
+            noteWithLabels.labels
+        } else {
+            noteWithLabels.labels - excludeLabel
+        }
+        this += noteItemFactory.createItem(note, labels, checked, showMarkAsDone)
     }
 
     override fun updatePlaceholder() = when (val destination = currentDestination) {

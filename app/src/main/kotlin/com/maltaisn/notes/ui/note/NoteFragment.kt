@@ -120,7 +120,7 @@ abstract class NoteFragment : Fragment(), ActionMode.Callback, ConfirmDialog.Cal
                 NoteListLayoutMode.LIST -> R.integer.note_list_layout_span_count
                 NoteListLayoutMode.GRID -> R.integer.note_grid_layout_span_count
             })
-            adapter.listLayoutMode = mode
+            adapter.updateForListLayoutChange()
         }
 
         viewModel.editItemEvent.observeEvent(viewLifecycleOwner) { noteId ->

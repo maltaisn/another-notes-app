@@ -105,6 +105,19 @@ class NoteTest {
     }
 
     @Test
+    fun `should get list items on list note (trimmed)`() {
+        val items = listOf(
+            ListNoteItem("  0 ", false),
+            ListNoteItem("1     ", true),
+            ListNoteItem("\r\t 2 \r  ", true))
+        val note = listNote(items)
+        assertEquals(listOf(
+            ListNoteItem("0", false),
+            ListNoteItem("1", true),
+            ListNoteItem("2", true)), note.listItems)
+    }
+
+    @Test
     fun `should get no list items on empty list note`() {
         val note = listNote(emptyList())
         assertEquals(emptyList(), note.listItems)

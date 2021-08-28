@@ -24,6 +24,7 @@ import com.maltaisn.notes.model.MockLabelsRepository
 import com.maltaisn.notes.model.MockNotesRepository
 import com.maltaisn.notes.model.PrefsManager
 import com.maltaisn.notes.model.ReminderAlarmManager
+import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.model.entity.NoteStatus
 import com.maltaisn.notes.model.entity.PinnedStatus
 import com.maltaisn.notes.model.entity.Reminder
@@ -31,6 +32,7 @@ import com.maltaisn.notes.testNote
 import com.maltaisn.notes.ui.MockAlarmCallback
 import com.maltaisn.notes.ui.getOrAwaitValue
 import com.maltaisn.notes.ui.navigation.HomeDestination
+import com.maltaisn.notes.ui.note.NoteItemFactory
 import com.maltaisn.notes.ui.note.NoteViewModel
 import com.maltaisn.notes.ui.note.adapter.NoteItem
 import com.maltaisn.notes.ui.note.adapter.NoteListLayoutMode
@@ -52,6 +54,7 @@ class HomeViewModelRemindersTest {
     private lateinit var notesRepo: MockNotesRepository
     private lateinit var labelsRepo: MockLabelsRepository
     private lateinit var prefs: PrefsManager
+    private lateinit var itemFactory: NoteItemFactory
 
     @get:Rule
     var mainCoroutineRule = MainCoroutineRule()
@@ -87,8 +90,10 @@ class HomeViewModelRemindersTest {
             on { listLayoutMode } doReturn NoteListLayoutMode.LIST
         }
 
+        itemFactory = NoteItemFactory(prefs)
+
         viewModel = HomeViewModel(SavedStateHandle(), notesRepo, labelsRepo, prefs,
-            ReminderAlarmManager(notesRepo, MockAlarmCallback()), mock())
+            ReminderAlarmManager(notesRepo, MockAlarmCallback()), itemFactory, mock())
         viewModel.setDestination(HomeDestination.Reminders)
     }
 
@@ -98,12 +103,12 @@ class HomeViewModelRemindersTest {
             assertTrue(viewModel.fabShown.getOrAwaitValue())
             assertEquals(listOf(
                 HomeViewModel.OVERDUE_HEADER_ITEM,
-                NoteItem(4, notesRepo.requireNoteById(4), showMarkAsDone = true),
-                NoteItem(1, notesRepo.requireNoteById(1), showMarkAsDone = true),
+                noteItem(notesRepo.requireNoteById(4), true),
+                noteItem(notesRepo.requireNoteById(1), true),
                 HomeViewModel.TODAY_HEADER_ITEM,
-                NoteItem(2, notesRepo.requireNoteById(2)),
+                noteItem(notesRepo.requireNoteById(2)),
                 HomeViewModel.UPCOMING_HEADER_ITEM,
-                NoteItem(3, notesRepo.requireNoteById(3)),
+                noteItem(notesRepo.requireNoteById(3)),
             ), viewModel.noteItems.getOrAwaitValue())
         }
 
@@ -111,7 +116,7 @@ class HomeViewModelRemindersTest {
     fun `should mark reminder as done on action button click`() =
         mainCoroutineRule.runBlockingTest {
             val note = notesRepo.requireNoteById(4)
-            viewModel.onNoteActionButtonClicked(NoteItem(4, note), 1)
+            viewModel.onNoteActionButtonClicked(noteItem(note), 1)
             assertEquals(note.copy(reminder = note.reminder?.markAsDone()),
                 notesRepo.requireNoteById(4))
         }
@@ -126,8 +131,8 @@ class HomeViewModelRemindersTest {
 
         assertEquals(listOf(
             HomeViewModel.OVERDUE_HEADER_ITEM,
-            NoteItem(8, notesRepo.requireNoteById(8), showMarkAsDone = true),
-            NoteItem(4, notesRepo.requireNoteById(4), showMarkAsDone = true),
+            noteItem(notesRepo.requireNoteById(8), true),
+            noteItem(notesRepo.requireNoteById(4), true),
         ), viewModel.noteItems.getOrAwaitValue())
     }
 
@@ -163,4 +168,7 @@ class HomeViewModelRemindersTest {
     // the rest is already tested in NoteViewModelTest
 
     private fun getNoteItemAt(pos: Int) = viewModel.noteItems.getOrAwaitValue()[pos] as NoteItem
+
+    private fun noteItem(note: Note, showMarkAsDone: Boolean = false) =
+        itemFactory.createItem(note, emptyList(), false, showMarkAsDone)
 }

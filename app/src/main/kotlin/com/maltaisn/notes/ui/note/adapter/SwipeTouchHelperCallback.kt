@@ -30,7 +30,7 @@ class SwipeTouchHelperCallback(private val callback: NoteAdapter.Callback) : Ite
     override fun isItemViewSwipeEnabled() = callback.isNoteSwipeEnabled
 
     override fun getMovementFlags(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder) =
-        makeMovementFlags(0, if (viewHolder is NoteViewHolder) {
+        makeMovementFlags(0, if (viewHolder is NoteViewHolder<*>) {
             ItemTouchHelper.START or ItemTouchHelper.END
         } else {
             0
