@@ -13,6 +13,7 @@
 - Fixed simultaneous notifications all opening the same note (#43).
 - Fixed notification click not working if already editing a note.
 - Fixed notification creating new note if clicked after note is deleted.
+- Remove check for internal list note consistency between content and metadata.
 
 ## v1.4.0
 - Added a label attribute to hide all notes with that label in active & archive destinations.

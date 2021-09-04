@@ -142,10 +142,10 @@ data class Note(
                 return mutableListOf()
             }
 
-            check(checked.size == items.size) { "Invalid list note data." }
+//            check(checked.size == items.size) { "Invalid list note data." }
 
             return items.mapIndexedTo(mutableListOf()) { i, text ->
-                ListNoteItem(text.trim(), checked[i])
+                ListNoteItem(text.trim(), checked.getOrElse(i) { false })
             }
         }
 

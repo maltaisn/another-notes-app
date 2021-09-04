@@ -546,14 +546,14 @@ class EditViewModel @AssistedInject constructor(
             }
             NoteType.LIST -> {
                 // Add items in the correct actual order
-                val items = arrayOfNulls<EditItemItem>(listItems.count { it is EditItemItem })
+                val items = MutableList(listItems.count { it is EditItemItem }) { TEMP_ITEM }
                 for (item in listItems) {
                     if (item is EditItemItem) {
                         items[item.actualPos] = item
                     }
                 }
-                content = items.joinToString("\n") { it!!.content.text }
-                metadata = ListNoteMetadata(items.map { it!!.checked })
+                content = items.joinToString("\n") { it.content.text }
+                metadata = ListNoteMetadata(items.map { it.checked })
             }
         }
         note = note.copy(title = title, content = content,
@@ -862,5 +862,7 @@ class EditViewModel @AssistedInject constructor(
 
         private const val KEY_NOTE_ID = "noteId"
         private const val KEY_IS_NEW_NOTE = "isNewNote"
+
+        private val TEMP_ITEM = EditItemItem(DefaultEditableText(), false, false, 0)
     }
 }
