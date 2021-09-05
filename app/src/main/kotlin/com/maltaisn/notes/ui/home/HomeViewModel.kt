@@ -45,6 +45,7 @@ import com.maltaisn.notes.ui.note.adapter.NoteListItem
 import com.maltaisn.notes.ui.send
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
+import debugCheck
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import java.util.Calendar
@@ -185,7 +186,7 @@ class HomeViewModel @AssistedInject constructor(
             } else {
                 // If one note is active, consider all active.
                 // Otherwise consider archived.
-                check(selectedNotes.none { it.status == NoteStatus.DELETED })
+                debugCheck(selectedNotes.none { it.status == NoteStatus.DELETED })
                 when {
                     selectedNotes.isEmpty() -> null
                     selectedNotes.any { it.status == NoteStatus.ACTIVE } -> NoteStatus.ACTIVE

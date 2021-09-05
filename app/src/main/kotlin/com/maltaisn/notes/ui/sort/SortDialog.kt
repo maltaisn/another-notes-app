@@ -31,6 +31,7 @@ import com.maltaisn.notes.ui.SharedViewModel
 import com.maltaisn.notes.ui.navGraphViewModel
 import com.maltaisn.notes.ui.observeEvent
 import com.maltaisn.notes.ui.viewModel
+import debugCheck
 import javax.inject.Inject
 import javax.inject.Provider
 
@@ -85,7 +86,7 @@ class SortDialog : DialogFragment() {
 
     private fun setupViewModelObservers(binding: DialogSortBinding) {
         // Using `this` as lifecycle owner, cannot show dialog twice with same instance to avoid double observation.
-        check(!viewModel.sortField.hasObservers()) { "Dialog was shown twice with same instance." }
+        debugCheck(!viewModel.sortField.hasObservers()) { "Dialog was shown twice with same instance." }
 
         viewModel.sortField.observeEvent(this) { field ->
             when (field) {

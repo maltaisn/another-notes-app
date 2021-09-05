@@ -42,6 +42,7 @@ import com.maltaisn.recurpicker.list.RecurrenceListCallback
 import com.maltaisn.recurpicker.list.RecurrenceListDialog
 import com.maltaisn.recurpicker.picker.RecurrencePickerCallback
 import com.maltaisn.recurpicker.picker.RecurrencePickerDialog
+import debugCheck
 import java.text.DateFormat
 import javax.inject.Inject
 import javax.inject.Provider
@@ -103,7 +104,7 @@ class ReminderDialog : DialogFragment(), RecurrenceListCallback, RecurrencePicke
 
     private fun setupViewModelObservers(binding: DialogReminderBinding) {
         // Using `this` as lifecycle owner, cannot show dialog twice with same instance to avoid double observation.
-        check(!viewModel.details.hasObservers()) { "Dialog was shown twice with same instance." }
+        debugCheck(!viewModel.details.hasObservers()) { "Dialog was shown twice with same instance." }
 
         viewModel.details.observe(this) { details ->
             binding.dateInput.setText(dateFormat.format(details.date))

@@ -86,17 +86,6 @@ class NoteTest {
     }
 
     @Test
-    fun `should handle mismatch in list note metadata and content`() {
-        val items = listOf(
-            ListNoteItem("0", false),
-            ListNoteItem("1", true),
-            ListNoteItem("2", true))
-        var note = listNote(items)
-        note = note.copy(content = note.content + "\n3")
-        assertEquals(items + ListNoteItem("3", false), note.listItems)
-    }
-
-    @Test
     fun `should fail to create deleted note with reminder`() {
         assertFailsWith<IllegalArgumentException> {
             testNote(status = NoteStatus.DELETED, reminder = Reminder.create(

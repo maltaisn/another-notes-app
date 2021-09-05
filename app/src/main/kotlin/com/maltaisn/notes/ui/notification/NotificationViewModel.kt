@@ -114,9 +114,10 @@ class NotificationViewModel @AssistedInject constructor(
             viewModelScope.launch {
                 val note = notesRepository.getNoteById(noteId)
                 val reminder = note?.reminder
-                if (note != null && reminder != null) {
-                    // There's hardly a way note or reminder can be null at this point, but
-                    // let's assume it's possible and do nothing in that case.
+                if (note != null && reminder != null && reminder.recurrence == null
+                        && !reminder.done && calendar.timeInMillis > reminder.next.time) {
+                    // Reminder can be null or be recurring if user changed it between the
+                    // notification and the postpone action.
                     val newNote = note.copy(reminder = reminder.postponeTo(calendar.time))
                     notesRepository.updateNote(newNote)
                     reminderAlarmManager.setNoteReminderAlarm(newNote)

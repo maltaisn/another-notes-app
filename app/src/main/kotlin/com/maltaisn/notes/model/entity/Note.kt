@@ -23,6 +23,8 @@ import androidx.room.Junction
 import androidx.room.PrimaryKey
 import androidx.room.Relation
 import com.maltaisn.notes.model.converter.NoteMetadataConverter
+import debugCheck
+import debugRequire
 import kotlinx.serialization.Transient
 import java.util.Date
 
@@ -104,18 +106,18 @@ data class Note(
             NoteType.LIST -> metadata is ListNoteMetadata
         })
 
-        require(addedDate.time <= lastModifiedDate.time) {
+        debugRequire(addedDate.time <= lastModifiedDate.time) {
             "Note added date must be before or on last modified date."
         }
 
-        require(status != NoteStatus.ACTIVE || pinned != PinnedStatus.CANT_PIN) {
+        debugRequire(status != NoteStatus.ACTIVE || pinned != PinnedStatus.CANT_PIN) {
             "Active note must be pinnable."
         }
-        require(status == NoteStatus.ACTIVE || pinned == PinnedStatus.CANT_PIN) {
+        debugRequire(status == NoteStatus.ACTIVE || pinned == PinnedStatus.CANT_PIN) {
             "Archived or deleted note must not be pinnable."
         }
 
-        require(status != NoteStatus.DELETED || reminder == null) {
+        debugRequire(status != NoteStatus.DELETED || reminder == null) {
             "Deleted note cannot have a reminder."
         }
     }
@@ -142,7 +144,7 @@ data class Note(
                 return mutableListOf()
             }
 
-//            check(checked.size == items.size) { "Invalid list note data." }
+            debugCheck(checked.size == items.size) { "Invalid list note data." }
 
             return items.mapIndexedTo(mutableListOf()) { i, text ->
                 ListNoteItem(text.trim(), checked.getOrElse(i) { false })

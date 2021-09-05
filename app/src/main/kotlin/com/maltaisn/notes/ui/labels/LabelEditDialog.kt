@@ -31,6 +31,7 @@ import com.maltaisn.notes.sync.R
 import com.maltaisn.notes.sync.databinding.DialogLabelEditBinding
 import com.maltaisn.notes.ui.observeEvent
 import com.maltaisn.notes.ui.viewModel
+import debugCheck
 import javax.inject.Inject
 
 class LabelEditDialog : DialogFragment() {
@@ -51,7 +52,7 @@ class LabelEditDialog : DialogFragment() {
         val binding = DialogLabelEditBinding.inflate(LayoutInflater.from(context), null, false)
 
         // Using `this` as lifecycle owner, cannot show dialog twice with same instance to avoid double observation.
-        check(!viewModel.setLabelEvent.hasObservers()) { "Dialog was shown twice with same instance." }
+        debugCheck(!viewModel.setLabelEvent.hasObservers()) { "Dialog was shown twice with same instance." }
 
         val nameInput = binding.labelInput
         val nameInputLayout = binding.labelInputLayout
