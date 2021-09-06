@@ -122,7 +122,7 @@ class Screenshots {
         ))
 
         onView(allOf(isDescendantOfA(withId(R.id.fragment_note_layout)), withId(R.id.recycler_view)))
-            .perform(actionOnItemAtPosition<NoteViewHolder>(0, click()))
+            .perform(actionOnItemAtPosition<NoteViewHolder<*>>(0, click()))
         delay(250)
         onView(allOf(isDescendantOfA(withId(R.id.fragment_edit_layout)), withId(R.id.recycler_view)))
             .perform(actionOnItemAtPosition<EditItemViewHolder>(3, click()))
@@ -180,7 +180,7 @@ class Screenshots {
         ))
 
         onView(allOf(isDescendantOfA(withId(R.id.fragment_note_layout)), withId(R.id.recycler_view)))
-            .perform(actionOnItemAtPosition<NoteViewHolder>(1, longClick()))
+            .perform(actionOnItemAtPosition<NoteViewHolder<*>>(1, longClick()))
         delay(250)
         onView(toolbarItem(R.id.item_reminder)).perform(click())
 

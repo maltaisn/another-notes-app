@@ -1,4 +1,3 @@
-- Ajout d'une fonctionnalité pour cacher les notes ayant une étiquette en particulier.
-- Ajout de liens cliquables lors de l'édition.
-- Nouvelle traduction en espagnol.
+- Ajout d'options de tri.
+- Plus de résultats surlignés dans la recherche.
 - Plusieurs bugs corrigés.

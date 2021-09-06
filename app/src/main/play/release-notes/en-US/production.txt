@@ -1,4 +1,3 @@
-- Added ability to hide all notes with a particular label.
-- Added clickable links to edit screen.
-- New Spanish translation.
+- Added sorting options.
+- Show more highlights in search screen.
 - Many bug fixes.

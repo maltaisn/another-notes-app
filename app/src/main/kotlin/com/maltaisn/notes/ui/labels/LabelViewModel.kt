@@ -223,10 +223,10 @@ class LabelViewModel @AssistedInject constructor(
 
     /** Set the selected state of all notes to [selected]. */
     private fun setAllSelected(selected: Boolean) {
-        if (!selected && selectedLabels.isEmpty() ||
-            selected && selectedLabels.size == listItems.size
-        ) {
-            // Already all unselected or all selected.
+        val allSelected = selected && selectedLabels.size == listItems.size
+        val allUnselected = !selected && selectedLabels.isEmpty()
+        if (allSelected || allUnselected) {
+            // No changes needed.
             return
         }
 

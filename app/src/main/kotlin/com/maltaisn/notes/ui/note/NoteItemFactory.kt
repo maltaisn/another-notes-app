@@ -18,6 +18,7 @@ package com.maltaisn.notes.ui.note
 
 import com.maltaisn.notes.model.PrefsManager
 import com.maltaisn.notes.model.entity.Label
+import com.maltaisn.notes.model.entity.ListNoteItem
 import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.model.entity.NoteType
 import com.maltaisn.notes.ui.note.adapter.NoteItemList
@@ -94,43 +95,8 @@ class NoteItemFactory @Inject constructor(
             items.sortBy { it.checked }
         }
 
-        val highlights = if (query == null) {
-            mutableListOf()
-        } else {
-            var maxHighlights = MAX_HIGHLIGHTS_IN_LIST
-            items.mapTo(mutableListOf()) {
-                val ranges = HighlightHelper.findHighlightsInString(it.content, query!!,
-                    minOf(maxHighlights, MAX_HIGHLIGHTS_IN_LIST_ITEM))
-                maxHighlights -= ranges.size
-                ranges
-            }
-        }
-
-        val maxItemsCount = prefs.getMaximumPreviewLines(NoteType.LIST)
-        val itemsCount = minOf(maxItemsCount, if (prefs.moveCheckedToBottom) {
-            var count = items.indexOfFirst { it.checked }
-            if (count == -1) {
-                count = items.size
-            }
-            if (query != null) {
-                // Show checked items with highlights as well
-                val checkedHighlighed = items.foldIndexed(0) { i, c, item ->
-                    if (highlights[i].isNotEmpty() && item.checked) {
-                        c + 1
-                    } else {
-                        c
-                    }
-                }
-                count += checkedHighlighed
-            }
-            if (MINIMUM_LIST_NOTE_ITEMS in count until maxItemsCount) {
-                // Less than minimum unchecked items, add checked items.
-                count = minOf(items.size, MINIMUM_LIST_NOTE_ITEMS)
-            }
-            count
-        } else {
-            items.size
-        })
+        val highlights = getListItemHighlights(items)
+        val itemsCount = getListItemCount(items, highlights)
 
         var onlyCheckedInOverflow = true
         if (query != null) {
@@ -174,6 +140,48 @@ class NoteItemFactory @Inject constructor(
 
         return NoteItemList(note.id, note, labels, checked, title, highlightedItems,
             itemsChecked, overflowCount, onlyCheckedInOverflow, showMarkAsDone)
+    }
+
+    private fun getListItemCount(items: List<ListNoteItem>, highlights: List<List<IntRange>>): Int {
+        val maxItemsCount = prefs.getMaximumPreviewLines(NoteType.LIST)
+        return minOf(maxItemsCount, if (prefs.moveCheckedToBottom) {
+            var count = items.indexOfFirst { it.checked }
+            if (count == -1) {
+                count = items.size
+            }
+            if (query != null) {
+                // Show checked items with highlights as well
+                val checkedHighlighed = items.foldIndexed(0) { i, c, item ->
+                    if (highlights[i].isNotEmpty() && item.checked) {
+                        c + 1
+                    } else {
+                        c
+                    }
+                }
+                count += checkedHighlighed
+            }
+            if (MINIMUM_LIST_NOTE_ITEMS in count until maxItemsCount) {
+                // Less than minimum unchecked items, add checked items.
+                count = minOf(items.size, MINIMUM_LIST_NOTE_ITEMS)
+            }
+            count
+        } else {
+            items.size
+        })
+    }
+
+    private fun getListItemHighlights(items: List<ListNoteItem>): MutableList<MutableList<IntRange>> {
+        return if (query == null) {
+            mutableListOf()
+        } else {
+            var maxHighlights = MAX_HIGHLIGHTS_IN_LIST
+            items.mapTo(mutableListOf()) {
+                val ranges = HighlightHelper.findHighlightsInString(it.content, query!!,
+                    minOf(maxHighlights, MAX_HIGHLIGHTS_IN_LIST_ITEM))
+                maxHighlights -= ranges.size
+                ranges
+            }
+        }
     }
 
     private fun createTitle(note: Note): Highlighted {

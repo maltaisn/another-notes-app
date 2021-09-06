@@ -98,7 +98,7 @@ class NotificationViewModel @AssistedInject constructor(
         // Open time dialog next
         viewModelScope.launch {
             // TODO thats ugly
-            delay(250)
+            delay(INTER_DIALOG_DELAY)
             _showTimeDialogEvent.send(postponeTime)
         }
     }
@@ -139,6 +139,8 @@ class NotificationViewModel @AssistedInject constructor(
     }
 
     companion object {
+        private const val INTER_DIALOG_DELAY = 250L
+
         private const val KEY_NOTE_ID = "note_id"
         private const val KEY_POSTPONE_TIME = "postpone_time"
     }

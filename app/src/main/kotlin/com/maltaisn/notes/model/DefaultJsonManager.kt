@@ -88,7 +88,22 @@ class DefaultJsonManager @Inject constructor(
             return ImportResult.BAD_DATA
         }
 
-        // Add labels
+        // Import all data
+        val newLabelsMap = importLabels(notesData)
+        importNotes(notesData, newLabelsMap)
+
+        // Update all reminders
+        reminderAlarmManager.updateAllAlarms()
+
+        return if (notesData.version > VERSION) {
+            // data comes from future version of app
+            ImportResult.FUTURE_VERSION
+        } else {
+            ImportResult.SUCCESS
+        }
+    }
+
+    private suspend fun importLabels(notesData: NotesData): Map<Long, Long> {
         val existingLabels = labelsDao.getAll()
         val existingLabelsIdMap = existingLabels.associateBy { it.id }
         val existingLabelsNameMap = existingLabels.associateBy { it.name }
@@ -120,8 +135,10 @@ class DefaultJsonManager @Inject constructor(
                 newLabelsMap[id] = labelsDao.insert(Label(id, labelName))
             }
         }
+        return newLabelsMap
+    }
 
-        // Add notes
+    private suspend fun importNotes(notesData: NotesData, newLabelsMap: Map<Long, Long>) {
         val existingNotes = notesDao.getAll().asSequence().map { it.note }.associateBy { it.id }
         val labelRefs = mutableListOf<LabelRef>()
         for ((id, ns) in notesData.notes) {
@@ -150,16 +167,6 @@ class DefaultJsonManager @Inject constructor(
             }
         }
         labelsDao.insertRefs(labelRefs)
-
-        // Update all reminders
-        reminderAlarmManager.updateAllAlarms()
-
-        return if (notesData.version > VERSION) {
-            // data comes from future version of app
-            ImportResult.FUTURE_VERSION
-        } else {
-            ImportResult.SUCCESS
-        }
     }
 
     enum class ImportResult {
@@ -180,7 +187,7 @@ class DefaultJsonManager @Inject constructor(
  * adding [labels] to store label references.
  */
 @Serializable
-private class NoteSurrogate(
+private data class NoteSurrogate(
     @SerialName("type")
     val type: NoteType,
     @SerialName("title")

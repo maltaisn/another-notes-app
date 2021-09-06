@@ -137,7 +137,7 @@ class ReminderViewModel @AssistedInject constructor(
                 val currHour = calendar[Calendar.HOUR_OF_DAY]
                 val todayReminderHour = DEFAULT_REMINDER_HOURS.find { it > currHour + REMINDER_HOUR_MIN_DISTANCE }
                 calendar[Calendar.HOUR_OF_DAY] = todayReminderHour ?:
-                        DEFAULT_REMINDER_HOURS.first { it > currHour + REMINDER_HOUR_MIN_DISTANCE - 24 }
+                        DEFAULT_REMINDER_HOURS.first { it > currHour + REMINDER_HOUR_MIN_DISTANCE - HOURS_IN_DAY }
                 calendar[Calendar.MINUTE] = 0
                 calendar[Calendar.SECOND] = 0
                 calendar[Calendar.MILLISECOND] = 0
@@ -335,6 +335,8 @@ class ReminderViewModel @AssistedInject constructor(
         // If no hour is applicable, then the reminder is set for tomorrow.
         private val DEFAULT_REMINDER_HOURS = listOf(8, 13, 18, 20)
         private const val REMINDER_HOUR_MIN_DISTANCE = 3
+
+        private const val HOURS_IN_DAY = 24
 
         private const val KEY_DATE = "date"
         private const val KEY_RECURRENCE = "recurrence"

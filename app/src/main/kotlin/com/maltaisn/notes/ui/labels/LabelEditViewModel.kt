@@ -129,7 +129,7 @@ class LabelEditViewModel @AssistedInject constructor(
     }
 
     companion object {
-        private val KEY_NAME = "name"
-        private val KEY_HIDDEN = "hidden"
+        private const val KEY_NAME = "name"
+        private const val KEY_HIDDEN = "hidden"
     }
 }

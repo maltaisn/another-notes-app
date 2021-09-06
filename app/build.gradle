@@ -27,8 +27,8 @@ android {
         applicationId "com.maltaisn.notes.sync"
         minSdkVersion 21
         targetSdkVersion 30
-        versionCode 10400
-        versionName "1.4.0"
+        versionCode 10401
+        versionName "1.4.1"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
         kapt {
