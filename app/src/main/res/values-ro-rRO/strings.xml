@@ -14,154 +14,217 @@
   See the License for the specific language governing permissions and
   limitations under the License.
   -->
-<resources>
-    <!-- Do not translate the app name -->
-    <!-- Can be translated to provided a sensible localized name for a "Notes" app -->
-    <string name="app_name_short">Notas</string>
-    <string name="action_archive">Archivar</string>
-    <string name="action_cancel">Cancelar</string>
-    <string name="action_clear">Limpiar</string>
-    <string name="action_convert_to_list">Convertir a lista</string>
-    <string name="action_convert_to_text">Convertir a texto</string>
-    <string name="action_copy">Hacer una copia</string>
-    <string name="action_delete">Borrar</string>
-    <string name="action_delete_checked">Borrar elementos marcados</string>
-    <string name="action_delete_forever">Borrar permanentemente</string>
-    <string name="action_delete_selection">Borrar selección</string>
-    <string name="action_delete_selection_forever">Borrar selección permanentemente</string>
-    <string name="action_empty_trash">Vaciar papeleta</string>
-    <string name="action_empty_trash_short">Vaciar</string>
-    <string name="action_keep">Conservar</string>
-    <string name="action_labels">Cambiar etiquetas</string>
-    <string name="action_layout_grid">Vista de cuadrícula</string>
-    <string name="action_layout_list">Vista de lista</string>
-    <string name="action_manage">Gestionar</string>
-    <string name="action_mark_as_done">Marcar como terminado</string>
-    <string name="action_none">Ninguno</string>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="app_name_short">Notes</string>
+    <string name="action_archive">Archiver</string>
+    <string name="action_cancel">Annuler</string>
+    <string name="action_clear">Effacer</string>
+    <string name="action_convert_to_list">Convertir en liste</string>
+    <string name="action_convert_to_text">Convertir en texte</string>
+    <string name="action_copy">Faire une copie</string>
+    <string name="action_delete">Supprimer</string>
+    <string name="action_delete_checked">Effacer les éléments cochés</string>
+    <string name="action_delete_forever">Supprimer définitivement</string>
+    <string name="action_delete_selection">Supprimer la sélection</string>
+    <string name="action_delete_selection_forever">Supprimer la sélection définitivement</string>
+    <string name="action_empty_trash">Vider la corbeille</string>
+    <string name="action_empty_trash_short">Vider</string>
+    <string name="action_keep">Garder</string>
+    <string name="action_labels">Changer les étiquettes</string>
+    <string name="action_layout_grid">Disposition grille</string>
+    <string name="action_layout_list">Disposition liste</string>
+    <string name="action_manage">Gérer</string>
+    <string name="action_mark_as_done">Marquer comme terminé</string>
+    <string name="action_none">Aucune</string>
     <string name="action_ok">OK</string>
-    <string name="action_pin">Fijar</string>
-    <string name="action_postpone">Posponer</string>
-    <string name="action_reminder_add">Añadir recordatorio</string>
-    <string name="action_reminder_edit">Editar recordatorio</string>
-    <string name="action_rename">Renombrar</string>
-    <string name="action_restore">Restaurar</string>
-    <string name="action_search">Buscar</string>
-    <string name="action_select_all">Seleccionar todo</string>
-    <string name="action_settings">Ajustes</string>
-    <string name="action_share">Compartir</string>
-    <string name="action_unarchive">Desarchivar</string>
-    <string name="action_uncheck_all">Desmarcar todo</string>
-    <string name="action_undo">Deshacer</string>
-    <string name="action_unpin">Dejar de fijar</string>
+    <string name="action_pin">Épingler</string>
+    <string name="action_postpone">Reporter</string>
+    <string name="action_reminder_add">Ajouter un rappel</string>
+    <string name="action_reminder_edit">Modifier le rappel</string>
+    <string name="action_rename">Renommer</string>
+    <string name="action_restore">Restaurer</string>
+    <string name="action_search">Rechercher</string>
+    <string name="action_select_all">Sélectionner tout</string>
+    <string name="action_settings">Paramètres</string>
+    <string name="action_share">Partager</string>
+    <string name="action_unarchive">Désarchiver</string>
+    <string name="action_uncheck_all">Décocher tous les éléments</string>
+    <string name="action_undo">Annuler</string>
+    <string name="action_unpin">Désépingler</string>
     <!-- Shortcuts -->
     <!-- Note: normal length is ideally 25 chars or less, short is 10 chars or less. -->
-    <string name="shortcut_text_note">Nueva nota de texto</string>
-    <string name="shortcut_text_note_short">Nuevo texto</string>
-    <string name="shortcut_list_note">Nueva nota de lista</string>
-    <string name="shortcut_list_note_short">Nueva lista</string>
-    <string name="shortcut_reminders">Recordatorios</string>
-    <string name="shortcut_reminders_short">Recordatorios</string>
+    <string name="shortcut_text_note">Nouveau texte</string>
+    <string name="shortcut_text_note_short">Texte</string>
+    <string name="shortcut_list_note">Nouvelle liste</string>
+    <string name="shortcut_list_note_short">Liste</string>
+    <string name="shortcut_reminders">Rappels</string>
+    <string name="shortcut_reminders_short">Rappels</string>
     <!-- Home -->
-    <string name="note_location_active">Notas</string>
-    <string name="note_location_archived">Archivadas</string>
-    <string name="note_location_deleted">Eliminadas</string>
-    <string name="note_location_labels">Etiquetas</string>
-    <string name="note_pinned">Fijadas</string>
-    <string name="note_not_pinned">Otras</string>
-    <string name="note_placeholder_active">No hay ninguna nota.\n
-      Pulsa + para crear una nueva.</string>
-    <string name="note_placeholder_archived">No hay notas archivadas</string>
-    <string name="note_placeholder_deleted">La papelera está vacía</string>
-    <string name="trash_reminder_message">Las notas de la papelera de eliminarán automáticamente tras %d días.</string>
-    <string name="trash_delete_message">Está nota se eliminará permanentemente.</string>
-    <string name="trash_delete_selected_message">Las notas seleccionadas se eliminarán permanentemente.</string>
-    <string name="trash_empty_message">Todas las notas de la papelera de eliminarán permanentemente.</string>
-    <string name="search_hint">Buscar notas</string>
-    <string name="search_empty_placeholder">No se han encontrado notas para tu búsqueda</string>
+    <string name="note_location_active">Notes</string>
+    <string name="note_location_archived">Archive</string>
+    <string name="note_location_deleted">Corbeille</string>
+    <string name="note_location_labels">Étiquettes</string>
+    <string name="note_pinned">Épinglées</string>
+    <string name="note_not_pinned">Autres</string>
+    <string name="note_placeholder_active">Vous n\'avez aucune note.\nCliquez sur le + pour en ajouter.</string>
+    <string name="note_placeholder_archived">Aucune note archivée</string>
+    <string name="note_placeholder_deleted">La corbeille est vide</string>
+    <plurals name="note_list_item_info">
+        <item quantity="one">+ %d autre élément</item>
+        <item quantity="few">+ %d autres éléments</item>
+        <item quantity="other">+ %d autres éléments</item>
+    </plurals>
+    <plurals name="note_list_item_info_checked">
+        <item quantity="one">+ %d élément coché</item>
+        <item quantity="few">+ %d éléments cochés</item>
+        <item quantity="other">+ %d éléments cochés</item>
+    </plurals>
+    <string name="trash_reminder_message">Les notes dans la corbeille sont supprimées automatiquement après %d jours.</string>
+    <string name="trash_delete_message">Cette note sera supprimée définitivement.</string>
+    <string name="trash_delete_selected_message">Les notes sélectionnées seront supprimées définitivement.</string>
+    <string name="trash_empty_message">Toutes les notes dans la corbeille sont supprimées définitivement.</string>
+    <string name="search_hint">Rechercher dans vos notes</string>
+    <string name="search_empty_placeholder">Aucune note trouvée pour cette recherche.</string>
+    <string name="sort_title">Options de tri</string>
+    <string name="sort_direction">Sens du tri</string>
+    <string name="sort_direction_ascending">Ordre croissant</string>
+    <string name="sort_direction_descending">Ordre décroissant</string>
+    <string name="sort_field">Trier par</string>
+    <string name="sort_field_created">Date de création</string>
+    <string name="sort_field_modified">Date de modification</string>
+    <string name="sort_field_title">Titre</string>
     <!-- Edit -->
-    <string name="edit_add_title">Crear nota</string>
-    <string name="edit_change_title">Editar nota</string>
-    <string name="edit_hint_note_title">Título</string>
-    <string name="edit_hint_note_content">Nota</string>
-    <string name="edit_hint_note_item">Lista de elementos</string>
-    <string name="edit_message_blank_note_discarded">La nota vacía se ha descartado</string>
-    <string name="edit_in_trash_message">No es posible editar una nota que está en la papelera.</string>
-    <string name="edit_copy_suffix">Copiar</string>
-    <string name="edit_copy_untitled_name">Sin título</string>
-    <string name="edit_convert_keep_checked">¿Eliminar elementos marcados?</string>
+    <string name="edit_add_title">Ajouter</string>
+    <string name="edit_change_title">Modifier</string>
+    <string name="edit_hint_note_title">Titre</string>
+    <string name="edit_hint_note_content">Note</string>
+    <string name="edit_hint_note_item">Nouvel élément</string>
+    <string name="edit_message_blank_note_discarded">Note vide supprimée.</string>
+    <plurals name="edit_move_archive_message" tools:ignore="ImpliedQuantity">
+        <item quantity="one">Note archivée.</item>
+        <item quantity="few">Notes archivées.</item>
+        <item quantity="other">Notes archivées.</item>
+    </plurals>
+    <plurals name="edit_message_move_delete" tools:ignore="ImpliedQuantity">
+        <item quantity="one">Note déplacée dans la corbeille.</item>
+        <item quantity="few">Notes déplacées dans la corbeille.</item>
+        <item quantity="other">Notes déplacées dans la corbeille.</item>
+    </plurals>
+    <plurals name="edit_message_move_restore" tools:ignore="ImpliedQuantity">
+        <item quantity="one">Note restaurée.</item>
+        <item quantity="few">Notes réstaurées.</item>
+        <item quantity="other">Notes réstaurées.</item>
+    </plurals>
+    <plurals name="edit_message_move_unarchive" tools:ignore="ImpliedQuantity">
+        <item quantity="one">Note désarchivée.</item>
+        <item quantity="few">Notes désarchivées.</item>
+        <item quantity="other">Notes désarchivées.</item>
+    </plurals>
+    <string name="edit_in_trash_message">Impossible de modifier une note dans la corbeille.</string>
+    <string name="edit_copy_suffix">Copie</string>
+    <string name="edit_copy_untitled_name">Sans titre</string>
+    <string name="edit_convert_keep_checked">Effacer les éléments cochés?</string>
+    <plurals name="edit_checked_items">
+        <item quantity="one">%d élément coché</item>
+        <item quantity="few">%d élément cochés</item>
+        <item quantity="other">%d élément cochés</item>
+    </plurals>
     <!-- Reminder -->
-    <string name="note_reminders">Recordatorios</string>
-    <string name="reminder_upcoming">Próximos</string>
-    <string name="reminder_today">Hoy</string>
-    <string name="reminder_overdue">Vencida</string>
-    <string name="reminder_date">Fecha</string>
-    <string name="reminder_time">Hora</string>
-    <string name="reminder_invalid_time">La fecha ya ha pasado</string>
-    <string name="reminder_notif_channel_title">Recordatorios</string>
-    <string name="reminder_empty_placeholder">Sin recordatorios</string>
-    <string name="reminder_restricted_battery">Las alarmas de los recordatorios podrían no funcionar correctamente porque la aplicación tiene restringido el uso de batería. Esto se puede cambiar en los ajustes de la aplicación.</string>
+    <string name="note_reminders">Rappels</string>
+    <string name="reminder_upcoming">À venir</string>
+    <string name="reminder_today">Aujourd\'hui</string>
+    <string name="reminder_overdue">En retard</string>
+    <string name="reminder_date">Date</string>
+    <string name="reminder_time">Heure</string>
+    <string name="reminder_invalid_time">Ce moment est déjà passé.</string>
+    <string name="reminder_notif_channel_title">Rappels</string>
+    <string name="reminder_notif_channel_descr">Rappels mis sur les notes</string>
+    <string name="reminder_empty_placeholder">Aucun rappel défini</string>
+    <string name="reminder_restricted_battery">Les alarmes des rappels pourraient ne pas fonctionner
+    correctement puisque l\'application a une restriction au niveau de l\'utilisation de la pile.
+    Cela peut être changé dans les paramètres.</string>
     <!-- Labels -->
-    <string name="label_create">Crear nueva etiqueta</string>
-    <string name="label_edit">Editar nombre de etiqueta</string>
-    <string name="label_manage">Gestionar etiquetas</string>
-    <string name="label_select">Selecciona etiquetas</string>
-    <string name="label_already_exists">Ya existe una etiqueta con ese nombre.</string>
-    <string name="label_empty_placeholder">No hay etiquetas creadas</string>
-    <string name="label_delete_message">Las etiquetas seleccionadas se borrarán pero sus notas asociadas se conservarán.</string>
-    <string name="label_notes_empty_placeholder">No hay notas con esta etiqueta</string>
+    <string name="label_create">Créer une étiquette</string>
+    <string name="label_edit">Changer le nom de l\'étiquette</string>
+    <string name="label_manage">Étiquettes</string>
+    <string name="label_select">Sélectionner</string>
+    <string name="label_already_exists">Une étiquette porte déjà ce nom.</string>
+    <string name="label_hidden_option">Ne pas afficher les notes avec cette étiquette dans la section des notes actives et archivées.</string>
+    <string name="label_empty_placeholder">Aucune étiquette créée</string>
+    <string name="label_delete_message">Les étiquettes sélectionnées seront supprimées, mais
+    les notes y étant associées seront gardées.</string>
+    <string name="label_notes_empty_placeholder">Aucune note porte cette étiquette</string>
     <!-- Settings -->
-    <string name="pref_group_appearance">Apariencia</string>
-    <string name="pref_theme">Tema</string>
-    <string name="pref_theme_light">Claro</string>
-    <string name="pref_theme_dark">Oscuro</string>
-    <string name="pref_theme_system">El mismo que el sistema</string>
-    <string name="pref_strikethrough_checked">Tachar elementos marcados</string>
-    <string name="pref_preview_labels">Número máximo de etiquetas en la miniatura</string>
-    <string name="pref_shown_date">Mostrar fecha en las notas</string>
-    <string name="pref_shown_date_added">Fecha de creación</string>
-    <string name="pref_shown_date_modified">Fecha de última modificación</string>
-    <string name="pref_shown_date_none">No mostrar fecha</string>
-    <string name="pref_preview_lines">Máximo número de líneas en la miniatura</string>
-    <string name="pref_preview_lines_summary">Configura cuántas líneas y elementos se muestran en las notas para cada vista y cada tipo de nota</string>
-    <string name="pref_preview_lines_grid_layout">Vista de cuadrícula</string>
-    <string name="pref_preview_lines_list_layout">Vista de lista</string>
-    <string name="pref_preview_lines_text">Líneas de texto en la miniatura</string>
-    <string name="pref_preview_lines_list">Elementos listados en la miniatura</string>
-    <string name="pref_group_behavior">Comportamiento</string>
-    <string name="pref_behavior_swipe_action">Acción al deslizar</string>
-    <string name="pref_behavior_move_checked">Mover los elementos marcados al final</string>
-    <string name="pref_group_data">Datos</string>
-    <string name="pref_data_export">Exportar datos</string>
-    <string name="pref_data_export_summary">Exporta las notas en formato JSON</string>
-    <string name="pref_data_auto_export">Exportación automática</string>
-    <string name="pref_data_auto_export_summary">Exporta automáticamente los datos de la aplicación una vez al día</string>
-    <string name="pref_data_auto_export_date">(Última exportación el %s)</string>
-    <string name="pref_data_import">Importar datos</string>
-    <string name="pref_data_import_summary">Importa datos previamente exportadora y los combina con los ya existentes</string>
-    <string name="pref_data_clear">Limpiar todos los datos</string>
-    <string name="pref_data_clear_confirm_message">¡Todas las notas se eliminarán! Esto no se puede revertir.</string>
-    <string name="pref_data_clear_success_message">Todos los datos se han borrado correctamente.</string>
-    <string name="pref_group_about">Acerca de</string>
-    <string name="pref_about_view_source">Ver en Github</string>
-    <string name="pref_about_view_licenses">Licencias de código abierto</string>
-    <string name="pref_about_version">Versión</string>
+    <string name="pref_group_appearance">Apparence</string>
+    <string name="pref_theme">Thème de l\'application</string>
+    <string name="pref_theme_light">Clair</string>
+    <string name="pref_theme_dark">Sombre</string>
+    <string name="pref_theme_system">Par défaut</string>
+    <string name="pref_strikethrough_checked">Barrer les éléments cochés</string>
+    <string name="pref_preview_labels">Maximum d\'étiquettes dans l\'aperçu</string>
+    <string name="pref_shown_date">Date affichée pour les notes</string>
+    <string name="pref_shown_date_added">Date de création</string>
+    <string name="pref_shown_date_modified">Date de modification</string>
+    <string name="pref_shown_date_none">Aucune date</string>
+    <string name="pref_preview_lines">Maximum de lignes dans l\'aperçu</string>
+    <string name="pref_preview_lines_summary">Configure le nombre de lignes ou d\'éléments affichés, pour chaque disposition et chaque type de note</string>
+    <string name="pref_preview_lines_grid_layout">Disposition grille</string>
+    <string name="pref_preview_lines_list_layout">Disposition liste</string>
+    <string name="pref_preview_lines_text">Lignes dans les notes textuelles</string>
+    <string name="pref_preview_lines_list">Éléments dans les listes</string>
+    <string name="pref_group_behavior">Comportement</string>
+    <string name="pref_behavior_swipe_action">Action de glissement</string>
+    <string name="pref_behavior_move_checked">Déplacer les éléments cochés vers le bas</string>
+    <string name="pref_group_data">Données</string>
+    <string name="pref_data_export">Exporter les données</string>
+    <string name="pref_data_export_summary">Exporter les données en format JSON</string>
+    <string name="pref_data_auto_export">Exportation automatique</string>
+    <string name="pref_data_auto_export_summary">Exporter automatiquement les données vers un fichier, une fois par jour.</string>
+    <string name="pref_data_auto_export_date">(Dernière exportation le %s)</string>
+    <string name="pref_data_import">Importer des données</string>
+    <string name="pref_data_import_summary">Importer des données JSON exportées précédemment,
+        tout en gardant les données existantes.</string>
+    <string name="pref_data_clear">Effacer toutes les données</string>
+    <string name="pref_data_clear_confirm_message">Toutes les notes seront effacées définitivement !
+        Cette action ne pourra pas être annulée.</string>
+    <string name="pref_data_clear_success_message">Toutes les données ont été effacées avec succès.</string>
+    <string name="pref_group_about">À propos</string>
+    <string name="pref_about_view_source">Voir sur Github</string>
+    <string name="pref_about_view_licenses">Licences open source</string>
+    <string name="pref_about_version">Version</string>
     <!-- Import/export data messages -->
-    <string name="export_success">¡Exportación finalizada correctamente!</string>
-    <string name="export_fail">Ha ocurrido un error al exportar los datos.</string>
-    <string name="import_success">¡Los datos se han importado correctamente!</string>
-    <string name="import_future_version">¡Los datos se han importado correctamente! Es posible que parte de la información se haya perdido porque los datos procedían de una versión anterior de la aplicación.</string>
-    <string name="import_bad_input">Ha ocurrido un error intentando leer este fichero.</string>
-    <string name="import_bad_format">No se han podido importar los datos: JSON inválido.</string>
-    <string name="import_bad_data">No se ha podido importar los datos, algunos campos tienen valores inválidos. Esto puede ocurrir al importar datos de una versión antigua, prueba a actualizar la aplicación.</string>
-    <string name="auto_export_message">Para habilitar la exportación automática es necesario elegir un fichero dónde guardar los datos. Los datos se guardan diariamente siempre que la aplicación se encuentre abierta.</string>
-    <string name="auto_export_fail">La exportación automática ha fallado. Asegúrate de que la localización existe y es accesible, después vuelve a configurar la exportación automática.</string>
+    <string name="export_success">Les données ont été exportées avec succès !</string>
+    <string name="export_fail">Une erreur est survenue lors de l\'exportation des données.</string>
+    <string name="import_success">Les données ont été importées avec succès !</string>
+    <string name="import_future_version">Les données ont été importées avec succès !
+        Veuillez noter que certaines informations ont pu être perdues puisque les données proviennent
+        d\'une version ultérieure.</string>
+    <string name="import_bad_input">Une erreur est survenue en essayant de lire ce fichier.</string>
+    <string name="import_bad_format">Impossible d\'importer les données, la structure JSON est invalide.</string>
+    <string name="import_bad_data">Impossible d\'importer les données, certains champs ont des valeurs invalides.
+        Cela peut arriver lors de l\'importation de données provenant d\'une version ultérieure.</string>
+    <string name="auto_export_message">Pour activer l\'exportation automatique, un fichier doit être choisi pour
+        sauvegarder les données. Les données seront ensuite exportées une fois par jour pendant que
+        l\'application est ouverte. Cliquez sur OK pour continuer.</string>
+    <string name="auto_export_fail">L\'exportation automatique a échouée. Assurez-vous que l\'emplacement du
+        fichier est encore accessible, puis veuillez reconfigurer l\'exportation automatique.</string>
     <!-- Content description -->
-    <string name="content_descrp_open_drawer">Abrir cajón</string>
-    <string name="content_descrp_back">Volver</string>
+    <string name="content_descrp_open_drawer">Ouvrir la navigation</string>
+    <string name="content_descrp_back">Revenir en arrière</string>
+    <string name="content_descrp_label_hidden">Les notes avec cette étiquette sont cachées</string>
     <!-- Relative date time format -->
-    <string name="date_rel_today">Hoy, %s</string>
-    <string name="date_rel_yesterday">Ayer, %s</string>
-    <string name="date_rel_tomorrow">Mañana, %s</string>
-    <!-- format values: date, time -->
+    <string name="date_rel_today">Aujourd\'hui, %s</string>
+    <string name="date_rel_yesterday">Hier, %s</string>
+    <string name="date_rel_tomorrow">Demain, %s</string>
+    <plurals name="date_rel_days_past" tools:ignore="MissingQuantity">
+        <item quantity="one">Il y a %d jours, %s</item>
+        <item quantity="few">Il y a %d jours, %s</item>
+        <item quantity="other">Il y a %d jours, %s</item>
+    </plurals>
+    <plurals name="date_rel_days_future" tools:ignore="MissingQuantity">
+        <item quantity="one">Dans %d jours, %s</item>
+        <item quantity="few">Dans %d jours, %s</item>
+        <item quantity="other">Dans %d jours, %s</item>
+    </plurals>
     <string name="date_rel_absolute">%1$s, %2$s</string>
 </resources>
