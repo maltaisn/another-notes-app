@@ -1,4 +1,7 @@
-## v1.5.0
+## upcoming
+- Fixed export not completely overwriting JSON file if new content smaller.
+
+## v1.4.1
 - Added dialog to change sort field and direction (#31).
 - Ellipsize start of content when search highlight falls outside of preview (#32).
 - Set the initial reminder time from a list of presets instead of the same hour every time.

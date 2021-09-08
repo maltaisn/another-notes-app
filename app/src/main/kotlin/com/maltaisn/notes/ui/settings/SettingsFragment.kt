@@ -68,7 +68,8 @@ class SettingsFragment : PreferenceFragmentCompat(), ConfirmDialog.Callback {
             val uri = result.data?.data
             if (result.resultCode == Activity.RESULT_OK && uri != null) {
                 val output = try {
-                    context.contentResolver.openOutputStream(uri)
+                    // write and *truncate*. Otherwise the file is not overwritten!
+                    context.contentResolver.openOutputStream(uri, "wt")
                 } catch (e: Exception) {
                     Log.i(TAG, "Data export failed", e)
                     null

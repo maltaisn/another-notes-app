@@ -91,7 +91,8 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
 
         viewModel.autoExportEvent.observeEvent(this) { uri ->
             viewModel.autoExport(try {
-                contentResolver.openOutputStream(Uri.parse(uri))
+                // write and *truncate*. Otherwise the file is not overwritten!
+                contentResolver.openOutputStream(Uri.parse(uri), "wt")
             } catch (e: Exception) {
                 Log.i(TAG, "Auto data export failed", e)
                 null
