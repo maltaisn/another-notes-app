@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Copyright 2021 Nicolas Maltais
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  -->
+<resources>
+    <!-- Do not translate the app name -->
+    <!-- Can be translated to provided a sensible localized name for a "Notes" app -->
+    <string name="app_name_short">Notes</string>
+    <string name="action_archive">Archive</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_clear">Clear</string>
+    <string name="action_convert_to_list">Convert to list</string>
+    <string name="action_convert_to_text">Convert to text</string>
+    <string name="action_copy">Make a copy</string>
+    <string name="action_delete">Delete</string>
+    <string name="action_delete_checked">Delete checked items</string>
+    <string name="action_delete_forever">Delete forever</string>
+    <string name="action_delete_selection">Delete selection</string>
+    <string name="action_delete_selection_forever">Delete selection forever</string>
+    <string name="action_empty_trash">Empty recycle bin</string>
+    <string name="action_empty_trash_short">Empty</string>
+    <string name="action_keep">Keep</string>
+    <string name="action_labels">Change labels</string>
+    <string name="action_layout_grid">View as grid</string>
+    <string name="action_layout_list">View as list</string>
+    <string name="action_manage">Manage</string>
+    <string name="action_mark_as_done">Mark as done</string>
+    <string name="action_none">None</string>
+    <string name="action_ok">OK</string>
+    <string name="action_pin">Pin</string>
+    <string name="action_postpone">Postpone</string>
+    <string name="action_reminder_add">Add reminder</string>
+    <string name="action_reminder_edit">Edit reminder</string>
+    <string name="action_rename">Rename</string>
+    <string name="action_restore">Restore</string>
+    <string name="action_search">Search</string>
+    <string name="action_select_all">Select all</string>
+    <string name="action_settings">Settings</string>
+    <string name="action_share">Share</string>
+    <string name="action_unarchive">Unarchive</string>
+    <string name="action_uncheck_all">Uncheck all items</string>
+    <string name="action_undo">Undo</string>
+    <string name="action_unpin">Unpin</string>
+    <!-- Shortcuts -->
+    <!-- Note: normal length is ideally 25 chars or less, short is 10 chars or less. -->
+    <string name="shortcut_text_note">New text note</string>
+    <string name="shortcut_text_note_short">New text</string>
+    <string name="shortcut_list_note">New list note</string>
+    <string name="shortcut_list_note_short">New list</string>
+    <string name="shortcut_reminders">Reminders</string>
+    <string name="shortcut_reminders_short">Reminders</string>
+    <!-- Home -->
+    <string name="note_location_active">Notes</string>
+    <string name="note_location_archived">Archived</string>
+    <string name="note_location_deleted">Deleted</string>
+    <string name="note_location_labels">Labels</string>
+    <string name="note_pinned">Pinned</string>
+    <string name="note_not_pinned">Others</string>
+    <string name="note_placeholder_active">You don\'t have any notes.\nClick on the + to add one.</string>
+    <string name="note_placeholder_archived">No archived notes</string>
+    <string name="note_placeholder_deleted">Recycle bin is empty</string>
+    <plurals name="note_list_item_info">
+        <item quantity="other">+ %d other list items</item>
+    </plurals>
+    <plurals name="note_list_item_info_checked">
+        <item quantity="other">+ %d checked items</item>
+    </plurals>
+    <string name="trash_reminder_message">Notes in recycle bin are automatically deleted after %d days.</string>
+    <string name="trash_delete_message">This note will be permanently deleted.</string>
+    <string name="trash_delete_selected_message">Selected notes will be permanently deleted.</string>
+    <string name="trash_empty_message">All notes in recycle bin will be permanently deleted.</string>
+    <string name="search_hint">Search notes</string>
+    <string name="search_empty_placeholder">No notes found for your query.</string>
+    <string name="sort_title">Sort options</string>
+    <string name="sort_direction">Sort direction</string>
+    <string name="sort_direction_ascending">Ascending</string>
+    <string name="sort_direction_descending">Descending</string>
+    <string name="sort_field">Sort by</string>
+    <string name="sort_field_created">Date created</string>
+    <string name="sort_field_modified">Date modified</string>
+    <string name="sort_field_title">Title</string>
+    <!-- Edit -->
+    <string name="edit_add_title">Create note</string>
+    <string name="edit_change_title">Edit note</string>
+    <string name="edit_hint_note_title">Title</string>
+    <string name="edit_hint_note_content">Note</string>
+    <string name="edit_hint_note_item">List item</string>
+    <string name="edit_message_blank_note_discarded">Blank note discarded.</string>
+    <plurals name="edit_move_archive_message">
+        <item quantity="other">Notes archived.</item>
+    </plurals>
+    <plurals name="edit_message_move_delete">
+        <item quantity="other">Notes moved to recycle bin.</item>
+    </plurals>
+    <plurals name="edit_message_move_restore">
+        <item quantity="other">Notes restored.</item>
+    </plurals>
+    <plurals name="edit_message_move_unarchive">
+        <item quantity="other">Notes unarchived.</item>
+    </plurals>
+    <string name="edit_in_trash_message">Cannot edit note in recycle bin.</string>
+    <string name="edit_copy_suffix">Copy</string>
+    <string name="edit_copy_untitled_name">Untitled</string>
+    <string name="edit_convert_keep_checked">Remove checked items?</string>
+    <plurals name="edit_checked_items">
+        <item quantity="other">%d checked items</item>
+    </plurals>
+    <!-- Reminder -->
+    <string name="note_reminders">Reminders</string>
+    <string name="reminder_upcoming">Upcoming</string>
+    <string name="reminder_today">Today</string>
+    <string name="reminder_overdue">Overdue</string>
+    <string name="reminder_date">Date</string>
+    <string name="reminder_time">Time</string>
+    <string name="reminder_invalid_time">This time has already passed.</string>
+    <string name="reminder_notif_channel_title">Reminders</string>
+    <string name="reminder_notif_channel_descr">Reminders set on notes</string>
+    <string name="reminder_empty_placeholder">No reminders set</string>
+    <string name="reminder_restricted_battery">Reminder alarms may not work correctly because the
+    app has restricted battery usage. This can be changed in the app settings.</string>
+    <!-- Labels -->
+    <string name="label_create">Create new label</string>
+    <string name="label_edit">Edit label name</string>
+    <string name="label_manage">Manage labels</string>
+    <string name="label_select">Select labels</string>
+    <string name="label_already_exists">A label with this name already exists.</string>
+    <string name="label_hidden_option">Hide notes with this label from the active and archived note sections</string>
+    <string name="label_empty_placeholder">No labels created</string>
+    <string name="label_delete_message">Selected labels will be deleted, but the notes associated
+    to them will be kept.</string>
+    <string name="label_notes_empty_placeholder">No notes tagged with this label</string>
+    <!-- Settings -->
+    <string name="pref_group_appearance">Appearance</string>
+    <string name="pref_theme">App theme</string>
+    <string name="pref_theme_light">Light</string>
+    <string name="pref_theme_dark">Dark</string>
+    <string name="pref_theme_system">Follow system</string>
+    <string name="pref_strikethrough_checked">Strikethrough checked list items</string>
+    <string name="pref_preview_labels">Maximum number of labels in preview</string>
+    <string name="pref_shown_date">Date shown for notes</string>
+    <string name="pref_shown_date_added">Creation date</string>
+    <string name="pref_shown_date_modified">Last modified date</string>
+    <string name="pref_shown_date_none">No date shown</string>
+    <string name="pref_preview_lines">Maximum lines in previews</string>
+    <string name="pref_preview_lines_summary">Configure how many lines and items are shown on notes,
+        for each layout mode and note type</string>
+    <string name="pref_preview_lines_grid_layout">Grid layout</string>
+    <string name="pref_preview_lines_list_layout">List layout</string>
+    <string name="pref_preview_lines_text">Lines in text note preview</string>
+    <string name="pref_preview_lines_list">Items in list note preview</string>
+    <string name="pref_group_behavior">Behavior</string>
+    <string name="pref_behavior_swipe_action">Swipe action</string>
+    <string name="pref_behavior_move_checked">Move checked items to the bottom</string>
+    <string name="pref_group_data">Data</string>
+    <string name="pref_data_export">Export data</string>
+    <string name="pref_data_export_summary">Export notes data as JSON</string>
+    <string name="pref_data_auto_export">Automatic data export</string>
+    <string name="pref_data_auto_export_summary">Automatically export the app\'s data to a file, once a day.</string>
+    <string name="pref_data_auto_export_date">(Last exported on %s)</string>
+    <string name="pref_data_import">Import data</string>
+    <string name="pref_data_import_summary">Import previously exported JSON data, merging with existing data.</string>
+    <string name="pref_data_clear">Clear all data</string>
+    <string name="pref_data_clear_confirm_message">All notes data will be cleared permanently!
+        This cannot be undone.</string>
+    <string name="pref_data_clear_success_message">All data was cleared successfully.</string>
+    <string name="pref_group_about">About</string>
+    <string name="pref_about_view_source">View on Github</string>
+    <string name="pref_about_view_licenses">Open source licenses</string>
+    <string name="pref_about_version">Version</string>
+    <!-- Import/export data messages -->
+    <string name="export_success">Data exported successfully!</string>
+    <string name="export_fail">An error occurred during data export.</string>
+    <string name="import_success">Data imported successfully!</string>
+    <string name="import_future_version">Data imported successfully! Note that some information may
+        have been lost because the data originates from a later version.</string>
+    <string name="import_bad_input">An error occurred while attempting to read this file.</string>
+    <string name="import_bad_format">Could not import data, JSON data is invalid.</string>
+    <string name="import_bad_data">Could not import data, some fields have invalid values.
+        This can happen if importing data from a later version, try updating the app.</string>
+    <string name="auto_export_message">To enable automatic export, a file must be chosen to
+        save the data. The app\'s data will be exported once a day while the app is opened.
+        Click OK to proceed.</string>
+    <string name="auto_export_fail">Failed to export data automatically. Make sure the export location
+        still exists and is accessible, then reconfigure automatic export.</string>
+    <!-- Content description -->
+    <string name="content_descrp_open_drawer">Open drawer</string>
+    <string name="content_descrp_back">Go back</string>
+    <string name="content_descrp_label_hidden">Notes with this label are hidden</string>
+    <!-- Relative date time format -->
+    <string name="date_rel_today">Today, %s</string>
+    <string name="date_rel_yesterday">Yesterday, %s</string>
+    <string name="date_rel_tomorrow">Tomorrow, %s</string>
+    <plurals name="date_rel_days_past">
+        <!-- used with quantity >= 2, format values: number of days, time -->
+        <item quantity="other">%d days ago, %s</item>
+    </plurals>
+    <plurals name="date_rel_days_future">
+        <!-- used with quantity >= 2, format values: number of days, time -->
+        <item quantity="other">In %d days, %s</item>
+    </plurals>
+    <!-- format values: date, time -->
+    <string name="date_rel_absolute">%1$s, %2$s</string>
+</resources>
