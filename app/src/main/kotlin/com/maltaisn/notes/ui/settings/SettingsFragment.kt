@@ -22,6 +22,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.TextView
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.StringRes
@@ -223,7 +224,9 @@ class SettingsFragment : PreferenceFragmentCompat(), ConfirmDialog.Callback {
     }
 
     private fun showMessage(@StringRes messageId: Int) {
-        Snackbar.make(requireView(), messageId, Snackbar.LENGTH_SHORT).show()
+        val snackbar = Snackbar.make(requireView(), messageId, Snackbar.LENGTH_SHORT)
+        snackbar.view.findViewById<TextView>(com.google.android.material.R.id.snackbar_text).maxLines = 5
+        snackbar.show()
     }
 
     private fun <T : Preference> requirePreference(key: CharSequence) =
