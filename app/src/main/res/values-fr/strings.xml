@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <!--
   Copyright 2021 Nicolas Maltais
 
@@ -13,11 +14,10 @@
   See the License for the specific language governing permissions and
   limitations under the License.
   -->
-
-<resources xmlns:tools="http://schemas.android.com/tools">
-
+<resources>
+    <!-- Do not translate the app name -->
+    <!-- Can be translated to provided a sensible localized name for a "Notes" app -->
     <string name="app_name_short">Notes</string>
-
     <string name="action_archive">Archiver</string>
     <string name="action_cancel">Annuler</string>
     <string name="action_clear">Effacer</string>
@@ -53,7 +53,6 @@
     <string name="action_uncheck_all">Décocher tous les éléments</string>
     <string name="action_undo">Annuler</string>
     <string name="action_unpin">Désépingler</string>
-
     <!-- Shortcuts -->
     <!-- Note: normal length is ideally 25 chars or less, short is 10 chars or less. -->
     <string name="shortcut_text_note">Nouveau texte</string>
@@ -62,38 +61,30 @@
     <string name="shortcut_list_note_short">Liste</string>
     <string name="shortcut_reminders">Rappels</string>
     <string name="shortcut_reminders_short">Rappels</string>
-
     <!-- Home -->
     <string name="note_location_active">Notes</string>
     <string name="note_location_archived">Archive</string>
     <string name="note_location_deleted">Corbeille</string>
     <string name="note_location_labels">Étiquettes</string>
-
     <string name="note_pinned">Épinglées</string>
     <string name="note_not_pinned">Autres</string>
-
     <string name="note_placeholder_active">Vous n\'avez aucune note.\nCliquez sur le + pour en ajouter.</string>
     <string name="note_placeholder_archived">Aucune note archivée</string>
     <string name="note_placeholder_deleted">La corbeille est vide</string>
-
     <plurals name="note_list_item_info">
         <item quantity="one">+ %d autre élément</item>
         <item quantity="other">+ %d autres éléments</item>
     </plurals>
-
     <plurals name="note_list_item_info_checked">
         <item quantity="one">+ %d élément coché</item>
         <item quantity="other">+ %d éléments cochés</item>
     </plurals>
-
     <string name="trash_reminder_message">Les notes dans la corbeille sont supprimées automatiquement après %d jours.</string>
     <string name="trash_delete_message">Cette note sera supprimée définitivement.</string>
     <string name="trash_delete_selected_message">Les notes sélectionnées seront supprimées définitivement.</string>
     <string name="trash_empty_message">Toutes les notes dans la corbeille sont supprimées définitivement.</string>
-
     <string name="search_hint">Rechercher dans vos notes</string>
     <string name="search_empty_placeholder">Aucune note trouvée pour cette recherche.</string>
-
     <string name="sort_title">Options de tri</string>
     <string name="sort_direction">Sens du tri</string>
     <string name="sort_direction_ascending">Ordre croissant</string>
@@ -102,43 +93,37 @@
     <string name="sort_field_created">Date de création</string>
     <string name="sort_field_modified">Date de modification</string>
     <string name="sort_field_title">Titre</string>
-
     <!-- Edit -->
     <string name="edit_add_title">Ajouter</string>
     <string name="edit_change_title">Modifier</string>
     <string name="edit_hint_note_title">Titre</string>
     <string name="edit_hint_note_content">Note</string>
     <string name="edit_hint_note_item">Nouvel élément</string>
-
     <string name="edit_message_blank_note_discarded">Note vide supprimée.</string>
-    <plurals name="edit_move_archive_message" tools:ignore="ImpliedQuantity">
+    <plurals name="edit_move_archive_message">
         <item quantity="one">Note archivée.</item>
         <item quantity="other">Notes archivées.</item>
     </plurals>
-    <plurals name="edit_message_move_delete" tools:ignore="ImpliedQuantity">
+    <plurals name="edit_message_move_delete">
         <item quantity="one">Note déplacée dans la corbeille.</item>
         <item quantity="other">Notes déplacées dans la corbeille.</item>
     </plurals>
-    <plurals name="edit_message_move_restore" tools:ignore="ImpliedQuantity">
+    <plurals name="edit_message_move_restore">
         <item quantity="one">Note restaurée.</item>
         <item quantity="other">Notes réstaurées.</item>
     </plurals>
-    <plurals name="edit_message_move_unarchive" tools:ignore="ImpliedQuantity">
+    <plurals name="edit_message_move_unarchive">
         <item quantity="one">Note désarchivée.</item>
         <item quantity="other">Notes désarchivées.</item>
     </plurals>
     <string name="edit_in_trash_message">Impossible de modifier une note dans la corbeille.</string>
-
     <string name="edit_copy_suffix">Copie</string>
     <string name="edit_copy_untitled_name">Sans titre</string>
-
     <string name="edit_convert_keep_checked">Effacer les éléments cochés?</string>
-
     <plurals name="edit_checked_items">
         <item quantity="one">%d élément coché</item>
         <item quantity="other">%d élément cochés</item>
     </plurals>
-
     <!-- Reminder -->
     <string name="note_reminders">Rappels</string>
     <string name="reminder_upcoming">À venir</string>
@@ -153,7 +138,6 @@
     <string name="reminder_restricted_battery">Les alarmes des rappels pourraient ne pas fonctionner
     correctement puisque l\'application a une restriction au niveau de l\'utilisation de la pile.
     Cela peut être changé dans les paramètres.</string>
-
     <!-- Labels -->
     <string name="label_create">Créer une étiquette</string>
     <string name="label_edit">Changer le nom de l\'étiquette</string>
@@ -165,7 +149,6 @@
     <string name="label_delete_message">Les étiquettes sélectionnées seront supprimées, mais
     les notes y étant associées seront gardées.</string>
     <string name="label_notes_empty_placeholder">Aucune note porte cette étiquette</string>
-
     <!-- Settings -->
     <string name="pref_group_appearance">Apparence</string>
     <string name="pref_theme">Thème de l\'application</string>
@@ -174,23 +157,19 @@
     <string name="pref_theme_system">Par défaut</string>
     <string name="pref_strikethrough_checked">Barrer les éléments cochés</string>
     <string name="pref_preview_labels">Maximum d\'étiquettes dans l\'aperçu</string>
-
     <string name="pref_shown_date">Date affichée pour les notes</string>
     <string name="pref_shown_date_added">Date de création</string>
     <string name="pref_shown_date_modified">Date de modification</string>
     <string name="pref_shown_date_none">Aucune date</string>
-
     <string name="pref_preview_lines">Maximum de lignes dans l\'aperçu</string>
     <string name="pref_preview_lines_summary">Configure le nombre de lignes ou d\'éléments affichés, pour chaque disposition et chaque type de note</string>
     <string name="pref_preview_lines_grid_layout">Disposition grille</string>
     <string name="pref_preview_lines_list_layout">Disposition liste</string>
     <string name="pref_preview_lines_text">Lignes dans les notes textuelles</string>
     <string name="pref_preview_lines_list">Éléments dans les listes</string>
-
     <string name="pref_group_behavior">Comportement</string>
     <string name="pref_behavior_swipe_action">Action de glissement</string>
     <string name="pref_behavior_move_checked">Déplacer les éléments cochés vers le bas</string>
-
     <string name="pref_group_data">Données</string>
     <string name="pref_data_export">Exporter les données</string>
     <string name="pref_data_export_summary">Exporter les données en format JSON</string>
@@ -204,12 +183,10 @@
     <string name="pref_data_clear_confirm_message">Toutes les notes seront effacées définitivement !
         Cette action ne pourra pas être annulée.</string>
     <string name="pref_data_clear_success_message">Toutes les données ont été effacées avec succès.</string>
-
     <string name="pref_group_about">À propos</string>
     <string name="pref_about_view_source">Voir sur Github</string>
     <string name="pref_about_view_licenses">Licences open source</string>
     <string name="pref_about_version">Version</string>
-
     <!-- Import/export data messages -->
     <string name="export_success">Les données ont été exportées avec succès !</string>
     <string name="export_fail">Une erreur est survenue lors de l\'exportation des données.</string>
@@ -226,22 +203,24 @@
         l\'application est ouverte. Cliquez sur OK pour continuer.</string>
     <string name="auto_export_fail">L\'exportation automatique a échouée. Assurez-vous que l\'emplacement du
         fichier est encore accessible, puis veuillez reconfigurer l\'exportation automatique.</string>
-
     <!-- Content description -->
     <string name="content_descrp_open_drawer">Ouvrir la navigation</string>
     <string name="content_descrp_back">Revenir en arrière</string>
     <string name="content_descrp_label_hidden">Les notes avec cette étiquette sont cachées</string>
-
     <!-- Relative date time format -->
     <string name="date_rel_today">Aujourd\'hui, %s</string>
     <string name="date_rel_yesterday">Hier, %s</string>
     <string name="date_rel_tomorrow">Demain, %s</string>
-    <plurals name="date_rel_days_past" tools:ignore="MissingQuantity">
-        <item quantity="other">Il y a %d jours, %s</item>
+    <plurals name="date_rel_days_past">
+        <item quantity="one">Il y a %d jours, %s</item>
+        <!-- used with quantity >= 2, format values: number of days, time -->
+        <item quantity="other">%d days ago, %s</item>
     </plurals>
-    <plurals name="date_rel_days_future" tools:ignore="MissingQuantity">
-        <item quantity="other">Dans %d jours, %s</item>
+    <plurals name="date_rel_days_future">
+        <item quantity="one">Dans %d jours, %s</item>
+        <!-- used with quantity >= 2, format values: number of days, time -->
+        <item quantity="other">In %d days, %s</item>
     </plurals>
+    <!-- format values: date, time -->
     <string name="date_rel_absolute">%1$s, %2$s</string>
-
 </resources>
