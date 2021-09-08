@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <!--
   Copyright 2021 Nicolas Maltais
 
@@ -13,12 +14,10 @@
   See the License for the specific language governing permissions and
   limitations under the License.
   -->
-
-<resources xmlns:tools="http://schemas.android.com/tools">
-
+<resources>
+    <!-- Do not translate the app name -->
     <!-- Can be translated to provided a sensible localized name for a "Notes" app -->
     <string name="app_name_short">Notizen</string>
-
     <string name="action_archive">Archiv</string>
     <string name="action_cancel">Abrechen</string>
     <string name="action_clear">Löschen</string>
@@ -54,7 +53,6 @@
     <string name="action_uncheck_all">Alle Punkte abwählen</string>
     <string name="action_undo">Rückgängig</string>
     <string name="action_unpin">Anheften aufheben</string>
-
     <!-- Shortcuts -->
     <!-- Note: normal length is ideally 25 chars or less, short is 10 chars or less. -->
     <string name="shortcut_text_note">Neue Text Notiz</string>
@@ -63,45 +61,44 @@
     <string name="shortcut_list_note_short">Neue Liste</string>
     <string name="shortcut_reminders">Erinnerungen</string>
     <string name="shortcut_reminders_short">Erinnerungen</string>
-
     <!-- Home -->
     <string name="note_location_active">Notizen</string>
     <string name="note_location_archived">Archiviert</string>
     <string name="note_location_deleted">Gelöscht</string>
     <string name="note_location_labels">Etiketten</string>
-
     <string name="note_pinned">Angeheftet</string>
     <string name="note_not_pinned">Andere</string>
-
     <string name="note_placeholder_active">Du hast noch keine Notizen.\nKlicke auf + zum Notizen zufügen.</string>
     <string name="note_placeholder_archived">Keine archivierten Notizen</string>
     <string name="note_placeholder_deleted">Papierkorb ist leer</string>
-
     <plurals name="note_list_item_info">
         <item quantity="one">+ %d anderes Listen Element</item>
         <item quantity="other">+ %d andere Listen Elemente</item>
     </plurals>
-
     <plurals name="note_list_item_info_checked">
         <item quantity="one">+ %d checked item</item>
         <item quantity="other">+ %d checked items</item>
     </plurals>
-
     <string name="trash_reminder_message">Notizen im Papierkorb werden automatisch nach %d Tagen gelöscht.</string>
     <string name="trash_delete_message">Diese Notiz wird endgültig gelöscht.</string>
     <string name="trash_delete_selected_message">Ausgewählte Notizen werden dauerhaft gelöscht.</string>
     <string name="trash_empty_message">Alle Notizen im Papierkorb werden endgültig gelöscht.</string>
-
     <string name="search_hint">Notiz suchen</string>
     <string name="search_empty_placeholder">Es wurden keine Notizen für Ihre Anfrage gefunden.</string>
-
+    <string name="sort_title">Sort options</string>
+    <string name="sort_direction">Sort direction</string>
+    <string name="sort_direction_ascending">Ascending</string>
+    <string name="sort_direction_descending">Descending</string>
+    <string name="sort_field">Sort by</string>
+    <string name="sort_field_created">Date created</string>
+    <string name="sort_field_modified">Date modified</string>
+    <string name="sort_field_title">Title</string>
     <!-- Edit -->
     <string name="edit_add_title">Notiz erstellen</string>
     <string name="edit_change_title">Notiz bearbeiten</string>
     <string name="edit_hint_note_title">Titel</string>
     <string name="edit_hint_note_content">Notiz</string>
     <string name="edit_hint_note_item">Listen Punkt</string>
-
     <string name="edit_message_blank_note_discarded">Leere Notiz verworfen.</string>
     <plurals name="edit_move_archive_message">
         <item quantity="one">Notiz archiviert.</item>
@@ -120,17 +117,13 @@
         <item quantity="other">Notizen nicht mehr archiviert.</item>
     </plurals>
     <string name="edit_in_trash_message">Notizen im Papierkorb kann nicht bearbeitet werden.</string>
-
     <string name="edit_copy_suffix">Kopieren</string>
     <string name="edit_copy_untitled_name">Unbenannt</string>
-
     <string name="edit_convert_keep_checked">Markierte Elemente entfernen?</string>
-
     <plurals name="edit_checked_items">
         <item quantity="one">%d markiertes Elelement</item>
         <item quantity="other">%d markierte Elelemente</item>
     </plurals>
-
     <!-- Reminder -->
     <string name="note_reminders">Erinnerungen</string>
     <string name="reminder_upcoming">Demnächst</string>
@@ -143,7 +136,6 @@
     <string name="reminder_notif_channel_descr">Auf Notizen gesetzte Erinnerungen</string>
     <string name="reminder_empty_placeholder">Keine Erinnerungen eingestellt</string>
     <string name="reminder_restricted_battery">Erinnerungsalarme funktionieren möglicherweise nicht richtig, weil die App die Batterienutzung eingeschränkt hat. Dies kann in den Einstellungen der App geändert werden.</string>
-
     <!-- Labels -->
     <string name="label_create">Neues Etikett erstellen</string>
     <string name="label_edit">Etikettenname bearbeiten</string>
@@ -154,7 +146,6 @@
     <string name="label_empty_placeholder">Keine Etiketten erstellt</string>
     <string name="label_delete_message">Ausgewählte Etiketten werden gelöscht, die zugehörigen Notizen werden jedoch beibehalten.</string>
     <string name="label_notes_empty_placeholder">Keine Notizen, die mit diesem Etikett versehen sind</string>
-
     <!-- Settings -->
     <string name="pref_group_appearance">Erscheinungsbild</string>
     <string name="pref_theme">App Thema</string>
@@ -163,12 +154,10 @@
     <string name="pref_theme_system">System folgen</string>
     <string name="pref_strikethrough_checked">Erledigte Listen Elemente durchstreichen</string>
     <string name="pref_preview_labels">Maximale Anzahl von Etiketten in der Vorschau</string>
-
     <string name="pref_shown_date">Datum für Notizen angezeigen</string>
     <string name="pref_shown_date_added">Datum der Erstellung</string>
     <string name="pref_shown_date_modified">Datum letzter Änderung</string>
     <string name="pref_shown_date_none">Kein Datum anzeigen</string>
-
     <string name="pref_preview_lines">Maximale Zeilenanzahl in Vorschauen</string>
     <string name="pref_preview_lines_summary">Legen Sie fest, wie viele Zeilen und Elemente auf Notizen angezeigt werden, für jeden Layoutmodus und jeden Notizentyp</string>
     <string name="pref_preview_lines_grid_layout">Gitter-Layout</string>
@@ -178,7 +167,6 @@
     <string name="pref_group_behavior">Verhalten</string>
     <string name="pref_behavior_swipe_action">Wisch-Aktion</string>
     <string name="pref_behavior_move_checked">Markierte Elemente nach unten verschieben</string>
-
     <string name="pref_group_data">Daten</string>
     <string name="pref_data_export">Daten exportieren</string>
     <string name="pref_data_export_summary">Notizdaten als JSON exportieren</string>
@@ -190,12 +178,10 @@
     <string name="pref_data_clear">Alle Daten löschen</string>
     <string name="pref_data_clear_confirm_message">Alle Daten der Notizen werden dauerhaft gelöscht! Dies kann nicht rückgängig gemacht werden.</string>
     <string name="pref_data_clear_success_message">Alle Daten wurden erfolgreich gelöscht.</string>
-
     <string name="pref_group_about">Über</string>
     <string name="pref_about_view_source">Bei Github anzeigen</string>
     <string name="pref_about_view_licenses">Open-Source-Lizenzen</string>
     <string name="pref_about_version">Version</string>
-
     <!-- Import/export data messages -->
     <string name="export_success">Daten erfolgreich exportiert!</string>
     <string name="export_fail">Beim Datenexport ist ein Fehler aufgetreten.</string>
@@ -206,25 +192,24 @@
     <string name="import_bad_data">Daten konnten nicht importiert werden, einige Felder haben ungültige Werte. Dies kann passieren, wenn Sie Daten aus einer späteren Version importieren. Versuchen Sie, die App zu aktualisieren.</string>
     <string name="auto_export_message">Um den automatischen Export zu aktivieren, muss eine Datei ausgewählt werden, um die Daten zu speichern. Die Daten der App werden einmal pro Tag exportiert, während die App geöffnet ist. Klicken Sie auf OK, um fortzufahren.</string>
     <string name="auto_export_fail">Der automatische Export der Daten ist fehlgeschlagen. Stellen Sie sicher, dass der Exportort noch existiert und zugänglich ist, und konfigurieren Sie dann den automatischen Export neu.</string>
-
     <!-- Content description -->
     <string name="content_descrp_open_drawer">Ordner öffnen</string>
     <string name="content_descrp_back">Zurück</string>
     <string name="content_descrp_label_hidden">Notizen mit diesem Etikett sind ausgeblendet</string>
-
     <!-- Relative date time format -->
     <string name="date_rel_today">Heute, %s</string>
     <string name="date_rel_yesterday">Gestern, %s</string>
     <string name="date_rel_tomorrow">Morgen, %s</string>
-    <plurals name="date_rel_days_past" tools:ignore="MissingQuantity">
+    <plurals name="date_rel_days_past">
+        <item quantity="one">vor %d Tagen, %s</item>
         <!-- used with quantity >= 2, format values: number of days, time -->
-        <item quantity="other">vor %d Tagen, %s</item>
+        <item quantity="other">%d days ago, %s</item>
     </plurals>
-    <plurals name="date_rel_days_future" tools:ignore="MissingQuantity">
+    <plurals name="date_rel_days_future">
+        <item quantity="one">In %d Tagen, %s</item>
         <!-- used with quantity >= 2, format values: number of days, time -->
-        <item quantity="other">In %d Tagen, %s</item>
+        <item quantity="other">In %d days, %s</item>
     </plurals>
     <!-- format values: date, time -->
     <string name="date_rel_absolute">%1$s, %2$s</string>
-
 </resources>
