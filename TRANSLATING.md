@@ -1,16 +1,18 @@
 # Translating
 
-Translating the app is relatively straightforward, take the [`strings.xml`][strings_xml] file
-and translate each string. Note that some strings are to be used in constrained space situations,
+Translating the app can be done on Crowdin: https://crowdin.com/project/another-notes-app
+Most strings are accompanied with a screenshot to give the context.
+
+Note that some strings are to be used in constrained space situations,
 and in this case it's entirely fine to slightly change the meaning.
-You can use the English version of the app to know which string appears where.
 
 There are a few additionnal steps to consider, but they are not mandatory:
 
 - The app also relies on a library, [recurpickerlib](https://github.com/maltaisn/recurpickerlib) (which I
   maintain), so you might want to make sure it's also available in the new language.
+  The translation process is not available through Crowdin for now.
 
-- Optionally, the app listing can be translated.
+- Optionally, the app listing can be translated. This is also not on Crowdin.
   Create a folder in `app/src/main/play/listings` with the locale code. The locale code must be
   one [supported by Google Play][play_store_locales]. The folder must contain the following:
     - `graphics/phone-screenshots` subfolders, will eventually contain screenshots.
