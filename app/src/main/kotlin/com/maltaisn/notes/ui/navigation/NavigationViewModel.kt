@@ -170,7 +170,7 @@ class NavigationViewModel @AssistedInject constructor(
         // removed. Go back to active notes.
         checkedId = ITEM_ID_ACTIVE
         list[1] = (list[1] as NavigationDestinationItem).copy(checked = true)
-        HomeDestination.Status(NoteStatus.ACTIVE)
+        _currentHomeDestination.value = HomeDestination.Status(NoteStatus.ACTIVE)
     }
 
     private fun MutableList<NavigationItem>.addDivider() {
