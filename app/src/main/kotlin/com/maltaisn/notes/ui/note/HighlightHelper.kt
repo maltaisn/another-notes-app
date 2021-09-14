@@ -60,7 +60,8 @@ object HighlightHelper {
         if (highlights.isNotEmpty()) {
             val firstIndex = highlights.first().first
             if (firstIndex > startEllipsisThreshold) {
-                var highlightShift = firstIndex - startEllipsisDistance
+                var highlightShift = firstIndex - minOf(startEllipsisDistance, startEllipsisThreshold)
+                // Skip white space between ellipsis start and text
                 while (text[highlightShift].isWhitespace()) {
                     highlightShift++
                 }

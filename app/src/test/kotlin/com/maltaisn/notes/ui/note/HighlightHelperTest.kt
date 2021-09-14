@@ -115,4 +115,11 @@ class HighlightHelperTest {
                 mutableListOf(), 8, 4))
     }
 
+    @Test
+    fun `should ellipsize at threshold if distance greater than threshold`() {
+        assertEquals(Highlighted(HighlightHelper.START_ELLIPSIS + "ack needle haystack", listOf(7..13)),
+            HighlightHelper.getStartEllipsizedText("haystack needle haystack",
+                mutableListOf(10..16), 5, 8))
+    }
+
 }
