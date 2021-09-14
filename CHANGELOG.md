@@ -1,6 +1,7 @@
 ## v1.4.2
 - Fixed export not completely overwriting JSON file if new content smaller.
-- Fixed crash during search if maximum lines shown in preview is 1 or 2.
+- Fixed crash during search if maximum lines shown in preview is 1 or 2 (#47).
+- Fixed crash during search if only negative term is used (e.g. `-a`) (#47).
 
 ## v1.4.1
 - Added dialog to change sort field and direction (#31).

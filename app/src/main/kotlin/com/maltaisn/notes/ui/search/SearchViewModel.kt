@@ -16,6 +16,7 @@
 
 package com.maltaisn.notes.ui.search
 
+import android.database.sqlite.SQLiteException
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.maltaisn.notes.model.LabelsRepository
@@ -33,6 +34,7 @@ import com.maltaisn.notes.ui.note.adapter.HeaderItem
 import com.maltaisn.notes.ui.note.adapter.NoteAdapter
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
+import debugCheck
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
@@ -68,8 +70,15 @@ class SearchViewModel @AssistedInject constructor(
         val cleanedQuery = SearchQueryCleaner.clean(query)
         noteListJob = viewModelScope.launch {
             delay(SEARCH_DEBOUNCE_DELAY)
-            notesRepository.searchNotes(cleanedQuery).collect { notes ->
-                createListItems(notes)
+            try {
+                notesRepository.searchNotes(cleanedQuery).collect { notes ->
+                    createListItems(notes)
+                }
+            } catch (e: SQLiteException) {
+                // SearchQueryCleaner may not be perfect, user might have entered
+                // something that produces erronous FTS match syntax. Just ignore it.
+                debugCheck(false) { "Search query cleaner failed for query '$cleanedQuery'" }
+                createListItems(emptyList())
             }
         }
     }

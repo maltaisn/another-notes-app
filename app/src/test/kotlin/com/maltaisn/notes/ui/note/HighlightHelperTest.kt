@@ -65,9 +65,15 @@ class HighlightHelperTest {
     }
 
     @Test
-    fun `should highlight no matches spanning items in list note`() {
+    fun `should highlight no matches spanning multiple lines`() {
         assertEquals(emptyList(),
             HighlightHelper.findHighlightsInString("bar\nfoo bar\nhello\nworld", "bar foo"))
+    }
+
+    @Test
+    fun `should highlight if query is quoted string`() {
+        assertEquals(listOf(4..11),
+            HighlightHelper.findHighlightsInString("bar foo bar", "\"foo bar\""))
     }
 
     @Test

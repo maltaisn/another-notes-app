@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Nicolas Maltais
+ * Copyright 2021 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -70,8 +70,23 @@ class SearchQueryCleanerTest {
     }
 
     @Test
+    fun `should ignore negative if only term`() {
+        assertEquals("a*",
+            SearchQueryCleaner.clean("-a"))
+        assertEquals("a*",
+            SearchQueryCleaner.clean("-  a"))
+        assertEquals("a*",
+            SearchQueryCleaner.clean(" -a"))
+    }
+
+    @Test
     fun `should ignore query of only separators`() {
         assertEquals("",
             SearchQueryCleaner.clean("        "))
+    }
+
+    @Test
+    fun `should ignore empty query`() {
+        assertEquals("", SearchQueryCleaner.clean(""))
     }
 }

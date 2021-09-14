@@ -25,17 +25,24 @@ object HighlightHelper {
 
     /**
      * Find a [max] of highlight positions for matches of a [query] in a [text].
+     *
+     * Note: could be improved to tokenize query in the same way FTS does, to separate terms
+     * and highlight them separatedly.
      */
     fun findHighlightsInString(text: String, query: String, max: Int = Int.MAX_VALUE): MutableList<IntRange> {
         val highlights = mutableListOf<IntRange>()
+        var queryClean = query
+        if (query.first() == '"' && query.last() == '"') {
+            queryClean = queryClean.substring(1, queryClean.length - 1)
+        }
         if (max > 0) {
             var i = 0
             while (i < text.length) {
-                i = text.indexOf(query, i, ignoreCase = true)
+                i = text.indexOf(queryClean, i, ignoreCase = true)
                 if (i == -1) {
                     break
                 }
-                highlights += i..(i + query.length)
+                highlights += i..(i + queryClean.length)
                 if (highlights.size == max) {
                     break
                 }

@@ -30,6 +30,7 @@ object SearchQueryCleaner {
      */
     fun clean(query: String) = buildString {
         var inQuotes = false
+        var terms = 0
         var inSearchTerm = false
         for (c in query) {
             when (c) {
@@ -43,6 +44,10 @@ object SearchQueryCleaner {
                     // boolean operators grouping parenthesis, escapes.
                     continue
                 }
+                '-' -> {
+                    // equivalent to NOT operator, allowed.
+                    append('-')
+                }
                 ' ', ',', ';' -> {
                     // Last search term has ended, add wildcard and separator
                     if (inSearchTerm) {
@@ -51,6 +56,7 @@ object SearchQueryCleaner {
                         }
                         append(' ')
                         inSearchTerm = false
+                        terms++
                     }
                 }
                 else -> {
@@ -63,10 +69,13 @@ object SearchQueryCleaner {
         if (inQuotes) {
             // Add missing quote
             append('"')
-            inSearchTerm = false
-        }
-        if (inSearchTerm) {
+        } else if (inSearchTerm) {
             append("*")
+            terms++
+        }
+        if (isNotEmpty() && first() == '-' && terms == 1) {
+            // Negative term but no other, ignore negative.
+            deleteCharAt(0)
         }
         if (length > 0 && this[lastIndex] == ' ') {
             deleteCharAt(lastIndex)
