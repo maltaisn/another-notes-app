@@ -27,7 +27,8 @@ import com.maltaisn.notes.ui.note.adapter.NoteListLayoutMode
 import javax.inject.Inject
 
 /**
- * TODO
+ * Class used to create note items for the note preview list.
+ * Handles which items are visible, search highlights, ellipsis, etc.
  */
 class NoteItemFactory @Inject constructor(
     private val prefs: PrefsManager

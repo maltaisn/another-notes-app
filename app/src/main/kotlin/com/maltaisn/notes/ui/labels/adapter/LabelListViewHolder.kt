@@ -18,13 +18,19 @@ package com.maltaisn.notes.ui.labels.adapter
 
 import androidx.core.view.isInvisible
 import androidx.recyclerview.widget.RecyclerView
+import com.maltaisn.notes.sync.BuildConfig
 import com.maltaisn.notes.sync.R
 import com.maltaisn.notes.sync.databinding.ItemLabelBinding
 
 class LabelListViewHolder(val binding: ItemLabelBinding) : RecyclerView.ViewHolder(binding.root) {
 
     fun bind(item: LabelListItem, adapter: LabelAdapter) {
-        binding.labelTxv.text = item.label.name
+        var name = item.label.name
+        if (BuildConfig.ENABLE_DEBUG_FEATURES) {
+            name += " (${item.label.id})"
+        }
+
+        binding.labelTxv.text = name
         binding.hiddenImv.isInvisible = !item.label.hidden
 
         val view = binding.root

@@ -29,6 +29,7 @@ import com.maltaisn.notes.model.entity.LabelRef
 import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.model.entity.NoteStatus
 import com.maltaisn.notes.model.entity.PinnedStatus
+import com.maltaisn.notes.sync.BuildConfig
 import com.maltaisn.notes.ui.Event
 import com.maltaisn.notes.ui.ShareData
 import com.maltaisn.notes.ui.StatusChange
@@ -138,6 +139,10 @@ abstract class NoteViewModel(
     init {
         // Initialize list layout to saved value.
         _listLayoutMode.value = prefs.listLayoutMode
+
+        if (BuildConfig.ENABLE_DEBUG_FEATURES) {
+            noteItemFactory.appendIdToTitle = true
+        }
     }
 
     /**
