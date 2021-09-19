@@ -44,7 +44,7 @@ data class Reminder(
      * Can be `null` to indicate that the reminder isn't recurring.
      */
     @SerialName("recurrence")
-    val recurrence: Recurrence?,
+    val recurrence: Recurrence? = null,
 
     /**
      * The time of the next occurence of this reminder in local time zone.

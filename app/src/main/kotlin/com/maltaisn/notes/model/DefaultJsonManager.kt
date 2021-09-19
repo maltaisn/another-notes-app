@@ -139,34 +139,57 @@ class DefaultJsonManager @Inject constructor(
     }
 
     private suspend fun importNotes(notesData: NotesData, newLabelsMap: Map<Long, Long>) {
-        val existingNotes = notesDao.getAll().asSequence().map { it.note }.associateBy { it.id }
+        val existingNotes = notesDao.getAll().asSequence().associateBy { it.note.id }
         val labelRefs = mutableListOf<LabelRef>()
         for ((id, ns) in notesData.notes) {
             var noteId = id
-            val note = Note(id, ns.type, ns.title, ns.content, ns.metadata, ns.addedDate,
+            val newNote = Note(id, ns.type, ns.title, ns.content, ns.metadata, ns.addedDate,
                 ns.lastModifiedDate, ns.status, ns.pinned, ns.reminder)
-            val existingNote = existingNotes[noteId]
+            val oldNote = existingNotes[noteId]
+
+            // Remap labels appropriately and discard unresolved label IDs.
+            var labelIds = ns.labels.mapNotNull { newLabelsMap[it] }
+
             when {
-                existingNote == null -> {
-                    notesDao.insert(note)
+                oldNote == null -> {
+                    notesDao.insert(newNote)
                 }
-                existingNote.addedDate == note.addedDate -> {
-                    // existing note has same creation date as the data, assume this is the same
-                    // same that was exported in the first place.
-                    notesDao.update(note)
+                oldNote.note.addedDate == newNote.addedDate &&
+                        oldNote.note.lastModifiedDate == newNote.lastModifiedDate -> {
+                    // existing note has same added and modified date as the data, assume this is the same
+                    // same that was exported in the first place, unmodified since.
+                    // changing the reminder or labels doesn't affect last modified date so merge them explicitly.
+                    val mergedNote = mergeNotes(oldNote.note, newNote)
+                    if (mergedNote != null) {
+                        labelIds = (labelIds union oldNote.labels.map { it.id }).toList()
+                        notesDao.update(mergedNote)
+                    } else {
+                        noteId = notesDao.insert(newNote.copy(id = Note.NO_ID))
+                    }
                 }
                 else -> {
                     // ID clash, assign new ID.
-                    noteId = notesDao.insert(note.copy(id = Note.NO_ID))
+                    noteId = notesDao.insert(newNote.copy(id = Note.NO_ID))
                 }
             }
 
-            // Add label references, remapping labels appropriately and discarding unresolved label IDs.
-            labelRefs += ns.labels.mapNotNull { labelId ->
-                newLabelsMap[labelId]?.let { LabelRef(noteId, it) }
-            }
+            labelRefs += labelIds.map { LabelRef(noteId, it) }
         }
         labelsDao.insertRefs(labelRefs)
+    }
+
+    private fun mergeNotes(old: Note, new: Note): Note? {
+        val reminder = when {
+            old.reminder == null && new.reminder != null -> new.reminder
+            old.reminder != null && new.reminder == null -> old.reminder
+            old.reminder != null && new.reminder != null && old.reminder != new.reminder -> {
+                // Old and new notes have different reminders, do not merge to avoid losing one or the other.
+                return null
+            }
+            else -> null
+        }
+
+        return new.copy(reminder = reminder)
     }
 
     enum class ImportResult {

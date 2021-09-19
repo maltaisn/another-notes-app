@@ -37,6 +37,7 @@ import com.maltaisn.recurpicker.Recurrence
 import com.nhaarman.mockitokotlin2.mock
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
+import org.intellij.lang.annotations.Language
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -117,14 +118,45 @@ class DefaultJsonManagerTest {
 
     @Test
     fun testJsonImportClean() = runBlocking {
-        val jsonData = """
-{"version":3,"notes":{"1":{"type":0,"title":"note","content":"content","metadata":"{\"type\":\"blank\"}",
-"added":"2020-01-01T05:00:00.000Z","modified":"2020-02-01T05:00:00.000Z","status":0,"pinned":2,
-"reminder":{"start":"2020-03-01T05:00:00.000Z","recurrence":"RRULE:FREQ=DAILY",
-"next":"2020-03-02T05:00:00.000Z","count":1,"done":false},"labels":[1,10]},"9":{"type":1,
-"title":"list","content":"item 1\nitem 2","metadata":"{\"type\":\"list\",\"checked\":[false,true]}",
-"added":"2019-01-01T05:00:00.000Z","modified":"2019-02-01T05:00:00.000Z","status":1,"pinned":0,
-"labels":[1,3]}},"labels":{"1":{"name":"label0"},"3":{"name":"label1"},"10":{"name":"label2"}}}
+        @Language("JSON") val jsonData = """{
+  "version": 3,
+  "notes": {
+    "1": {
+      "type": 0,
+      "title": "note",
+      "content": "content",
+      "metadata": "{\"type\":\"blank\"}",
+      "added": "2020-01-01T05:00:00.000Z",
+      "modified": "2020-02-01T05:00:00.000Z",
+      "status": 0,
+      "pinned": 2,
+      "reminder": {
+        "start": "2020-03-01T05:00:00.000Z",
+        "recurrence": "RRULE:FREQ=DAILY",
+        "next": "2020-03-02T05:00:00.000Z",
+        "count": 1,
+        "done": false
+      },
+      "labels": [1, 10]
+    },
+    "9": {
+      "type": 1,
+      "title": "list",
+      "content": "item 1\nitem 2",
+      "metadata": "{\"type\":\"list\",\"checked\":[false,true]}",
+      "added": "2019-01-01T05:00:00.000Z",
+      "modified": "2019-02-01T05:00:00.000Z",
+      "status": 1,
+      "pinned": 0,
+      "labels": [1, 3]
+    }
+  },
+  "labels": {
+    "1": {"name": "label0"},
+    "3": {"name": "label1"},
+    "10": {"name": "label2"}
+  }
+}
         """.trim().replace("\n", "")
         assertEquals(ImportResult.SUCCESS, jsonManager.importJsonData(jsonData))
 
@@ -168,22 +200,78 @@ class DefaultJsonManagerTest {
         val label3 = Label(3, "label3")
         val label10 = Label(10, "label10")
         notesDao.insertAll(listOf(
+            // merge case: same ID, no reminder on old, labels merge.
             testNote(id = 1, added = dateFor("2020-01-01")),
+            // merge case: different dates, ID clash.
             testNote(id = 9, added = dateFor("2021-01-01")),
+            // merge case: different reminders
+            testNote(id = 12, added = dateFor("2021-01-01"),
+                reminder = Reminder(dateFor("2021-01-02"), null, dateFor("2021-01-03"), 1, true)),
         ))
         labelsDao.insert(label1)
         labelsDao.insert(label3)
         labelsDao.insert(label10)
+        labelsDao.insertRefs(listOf(LabelRef(1, 1), LabelRef(1, 3)))
 
-        val jsonData = """
-{"version":3,"notes":{"1":{"type":0,"title":"note","content":"content","metadata":"{\"type\":\"blank\"}",
-"added":"2020-01-01T05:00:00.000Z","modified":"2020-02-01T05:00:00.000Z","status":0,"pinned":2,
-"reminder":{"start":"2020-03-01T05:00:00.000Z","recurrence":"RRULE:FREQ=DAILY",
-"next":"2020-03-02T05:00:00.000Z","count":1,"done":false},"labels":[1,3,10]},"9":{"type":1,
-"title":"list","content":"item 1\nitem 2","metadata":"{\"type\":\"list\",\"checked\":[false,true]}",
-"added":"2019-01-01T05:00:00.000Z","modified":"2019-02-01T05:00:00.000Z","status":1,"pinned":0,
-"reminder":null,"labels":[1,9]}},"labels":{"1":{"name":"label0"},"3":{"name":"label11"},
-"9":{"name":"label10"}}}
+        @Language("JSON") val jsonData = """{
+  "version": 3,
+  "notes": {
+    "1": {
+      "type": 0,
+      "title": "note",
+      "content": "content",
+      "metadata": "{\"type\":\"blank\"}",
+      "added": "2020-01-01T05:00:00.000Z",
+      "modified": "2020-01-01T05:00:00.000Z",
+      "status": 0,
+      "pinned": 2,
+      "reminder": {
+        "start": "2020-03-01T05:00:00.000Z",
+        "recurrence": "RRULE:FREQ=DAILY",
+        "next": "2020-03-02T05:00:00.000Z",
+        "count": 1,
+        "done": false
+      },
+      "labels": [1, 3, 9]
+    },
+    "9": {
+      "type": 1,
+      "title": "list",
+      "content": "item 1\nitem 2",
+      "metadata": "{\"type\":\"list\",\"checked\":[false,true]}",
+      "added": "2019-01-01T05:00:00.000Z",
+      "modified": "2019-02-01T05:00:00.000Z",
+      "status": 1,
+      "pinned": 0,
+      "reminder": null,
+      "labels": [
+        1,
+        9
+      ]
+    },
+    "12": {
+      "type": 0,
+      "title": "note",
+      "content": "content",
+      "metadata": "{\"type\":\"blank\"}",
+      "added": "2021-01-01T05:00:00.000Z",
+      "modified": "2021-01-01T05:00:00.000Z",
+      "status": 0,
+      "pinned": 1,
+      "reminder": {
+        "start": "2021-01-02T05:00:00.000Z",
+        "next": "2022-01-02T05:00:00.000Z",
+        "count": 1,
+        "done": false
+      }
+    }
+  },
+  "labels": {
+    "1": {"name": "label0"},
+    "3": {"name": "label11"},
+    "9": {"name": "label10"}
+  }
+}
         """.trim().replace("\n", "")
         assertEquals(ImportResult.SUCCESS, jsonManager.importJsonData(jsonData))
 
@@ -199,17 +287,22 @@ class DefaultJsonManagerTest {
                 content = "content",
                 metadata = BlankNoteMetadata,
                 addedDate = dateFor("2020-01-01"),
-                lastModifiedDate = dateFor("2020-02-01"),
+                lastModifiedDate = dateFor("2020-01-01"),
                 status = NoteStatus.ACTIVE,
                 pinned = PinnedStatus.PINNED,
                 reminder = Reminder(dateFor("2020-03-01"), Recurrence(Recurrence.Period.DAILY),
                     dateFor("2020-03-02"), 1, false)
-            ), listOf(label1, label11)),
+            ), listOf(label1, label3, label9, label11)),
             NoteWithLabels(
                 testNote(id = 9, added = dateFor("2021-01-01")),
                 emptyList()
             ),
-            NoteWithLabels(Note(id = 10,
+            NoteWithLabels(
+                testNote(id = 12, added = dateFor("2021-01-01"),
+                    reminder = Reminder(dateFor("2021-01-02"), null, dateFor("2021-01-03"), 1, true)),
+                emptyList()
+            ),
+            NoteWithLabels(Note(id = 13,
                 type = NoteType.LIST,
                 title = "list",
                 content = "item 1\nitem 2",
@@ -220,6 +313,11 @@ class DefaultJsonManagerTest {
                 pinned = PinnedStatus.CANT_PIN,
                 reminder = null
             ), listOf(label1, label9)),
+            NoteWithLabels(
+                testNote(id = 14, added = dateFor("2021-01-01"),
+                    reminder = Reminder(dateFor("2021-01-02"), null, dateFor("2022-01-02"), 1, false)),
+                emptyList()
+            ),
         ), notesDao.getAll().toSet())
     }
 
