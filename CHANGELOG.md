@@ -1,4 +1,9 @@
 ## v1.4.2
+- Added new translations:
+    - Arabic: @afmbsr
+    - Italian: carallo
+    - Russian: Zakhar Timoshenko
+- Improved import merge: consider last modified date, merge labels, do not merge if reminders differ (#49).
 - Fixed export not completely overwriting JSON file if new content smaller.
 - Fixed crash during search if maximum lines shown in preview is 1 or 2 (#47).
 - Fixed crash during search if only negative term is used (e.g. `-a`) (#47).

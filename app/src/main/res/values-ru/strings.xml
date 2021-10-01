@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Copyright 2021 Nicolas Maltais
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  -->
+<resources>
+    <!-- Do not translate the app name -->
+    <!-- Can be translated to provided a sensible localized name for a "Notes" app -->
+    <string name="app_name_short">Заметки</string>
+    <string name="action_archive">Архивировать</string>
+    <string name="action_cancel">Отмена</string>
+    <string name="action_clear">Очистить</string>
+    <string name="action_convert_to_list">Преобразовать в список</string>
+    <string name="action_convert_to_text">Преобразовать в текст</string>
+    <string name="action_copy">Создать копию</string>
+    <string name="action_delete">Удалить</string>
+    <string name="action_delete_checked">Удалить отмеченные пункты</string>
+    <string name="action_delete_forever">Удалить навсегда</string>
+    <string name="action_delete_selection">Удалить выделенное</string>
+    <string name="action_delete_selection_forever">Удалить выделенное навсегда</string>
+    <string name="action_empty_trash">Очистить корзину</string>
+    <string name="action_empty_trash_short">Очистить</string>
+    <string name="action_keep">Оставить</string>
+    <string name="action_labels">Изменить метки</string>
+    <string name="action_layout_grid">Показать в виде сетки</string>
+    <string name="action_layout_list">Показать в виде списка</string>
+    <string name="action_manage">Настроить</string>
+    <string name="action_mark_as_done">Выполнено</string>
+    <string name="action_none">Нет</string>
+    <string name="action_ok">ОК</string>
+    <string name="action_pin">Закрепить</string>
+    <string name="action_postpone">Отложить</string>
+    <string name="action_reminder_add">Добавить напоминание</string>
+    <string name="action_reminder_edit">Редактировать напоминание</string>
+    <string name="action_rename">Переименовать</string>
+    <string name="action_restore">Восстановить</string>
+    <string name="action_search">Поиск</string>
+    <string name="action_select_all">Выделить все</string>
+    <string name="action_settings">Настройки</string>
+    <string name="action_share">Поделиться</string>
+    <string name="action_unarchive">Разархивировать</string>
+    <string name="action_uncheck_all">Снять выделение со всех элементов</string>
+    <string name="action_undo">Отменить</string>
+    <string name="action_unpin">Открепить</string>
+    <!-- Shortcuts -->
+    <!-- Note: normal length is ideally 25 chars or less, short is 10 chars or less. -->
+    <string name="shortcut_text_note">Новая текстовая заметка</string>
+    <string name="shortcut_text_note_short">Новый текст</string>
+    <string name="shortcut_list_note">Новая заметка списка</string>
+    <string name="shortcut_list_note_short">Новый список</string>
+    <string name="shortcut_reminders">Напоминания</string>
+    <string name="shortcut_reminders_short">Напоминания</string>
+    <!-- Home -->
+    <string name="note_location_active">Заметки</string>
+    <string name="note_location_archived">Архив</string>
+    <string name="note_location_deleted">Корзина</string>
+    <string name="note_location_labels">Метки</string>
+    <string name="note_pinned">Закреплено</string>
+    <string name="note_not_pinned">Прочее</string>
+    <string name="note_placeholder_active">У вас нет заметок.\nНажмите на +, чтобы добавить.</string>
+    <string name="note_placeholder_archived">Нет архивных заметок</string>
+    <string name="note_placeholder_deleted">Корзина пуста</string>
+    <plurals name="note_list_item_info">
+        <item quantity="one">+ %d пункт списка</item>
+        <item quantity="few">+ %d пункта в списке</item>
+        <item quantity="many">+ %d пунктов в списке</item>
+        <item quantity="other">+ %d пунктов в списке</item>
+    </plurals>
+    <plurals name="note_list_item_info_checked">
+        <item quantity="one">+ %d отмеченный элемент</item>
+        <item quantity="few">+ %d отмеченных элемента</item>
+        <item quantity="many">+ %d отмеченных элементов</item>
+        <item quantity="other">+ %d отмеченных элементов</item>
+    </plurals>
+    <string name="trash_reminder_message">Заметки в корзине автоматически удаляются после %d дней.</string>
+    <string name="trash_delete_message">Эта заметка будет удалена навсегда.</string>
+    <string name="trash_delete_selected_message">Выбранные заметки будут удалены навсегда.</string>
+    <string name="trash_empty_message">Все заметки в корзине будут удалены навсегда.</string>
+    <string name="search_hint">Поиск заметок</string>
+    <string name="search_empty_placeholder">Заметки по вашему запросу отсутствуют.</string>
+    <string name="sort_title">Параметры сортировки</string>
+    <string name="sort_direction">Порядок сортировки</string>
+    <string name="sort_direction_ascending">По возрастанию</string>
+    <string name="sort_direction_descending">По убыванию</string>
+    <string name="sort_field">Сортировать по</string>
+    <string name="sort_field_created">Дата создания</string>
+    <string name="sort_field_modified">Дата изменения</string>
+    <string name="sort_field_title">Наименование</string>
+    <!-- Edit -->
+    <string name="edit_add_title">Создание заметки</string>
+    <string name="edit_change_title">Редактирование заметки</string>
+    <string name="edit_hint_note_title">Наименование</string>
+    <string name="edit_hint_note_content">Текст</string>
+    <string name="edit_hint_note_item">Пункт списка</string>
+    <string name="edit_message_blank_note_discarded">Пустая заметка удалена.</string>
+    <string name="edit_in_trash_message">Невозможно редактировать заметку в корзине.</string>
+    <string name="edit_copy_suffix">Копия</string>
+    <string name="edit_copy_untitled_name">Без названия</string>
+    <string name="edit_convert_keep_checked">Удалить отмеченные пункты?</string>
+    <plurals name="edit_checked_items">
+        <item quantity="one">%d отмеченный пункт</item>
+        <item quantity="few">%d отмеченных пункта</item>
+        <item quantity="many">%d отмеченных пунктов</item>
+        <item quantity="other">%d отмеченных пунктов</item>
+    </plurals>
+    <!-- Reminder -->
+    <string name="note_reminders" comment="note_reminders&#10;Reminder&#10;&#10;IMPORTANT: reminders can have a recurrence, which is selected using a dialog provided by another library which I maintain. For the app to be fully translated, this library needs to be translated too. The library can be translated at https://crowdin.com/translate/recurpickerlib">Напоминания</string>
+    <string name="reminder_upcoming">Предстоящее</string>
+    <string name="reminder_today">Сегодня</string>
+    <string name="reminder_overdue">Просрочено</string>
+    <string name="reminder_date">Дата</string>
+    <string name="reminder_time">Время</string>
+    <string name="reminder_invalid_time">Это время уже прошло.</string>
+    <string name="reminder_notif_channel_title">Напоминания</string>
+    <string name="reminder_notif_channel_descr">Напоминания, установленные в заметки</string>
+    <string name="reminder_empty_placeholder">Напоминаний нет</string>
+    <string name="reminder_restricted_battery">Напоминание может работать неправильно, потому что приложение
+    не потребляет заряд аккумулятора. Это может быть изменено в настройках приложения.</string>
+    <!-- Labels -->
+    <string name="label_create">Создать новую метку</string>
+    <string name="label_edit">Изменить имя метки</string>
+    <string name="label_manage">Управление метками</string>
+    <string name="label_select">Выбор меток</string>
+    <string name="label_already_exists">Метка с таким именем уже существует.</string>
+    <string name="label_hidden_option">Скрыть заметки с этой меткой из активных и архивных разделов заметок</string>
+    <string name="label_empty_placeholder">Ни одной метки еще не создано</string>
+    <string name="label_delete_message">Выбранные метки будут удалены, но заметки
+    к ним останутся.</string>
+    <string name="label_notes_empty_placeholder">Нет заметок с такой меткой</string>
+    <!-- Settings -->
+    <string name="pref_group_appearance">Внешний вид</string>
+    <string name="pref_theme">Тема приложения</string>
+    <string name="pref_theme_light">Светлая</string>
+    <string name="pref_theme_dark">Тёмная</string>
+    <string name="pref_theme_system">Следовать системе</string>
+    <string name="pref_strikethrough_checked">Зачеркнуть отмеченные элементы списка</string>
+    <string name="pref_preview_labels">Максимальное количество меток</string>
+    <string name="pref_shown_date">Дата отображения заметок</string>
+    <string name="pref_shown_date_added">По дате создания</string>
+    <string name="pref_shown_date_modified">По дате редактирования</string>
+    <string name="pref_shown_date_none">Не указывать</string>
+    <string name="pref_preview_lines">Максимальное количество строк</string>
+    <string name="pref_preview_lines_summary">Настройка количества строк и элементов в заметках,
+        для каждого режима макета и типа заметок</string>
+    <string name="pref_preview_lines_grid_layout">Режим сетки</string>
+    <string name="pref_preview_lines_list_layout">Режим списка</string>
+    <string name="pref_preview_lines_text">Количество строк текстовых заметок</string>
+    <string name="pref_preview_lines_list">Количество пунктов в заметках в виде списка</string>
+    <string name="pref_group_behavior">Поведение</string>
+    <string name="pref_behavior_swipe_action">Действие при свайпе</string>
+    <string name="pref_behavior_move_checked">Перемещать отмеченные пункты в конец</string>
+    <string name="pref_group_data">Данные</string>
+    <string name="pref_data_export">Экспорт данных</string>
+    <string name="pref_data_export_summary">Экспортировать заметки в JSON</string>
+    <string name="pref_data_auto_export">Автоматический экспорт данных</string>
+    <string name="pref_data_auto_export_summary">Автоматически экспортировать данные приложения в файл один раз в день.</string>
+    <string name="pref_data_auto_export_date">(Последнее экспортирование %s)</string>
+    <string name="pref_data_import">Импорт данных</string>
+    <string name="pref_data_import_summary">Импортировать ранее экспортированные данные JSON, объединяя с существующими данными.</string>
+    <string name="pref_data_clear">Очистить все данные</string>
+    <string name="pref_data_clear_confirm_message">Все заметки будут удалены навсегда!
+        Это действие не может быть отменено.</string>
+    <string name="pref_data_clear_success_message">Все данные успешно очищены.</string>
+    <string name="pref_group_about">О программе</string>
+    <string name="pref_about_view_source">Посмотреть на GitHub</string>
+    <string name="pref_about_view_licenses">Лицензии открытого ПО</string>
+    <string name="pref_about_version">Версия</string>
+    <!-- Import/export data messages -->
+    <string name="export_success">Данные успешно выгружены!</string>
+    <string name="export_fail">Произошла ошибка в процессе экспорта.</string>
+    <string name="import_success">Импорт данных выполнен успешно!</string>
+    <string name="import_future_version">Данные успешно импортированы! Имейте в виду, что некоторая информация
+        может быть потеряна, так как данные происходят из более поздней версии.</string>
+    <string name="import_bad_input">Возникла ошибка при чтении файла.</string>
+    <string name="import_bad_format">Не удалось импортировать данные, данные JSON недействительны.</string>
+    <string name="import_bad_data">Не удалось импортировать данные, некоторые поля имеют недопустимые значения.
+        Это может произойти, если импортировать данные из более поздней версии, попробуйте обновить приложение.</string>
+    <string name="auto_export_message">Для автоматического экспорта необходимо выбрать файл
+        для сохранения данных. Данные будут экспортированы один раз в день, пока открыто приложение.
+        Нажмите кнопку ОК, чтобы продолжить.</string>
+    <string name="auto_export_fail">Не удалось автоматически экспортировать данные. Убедитесь, что экспортируемое местоположение
+        все еще существует и является доступным, а затем перенастройте автоматический экспорт.</string>
+    <!-- Content description -->
+    <string name="content_descrp_open_drawer">Открыть боковое меню</string>
+    <string name="content_descrp_back">Вернуться назад</string>
+    <string name="content_descrp_label_hidden">Заметки с этой меткой скрыты</string>
+    <!-- Relative date time format -->
+    <string name="date_rel_today">Сегодня, %s</string>
+    <string name="date_rel_yesterday">Вчера, %s</string>
+    <string name="date_rel_tomorrow">Завтра, %s</string>
+    <plurals name="date_rel_days_past" comment="date_rel_days_past&#10;used with quantity &gt;= 2, format values: number of days, time&#10;No need to provide translation for quantities &lt; 2">
+        <item quantity="one">%d день назад, %s</item>
+        <item quantity="few">%d дня назад, %s</item>
+        <item quantity="many">%d дней назад, %s</item>
+        <!-- used with quantity >= 2, format values: number of days, time -->
+        <item quantity="other">%d дней назад, %s</item>
+    </plurals>
+    <plurals name="date_rel_days_future" comment="date_rel_days_future&#10;used with quantity &gt;= 2, format values: number of days, time&#10;No need to provide translation for quantities &lt; 2">
+        <item quantity="one">Через %d день, %s</item>
+        <item quantity="few">Через %d дня, %s</item>
+        <item quantity="many">Через %d дней, %s</item>
+        <!-- used with quantity >= 2, format values: number of days, time -->
+        <item quantity="other">Через %d дней, %s</item>
+    </plurals>
+    <!-- format values: date, time -->
+    <string name="date_rel_absolute">%1$s, %2$s</string>
+</resources>

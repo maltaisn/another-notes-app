@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Copyright 2021 Nicolas Maltais
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  -->
+<resources>
+    <!-- Do not translate the app name -->
+    <!-- Can be translated to provided a sensible localized name for a "Notes" app -->
+    <string name="app_name_short">ملاحظات</string>
+    <string name="action_archive">أرشفة</string>
+    <string name="action_cancel">إلغاء</string>
+    <string name="action_clear">محو</string>
+    <string name="action_convert_to_list">تحويل الى قائمة</string>
+    <string name="action_convert_to_text">تحويل الى نص</string>
+    <string name="action_copy">تكرار</string>
+    <string name="action_delete">حذف</string>
+    <string name="action_delete_checked">حذف العناصر المؤشَرة</string>
+    <string name="action_delete_forever">الحذف نهائيًا</string>
+    <string name="action_delete_selection">حذف المحدد</string>
+    <string name="action_delete_selection_forever">حذف المحددة نهائيًا</string>
+    <string name="action_empty_trash">إفراغ سلة المهملات</string>
+    <string name="action_empty_trash_short">إفراغ</string>
+    <string name="action_keep">إبقاء</string>
+    <string name="action_labels">التصنيفات</string>
+    <string name="action_layout_grid">عرض كمصفوفة</string>
+    <string name="action_layout_list">عرض كلائحة</string>
+    <string name="action_manage">إدارة</string>
+    <string name="action_mark_as_done">اعتباره مكتمل</string>
+    <string name="action_none">لا شيء</string>
+    <string name="action_ok">حسنًا</string>
+    <string name="action_pin">تثبيت</string>
+    <string name="action_postpone">تأجيل</string>
+    <string name="action_reminder_add">إضافة تذكير</string>
+    <string name="action_reminder_edit">تحرير التذكير</string>
+    <string name="action_rename">تحرير</string>
+    <string name="action_restore">استعادة</string>
+    <string name="action_search">بحث</string>
+    <string name="action_select_all">تحديد الكل</string>
+    <string name="action_settings">الإعدادات والمعلومات</string>
+    <string name="action_share">مشاركة</string>
+    <string name="action_unarchive">إعاده من المؤرشفة</string>
+    <string name="action_uncheck_all">إلغاء تأشير كل العناصر</string>
+    <string name="action_undo">تراجع</string>
+    <string name="action_unpin">فك التثبيت</string>
+    <!-- Shortcuts -->
+    <!-- Note: normal length is ideally 25 chars or less, short is 10 chars or less. -->
+    <string name="shortcut_text_note">ملاحظة نصية جديدة</string>
+    <string name="shortcut_text_note_short">نص جديد</string>
+    <string name="shortcut_list_note">ملاحظة قائمه جديدة</string>
+    <string name="shortcut_list_note_short">قائمة جديدة</string>
+    <string name="shortcut_reminders">تذكيرات</string>
+    <string name="shortcut_reminders_short">تذكيرات</string>
+    <!-- Home -->
+    <string name="note_location_active">الملاحظات</string>
+    <string name="note_location_archived">المؤرشفة</string>
+    <string name="note_location_deleted">المهملات</string>
+    <string name="note_location_labels">التصنيفات</string>
+    <string name="note_pinned">المثبتة</string>
+    <string name="note_not_pinned">الأخرى</string>
+    <string name="note_placeholder_active">ليس لديك أي ملاحظة.\nانقر على + لإضافة واحدة.</string>
+    <string name="note_placeholder_archived">لا توجد ملاحظات مؤرشفة</string>
+    <string name="note_placeholder_deleted">سلة المهملات فارغة</string>
+    <string name="trash_reminder_message">تُحذف الملاحظات من المهملات تلقائيًا بعد %d أيام.</string>
+    <string name="trash_delete_message">سيتم حذف الملاحظة نهائيًا.</string>
+    <string name="trash_delete_selected_message">سيتم حذف الملاحظات المحددة نهائيًا.</string>
+    <string name="trash_empty_message">سيتم حذف كل الملاحظات الموجودة هنا نهائيًا.</string>
+    <string name="search_hint">بحث الملاحظات</string>
+    <string name="search_empty_placeholder">لا توجد ملاحظة متطابقة.</string>
+    <string name="sort_title">خيارات الترتيب</string>
+    <string name="sort_direction">اتجاه الترتيب</string>
+    <string name="sort_direction_ascending">تصاعدي</string>
+    <string name="sort_direction_descending">تنازلي</string>
+    <string name="sort_field">الترتيب حسب</string>
+    <string name="sort_field_created">تاريخ الإنشاء</string>
+    <string name="sort_field_modified">تاريخ التعديل</string>
+    <string name="sort_field_title">أبجدية العنوان</string>
+    <!-- Edit -->
+    <string name="edit_add_title">إنشاء ملاحظة</string>
+    <string name="edit_change_title">تحرير الملاحظة</string>
+    <string name="edit_hint_note_title">العنوان</string>
+    <string name="edit_hint_note_content">ملاحظة</string>
+    <string name="edit_hint_note_item">عنصر قائمة</string>
+    <string name="edit_message_blank_note_discarded">تم تجاهل ملاحظة فارغة.</string>
+    <string name="edit_in_trash_message">لا يمكن التعديل في سلة المهملات.</string>
+    <string name="edit_copy_suffix">مكررة</string>
+    <string name="edit_copy_untitled_name">بلا عنوان</string>
+    <string name="edit_convert_keep_checked">حذف العناصر المؤشَرة؟</string>
+    <!-- Reminder -->
+    <string name="note_reminders" comment="note_reminders&#10;Reminder&#10;&#10;IMPORTANT: reminders can have a recurrence, which is selected using a dialog provided by another library which I maintain. For the app to be fully translated, this library needs to be translated too. The library can be translated at https://crowdin.com/translate/recurpickerlib">التذكيرات</string>
+    <string name="reminder_upcoming">القادمة</string>
+    <string name="reminder_today">اليوم</string>
+    <string name="reminder_overdue">الفائتة</string>
+    <string name="reminder_date">التاريخ</string>
+    <string name="reminder_time">الوقت</string>
+    <string name="reminder_invalid_time">لقد مر هذا الوقت بالفعل.</string>
+    <string name="reminder_notif_channel_title">التذكيرات</string>
+    <string name="reminder_notif_channel_descr">تعيين منبه التذكيرات</string>
+    <string name="reminder_empty_placeholder">لم يتم تعيين تذكيرات</string>
+    <string name="reminder_restricted_battery">تنبيهات التذكير قد لا تعمل بشكل صحيح؛ لأن التطبيق
+    لديه استخدام محدود للبطارية. يمكن تغيير ذلك من إعدادات النظام.</string>
+    <!-- Labels -->
+    <string name="label_create">إنشاء تصنيف جديد</string>
+    <string name="label_edit">تعديل اسم التصنيف</string>
+    <string name="label_manage">إدارة التصنيفات</string>
+    <string name="label_select">اختيار التصنيفات</string>
+    <string name="label_already_exists">يوجد تصنيف بهذا الاسم بالفعل.</string>
+    <string name="label_hidden_option">إخفاء ملاحظات هذا التصنيف من العامة والمؤرشفة</string>
+    <string name="label_empty_placeholder">لم يتم إنشاء تصنيفات</string>
+    <string name="label_delete_message">سيتم حذف التصنيفات المحددة، ولكن سيتم الاحتفاظ بالملاحظات المرتبطة
+    بها.</string>
+    <string name="label_notes_empty_placeholder">لا توجد ملاحظات موسّمة بهذا التصنيف</string>
+    <!-- Settings -->
+    <string name="pref_group_appearance">المظهر</string>
+    <string name="pref_theme">سمة التطبيق</string>
+    <string name="pref_theme_light">فاتح</string>
+    <string name="pref_theme_dark">داكن</string>
+    <string name="pref_theme_system">تبعًا للنظام</string>
+    <string name="pref_strikethrough_checked">عنصر القائمة المؤشَر يتوسطه خط</string>
+    <string name="pref_preview_labels">عدد التصنيفات أسفل المعاينات</string>
+    <string name="pref_shown_date">تاريخ الملاحظة</string>
+    <string name="pref_shown_date_added">تاريخ الإنشاء</string>
+    <string name="pref_shown_date_modified">تاريخ آخر تعديل</string>
+    <string name="pref_shown_date_none">بدون عرض</string>
+    <string name="pref_preview_lines">عدد الأسطر في المعاينات</string>
+    <string name="pref_preview_lines_summary">ضبط عدد الأسطر، 
+        لكل نمط ونوع ملاحظة</string>
+    <string name="pref_preview_lines_grid_layout">نمط المصفوفة</string>
+    <string name="pref_preview_lines_list_layout">نمط اللائحة</string>
+    <string name="pref_preview_lines_text">معاينة ملاحظة نصية</string>
+    <string name="pref_preview_lines_list">معاينة ملاحظة قائمة</string>
+    <string name="pref_group_behavior">السلوك</string>
+    <string name="pref_behavior_swipe_action">الإجراء عند السحب</string>
+    <string name="pref_behavior_move_checked">تحريك العناصر المؤشَرة للأسفل</string>
+    <string name="pref_group_data">البيانات</string>
+    <string name="pref_data_export">تصدير البيانات</string>
+    <string name="pref_data_export_summary">تصدير بيانات الملاحظات بتنسيق JSON</string>
+    <string name="pref_data_auto_export">التصدير التلقائي للبيانات</string>
+    <string name="pref_data_auto_export_summary">تصدير بيانات التطبيق تلقائيًا الى ملف، مرة واحدة في اليوم.</string>
+    <string name="pref_data_auto_export_date">(تم التصدير في %s)</string>
+    <string name="pref_data_import">استيراد البيانات</string>
+    <string name="pref_data_import_summary">استيراد بيانات JSON المصدّرة مسبقًا، ودمجها مع البيانات الحالية.</string>
+    <string name="pref_data_clear">محو كافة البيانات</string>
+    <string name="pref_data_clear_confirm_message">سيتم محو جميع بيانات الملاحظات بشكل دائم!
+        لا يمكن التراجع عن ذلك.</string>
+    <string name="pref_data_clear_success_message">تم محو كافة البيانات بنجاح.</string>
+    <string name="pref_group_about">حول</string>
+    <string name="pref_about_view_source">عرض على Github</string>
+    <string name="pref_about_view_licenses">تراخيص مفتوحة المصدر</string>
+    <string name="pref_about_version">الإصدار</string>
+    <!-- Import/export data messages -->
+    <string name="export_success">تم تصدير البيانات بنجاح!</string>
+    <string name="export_fail">حدث خطأ أثناء تصدير البيانات.</string>
+    <string name="import_success">تم استيراد البيانات بنجاح!</string>
+    <string name="import_future_version">تم استيراد البيانات بنجاح! ويلاحظ أن بعض المعلومات ربما
+        قد فقدت؛ ذلك لأن البيانات تُنشأ من إصدار لاحق.</string>
+    <string name="import_bad_input">حدث خطأ أثناء محاولة قراءة هذا الملف.</string>
+    <string name="import_bad_format">تعذرت عملية الاستيراد؛ بيانات الـ JSON غير صالحة.</string>
+    <string name="import_bad_data">تعذر استيراد البيانات، بعض الحقول لديها قيم غير صالحة.
+        يمكن أن يحدث هذا في حالة استيراد البيانات من إصدار لاحق، حاول تحديث التطبيق.</string>
+    <string name="auto_export_message">لتمكين التصدير التلقائي، يجب اختيار ملف
+        لحفظ البيانات. سيتم تصدير بيانات التطبيق مرة واحدة يوميًا أثناء فتح التطبيق.
+        انقر \"حسنًا\" للمتابعة.</string>
+    <string name="auto_export_fail">فشل في التصدير التلقائي للبيانات. تأكد من أن موقع التصدير
+        لا يزال موجودًا ويمكن الوصول إليه، ثم قم بإعادة تمكين التصدير التلقائي.</string>
+    <!-- Content description -->
+    <string name="content_descrp_open_drawer">فتح الدرج</string>
+    <string name="content_descrp_back">رجوع</string>
+    <string name="content_descrp_label_hidden">الملاحظات التي تحمل هذا التصنيف مخفية</string>
+    <!-- Relative date time format -->
+    <string name="date_rel_today">اليوم، %s</string>
+    <string name="date_rel_yesterday">أمس، %s</string>
+    <string name="date_rel_tomorrow">غدًا، %s</string>
+    <!-- format values: date, time -->
+    <string name="date_rel_absolute">%1$s، %2$s</string>
+</resources>

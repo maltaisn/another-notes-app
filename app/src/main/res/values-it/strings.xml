@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Copyright 2021 Nicolas Maltais
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  -->
+<resources>
+    <!-- Do not translate the app name -->
+    <!-- Can be translated to provided a sensible localized name for a "Notes" app -->
+    <string name="app_name_short">Note</string>
+    <string name="action_archive">Archivia</string>
+    <string name="action_cancel">Annulla</string>
+    <string name="action_clear">Cancella</string>
+    <string name="action_convert_to_list">Converti in elenco</string>
+    <string name="action_convert_to_text">Converti in testo</string>
+    <string name="action_copy">Crea una copia</string>
+    <string name="action_delete">Elimina</string>
+    <string name="action_delete_checked">Rimuovi elementi spuntati</string>
+    <string name="action_delete_forever">Elimina definitivamente</string>
+    <string name="action_delete_selection">Elimina selezionati</string>
+    <string name="action_delete_selection_forever">Elimina selezionati definitivamente</string>
+    <string name="action_empty_trash">Svuota cestino</string>
+    <string name="action_empty_trash_short">Svuota</string>
+    <string name="action_keep">Mantieni</string>
+    <string name="action_labels">Cambia etichette</string>
+    <string name="action_layout_grid">Vedi come griglia</string>
+    <string name="action_layout_list">Vedi come lista</string>
+    <string name="action_manage">Organizza</string>
+    <string name="action_mark_as_done">Segna come eseguito</string>
+    <string name="action_none">Nessuno</string>
+    <string name="action_ok">OK</string>
+    <string name="action_pin">Fissa</string>
+    <string name="action_postpone">Posticipa</string>
+    <string name="action_reminder_add">Aggiungi promemoria</string>
+    <string name="action_reminder_edit">Modifica promemoria</string>
+    <string name="action_rename">Rinomina</string>
+    <string name="action_restore">Ripristina</string>
+    <string name="action_search">Cerca</string>
+    <string name="action_select_all">Seleziona tutti</string>
+    <string name="action_settings">Impostazioni</string>
+    <string name="action_share">Condividi</string>
+    <string name="action_unarchive">Ripristina da archivio</string>
+    <string name="action_uncheck_all">Deseleziona tutti gli elementi</string>
+    <string name="action_undo">Annulla</string>
+    <string name="action_unpin">Togli</string>
+    <!-- Shortcuts -->
+    <!-- Note: normal length is ideally 25 chars or less, short is 10 chars or less. -->
+    <string name="shortcut_text_note">Nuova nota di testo</string>
+    <string name="shortcut_text_note_short">Nuova nota</string>
+    <string name="shortcut_list_note">Nuovo elenco</string>
+    <string name="shortcut_list_note_short">Nuovo elenco</string>
+    <string name="shortcut_reminders">Promemoria</string>
+    <string name="shortcut_reminders_short">Promemoria</string>
+    <!-- Home -->
+    <string name="note_location_active">Note</string>
+    <string name="note_location_archived">Archivio</string>
+    <string name="note_location_deleted">Cestino</string>
+    <string name="note_location_labels">Etichette</string>
+    <string name="note_pinned">Fissate</string>
+    <string name="note_not_pinned">Altre</string>
+    <string name="note_placeholder_active">Non hai nessuna nota.\nClicca sul + per aggiungerne una.</string>
+    <string name="note_placeholder_archived">Nessuna nota archiviata</string>
+    <string name="note_placeholder_deleted">Il cestino è vuoto</string>
+    <plurals name="note_list_item_info">
+        <item quantity="one">+ %d altro elemento</item>
+        <item quantity="other">+ %d altri elementi</item>
+    </plurals>
+    <plurals name="note_list_item_info_checked">
+        <item quantity="one">+ %d elemento selezionato</item>
+        <item quantity="other">+ %d elementi selezionati</item>
+    </plurals>
+    <string name="trash_reminder_message">Le note nel cestino vengono eliminate automaticamente dopo %d giorni.</string>
+    <string name="trash_delete_message">Questa nota verrà eliminata permanentemente.</string>
+    <string name="trash_delete_selected_message">Le note selezionate saranno eliminate permanentemente.</string>
+    <string name="trash_empty_message">Tutte le note nel Cestino saranno eliminate permanentemente.</string>
+    <string name="search_hint">Cerca note</string>
+    <string name="search_empty_placeholder">Nessuna nota trovata per la tua ricerca.</string>
+    <string name="sort_title">Ordinamento</string>
+    <string name="sort_direction">Ordine</string>
+    <string name="sort_direction_ascending">Crescente</string>
+    <string name="sort_direction_descending">Decrescente</string>
+    <string name="sort_field">Ordina per</string>
+    <string name="sort_field_created">Data creazione</string>
+    <string name="sort_field_modified">Ultima modifica</string>
+    <string name="sort_field_title">Titolo</string>
+    <!-- Edit -->
+    <string name="edit_add_title">Crea nota</string>
+    <string name="edit_change_title">Modifica nota</string>
+    <string name="edit_hint_note_title">Titolo</string>
+    <string name="edit_hint_note_content">Nota</string>
+    <string name="edit_hint_note_item">Elemento della lista</string>
+    <string name="edit_message_blank_note_discarded">Nota vuota scartata.</string>
+    <plurals name="edit_move_archive_message">
+        <item quantity="one">Nota archiviata.</item>
+        <item quantity="other">Note archiviate.</item>
+    </plurals>
+    <plurals name="edit_message_move_delete">
+        <item quantity="one">Nota spostata nel cestino.</item>
+        <item quantity="other">Note spostate nel cestino.</item>
+    </plurals>
+    <plurals name="edit_message_move_restore">
+        <item quantity="one">Nota ripristinata.</item>
+        <item quantity="other">Note ripristinate.</item>
+    </plurals>
+    <plurals name="edit_message_move_unarchive">
+        <item quantity="one">Nota ripristinata dall\'archivio.</item>
+        <item quantity="other">Note ripristinate dall\'archivio.</item>
+    </plurals>
+    <string name="edit_in_trash_message">Impossibile modificare le note nel cestino.</string>
+    <string name="edit_copy_suffix">Copia</string>
+    <string name="edit_copy_untitled_name">Senza titolo</string>
+    <string name="edit_convert_keep_checked">Rimuovere gli elementi completati?</string>
+    <plurals name="edit_checked_items">
+        <item quantity="one">%d elemento completato</item>
+        <item quantity="other">%d elementi completati</item>
+    </plurals>
+    <!-- Reminder -->
+    <string name="note_reminders" comment="note_reminders&#10;Reminder&#10;&#10;IMPORTANT: reminders can have a recurrence, which is selected using a dialog provided by another library which I maintain. For the app to be fully translated, this library needs to be translated too. The library can be translated at https://crowdin.com/translate/recurpickerlib">Promemoria</string>
+    <string name="reminder_upcoming">Prossime</string>
+    <string name="reminder_today">Oggi</string>
+    <string name="reminder_overdue">Scadute</string>
+    <string name="reminder_date">Data</string>
+    <string name="reminder_time">Ora</string>
+    <string name="reminder_invalid_time">Questa data è già trascorsa.</string>
+    <string name="reminder_notif_channel_title">Promemoria</string>
+    <string name="reminder_notif_channel_descr">Promemoria impostati sulle note</string>
+    <string name="reminder_empty_placeholder">Nessun promemoria</string>
+    <string name="reminder_restricted_battery">I promemoria potrebbero non funzionare correttamente perché l\'uso della batteria è limitato per quest\'app. Ciò può essere modificato nelle impostazioni.</string>
+    <!-- Labels -->
+    <string name="label_create">Crea nuova etichetta</string>
+    <string name="label_edit">Modifica etichetta</string>
+    <string name="label_manage">Gestisci le etichette</string>
+    <string name="label_select">Seleziona etichette</string>
+    <string name="label_already_exists">Esiste già un\'etichetta con questo nome.</string>
+    <string name="label_hidden_option">Nascondi le note con questa etichetta tra le note attive e archiviate</string>
+    <string name="label_empty_placeholder">Nessuna etichetta creata</string>
+    <string name="label_delete_message">Le etichette selezionate verranno eliminate, ma le note associate
+    saranno mantenute.</string>
+    <string name="label_notes_empty_placeholder">Nessuna nota contrassegnata con questa etichetta</string>
+    <!-- Settings -->
+    <string name="pref_group_appearance">Aspetto</string>
+    <string name="pref_theme">Tema</string>
+    <string name="pref_theme_light">Chiaro</string>
+    <string name="pref_theme_dark">Scuro</string>
+    <string name="pref_theme_system">Segui il sistema</string>
+    <string name="pref_strikethrough_checked">Barrare elementi selezionati nelle liste</string>
+    <string name="pref_preview_labels">Numero massimo di etichette nell\'anteprima</string>
+    <string name="pref_shown_date">Data visualizzata per le note</string>
+    <string name="pref_shown_date_added">Data di creazione</string>
+    <string name="pref_shown_date_modified">Data dell\'ultima modifica</string>
+    <string name="pref_shown_date_none">Nessuna data</string>
+    <string name="pref_preview_lines">Numero massimo di righe nelle anteprime</string>
+    <string name="pref_preview_lines_summary">Configura quante righe ed elementi sono mostrati sulle note, per visualizzazione e tipo di nota</string>
+    <string name="pref_preview_lines_grid_layout">Visualizzazione a griglia</string>
+    <string name="pref_preview_lines_list_layout">Visualizzazione a lista</string>
+    <string name="pref_preview_lines_text">Righe nell\'anteprima delle note di testo</string>
+    <string name="pref_preview_lines_list">Elementi nell\'anteprima delle note a elenco</string>
+    <string name="pref_group_behavior">Comportamento</string>
+    <string name="pref_behavior_swipe_action">Azione dello scorrimento</string>
+    <string name="pref_behavior_move_checked">Sposta in fondo gli elementi spuntati</string>
+    <string name="pref_group_data">Dati</string>
+    <string name="pref_data_export">Esporta dati</string>
+    <string name="pref_data_export_summary">Esporta note in formato JSON</string>
+    <string name="pref_data_auto_export">Esportazione automatica</string>
+    <string name="pref_data_auto_export_summary">Esporta automaticamente i dati in un file, una volta al giorno.</string>
+    <string name="pref_data_auto_export_date">(Ultima esportazione il %s)</string>
+    <string name="pref_data_import">Importa dati</string>
+    <string name="pref_data_import_summary">Importa dati JSON precedentemente esportati, unendoli con gli esistenti.</string>
+    <string name="pref_data_clear">Cancella tutti i dati</string>
+    <string name="pref_data_clear_confirm_message">Tutti i dati verranno cancellati definitivamente!
+Quest\'azione non può essere annullata.</string>
+    <string name="pref_data_clear_success_message">Tutti i dai sono stati cancellati con successo.</string>
+    <string name="pref_group_about">Informazioni</string>
+    <string name="pref_about_view_source">Vedi su GitHub</string>
+    <string name="pref_about_view_licenses">Licenze Open source</string>
+    <string name="pref_about_version">Versione</string>
+    <!-- Import/export data messages -->
+    <string name="export_success">Dati esportati con successo!</string>
+    <string name="export_fail">Si è verificato un errore durante l\'esportazione.</string>
+    <string name="import_success">Dati importati con successo!</string>
+    <string name="import_future_version">Dati importati con successo! Nota che alcune informazioni potrebbero essere state perse perché i dati provengono da una versione successiva.</string>
+    <string name="import_bad_input">Errore nella lettura del file.</string>
+    <string name="import_bad_format">Impossibile importare, i dati JSON non sono validi.</string>
+    <string name="import_bad_data">Impossibile importare i dati, alcuni campi hanno valori non validi.
+Questo può accadere importando dati da una versione successiva, prova ad aggiornare l\'app.</string>
+    <string name="auto_export_message">Per abilitare l\'esportazione automatica, bisogna scegliere un file su cui salvare i dati. Questi verranno esportati una volta al giorno quando l\'app viene aperta.
+Cliccare OK per procedere.</string>
+    <string name="auto_export_fail">Esportazione automatica non riuscita. Assicurarsi che la posizione di esportazione esista ancora e sia accessibile, quindi riconfigura l\'esportazione automatica.</string>
+    <!-- Content description -->
+    <string name="content_descrp_open_drawer">Apri menù</string>
+    <string name="content_descrp_back">Indietro</string>
+    <string name="content_descrp_label_hidden">Le note con questa etichetta sono nascoste</string>
+    <!-- Relative date time format -->
+    <string name="date_rel_today">Oggi %s</string>
+    <string name="date_rel_yesterday">Ieri, %s</string>
+    <string name="date_rel_tomorrow">Domani, %s</string>
+    <plurals name="date_rel_days_past" comment="date_rel_days_past&#10;used with quantity &gt;= 2, format values: number of days, time&#10;No need to provide translation for quantities &lt; 2">
+        <item quantity="one">%d giorno fa, %s</item>
+        <!-- used with quantity >= 2, format values: number of days, time -->
+        <item quantity="other">%d giorni fa, %s</item>
+    </plurals>
+    <plurals name="date_rel_days_future" comment="date_rel_days_future&#10;used with quantity &gt;= 2, format values: number of days, time&#10;No need to provide translation for quantities &lt; 2">
+        <item quantity="one">Fra %d giorno, %s</item>
+        <!-- used with quantity >= 2, format values: number of days, time -->
+        <item quantity="other">Fra %d giorni, %s</item>
+    </plurals>
+    <!-- format values: date, time -->
+    <string name="date_rel_absolute">%1$s, %2$s</string>
+</resources>
