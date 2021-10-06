@@ -535,6 +535,12 @@ class EditViewModel @AssistedInject constructor(
      * Note is not updated in database and last modified date isn't changed.
      */
     private fun updateNote() {
+        if (listItems.isEmpty()) {
+            // updateNote seems to be called before list items are created due to
+            // live data events being called in a non-deterministic order? Return to avoid a crash.
+            return
+        }
+
         // Create note
         val title = findItem<EditTitleItem>().title.text.toString()
         val content: String

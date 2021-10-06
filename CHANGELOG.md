@@ -4,10 +4,12 @@
     - Italian: carallo
     - Russian: Zakhar Timoshenko
 - Improved import merge: consider last modified date, merge labels, do not merge if reminders differ (#49).
+- More note text is now shown in reminder notification.
 - Fixed export not completely overwriting JSON file if new content smaller.
 - Fixed crash during search if maximum lines shown in preview is 1 or 2 (#47).
 - Fixed crash during search if only negative term is used (e.g. `-a`) (#47).
 - Fixed regression, destination not changed after selected label is deleted.
+- Fixed rare crash when opening a list note.
 
 ## v1.4.1
 - Added dialog to change sort field and direction (#31).
