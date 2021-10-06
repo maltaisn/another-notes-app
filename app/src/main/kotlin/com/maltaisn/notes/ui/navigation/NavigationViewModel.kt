@@ -86,6 +86,16 @@ class NavigationViewModel @AssistedInject constructor(
         }
     }
 
+    fun selectLabel(label: Label) {
+        checkedId = label.id
+        val pos = listItems.indexOfFirst { it is NavigationDestinationItem
+                && it.destination is HomeDestination.Labels
+                && it.destination.label == label }
+        if (pos != -1) {
+            selectNavigationItem(listItems[pos] as NavigationDestinationItem, pos)
+        } // otherwise list wasn't updated yet for new label, select on update.
+    }
+
     private fun createListItems(labels: List<Label>) = buildList {
         this += NavigationTopItem(ITEM_ID_TOP)
 
@@ -158,8 +168,9 @@ class NavigationViewModel @AssistedInject constructor(
             if (item is NavigationDestinationItem && item.id == checkedId) {
                 list[i] = item.copy(checked = true)
                 if (item.destination is HomeDestination) {
-                    // Set destination again to make sure observers have the update destination value.
+                    // Set destination again to make sure observers have the updated destination value.
                     // For example in the case a label, it could become hidden or change name.
+                    // This is also needed to select a newly created label that wasn't in the list previously.
                     _currentHomeDestination.value = item.destination
                 }
                 return
@@ -179,6 +190,10 @@ class NavigationViewModel @AssistedInject constructor(
 
     override fun onNavigationDestinationItemClicked(item: NavigationDestinationItem, pos: Int) {
         _drawerCloseEvent.send()
+        selectNavigationItem(item, pos)
+    }
+
+    private fun selectNavigationItem(item: NavigationDestinationItem, pos: Int) {
         when (val destination = item.destination) {
             is HomeDestination -> {
                 // For these destinations, only one can be set at the time

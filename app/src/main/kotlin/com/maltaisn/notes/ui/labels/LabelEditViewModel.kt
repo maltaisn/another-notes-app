@@ -39,6 +39,10 @@ class LabelEditViewModel @AssistedInject constructor(
     val setLabelEvent: LiveData<Event<Label>>
         get() = _setLabelEvent
 
+    private val _labelAddEvent = MutableLiveData<Event<Label>>()
+    val labelAddEvent: LiveData<Event<Label>>
+        get() = _labelAddEvent
+
     private val _labelError = MutableLiveData(Error.NONE)
     val nameError: LiveData<Error>
         get() = _labelError
@@ -90,13 +94,16 @@ class LabelEditViewModel @AssistedInject constructor(
     }
 
     fun addLabel() {
+        var label = Label(labelId, labelName, hidden)
         viewModelScope.launch {
             if (labelId == Label.NO_ID) {
-                labelsRepository.insertLabel(Label(Label.NO_ID, labelName, hidden))
+                val id = labelsRepository.insertLabel(label)
+                label = label.copy(id = id)
             } else {
                 // Must use update, using insert will remove the label references despite being update on conflict.
-                labelsRepository.updateLabel(Label(labelId, labelName, hidden))
+                labelsRepository.updateLabel(label)
             }
+            _labelAddEvent.send(label)
         }
     }
 

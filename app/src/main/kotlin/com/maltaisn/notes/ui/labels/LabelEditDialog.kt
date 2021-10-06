@@ -29,12 +29,19 @@ import com.maltaisn.notes.App
 import com.maltaisn.notes.model.entity.Label
 import com.maltaisn.notes.sync.R
 import com.maltaisn.notes.sync.databinding.DialogLabelEditBinding
+import com.maltaisn.notes.ui.SharedViewModel
+import com.maltaisn.notes.ui.navGraphViewModel
 import com.maltaisn.notes.ui.observeEvent
 import com.maltaisn.notes.ui.viewModel
 import debugCheck
 import javax.inject.Inject
+import javax.inject.Provider
 
 class LabelEditDialog : DialogFragment() {
+
+    @Inject
+    lateinit var sharedViewModelProvider: Provider<SharedViewModel>
+    private val sharedViewModel by navGraphViewModel(R.id.nav_graph_main) { sharedViewModelProvider.get() }
 
     @Inject
     lateinit var viewModelFactory: LabelEditViewModel.Factory
@@ -104,6 +111,8 @@ class LabelEditDialog : DialogFragment() {
             nameInput.setSelection(label.name.length)  // put cursor at the end
             hiddenCheck.isChecked = label.hidden
         }
+
+        viewModel.labelAddEvent.observeEvent(this, sharedViewModel::onLabelAdd)
 
         viewModel.start(args.labelId)
 

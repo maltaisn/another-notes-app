@@ -23,6 +23,7 @@ import androidx.lifecycle.viewModelScope
 import com.maltaisn.notes.model.NotesRepository
 import com.maltaisn.notes.model.ReminderAlarmManager
 import com.maltaisn.notes.model.SortSettings
+import com.maltaisn.notes.model.entity.Label
 import com.maltaisn.notes.model.entity.NoteStatus
 import com.maltaisn.notes.model.entity.Reminder
 import com.maltaisn.notes.sync.R
@@ -53,6 +54,10 @@ class SharedViewModel @Inject constructor(
     private val _reminderChangeEvent = MutableLiveData<Event<Reminder?>>()
     val reminderChangeEvent: LiveData<Event<Reminder?>>
         get() = _reminderChangeEvent
+
+    private val _labelAddEvent = MutableLiveData<Event<Label>>()
+    val labelAddEvent: LiveData<Event<Label>>
+        get() = _labelAddEvent
 
     private val _sortChangeEvent = MutableLiveData<Event<SortSettings>>()
     val sortChangeEvent: LiveData<Event<SortSettings>>
@@ -92,6 +97,10 @@ class SharedViewModel @Inject constructor(
 
     fun onReminderChange(reminder: Reminder?) {
         _reminderChangeEvent.send(reminder)
+    }
+
+    fun onLabelAdd(label: Label) {
+        _labelAddEvent.send(label)
     }
 
     fun changeSortSettings(settings: SortSettings) {

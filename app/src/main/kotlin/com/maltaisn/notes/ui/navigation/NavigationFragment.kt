@@ -103,6 +103,15 @@ class NavigationFragment : Fragment() {
         viewModel.drawerCloseEvent.observeEvent(viewLifecycleOwner) {
             drawerLayout.closeDrawers()
         }
+
+        requireView().post {
+            sharedViewModel.labelAddEvent.observeEvent(viewLifecycleOwner) { label ->
+                // If user is on home fragment, select the newly created label.
+                if (findNavController().previousBackStackEntry?.destination?.id == R.id.fragment_home) {
+                    viewModel.selectLabel(label)
+                }
+            }
+        }
     }
 
 }
