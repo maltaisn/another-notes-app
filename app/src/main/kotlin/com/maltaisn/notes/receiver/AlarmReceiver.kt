@@ -70,12 +70,14 @@ class AlarmReceiver : BroadcastReceiver() {
 
         reminderAlarmManager.setNextNoteReminderAlarm(note)
 
+        val noteText = note.asText(includeTitle = false).ifBlank { null }
         val builder = NotificationCompat.Builder(context, App.NOTIFICATION_CHANNEL_ID)
             .setPriority(NotificationCompat.PRIORITY_MAX)
             .setSmallIcon(R.drawable.ic_app_icon)
             .setGroup(NOTIFICATION_GROUP)
             .setContentTitle(note.title.ifBlank { null })
-            .setContentText(note.asText(includeTitle = false).ifBlank { null })
+            .setContentText(noteText)
+            .setStyle(NotificationCompat.BigTextStyle().bigText(noteText))
             .setAutoCancel(true)
 
         // Edit/view main action
