@@ -38,6 +38,7 @@
     <string name="action_manage">Behandle</string>
     <string name="action_mark_as_done">Marker som gjort</string>
     <string name="action_none">Ingen</string>
+    <string name="action_ok">OK</string>
     <string name="action_pin">Fest</string>
     <string name="action_postpone">Utsett</string>
     <string name="action_reminder_add">Legg til påminnelse</string>
@@ -84,6 +85,14 @@
     <string name="trash_empty_message">Alle notater i papirkurven blir slettet permanent.</string>
     <string name="search_hint">Søk i notater</string>
     <string name="search_empty_placeholder">Ingen notater funnet for dette søket.</string>
+    <string name="sort_title">Sorteringsalternativer</string>
+    <string name="sort_direction">Sorteringsrekkefølge</string>
+    <string name="sort_direction_ascending">Stigende</string>
+    <string name="sort_direction_descending">Fallende</string>
+    <string name="sort_field">Sorter etter</string>
+    <string name="sort_field_created">Dato opprettet</string>
+    <string name="sort_field_modified">Dato endret</string>
+    <string name="sort_field_title">Tittel</string>
     <!-- Edit -->
     <string name="edit_add_title">Opprett notat</string>
     <string name="edit_change_title">Rediger notat</string>
@@ -160,6 +169,7 @@
     <string name="pref_group_behavior">Virkemåte</string>
     <string name="pref_behavior_swipe_action">Sveipehandling</string>
     <string name="pref_behavior_move_checked">Flytt avmerkede elementer til bunnen</string>
+    <string name="pref_group_data">Data</string>
     <string name="pref_data_export">Eksporter data</string>
     <string name="pref_data_export_summary">Eksporter notatdata som JSON</string>
     <string name="pref_data_auto_export">Automatisk dataeksport</string>
@@ -198,4 +208,5 @@
     <string name="date_rel_yesterday">I går, %s</string>
     <string name="date_rel_tomorrow">I morgen, %s</string>
     <!-- format values: date, time -->
+    <string name="date_rel_absolute">%1$s, %2$s</string>
 </resources>

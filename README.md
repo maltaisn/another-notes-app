@@ -47,8 +47,10 @@ Contributions are welcome, especially translations (see [`TRANSLATING.md`][trans
     - German: [@memyselfandi](https://troet.cafe/@memyselfandi)
     - Italian: carallo ([Crowdin](https://crowdin.com/profile/carallo))
     - Norwegian: [@FTno](https://github.com/FTno)
-    - Russian: Zakhar Timoshenko ([Crowdin](https://crowdin.com/profile/ztimms73)
+    - Polish: Sebastian Jasiński ([Crowdin](https://crowdin.com/profile/princenorris))
+    - Russian: Zakhar Timoshenko ([Crowdin](https://crowdin.com/profile/ztimms73))
     - Spanish: [@urizev](https://github.com/urizev)
+    - Turkish: language_is_alive ([Crowdin](https://crowdin.com/profile/language_is_alive))
 
 [changelog]: CHANGELOG.md
 [translating]: TRANSLATING.md

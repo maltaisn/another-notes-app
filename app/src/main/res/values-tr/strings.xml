@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Copyright 2021 Nicolas Maltais
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  -->
+<resources>
+    <!-- Do not translate the app name -->
+    <!-- Can be translated to provided a sensible localized name for a "Notes" app -->
+    <string name="app_name_short">Notlar</string>
+    <string name="action_archive">Arşiv</string>
+    <string name="action_cancel">İptal Et</string>
+    <string name="action_clear">Temizle</string>
+    <string name="action_convert_to_list">Listeye dönüştür</string>
+    <string name="action_convert_to_text">Yazıya dönüştür</string>
+    <string name="action_copy">Kopyasını oluştur</string>
+    <string name="action_delete">Sil</string>
+    <string name="action_delete_checked">İşaretli ögeleri sil</string>
+    <string name="action_delete_forever">Tamamen sil</string>
+    <string name="action_delete_selection">Seçileni sil</string>
+    <string name="action_delete_selection_forever">Seçileni tamamen sil</string>
+    <string name="action_empty_trash">Geri dönüşüm kutusundakileri boşalt</string>
+    <string name="action_empty_trash_short">Boşalt</string>
+    <string name="action_keep">Silme</string>
+    <string name="action_labels">Etiketleri değiştir</string>
+    <string name="action_layout_grid">Izgara olarak görüntüle</string>
+    <string name="action_layout_list">Liste olarak görüntüle</string>
+    <string name="action_manage">Yönet</string>
+    <string name="action_mark_as_done">Tamamlandı olarak işaretle</string>
+    <string name="action_none">Hiçbiri</string>
+    <string name="action_ok">Tamam</string>
+    <string name="action_pin">Sabitle</string>
+    <string name="action_postpone">Ertele</string>
+    <string name="action_reminder_add">Hatırlatıcı ekle</string>
+    <string name="action_reminder_edit">Hatırlatıcıyı düzenle</string>
+    <string name="action_rename">Yeniden Adlandır</string>
+    <string name="action_restore">Geri Yükle</string>
+    <string name="action_search">Ara</string>
+    <string name="action_select_all">Tümünü seç</string>
+    <string name="action_settings">Ayarlar</string>
+    <string name="action_share">Paylaş</string>
+    <string name="action_unarchive">Arşivden çıkar</string>
+    <string name="action_uncheck_all">Tüm ögelerin işaretini kaldır</string>
+    <string name="action_undo">Geri al</string>
+    <string name="action_unpin">Sabitlemeyi kaldır</string>
+    <!-- Shortcuts -->
+    <!-- Note: normal length is ideally 25 chars or less, short is 10 chars or less. -->
+    <string name="shortcut_text_note">Yeni metin notu</string>
+    <string name="shortcut_text_note_short">Yeni metin</string>
+    <string name="shortcut_list_note">Yeni liste notu</string>
+    <string name="shortcut_list_note_short">Yeni liste</string>
+    <string name="shortcut_reminders">Hatırlatıcılar</string>
+    <string name="shortcut_reminders_short">Hatırlatıcılar</string>
+    <!-- Home -->
+    <string name="note_location_active">Notlar</string>
+    <string name="note_location_archived">Arşivlenenler</string>
+    <string name="note_location_deleted">Silinenler</string>
+    <string name="note_location_labels">Etiketler</string>
+    <string name="note_pinned">Sabitlenenler</string>
+    <string name="note_not_pinned">Diğerleri</string>
+    <string name="note_placeholder_active">Hiç notunuz yok. \nNot eklemek için +\'ya basın.</string>
+    <string name="note_placeholder_archived">Arşivlenmiş not yok</string>
+    <string name="note_placeholder_deleted">Geri dönüşüm kutusu boş</string>
+    <plurals name="note_list_item_info">
+        <item quantity="one">+ %d diğer listelenmiş öge</item>
+        <item quantity="other">+ %d diğer listelenmiş ögeler</item>
+    </plurals>
+    <plurals name="note_list_item_info_checked">
+        <item quantity="one">+ %d diğer işaretli öge</item>
+        <item quantity="other">+ %d diğer işaretli ögeler</item>
+    </plurals>
+    <string name="trash_reminder_message">Geri dönüşüm kutusundaki notlar %d gün sonra otomatik olarak silinecek.</string>
+    <string name="trash_delete_message">Bu not kalıcı olarak silinecek.</string>
+    <string name="trash_delete_selected_message">Seçilen notlar kalıcı olarak silinecek.</string>
+    <string name="trash_empty_message">Geri dönüşüm kutusundaki bütün notlar kalıcı olarak silinecek.</string>
+    <string name="search_hint">Notları ara</string>
+    <string name="search_empty_placeholder">Sorgunuz için hiçbir eşleşme bulunamadı.</string>
+    <string name="sort_title">Sıralama seçenekleri</string>
+    <string name="sort_direction">Sıralama Yönü</string>
+    <string name="sort_direction_ascending">Artan sırada</string>
+    <string name="sort_direction_descending">Azalan sırada</string>
+    <string name="sort_field">Şuna göre sırala</string>
+    <string name="sort_field_created">Oluşturulma Tarihi</string>
+    <string name="sort_field_modified">Değiştirilme tarihi</string>
+    <string name="sort_field_title">Başlık</string>
+    <!-- Edit -->
+    <string name="edit_add_title">Not oluştur</string>
+    <string name="edit_change_title">Notu düzenle</string>
+    <string name="edit_hint_note_title">Başlık</string>
+    <string name="edit_hint_note_content">Not</string>
+    <string name="edit_hint_note_item">Liste öğesi</string>
+    <string name="edit_message_blank_note_discarded">Boş not silindi.</string>
+    <plurals name="edit_move_archive_message">
+        <item quantity="one">Not arşivlendi.</item>
+        <item quantity="other">Not geri dönüşüm kutusuna taşındı.</item>
+    </plurals>
+    <plurals name="edit_message_move_delete">
+        <item quantity="one">Not geri dönüşüm kutusuna taşındı.</item>
+        <item quantity="other">Notlar geri dönüşüm kutusuna taşındı.</item>
+    </plurals>
+    <plurals name="edit_message_move_restore">
+        <item quantity="one">Not geri yüklendi.</item>
+        <item quantity="other">Notlar geri yüklendi.</item>
+    </plurals>
+    <plurals name="edit_message_move_unarchive">
+        <item quantity="one">Not arşivden çıkarıldı.</item>
+        <item quantity="other">Notlar arşivden çıkarıldı.</item>
+    </plurals>
+    <string name="edit_in_trash_message">Geri dönüşüm kutusundaki not düzenlenemiyor.</string>
+    <string name="edit_copy_suffix">Kopyala</string>
+    <string name="edit_copy_untitled_name">Başlıksız</string>
+    <string name="edit_convert_keep_checked">İşaretli ögeleri sil?</string>
+    <plurals name="edit_checked_items">
+        <item quantity="one">%d işaretlenmiş öge</item>
+        <item quantity="other">%d işaretlenmiş ögeler</item>
+    </plurals>
+    <!-- Reminder -->
+    <string name="note_reminders" comment="note_reminders&#10;Reminder&#10;&#10;IMPORTANT: reminders can have a recurrence, which is selected using a dialog provided by another library which I maintain. For the app to be fully translated, this library needs to be translated too. The library can be translated at https://crowdin.com/translate/recurpickerlib">Hatırlatıcılar</string>
+    <string name="reminder_upcoming">Yaklaşan</string>
+    <string name="reminder_today">Bugün</string>
+    <string name="reminder_overdue">Geçmiş</string>
+    <string name="reminder_date">Tarih</string>
+    <string name="reminder_time">Saat</string>
+    <string name="reminder_invalid_time">Bu saat geçmiş bir saat.</string>
+    <string name="reminder_notif_channel_title">Hatırlatıcılar</string>
+    <string name="reminder_notif_channel_descr">Not için hatırlatıcı kur</string>
+    <string name="reminder_empty_placeholder">Hatırlatıcı ayarlanmadı</string>
+    <string name="reminder_restricted_battery">Hatırlatıcı alarmları doğru şekilde çalışmayabilir, çünkü
+  uygulama kısıtlanmış pil kullanımında çalışıyor. Bu durum uygulama ayarlarından değiştirilebilir.</string>
+    <!-- Labels -->
+    <string name="label_create">Yeni etiket oluştur</string>
+    <string name="label_edit">Etiket adını düzenle</string>
+    <string name="label_manage">Etiketleri yönet</string>
+    <string name="label_select">Etiketleri Seç</string>
+    <string name="label_already_exists">Bu isimde bir etiket zaten var.</string>
+    <string name="label_hidden_option">Bu etikete sahip notları, aktif ve arşivlenmiş not bölümlerinden gizle</string>
+    <string name="label_empty_placeholder">Etiket oluşturulmadı</string>
+    <string name="label_delete_message">Seçilmiş etiketler silinecek ancak etiketlere bağlı notlar
+ silinmeyecek.</string>
+    <string name="label_notes_empty_placeholder">Bu etikete sahip not bulunmuyor</string>
+    <!-- Settings -->
+    <string name="pref_group_appearance">Görünüş</string>
+    <string name="pref_theme">Uygulama teması</string>
+    <string name="pref_theme_light">Açık</string>
+    <string name="pref_theme_dark">Koyu</string>
+    <string name="pref_theme_system">Sistem ile aynı</string>
+    <string name="pref_strikethrough_checked">Üstü çizili işaretli liste ögeleri</string>
+    <string name="pref_preview_labels">Ön izlemede en fazla etiket sayısı</string>
+    <string name="pref_shown_date">Notlar için gösterilen tarih</string>
+    <string name="pref_shown_date_added">Oluşturma Tarihi</string>
+    <string name="pref_shown_date_modified">Son değiştirilme tarihi</string>
+    <string name="pref_shown_date_none">Tarih gösterme</string>
+    <string name="pref_preview_lines">Ön izlemede en fazla satır sayısı</string>
+    <string name="pref_preview_lines_summary">Her bir düzene ve not çeşidine göre, 
+ notlarda kaç satır ve öge görüneceğini ayarlayın</string>
+    <string name="pref_preview_lines_grid_layout">Izgara düzeni</string>
+    <string name="pref_preview_lines_list_layout">Liste düzeni</string>
+    <string name="pref_preview_lines_text">Metin notu ön izlemesindeki satır sayısı</string>
+    <string name="pref_preview_lines_list">Liste notu ön izlemesindeki öge sayısı</string>
+    <string name="pref_group_behavior">Davranış</string>
+    <string name="pref_behavior_swipe_action">Kaydırma eylemi</string>
+    <string name="pref_behavior_move_checked">İşaretli ögeleri en alta taşı</string>
+    <string name="pref_group_data">Veriler</string>
+    <string name="pref_data_export">Verileri dışa aktar</string>
+    <string name="pref_data_export_summary">Not verilerini JSON olarak dışa aktar</string>
+    <string name="pref_data_auto_export">Verileri otomatik dışa aktarma</string>
+    <string name="pref_data_auto_export_summary">Günde bir kez, uygulama verilerini otomatik olarak dışa aktar.</string>
+    <string name="pref_data_auto_export_date">(En son dışa aktarma %s)</string>
+    <string name="pref_data_import">Verileri geri yükle</string>
+    <string name="pref_data_import_summary">Daha önce dışa aktarılmış JSON verisini, var olan verilerle birleştirerek geri yükle.</string>
+    <string name="pref_data_clear">Tüm verileri sil</string>
+    <string name="pref_data_clear_confirm_message">Bütün not verileri kalıcı olarak silinecek! 
+ Bu işlem geri alınamaz.</string>
+    <string name="pref_data_clear_success_message">Bütün veriler başarıyla temizlendi.</string>
+    <string name="pref_group_about">Hakkında</string>
+    <string name="pref_about_view_source">GitHub\'da görüntüle</string>
+    <string name="pref_about_view_licenses">Açık kaynak lisansları</string>
+    <string name="pref_about_version">Sürüm</string>
+    <!-- Import/export data messages -->
+    <string name="export_success">Verileri dışa aktarma işlemi başarılı!</string>
+    <string name="export_fail">Verileri dışa aktarma işlemi esnasında bir hata oluştu.</string>
+    <string name="import_success">Veri başarıyla içe aktarıldı!</string>
+    <string name="import_future_version">Veri başarıyla içe aktarıldı! Veriler daha yeni bir sürümden oluşturulduğu için 
+ bazı bilgiler kaybolmuş olabilir.</string>
+    <string name="import_bad_input">Bu dosyayı okumaya çalışırken bir hata oluştu.</string>
+    <string name="import_bad_format">Veriler içe aktarılamadı, JSON dosyası geçersiz.</string>
+    <string name="import_bad_data">Bazı alanlar geçersiz değerlere sahip olduğundan veriler içe aktarılamadı. 
+ Daha yeni bir sürümden içe aktarım yapılıyorsa bu olabilir, uygulamayı güncellemeyi deneyiniz.</string>
+    <string name="auto_export_message">Otomatik dışa aktarımı aktifleştirmek için, verinin aktarılacağı 
+ bir dosya seçilmelidir. Uygulamadaki veriler, uygulama açıldığında günde bir kez dışa dışa aktarılacaktır. 
+ Devam etmek için TAMAM\'a basın.</string>
+    <string name="auto_export_fail">Veriler otomatik olarak aktarılırken hata oluştu. Notların dışa aktarılma yerinin halen mevcut  ve ulaşılabilir olduğundan emin olun, sonra yeniden otomatik dışa aktarmayı yapılandırın.</string>
+    <!-- Content description -->
+    <string name="content_descrp_open_drawer">Çizim aracını aç</string>
+    <string name="content_descrp_back">Geri git</string>
+    <string name="content_descrp_label_hidden">Bu etikete sahip notlar gizli</string>
+    <!-- Relative date time format -->
+    <string name="date_rel_today">Bugün, %s</string>
+    <string name="date_rel_yesterday">Dün, %s</string>
+    <string name="date_rel_tomorrow">Yarın, %s</string>
+    <plurals name="date_rel_days_past" comment="date_rel_days_past&#10;used with quantity &gt;= 2, format values: number of days, time&#10;No need to provide translation for quantities &lt; 2">
+        <item quantity="one">%d gün önce, %s</item>
+        <!-- used with quantity >= 2, format values: number of days, time -->
+        <item quantity="other">%d gün önce, %s</item>
+    </plurals>
+    <plurals name="date_rel_days_future" comment="date_rel_days_future&#10;used with quantity &gt;= 2, format values: number of days, time&#10;No need to provide translation for quantities &lt; 2">
+        <item quantity="one">%d gün içinde, %s</item>
+        <!-- used with quantity >= 2, format values: number of days, time -->
+        <item quantity="other">%d gün içinde, %s</item>
+    </plurals>
+    <!-- format values: date, time -->
+    <string name="date_rel_absolute">%1$s, %2$s</string>
+</resources>

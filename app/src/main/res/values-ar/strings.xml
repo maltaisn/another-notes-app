@@ -23,7 +23,7 @@
     <string name="action_clear">محو</string>
     <string name="action_convert_to_list">تحويل الى قائمة</string>
     <string name="action_convert_to_text">تحويل الى نص</string>
-    <string name="action_copy">تكرار</string>
+    <string name="action_copy">إنشاء نسخة</string>
     <string name="action_delete">حذف</string>
     <string name="action_delete_checked">حذف العناصر المؤشَرة</string>
     <string name="action_delete_forever">الحذف نهائيًا</string>
@@ -71,6 +71,22 @@
     <string name="note_placeholder_active">ليس لديك أي ملاحظة.\nانقر على + لإضافة واحدة.</string>
     <string name="note_placeholder_archived">لا توجد ملاحظات مؤرشفة</string>
     <string name="note_placeholder_deleted">سلة المهملات فارغة</string>
+    <plurals name="note_list_item_info">
+        <item quantity="zero">لا شيء</item>
+        <item quantity="one">+ %d من العناصر الأخرى للقائمة</item>
+        <item quantity="two">+ %d من العناصر الأخرى للقائمة</item>
+        <item quantity="few">+ %d من العناصر الأخرى للقائمة</item>
+        <item quantity="many">+ %d من العناصر الأخرى للقائمة</item>
+        <item quantity="other">+ %d من العناصر الأخرى للقائمة</item>
+    </plurals>
+    <plurals name="note_list_item_info_checked">
+        <item quantity="zero">لا شيء</item>
+        <item quantity="one">+ عنصر واحد مؤشَر</item>
+        <item quantity="two">+ عنصرين مؤشَرين</item>
+        <item quantity="few">+ %d عناصر مؤشَرة</item>
+        <item quantity="many">+ %d عنصر مؤشَر</item>
+        <item quantity="other">+ %d عنصر مؤشَر</item>
+    </plurals>
     <string name="trash_reminder_message">تُحذف الملاحظات من المهملات تلقائيًا بعد %d أيام.</string>
     <string name="trash_delete_message">سيتم حذف الملاحظة نهائيًا.</string>
     <string name="trash_delete_selected_message">سيتم حذف الملاحظات المحددة نهائيًا.</string>
@@ -92,10 +108,50 @@
     <string name="edit_hint_note_content">ملاحظة</string>
     <string name="edit_hint_note_item">عنصر قائمة</string>
     <string name="edit_message_blank_note_discarded">تم تجاهل ملاحظة فارغة.</string>
+    <plurals name="edit_move_archive_message">
+        <item quantity="zero">لا شيء.</item>
+        <item quantity="one">تمت أرشفة الملاحظة.</item>
+        <item quantity="two">تمت أرشفة الملاحظتين.</item>
+        <item quantity="few">تمت أرشفة الملاحظات.</item>
+        <item quantity="many">تمت أرشفة الملاحظات.</item>
+        <item quantity="other">تمت أرشفة الملاحظات.</item>
+    </plurals>
+    <plurals name="edit_message_move_delete">
+        <item quantity="zero">لا شيء.</item>
+        <item quantity="one">تم نقل الملاحظة للمهملات.</item>
+        <item quantity="two">تم نقل الملاحظتين للمهملات.</item>
+        <item quantity="few">تم نقل الملاحظات للمهملات.</item>
+        <item quantity="many">تم نقل الملاحظات للمهملات.</item>
+        <item quantity="other">تم نقل الملاحظات للمهملات.</item>
+    </plurals>
+    <plurals name="edit_message_move_restore">
+        <item quantity="zero">لا شيء.</item>
+        <item quantity="one">تمت استعادة الملاحظة.</item>
+        <item quantity="two">تمت استعادة الملاحظتين.</item>
+        <item quantity="few">تمت استعادة الملاحظات.</item>
+        <item quantity="many">تمت استعادة الملاحظات.</item>
+        <item quantity="other">تمت استعادة الملاحظات.</item>
+    </plurals>
+    <plurals name="edit_message_move_unarchive">
+        <item quantity="zero">لا شيء.</item>
+        <item quantity="one">تمت إعادة الملاحظة من المؤرشفة.</item>
+        <item quantity="two">تمت إعادة الملاحظتين من المؤرشفة.</item>
+        <item quantity="few">تمت إعادة الملاحظات من المؤرشفة.</item>
+        <item quantity="many">تمت إعادة الملاحظات من المؤرشفة.</item>
+        <item quantity="other">تمت إعادة الملاحظات من المؤرشفة.</item>
+    </plurals>
     <string name="edit_in_trash_message">لا يمكن التعديل في سلة المهملات.</string>
-    <string name="edit_copy_suffix">مكررة</string>
+    <string name="edit_copy_suffix">منسوخة</string>
     <string name="edit_copy_untitled_name">بلا عنوان</string>
     <string name="edit_convert_keep_checked">حذف العناصر المؤشَرة؟</string>
+    <plurals name="edit_checked_items">
+        <item quantity="zero">لا شيء</item>
+        <item quantity="one">عنصر واحد مؤشَر</item>
+        <item quantity="two">عنصران مؤشَران</item>
+        <item quantity="few">%d عناصر مؤشَرة</item>
+        <item quantity="many">%d عنصر مؤشَر</item>
+        <item quantity="other">%d عنصر مؤشَر</item>
+    </plurals>
     <!-- Reminder -->
     <string name="note_reminders" comment="note_reminders&#10;Reminder&#10;&#10;IMPORTANT: reminders can have a recurrence, which is selected using a dialog provided by another library which I maintain. For the app to be fully translated, this library needs to be translated too. The library can be translated at https://crowdin.com/translate/recurpickerlib">التذكيرات</string>
     <string name="reminder_upcoming">القادمة</string>
@@ -181,6 +237,24 @@
     <string name="date_rel_today">اليوم، %s</string>
     <string name="date_rel_yesterday">أمس، %s</string>
     <string name="date_rel_tomorrow">غدًا، %s</string>
+    <plurals name="date_rel_days_past" comment="date_rel_days_past&#10;used with quantity &gt;= 2, format values: number of days, time&#10;No need to provide translation for quantities &lt; 2">
+        <item quantity="zero">لا شيء</item>
+        <item quantity="one">أمس، %s</item>
+        <item quantity="two">منذ يومين، %s</item>
+        <item quantity="few">منذ %d أيام، %s</item>
+        <item quantity="many">منذ %d يوم، %s</item>
+        <!-- used with quantity >= 2, format values: number of days, time -->
+        <item quantity="other">منذ %d يوم، %s</item>
+    </plurals>
+    <plurals name="date_rel_days_future" comment="date_rel_days_future&#10;used with quantity &gt;= 2, format values: number of days, time&#10;No need to provide translation for quantities &lt; 2">
+        <item quantity="zero">لا شيء</item>
+        <item quantity="one">غدًا، %s</item>
+        <item quantity="two">بعد يومين، %s</item>
+        <item quantity="few">بعد %d أيام، %s</item>
+        <item quantity="many">بعد %d يوم، %s</item>
+        <!-- used with quantity >= 2, format values: number of days, time -->
+        <item quantity="other">بعد %d يوم، %s</item>
+    </plurals>
     <!-- format values: date, time -->
     <string name="date_rel_absolute">%1$s، %2$s</string>
 </resources>

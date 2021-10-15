@@ -2,7 +2,9 @@
 - Added new translations:
     - Arabic: @afmbsr
     - Italian: carallo
+    - Polish:
     - Russian: Zakhar Timoshenko
+    - Turkish: language_is_alive
 - Improved import merge: consider last modified date, merge labels, do not merge if reminders differ (#49).
 - More note text is now shown in reminder notification.
 - Select newly created label when created from main screen.

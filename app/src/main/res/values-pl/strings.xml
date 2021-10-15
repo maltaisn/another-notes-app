@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Copyright 2021 Nicolas Maltais
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  -->
+<resources>
+    <!-- Do not translate the app name -->
+    <!-- Can be translated to provided a sensible localized name for a "Notes" app -->
+    <string name="app_name_short">Notatki</string>
+    <string name="action_archive">Archiwizuj</string>
+    <string name="action_cancel">Anuluj</string>
+    <string name="action_clear">Wyczyść</string>
+    <string name="action_convert_to_list">Zamień na listę</string>
+    <string name="action_convert_to_text">Zamień na tekst</string>
+    <string name="action_copy">Utwórz kopię</string>
+    <string name="action_delete">Usuń</string>
+    <string name="action_delete_checked">Usuń zaznaczone elementy</string>
+    <string name="action_delete_forever">Usuń na zawsze</string>
+    <string name="action_delete_selection">Usuń zaznaczone</string>
+    <string name="action_delete_selection_forever">Usuń zaznaczone na zawsze</string>
+    <string name="action_empty_trash">Opróżnij kosz</string>
+    <string name="action_empty_trash_short">Opróżnij</string>
+    <string name="action_keep">Zachowaj</string>
+    <string name="action_labels">Zmień etykiety</string>
+    <string name="action_layout_grid">Wyświetl jako galerię</string>
+    <string name="action_layout_list">Wyświetl jako listę</string>
+    <string name="action_manage">Zarządzaj</string>
+    <string name="action_mark_as_done">Oznacz jako wykonane</string>
+    <string name="action_none">Nic</string>
+    <string name="action_ok">OK</string>
+    <string name="action_pin">Przypnij</string>
+    <string name="action_postpone">Odłóż</string>
+    <string name="action_reminder_add">Dodaj przypomnienie</string>
+    <string name="action_reminder_edit">Edytuj przypomnienie</string>
+    <string name="action_rename">Zmień nazwę</string>
+    <string name="action_restore">Przywróć</string>
+    <string name="action_search">Szukaj</string>
+    <string name="action_select_all">Wybierz wszystko</string>
+    <string name="action_settings">Ustawienia</string>
+    <string name="action_share">Udostępnij</string>
+    <string name="action_unarchive">Przywróć</string>
+    <string name="action_uncheck_all">Odznacz wszystkie elementy</string>
+    <string name="action_undo">Cofnij</string>
+    <string name="action_unpin">Odepnij</string>
+    <!-- Shortcuts -->
+    <!-- Note: normal length is ideally 25 chars or less, short is 10 chars or less. -->
+    <string name="shortcut_text_note">Nowa notatka tekstowa</string>
+    <string name="shortcut_text_note_short">Tekst</string>
+    <string name="shortcut_list_note">Nowa notatka z listą</string>
+    <string name="shortcut_list_note_short">Lista</string>
+    <string name="shortcut_reminders">Przypomnienia</string>
+    <string name="shortcut_reminders_short">Przypomn.</string>
+    <!-- Home -->
+    <string name="note_location_active">Notatki</string>
+    <string name="note_location_archived">Zarchiwizowane</string>
+    <string name="note_location_deleted">Usunięte</string>
+    <string name="note_location_labels">Etykiety</string>
+    <string name="note_pinned">Przypięte</string>
+    <string name="note_not_pinned">Pozostałe</string>
+    <string name="note_placeholder_active">Nie posiadasz żadnych notatek.\nNaciśnij +, aby dodać.</string>
+    <string name="note_placeholder_archived">Brak zarchiwizowanych notatek</string>
+    <string name="note_placeholder_deleted">Kosz jest pusty</string>
+    <plurals name="note_list_item_info">
+        <item quantity="one">+ %d inny element listy</item>
+        <item quantity="few">+ %d inne elementy listy</item>
+        <item quantity="many">+ %d innych elementów listy</item>
+        <item quantity="other">+ %d innych elementów listy</item>
+    </plurals>
+    <plurals name="note_list_item_info_checked">
+        <item quantity="one">+ %d zaznaczony element</item>
+        <item quantity="few">+ %d zaznaczone elementy</item>
+        <item quantity="many">+ %d zaznaczonych elementów</item>
+        <item quantity="other">+ %d zaznaczonych elementów</item>
+    </plurals>
+    <string name="trash_reminder_message">Notatki w koszu są automatycznie usuwane po upływie %d dni.</string>
+    <string name="trash_delete_message">Ta notatka zostanie usunięta na zawsze.</string>
+    <string name="trash_delete_selected_message">Wybrane notatki zostaną usunięte na zawsze.</string>
+    <string name="trash_empty_message">Wszystkie notatki w koszu zostaną usunięte na zawsze.</string>
+    <string name="search_hint">Szukaj notatek</string>
+    <string name="search_empty_placeholder">Nie znaleziono pasujących notatek.</string>
+    <string name="sort_title">Opcje sortowania</string>
+    <string name="sort_direction">Kierunek sortowania</string>
+    <string name="sort_direction_ascending">Rosnąco</string>
+    <string name="sort_direction_descending">Malejąco</string>
+    <string name="sort_field">Sortuj według</string>
+    <string name="sort_field_created">Data utworzenia</string>
+    <string name="sort_field_modified">Data modyfikacji</string>
+    <string name="sort_field_title">Tytuł</string>
+    <!-- Edit -->
+    <string name="edit_add_title">Utwórz notatkę</string>
+    <string name="edit_change_title">Edytuj notatkę</string>
+    <string name="edit_hint_note_title">Tytuł</string>
+    <string name="edit_hint_note_content">Notatka</string>
+    <string name="edit_hint_note_item">Punkt z listy</string>
+    <string name="edit_message_blank_note_discarded">Pusta notatka odrzucona.</string>
+    <plurals name="edit_move_archive_message">
+        <item quantity="one">Notatka zarchiwizowana.</item>
+        <item quantity="few">Notatki zarchiwizowane.</item>
+        <item quantity="many">Notatki zarchiwizowane.</item>
+        <item quantity="other">Notatki zarchiwizowane.</item>
+    </plurals>
+    <plurals name="edit_message_move_delete">
+        <item quantity="one">Notatka przeniesiona do kosza.</item>
+        <item quantity="few">Notatki przeniesione do kosza.</item>
+        <item quantity="many">Notatki przeniesione do kosza.</item>
+        <item quantity="other">Notatki przeniesione do kosza.</item>
+    </plurals>
+    <plurals name="edit_message_move_restore">
+        <item quantity="one">Notatka przywrócona.</item>
+        <item quantity="few">Notatki przywrócone.</item>
+        <item quantity="many">Notatki przywrócone.</item>
+        <item quantity="other">Notatki przywrócone.</item>
+    </plurals>
+    <plurals name="edit_message_move_unarchive">
+        <item quantity="one">Anulowano archiwizację notatki.</item>
+        <item quantity="few">Anulowano archiwizację notatek.</item>
+        <item quantity="many">Anulowano archiwizację notatek.</item>
+        <item quantity="other">Anulowano archiwizację notatek.</item>
+    </plurals>
+    <string name="edit_in_trash_message">Nie możesz edytować notatki z kosza.</string>
+    <string name="edit_copy_suffix">Kopiuj</string>
+    <string name="edit_copy_untitled_name">Bez tytułu</string>
+    <string name="edit_convert_keep_checked">Usunąć zaznaczone elementy?</string>
+    <plurals name="edit_checked_items">
+        <item quantity="one">%d zaznaczony element</item>
+        <item quantity="few">%d zaznaczone elementy</item>
+        <item quantity="many">%d zaznaczonych elementów</item>
+        <item quantity="other">%d zaznaczonych elementów</item>
+    </plurals>
+    <!-- Reminder -->
+    <string name="note_reminders" comment="note_reminders&#10;Reminder&#10;&#10;IMPORTANT: reminders can have a recurrence, which is selected using a dialog provided by another library which I maintain. For the app to be fully translated, this library needs to be translated too. The library can be translated at https://crowdin.com/translate/recurpickerlib">Przypomnienia</string>
+    <string name="reminder_upcoming">Nadchodzące</string>
+    <string name="reminder_today">Dzisiaj</string>
+    <string name="reminder_overdue">Zaległe</string>
+    <string name="reminder_date">Data</string>
+    <string name="reminder_time">Czas</string>
+    <string name="reminder_invalid_time">Ten czas już minął.</string>
+    <string name="reminder_notif_channel_title">Przypomnienia</string>
+    <string name="reminder_notif_channel_descr">Przypomnienia ustawione dla notatek</string>
+    <string name="reminder_empty_placeholder">Brak ustawionych przypomnień</string>
+    <string name="reminder_restricted_battery">Alarmy przypominające mogą nie działać, jeśli
+    aplikacja ma ograniczone użycie baterii. Może to zostać zmienione w ustawieniach aplikacji.</string>
+    <!-- Labels -->
+    <string name="label_create">Utwórz nową etykietę</string>
+    <string name="label_edit">Edytuj nazwę etykiety</string>
+    <string name="label_manage">Zarządzaj etykietami</string>
+    <string name="label_select">Wybierz etykiety</string>
+    <string name="label_already_exists">Etykieta o tej nazwie już istnieje.</string>
+    <string name="label_hidden_option">Ukryj notatki z tą etykietą z sekcji aktywnych i zarchiwizowanych notatek</string>
+    <string name="label_empty_placeholder">Brak utworzonych etykiet</string>
+    <string name="label_delete_message">Zaznaczone notatki zostaną usunięte, ale notatki powiązane
+    z nimi zostaną zachowane.</string>
+    <string name="label_notes_empty_placeholder">Brak notatek używających tej etykiety</string>
+    <!-- Settings -->
+    <string name="pref_group_appearance">Wygląd</string>
+    <string name="pref_theme">Motyw aplikacji</string>
+    <string name="pref_theme_light">Jasny</string>
+    <string name="pref_theme_dark">Ciemny</string>
+    <string name="pref_theme_system">Zgodnie z systemem</string>
+    <string name="pref_strikethrough_checked">Przekreślenie wykonanych elementów z listy</string>
+    <string name="pref_preview_labels">Maksymalna ilość etykiet w podglądzie</string>
+    <string name="pref_shown_date">Wyświetlanie daty notatek</string>
+    <string name="pref_shown_date_added">Data utworzenia</string>
+    <string name="pref_shown_date_modified">Data ostatniej modyfikacji</string>
+    <string name="pref_shown_date_none">Nie pokazuj</string>
+    <string name="pref_preview_lines">Maksymalna ilość wierszy w podglądach</string>
+    <string name="pref_preview_lines_summary">Wskaż, jak wiele wierszy oraz elementów ma być wyświetlane w notatkach
+        dla każdego typu układu i rodzaju notatki</string>
+    <string name="pref_preview_lines_grid_layout">Widok galerii</string>
+    <string name="pref_preview_lines_list_layout">Widok listy</string>
+    <string name="pref_preview_lines_text">Wiersze w podglądzie notatki tekstowej</string>
+    <string name="pref_preview_lines_list">Elementy w podglądzie notatki tekstowej</string>
+    <string name="pref_group_behavior">Zachowanie</string>
+    <string name="pref_behavior_swipe_action">Akcja przesunięcia</string>
+    <string name="pref_behavior_move_checked">Przenieś zaznaczone elementy na koniec</string>
+    <string name="pref_group_data">Dane</string>
+    <string name="pref_data_export">Eksportuj dane</string>
+    <string name="pref_data_export_summary">Eksportuj dane notatek jak plik JSON</string>
+    <string name="pref_data_auto_export">Automatyczny eksport danych</string>
+    <string name="pref_data_auto_export_summary">Automatyczne eksportuj dane aplikacji do pliku każdego dnia.</string>
+    <string name="pref_data_auto_export_date">(Najnowszy eksport %s)</string>
+    <string name="pref_data_import">Importuj dane</string>
+    <string name="pref_data_import_summary">Importuj dane uprzednio wyeksportowane jako plik JSON scalając je z istniejącymi danymi.</string>
+    <string name="pref_data_clear">Wyczyść wszystkie dane</string>
+    <string name="pref_data_clear_confirm_message">Wszystkie dane notatek zostaną usunięte na zawsze!
+        Tej operacji nie można cofnąć.</string>
+    <string name="pref_data_clear_success_message">Wszystkie dane zostały pomyślnie wyczyszczone.</string>
+    <string name="pref_group_about">O aplikacji</string>
+    <string name="pref_about_view_source">Wyświetl na GitHub</string>
+    <string name="pref_about_view_licenses">Licencje Open Source</string>
+    <string name="pref_about_version">Wersja</string>
+    <!-- Import/export data messages -->
+    <string name="export_success">Dane wyeksportowane pomyślnie!</string>
+    <string name="export_fail">Wystąpił błąd podczas eksportowania danych.</string>
+    <string name="import_success">Dane zaimportowane pomyślnie!</string>
+    <string name="import_future_version">Dane zaimportowane pomyślnie! Pamiętaj, że niektóre informacje mogły
+        zostać utracone, ponieważ dane pochodzą z nowszej wersji.</string>
+    <string name="import_bad_input">Wystąpił błąd podczas próby odczytania tego pliku.</string>
+    <string name="import_bad_format">Błąd importowania danych. Dane JSON są nieprawidłowe.</string>
+    <string name="import_bad_data">Błąd importowania danych. Niektóre pola zawierają nieprawidłowe wartości.
+        Może się tak zdarzyć podczas importowania danych z nowszej wersji. Spróbuj zaktualizować aplikację.</string>
+    <string name="auto_export_message">Aby włączyć automatyczne eksportowanie, należy wybrać plik do
+        zapisania danych. Dane aplikacji będą eksportowane raz dziennie, podczas używania aplikacji.
+        Naciśnij OK, aby kontynuować.</string>
+    <string name="auto_export_fail">Błąd automatycznego eksportowania danych. Upewnij się, że lokalizacja eksportowania
+        nadal istnieje i jest dostępna, a następnie skonfiguruj automatyczne eksportowanie ponownie.</string>
+    <!-- Content description -->
+    <string name="content_descrp_open_drawer">Otwórz panel</string>
+    <string name="content_descrp_back">Wstecz</string>
+    <string name="content_descrp_label_hidden">Notatki z tą etykietą są ukryte</string>
+    <!-- Relative date time format -->
+    <string name="date_rel_today">Dzisiaj, %s</string>
+    <string name="date_rel_yesterday">Wczoraj, %s</string>
+    <string name="date_rel_tomorrow">Jutro, %s</string>
+    <plurals name="date_rel_days_past" comment="date_rel_days_past&#10;used with quantity &gt;= 2, format values: number of days, time&#10;No need to provide translation for quantities &lt; 2">
+        <item quantity="one">Wczoraj, %s</item>
+        <item quantity="few">%d dni temu, %s</item>
+        <item quantity="many">%d dni temu, %s</item>
+        <!-- used with quantity >= 2, format values: number of days, time -->
+        <item quantity="other">%d dni temu, %s</item>
+    </plurals>
+    <plurals name="date_rel_days_future" comment="date_rel_days_future&#10;used with quantity &gt;= 2, format values: number of days, time&#10;No need to provide translation for quantities &lt; 2">
+        <item quantity="one">Jutro, %s</item>
+        <item quantity="few">Za %d dni, %s</item>
+        <item quantity="many">Za %d dni, %s</item>
+        <!-- used with quantity >= 2, format values: number of days, time -->
+        <item quantity="other">Za %d dni, %s</item>
+    </plurals>
+    <!-- format values: date, time -->
+    <string name="date_rel_absolute">%1$s, %2$s</string>
+</resources>
