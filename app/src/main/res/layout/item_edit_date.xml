@@ -31,4 +31,7 @@
     android:textAppearance="?textAppearanceCaption"
     android:textColor="@color/material_on_surface_emphasis_medium"
     tools:text="Thu. March 30, 2021"
+    android:clickable="true"
+    android:focusable="true"
     />
+<!-- clickable and focusable is set so that click on item won't focus text note content as would a background click. -->

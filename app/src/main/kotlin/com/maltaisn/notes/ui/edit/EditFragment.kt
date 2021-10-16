@@ -85,6 +85,7 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener, ConfirmDialog.
         return binding.root
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val context = requireContext()
 
@@ -136,6 +137,15 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener, ConfirmDialog.
                     false
                 }
             }
+        }
+        rcv.setOnTouchListener { v, event ->
+            // Dispatch touch events to underlaying background view
+            binding.viewBackground.dispatchTouchEvent(event)
+            false
+        }
+        binding.viewBackground.setOnClickListener {
+            // On background click, focus note content if text note.
+            viewModel.focusNoteContent()
         }
 
         setupViewModelObservers(adapter)

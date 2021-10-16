@@ -498,6 +498,14 @@ class EditViewModel @AssistedInject constructor(
         moveCheckedItemsToBottom()
     }
 
+    fun focusNoteContent() {
+        if (note.type == NoteType.TEXT) {
+            val contentItemPos = findItemPos<EditContentItem>()
+            val contentItem = listItems[contentItemPos] as EditContentItem
+            focusItemAt(contentItemPos, contentItem.content.text.length, true)
+        }
+    }
+
     private fun changeNoteStatusAndExit(newStatus: NoteStatus) {
         updateNote()
 
