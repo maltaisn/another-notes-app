@@ -239,6 +239,21 @@ class LabelViewModel @AssistedInject constructor(
         }
     }
 
+    fun selectNewLabel(label: Label) {
+        if (!managingLabels) {
+            // If selecting labels and a new label was just added select it automatically.
+            // The user most likely added the label with the intention of using it.
+            val itemPos = listItems.indexOfFirst { it.id == label.id }
+            if (itemPos != -1) {
+                // Note that when this is called the list may or may not have been updated with the new label.
+                toggleItemChecked(itemPos)
+            } else {
+                // List wasn't updated yet, select it then.
+                selectedLabelIds += label.id
+            }
+        }
+    }
+
     override val shouldHighlightCheckedItems: Boolean
         // When managing labels, items are highlighted if checked.
         // When selecting labels for a note, only the left icon is changed.
@@ -246,7 +261,7 @@ class LabelViewModel @AssistedInject constructor(
 
     override fun onLabelItemClicked(item: LabelListItem, pos: Int) {
         if (!managingLabels || selectedLabels.isNotEmpty()) {
-            toggleItemChecked(item, pos)
+            toggleItemChecked(pos)
         } else {
             _showRenameDialogEvent.send(item.label.id)
         }
@@ -254,18 +269,18 @@ class LabelViewModel @AssistedInject constructor(
 
     override fun onLabelItemLongClicked(item: LabelListItem, pos: Int) {
         if (managingLabels) {
-            toggleItemChecked(item, pos)
+            toggleItemChecked(pos)
         }
     }
 
     override fun onLabelItemIconClicked(item: LabelListItem, pos: Int) {
-        toggleItemChecked(item, pos)
+        toggleItemChecked(pos)
     }
 
-    private fun toggleItemChecked(item: LabelListItem, pos: Int) {
+    private fun toggleItemChecked(pos: Int) {
         // Set the item as checked and update the list.
         changeListItems { items ->
-            items[pos] = item.copy(checked = !item.checked)
+            items[pos] = items[pos].copy(checked = !items[pos].checked)
         }
     }
 

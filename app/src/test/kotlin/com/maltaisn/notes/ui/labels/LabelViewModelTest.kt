@@ -220,5 +220,25 @@ class LabelViewModelTest {
         assertLiveDataEventSent(viewModel.exitEvent)
     }
 
+    @Test
+    fun `should select newly created label (case 1)`() = mainCoroutineRule.runBlockingTest {
+        // Case 1: list gets updated before call to select it
+        viewModel.start(listOf(1))
+        val label = Label(10, "new label")
+        labelsRepo.addLabel(label)
+        viewModel.selectNewLabel(label)
+        assertTrue(getLabelItemAt(5).checked)
+    }
+
+    @Test
+    fun `should select newly created label (case 2)`() = mainCoroutineRule.runBlockingTest {
+        // Case 2: list gets updated after call to select it
+        viewModel.start(listOf(1))
+        val label = Label(10, "new label")
+        viewModel.selectNewLabel(label)
+        labelsRepo.addLabel(label)
+        assertTrue(getLabelItemAt(5).checked)
+    }
+
     private fun getLabelItemAt(pos: Int) = viewModel.labelItems.value!![pos]
 }

@@ -55,9 +55,15 @@ class SharedViewModel @Inject constructor(
     val reminderChangeEvent: LiveData<Event<Reminder?>>
         get() = _reminderChangeEvent
 
-    private val _labelAddEvent = MutableLiveData<Event<Label>>()
-    val labelAddEvent: LiveData<Event<Label>>
-        get() = _labelAddEvent
+    // This is a bit wrong... events can only be observed once, but the same event
+    // has to be observed twice here (label add event). Thus we need two LiveDatas... or a refactor.
+    private val _labelAddEventNav = MutableLiveData<Event<Label>>()
+    val labelAddEventNav: LiveData<Event<Label>>
+        get() = _labelAddEventNav
+
+    private val _labelAddEventSelect = MutableLiveData<Event<Label>>()
+    val labelAddEventSelect: LiveData<Event<Label>>
+        get() = _labelAddEventSelect
 
     private val _sortChangeEvent = MutableLiveData<Event<SortSettings>>()
     val sortChangeEvent: LiveData<Event<SortSettings>>
@@ -100,7 +106,8 @@ class SharedViewModel @Inject constructor(
     }
 
     fun onLabelAdd(label: Label) {
-        _labelAddEvent.send(label)
+        _labelAddEventNav.send(label)
+        _labelAddEventSelect.send(label)
     }
 
     fun changeSortSettings(settings: SortSettings) {

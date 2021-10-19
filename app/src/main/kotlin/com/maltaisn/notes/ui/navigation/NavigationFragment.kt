@@ -108,7 +108,7 @@ class NavigationFragment : Fragment() {
             // Somewhat ugly: post is used to delay sharedViewModel creation since this fragment
             // is created alongside the NavigationFragment and thus the navigation controller
             // doesn't (fully?) exist yet.
-            sharedViewModel.labelAddEvent.observeEvent(viewLifecycleOwner) { label ->
+            sharedViewModel.labelAddEventNav.observeEvent(viewLifecycleOwner) { label ->
                 // If user is on home fragment, select the newly created label.
                 if (findNavController().previousBackStackEntry?.destination?.id == R.id.fragment_home) {
                     viewModel.selectLabel(label)

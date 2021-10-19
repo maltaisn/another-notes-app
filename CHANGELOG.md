@@ -2,12 +2,13 @@
 - Added new translations:
     - Arabic: @afmbsr
     - Italian: carallo
-    - Polish:
+    - Polish: Sebastian Jasiński
     - Russian: Zakhar Timoshenko
     - Turkish: language_is_alive
 - Improved import merge: consider last modified date, merge labels, do not merge if reminders differ (#49).
 - More note text is now shown in reminder notification.
 - Select newly created label when created from main screen.
+- Select newly created label when setting labels on note.
 - Focus text note content if background is clicked.
 - Fixed export not completely overwriting JSON file if new content smaller.
 - Fixed crash during search if maximum lines shown in preview is 1 or 2 (#47).

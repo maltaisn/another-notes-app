@@ -33,13 +33,16 @@ import com.maltaisn.notes.App
 import com.maltaisn.notes.navigateSafe
 import com.maltaisn.notes.sync.R
 import com.maltaisn.notes.sync.databinding.FragmentLabelBinding
+import com.maltaisn.notes.ui.SharedViewModel
 import com.maltaisn.notes.ui.common.ConfirmDialog
 import com.maltaisn.notes.ui.labels.adapter.LabelAdapter
+import com.maltaisn.notes.ui.navGraphViewModel
 import com.maltaisn.notes.ui.observeEvent
 import com.maltaisn.notes.ui.utils.startSafeActionMode
 import com.maltaisn.notes.ui.viewModel
 import java.text.NumberFormat
 import javax.inject.Inject
+import javax.inject.Provider
 
 /**
  * This fragment has two purposes:
@@ -55,6 +58,10 @@ class LabelFragment : DialogFragment(), Toolbar.OnMenuItemClickListener,
     @Inject
     lateinit var viewModelFactory: LabelViewModel.Factory
     val viewModel by viewModel { viewModelFactory.create(it) }
+
+    @Inject
+    lateinit var sharedViewModelProvider: Provider<SharedViewModel>
+    private val sharedViewModel by navGraphViewModel(R.id.nav_graph_main) { sharedViewModelProvider.get() }
 
     private val args: LabelFragmentArgs by navArgs()
 
@@ -141,6 +148,10 @@ class LabelFragment : DialogFragment(), Toolbar.OnMenuItemClickListener,
 
         viewModel.exitEvent.observeEvent(viewLifecycleOwner) {
             findNavController().popBackStack()
+        }
+
+        sharedViewModel.labelAddEventSelect.observeEvent(viewLifecycleOwner) { label ->
+            viewModel.selectNewLabel(label)
         }
     }
 
