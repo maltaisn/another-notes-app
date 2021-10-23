@@ -32,8 +32,9 @@ import com.maltaisn.notes.ui.note.NoteViewModel
 import com.maltaisn.notes.ui.note.PlaceholderData
 import com.maltaisn.notes.ui.note.adapter.HeaderItem
 import com.maltaisn.notes.ui.note.adapter.NoteAdapter
-import com.squareup.inject.assisted.Assisted
-import com.squareup.inject.assisted.AssistedInject
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import debugCheck
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
@@ -115,7 +116,7 @@ class SearchViewModel @AssistedInject constructor(
     override fun updatePlaceholder() = PlaceholderData(
         R.drawable.ic_search, R.string.search_empty_placeholder)
 
-    @AssistedInject.Factory
+    @AssistedFactory
     interface Factory : AssistedSavedStateViewModelFactory<SearchViewModel> {
         override fun create(savedStateHandle: SavedStateHandle): SearchViewModel
     }

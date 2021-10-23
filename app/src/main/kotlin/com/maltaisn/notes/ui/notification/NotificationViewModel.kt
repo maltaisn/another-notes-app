@@ -27,8 +27,9 @@ import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.ui.AssistedSavedStateViewModelFactory
 import com.maltaisn.notes.ui.Event
 import com.maltaisn.notes.ui.send
-import com.squareup.inject.assisted.Assisted
-import com.squareup.inject.assisted.AssistedInject
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.Calendar
@@ -133,7 +134,7 @@ class NotificationViewModel @AssistedInject constructor(
         _exitEvent.send()
     }
 
-    @AssistedInject.Factory
+    @AssistedFactory
     interface Factory : AssistedSavedStateViewModelFactory<NotificationViewModel> {
         override fun create(savedStateHandle: SavedStateHandle): NotificationViewModel
     }

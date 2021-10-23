@@ -26,8 +26,9 @@ import com.maltaisn.notes.model.entity.Label
 import com.maltaisn.notes.ui.AssistedSavedStateViewModelFactory
 import com.maltaisn.notes.ui.Event
 import com.maltaisn.notes.ui.send
-import com.squareup.inject.assisted.Assisted
-import com.squareup.inject.assisted.AssistedInject
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import kotlinx.coroutines.launch
 
 class LabelEditViewModel @AssistedInject constructor(
@@ -130,7 +131,7 @@ class LabelEditViewModel @AssistedInject constructor(
         BLANK
     }
 
-    @AssistedInject.Factory
+    @AssistedFactory
     interface Factory : AssistedSavedStateViewModelFactory<LabelEditViewModel> {
         override fun create(savedStateHandle: SavedStateHandle): LabelEditViewModel
     }

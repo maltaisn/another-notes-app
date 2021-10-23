@@ -37,8 +37,9 @@ import com.maltaisn.notes.ui.navigation.adapter.NavigationHeaderItem
 import com.maltaisn.notes.ui.navigation.adapter.NavigationItem
 import com.maltaisn.notes.ui.navigation.adapter.NavigationTopItem
 import com.maltaisn.notes.ui.send
-import com.squareup.inject.assisted.Assisted
-import com.squareup.inject.assisted.AssistedInject
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
@@ -88,9 +89,11 @@ class NavigationViewModel @AssistedInject constructor(
 
     fun selectLabel(label: Label) {
         checkedId = label.id
-        val pos = listItems.indexOfFirst { it is NavigationDestinationItem
-                && it.destination is HomeDestination.Labels
-                && it.destination.label == label }
+        val pos = listItems.indexOfFirst {
+            it is NavigationDestinationItem
+                    && it.destination is HomeDestination.Labels
+                    && it.destination.label == label
+        }
         if (pos != -1) {
             selectNavigationItem(listItems[pos] as NavigationDestinationItem, pos)
         } // otherwise list wasn't updated yet for new label, select on update.
@@ -229,7 +232,7 @@ class NavigationViewModel @AssistedInject constructor(
         listItems = newList
     }
 
-    @AssistedInject.Factory
+    @AssistedFactory
     interface Factory : AssistedSavedStateViewModelFactory<NavigationViewModel> {
         override fun create(savedStateHandle: SavedStateHandle): NavigationViewModel
     }
@@ -249,5 +252,4 @@ class NavigationViewModel @AssistedInject constructor(
         private const val KEY_HOME_DESTINATION = "destination"
         private const val KEY_CHECKED_ID = "checkedId"
     }
-
 }

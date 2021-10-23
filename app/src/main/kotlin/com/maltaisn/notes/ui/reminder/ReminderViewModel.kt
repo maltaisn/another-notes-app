@@ -29,8 +29,9 @@ import com.maltaisn.notes.ui.Event
 import com.maltaisn.notes.ui.send
 import com.maltaisn.recurpicker.Recurrence
 import com.maltaisn.recurpicker.RecurrenceFinder
-import com.squareup.inject.assisted.Assisted
-import com.squareup.inject.assisted.AssistedInject
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import kotlinx.coroutines.launch
 import java.util.Calendar
 import java.util.Date
@@ -285,7 +286,7 @@ class ReminderViewModel @AssistedInject constructor(
 
     data class ReminderDetails(val date: Long, val recurrence: Recurrence)
 
-    @AssistedInject.Factory
+    @AssistedFactory
     interface Factory : AssistedSavedStateViewModelFactory<ReminderViewModel> {
         override fun create(savedStateHandle: SavedStateHandle): ReminderViewModel
     }

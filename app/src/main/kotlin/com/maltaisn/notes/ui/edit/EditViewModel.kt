@@ -51,8 +51,9 @@ import com.maltaisn.notes.ui.edit.adapter.EditTitleItem
 import com.maltaisn.notes.ui.edit.adapter.EditableText
 import com.maltaisn.notes.ui.note.ShownDateField
 import com.maltaisn.notes.ui.send
-import com.squareup.inject.assisted.Assisted
-import com.squareup.inject.assisted.AssistedInject
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.launch
@@ -865,7 +866,7 @@ class EditViewModel @AssistedInject constructor(
         override fun toString() = text.toString()
     }
 
-    @AssistedInject.Factory
+    @AssistedFactory
     interface Factory : AssistedSavedStateViewModelFactory<EditViewModel> {
         override fun create(savedStateHandle: SavedStateHandle): EditViewModel
     }

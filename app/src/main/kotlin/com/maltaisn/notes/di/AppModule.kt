@@ -27,17 +27,14 @@ import com.maltaisn.notes.model.LabelsRepository
 import com.maltaisn.notes.model.NotesRepository
 import com.maltaisn.notes.model.ReminderAlarmCallback
 import com.maltaisn.notes.receiver.ReceiverAlarmCallback
-import com.squareup.inject.assisted.dagger2.AssistedModule
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import kotlinx.serialization.json.Json
 
-@AssistedModule
 @Module(includes = [
     DatabaseModule::class,
     BuildTypeModule::class,
-    AssistedInject_AppModule::class
 ])
 abstract class AppModule {
 

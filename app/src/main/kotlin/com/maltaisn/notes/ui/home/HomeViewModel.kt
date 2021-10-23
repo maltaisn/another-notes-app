@@ -43,8 +43,9 @@ import com.maltaisn.notes.ui.note.adapter.NoteAdapter
 import com.maltaisn.notes.ui.note.adapter.NoteItem
 import com.maltaisn.notes.ui.note.adapter.NoteListItem
 import com.maltaisn.notes.ui.send
-import com.squareup.inject.assisted.Assisted
-import com.squareup.inject.assisted.AssistedInject
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import debugCheck
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
@@ -386,7 +387,7 @@ class HomeViewModel @AssistedInject constructor(
 
     data class NewNoteSettings(val labelId: Long, val initialReminder: Boolean)
 
-    @AssistedInject.Factory
+    @AssistedFactory
     interface Factory : AssistedSavedStateViewModelFactory<HomeViewModel> {
         override fun create(savedStateHandle: SavedStateHandle): HomeViewModel
     }

@@ -138,7 +138,7 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener, ConfirmDialog.
                 }
             }
         }
-        rcv.setOnTouchListener { v, event ->
+        rcv.setOnTouchListener { _, event ->
             // Dispatch touch events to underlaying background view
             binding.viewBackground.dispatchTouchEvent(event)
             false

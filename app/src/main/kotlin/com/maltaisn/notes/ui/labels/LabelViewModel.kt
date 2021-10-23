@@ -29,8 +29,9 @@ import com.maltaisn.notes.ui.Event
 import com.maltaisn.notes.ui.labels.adapter.LabelAdapter
 import com.maltaisn.notes.ui.labels.adapter.LabelListItem
 import com.maltaisn.notes.ui.send
-import com.squareup.inject.assisted.Assisted
-import com.squareup.inject.assisted.AssistedInject
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
@@ -295,7 +296,7 @@ class LabelViewModel @AssistedInject constructor(
         savedStateHandle[KEY_SELECTED_IDS] = selectedLabelIds.toList()
     }
 
-    @AssistedInject.Factory
+    @AssistedFactory
     interface Factory : AssistedSavedStateViewModelFactory<LabelViewModel> {
         override fun create(savedStateHandle: SavedStateHandle): LabelViewModel
     }
