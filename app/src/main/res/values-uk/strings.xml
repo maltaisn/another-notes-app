@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Copyright 2021 Nicolas Maltais
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  -->
+<resources>
+    <!-- Do not translate the app name -->
+    <!-- Can be translated to provided a sensible localized name for a "Notes" app -->
+    <string name="app_name_short">Нотатки</string>
+    <string name="action_archive">Архівувати</string>
+    <string name="action_cancel">Скасувати</string>
+    <string name="action_clear">Стерти</string>
+    <string name="action_convert_to_list">Перетворити в список</string>
+    <string name="action_convert_to_text">Перетворити в текст</string>
+    <string name="action_copy">Зробити копію</string>
+    <string name="action_delete">Видалити</string>
+    <string name="action_delete_checked">Видалити позначені пункти</string>
+    <string name="action_delete_forever">Видалити назавжди</string>
+    <string name="action_delete_selection">Видалити вибране</string>
+    <string name="action_delete_selection_forever">Видалити вибране назавжди</string>
+    <string name="action_empty_trash">Очистити смітник</string>
+    <string name="action_empty_trash_short">Очистити</string>
+    <string name="action_keep">Тримати</string>
+    <string name="action_labels">Змінити мітки</string>
+    <string name="action_layout_grid">Перегляд сіткою</string>
+    <string name="action_layout_list">Перегляд списком</string>
+    <string name="action_manage">Керувати</string>
+    <string name="action_mark_as_done">Позначити виконаним</string>
+    <string name="action_none">Нічого</string>
+    <string name="action_ok">Добре</string>
+    <string name="action_pin">Закріпити</string>
+    <string name="action_postpone">Відкласти</string>
+    <string name="action_reminder_add">Додати нагадування</string>
+    <string name="action_reminder_edit">Змінити нагадування</string>
+    <string name="action_rename">Перейменувати</string>
+    <string name="action_restore">Відновити</string>
+    <string name="action_search">Шукати</string>
+    <string name="action_select_all">Вибрати все</string>
+    <string name="action_settings">Налаштування</string>
+    <string name="action_share">Поділитися</string>
+    <string name="action_unarchive">Розархівувати</string>
+    <string name="action_uncheck_all">Не відмічати всі пункти</string>
+    <string name="action_undo">Повернути</string>
+    <string name="action_unpin">Відкріпити</string>
+    <!-- Shortcuts -->
+    <!-- Note: normal length is ideally 25 chars or less, short is 10 chars or less. -->
+    <string name="shortcut_text_note">Нова текстова нотатка</string>
+    <string name="shortcut_text_note_short">Текст</string>
+    <string name="shortcut_list_note">Новий список</string>
+    <string name="shortcut_list_note_short">Список</string>
+    <string name="shortcut_reminders">Нагадування</string>
+    <string name="shortcut_reminders_short">Нагадати</string>
+    <!-- Home -->
+    <string name="note_location_active">Нотатки</string>
+    <string name="note_location_archived">Архівовані</string>
+    <string name="note_location_deleted">Видалені</string>
+    <string name="note_location_labels">Мітки</string>
+    <string name="note_pinned">Закріплені</string>
+    <string name="note_not_pinned">Інші</string>
+    <string name="note_placeholder_active">У Вас немає жодних нотаток.\nКлацніть +, щоб додати одну.</string>
+    <string name="note_placeholder_archived">Архівовані нотатки відсутні</string>
+    <string name="note_placeholder_deleted">Смітник порожній</string>
+    <plurals name="note_list_item_info">
+        <item quantity="one">+ ще %d пункт списку</item>
+        <item quantity="few">+ ще %d пункти списку</item>
+        <item quantity="many">+ ще %d пунктів списку</item>
+        <item quantity="other">+ ще %d пунктів списку</item>
+    </plurals>
+    <plurals name="note_list_item_info_checked">
+        <item quantity="one">+ ще %d відмічений пункт</item>
+        <item quantity="few">+ ще %d відмічені пункти</item>
+        <item quantity="many">+ ще %d відмічених пунктів</item>
+        <item quantity="other">+ ще %d відмічених пунктів</item>
+    </plurals>
+    <string name="trash_reminder_message">Нотатки в смітнику самостійно видаляться через %d днів.</string>
+    <string name="trash_delete_message">Ця нотатка видалиться назавжди.</string>
+    <string name="trash_delete_selected_message">Вибрані нотатки видаляться назавжди.</string>
+    <string name="trash_empty_message">Усі нотатки в смітнику видаляться назавжди.</string>
+    <string name="search_hint">Пошук нотаток</string>
+    <string name="search_empty_placeholder">За Вашим запитом нотаток не знайдено.</string>
+    <string name="sort_title">Параметри сортування</string>
+    <string name="sort_direction">Напрям сортування</string>
+    <string name="sort_direction_ascending">Зростання</string>
+    <string name="sort_direction_descending">Спадання</string>
+    <string name="sort_field">Сортувати за</string>
+    <string name="sort_field_created">Датою створення</string>
+    <string name="sort_field_modified">Датою зміни</string>
+    <string name="sort_field_title">Заголовком</string>
+    <!-- Edit -->
+    <string name="edit_add_title">Створити нотатку</string>
+    <string name="edit_change_title">Змінити нотатку</string>
+    <string name="edit_hint_note_title">Заголовок</string>
+    <string name="edit_hint_note_content">Нотатка</string>
+    <string name="edit_hint_note_item">Пункт списку</string>
+    <string name="edit_message_blank_note_discarded">Порожню нотатку відхилено.</string>
+    <plurals name="edit_move_archive_message">
+        <item quantity="one">Нотатку заархівовано.</item>
+        <item quantity="few">Нотатки заархівовано.</item>
+        <item quantity="many">Нотатки заархівовано.</item>
+        <item quantity="other">Нотатки заархівовано.</item>
+    </plurals>
+    <plurals name="edit_message_move_delete">
+        <item quantity="one">Нотатку переміщено в смітник.</item>
+        <item quantity="few">Нотатки переміщено в смітник.</item>
+        <item quantity="many">Нотатки переміщено в смітник.</item>
+        <item quantity="other">Нотатки переміщено в смітник.</item>
+    </plurals>
+    <plurals name="edit_message_move_restore">
+        <item quantity="one">Нотатку відновлено.</item>
+        <item quantity="few">Нотатки відновлено.</item>
+        <item quantity="many">Нотатки відновлено.</item>
+        <item quantity="other">Нотатки відновлено.</item>
+    </plurals>
+    <plurals name="edit_message_move_unarchive">
+        <item quantity="one">Нотатку розархівовано.</item>
+        <item quantity="few">Нотатки розархівовано.</item>
+        <item quantity="many">Нотатки розархівовано.</item>
+        <item quantity="other">Нотатки розархівовано.</item>
+    </plurals>
+    <string name="edit_in_trash_message">Не можна змінювати нотатки в смітнику.</string>
+    <string name="edit_copy_suffix">Копія</string>
+    <string name="edit_copy_untitled_name">Без назви</string>
+    <string name="edit_convert_keep_checked">Вилучити відмічені пункти?</string>
+    <plurals name="edit_checked_items">
+        <item quantity="one">%d відмічений пункт</item>
+        <item quantity="few">%d відмічені пункти</item>
+        <item quantity="many">%d відмічених пунктів</item>
+        <item quantity="other">%d відмічених пунктів</item>
+    </plurals>
+    <!-- Reminder -->
+    <string name="note_reminders" comment="note_reminders&#10;Reminder&#10;&#10;IMPORTANT: reminders can have a recurrence, which is selected using a dialog provided by another library which I maintain. For the app to be fully translated, this library needs to be translated too. The library can be translated at https://crowdin.com/translate/recurpickerlib">Нагадування</string>
+    <string name="reminder_upcoming">Майбутні</string>
+    <string name="reminder_today">Сьогодні</string>
+    <string name="reminder_overdue">Минулі</string>
+    <string name="reminder_date">Дата</string>
+    <string name="reminder_time">Час</string>
+    <string name="reminder_invalid_time">Цей час уже минув.</string>
+    <string name="reminder_notif_channel_title">Нагадування</string>
+    <string name="reminder_notif_channel_descr">Нагадування задані нотаткам</string>
+    <string name="reminder_empty_placeholder">Нагадувань не встановлено</string>
+    <string name="reminder_restricted_battery">Нагадування можуть не працювати коректно, оскільки програма має
+    обмежене використання батареї. Це можна виправити в налаштуваннях програми.</string>
+    <!-- Labels -->
+    <string name="label_create">Створити нову мітку</string>
+    <string name="label_edit">Змінити назву мітки</string>
+    <string name="label_manage">Керування мітками</string>
+    <string name="label_select">Виберіть мітки</string>
+    <string name="label_already_exists">Мітка з такою назвою вже існує.</string>
+    <string name="label_hidden_option">Ховати нотатки з цією міткою з розділів активних і архівованих нотаток</string>
+    <string name="label_empty_placeholder">Не створено міток</string>
+    <string name="label_delete_message">Вибрані мітки видаляться, але повʼязані з ними
+    нотатки залишаться.</string>
+    <string name="label_notes_empty_placeholder">Нема позначених нотаток цією міткою</string>
+    <!-- Settings -->
+    <string name="pref_group_appearance">Вигляд</string>
+    <string name="pref_theme">Тема застосунку</string>
+    <string name="pref_theme_light">Світла</string>
+    <string name="pref_theme_dark">Темна</string>
+    <string name="pref_theme_system">Наслідувати системну</string>
+    <string name="pref_strikethrough_checked">Закреслювати відмічені пункти списку</string>
+    <string name="pref_preview_labels">Кількість міток під час перегляду</string>
+    <string name="pref_shown_date">Показувати дату для нотаток</string>
+    <string name="pref_shown_date_added">Дата створення</string>
+    <string name="pref_shown_date_modified">Дата останньої зміни</string>
+    <string name="pref_shown_date_none">Не показувати дату</string>
+    <string name="pref_preview_lines">Кількість рядків під час перегляду</string>
+    <string name="pref_preview_lines_summary">Визначає скільки рядків і пунктів відображатиметься
+        в нотатках для кожного режиму і типу нотаток</string>
+    <string name="pref_preview_lines_grid_layout">Режим сітки</string>
+    <string name="pref_preview_lines_list_layout">Режим списку</string>
+    <string name="pref_preview_lines_text">Рядків при перегляді текстової нотатки</string>
+    <string name="pref_preview_lines_list">Пунктів при перегляді списку</string>
+    <string name="pref_group_behavior">Поведінка</string>
+    <string name="pref_behavior_swipe_action">Дія совганням</string>
+    <string name="pref_behavior_move_checked">Переміщати відмічені пункти вниз</string>
+    <string name="pref_group_data">Дані</string>
+    <string name="pref_data_export">Експорт даних</string>
+    <string name="pref_data_export_summary">Експортувати дані нотаток у JSON</string>
+    <string name="pref_data_auto_export">Автоекспортування даних</string>
+    <string name="pref_data_auto_export_summary">Автоматично експортувати дані програми у файл, раз на день.</string>
+    <string name="pref_data_auto_export_date">(Востаннє експортовано %s)</string>
+    <string name="pref_data_import">Імпорт даних</string>
+    <string name="pref_data_import_summary">Імпортувати попередньо експортовані дані JSON, обʼєднання з наявними даними.</string>
+    <string name="pref_data_clear">Стерти всі дані</string>
+    <string name="pref_data_clear_confirm_message">Усі дані нотаток видаляться назавжди!
+        Дію не можливо повернути.</string>
+    <string name="pref_data_clear_success_message">Усі дані успішно стерто.</string>
+    <string name="pref_group_about">Про застосунок</string>
+    <string name="pref_about_view_source">Переглянути на Github</string>
+    <string name="pref_about_view_licenses">Ліцензії відкритого коду</string>
+    <string name="pref_about_version">Версія</string>
+    <!-- Import/export data messages -->
+    <string name="export_success">Дані вдало експортовано!</string>
+    <string name="export_fail">Помилка відбулася під час експортування даних.</string>
+    <string name="import_success">Дані вдало імпортовано!</string>
+    <string name="import_future_version">Дані вдало імпортовано! Зауважте, що деяка інформація може
+        втратитися, оскільки дані походять із пізнішої версії.</string>
+    <string name="import_bad_input">Помилка відбулася під час спроби прочитати цей файл.</string>
+    <string name="import_bad_format">Не можливо імпортувати дані, дані JSON невірні.</string>
+    <string name="import_bad_data">Не можливо імпортувати дані, деякі поля мають невірні значення.
+        Таке може трапитися коли імпортуються дані з пізнішої версії, спробуйте оновити програму.</string>
+    <string name="auto_export_message">Щоб дозволити автоматичне експортування, файл має обиратися для збереження
+        даних. Дані програми експортуватимуться раз на день поки програму відкрито.
+        Клацніть Добре, щоб продовжити.</string>
+    <string name="auto_export_fail">Не вдалося автоматично експортувати дані. Переконайтеся, що місце
+        експортування існує і доступне, потім переналаштуйте автоекспортування.</string>
+    <!-- Content description -->
+    <string name="content_descrp_open_drawer">Відкрити шторку</string>
+    <string name="content_descrp_back">Назад</string>
+    <string name="content_descrp_label_hidden">Нотатки з цією міткою сховано</string>
+    <!-- Relative date time format -->
+    <string name="date_rel_today">Сьогодні, %s</string>
+    <string name="date_rel_yesterday">Учора, %s</string>
+    <string name="date_rel_tomorrow">Завтра, %s</string>
+    <plurals name="date_rel_days_past" comment="date_rel_days_past&#10;used with quantity &gt;= 2, format values: number of days, time&#10;No need to provide translation for quantities &lt; 2">
+        <item quantity="one">%d день тому, %s</item>
+        <item quantity="few">%d дні тому, %s</item>
+        <item quantity="many">%d днів тому, %s</item>
+        <!-- used with quantity >= 2, format values: number of days, time -->
+        <item quantity="other">%d днів тому, %s</item>
+    </plurals>
+    <plurals name="date_rel_days_future" comment="date_rel_days_future&#10;used with quantity &gt;= 2, format values: number of days, time&#10;No need to provide translation for quantities &lt; 2">
+        <item quantity="one">За %d день, %s</item>
+        <item quantity="few">За %d дні, %s</item>
+        <item quantity="many">За %d днів, %s</item>
+        <!-- used with quantity >= 2, format values: number of days, time -->
+        <item quantity="other">За %d днів, %s</item>
+    </plurals>
+    <!-- format values: date, time -->
+    <string name="date_rel_absolute">%1$s, %2$s</string>
+</resources>

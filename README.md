@@ -51,6 +51,7 @@ Contributions are welcome, especially translations (see [`TRANSLATING.md`][trans
     - Russian: Zakhar Timoshenko ([Crowdin](https://crowdin.com/profile/ztimms73))
     - Spanish: [@urizev](https://github.com/urizev)
     - Turkish: language_is_alive ([Crowdin](https://crowdin.com/profile/language_is_alive))
+    - Ukrainian: axmed99 ([Crowdin](https://crowdin.com/profile/axmed99))
 
 [changelog]: CHANGELOG.md
 [translating]: TRANSLATING.md
