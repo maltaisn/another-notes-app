@@ -25,6 +25,7 @@ import android.text.util.Linkify
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
+import android.widget.EditText
 import androidx.core.text.getSpans
 import androidx.core.text.util.LinkifyCompat
 import androidx.core.view.isInvisible
@@ -84,11 +85,12 @@ class EditTitleViewHolder(binding: ItemEditTitleBinding, callback: EditAdapter.C
             callback.onNoteClickedToEdit()
         }
         titleEdt.addTextChangedListener(clearSpansTextWatcher)
-        titleEdt.doAfterTextChanged {  editable ->
+        titleEdt.doAfterTextChanged { editable ->
             if (editable != item?.title?.text) {
                 item?.title = AndroidEditableText(editable ?: return@doAfterTextChanged)
             }
         }
+        titleEdt.addOnAttachStateChangeListener(PrepareCursorControllersListener())
         titleEdt.setHorizontallyScrolling(false)
         titleEdt.maxLines = Integer.MAX_VALUE
     }
@@ -130,6 +132,10 @@ class EditContentViewHolder(binding: ItemEditContentBinding, callback: EditAdapt
         contentEdt.setOnClickListener {
             callback.onNoteClickedToEdit()
         }
+
+        // Fixes broken long press after holder has been recycled (#34).
+        // See https://stackoverflow.com/q/54833004
+        contentEdt.addOnAttachStateChangeListener(PrepareCursorControllersListener())
     }
 
     fun bind(item: EditContentItem) {
@@ -216,6 +222,7 @@ class EditItemViewHolder(binding: ItemEditItemBinding, callback: EditAdapter.Cal
         itemEdt.setOnClickListener {
             callback.onNoteClickedToEdit()
         }
+        itemEdt.addOnAttachStateChangeListener(PrepareCursorControllersListener())
 
         deleteImv.setOnClickListener {
             val pos = bindingAdapterPosition
@@ -343,4 +350,20 @@ private val clearSpansTextWatcher = object : TextWatcher {
             s.removeSpan(span)
         }
     }
+}
+
+/**
+ * Used to fix the issue described at [https://stackoverflow.com/q/54833004],
+ * causing the EditText long press to fail after a view holder has been recycled.
+ */
+private class PrepareCursorControllersListener : View.OnAttachStateChangeListener {
+    override fun onViewAttachedToWindow(view: View) {
+        if (view !is EditText) {
+            return
+        }
+        view.isCursorVisible = false
+        view.isCursorVisible = true
+    }
+
+    override fun onViewDetachedFromWindow(v: View) = Unit
 }

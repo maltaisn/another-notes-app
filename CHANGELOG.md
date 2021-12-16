@@ -16,6 +16,8 @@
 - Fixed crash during search if only negative term is used (e.g. `-a`) (#47).
 - Fixed regression, destination not changed after selected label is deleted.
 - Fixed rare crash when opening a list note.
+- Fixed input field cut off in landscape mode in edit label dialog (#53).
+- Fixed broken long press after converting note twice (#34).
 
 ## v1.4.1
 - Added dialog to change sort field and direction (#31).
