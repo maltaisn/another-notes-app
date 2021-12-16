@@ -65,18 +65,26 @@ class LabelEditDialog : DialogFragment() {
         val nameInputLayout = binding.labelInputLayout
         val hiddenCheck = binding.labelHiddenChk
 
-        val dialog = MaterialAlertDialogBuilder(context)
+        val builder = MaterialAlertDialogBuilder(context)
             .setView(binding.root)
             .setPositiveButton(R.string.action_ok) { _, _ ->
                 viewModel.addLabel()
             }
             .setNegativeButton(R.string.action_cancel, null)
-            .setTitle(if (args.labelId == Label.NO_ID) {
+
+        // Only show dialog title if screen size is under a certain dimension.
+        // Otherwise it becomes much harder to type text, see #53.
+        val dimen = context.resources.getDimension(R.dimen.label_edit_dialog_title_min_height) /
+                context.resources.displayMetrics.density
+        if (context.resources.configuration.screenHeightDp >= dimen) {
+            builder.setTitle(if (args.labelId == Label.NO_ID) {
                 R.string.label_create
             } else {
                 R.string.label_edit
             })
-            .create()
+        }
+
+        val dialog = builder.create()
 
         dialog.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE)
 
