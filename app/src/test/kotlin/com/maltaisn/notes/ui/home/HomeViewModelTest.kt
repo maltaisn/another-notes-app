@@ -43,6 +43,7 @@ import com.maltaisn.notes.ui.note.NoteItemFactory
 import com.maltaisn.notes.ui.note.NoteViewModel
 import com.maltaisn.notes.ui.note.SwipeAction
 import com.maltaisn.notes.ui.note.adapter.MessageItem
+import com.maltaisn.notes.ui.note.adapter.NoteAdapter
 import com.maltaisn.notes.ui.note.adapter.NoteItem
 import com.maltaisn.notes.ui.note.adapter.NoteListLayoutMode
 import com.nhaarman.mockitokotlin2.any
@@ -94,6 +95,8 @@ class HomeViewModelTest {
         prefs = mock {
             on { listLayoutMode } doReturn NoteListLayoutMode.LIST
             on { lastTrashReminderTime } doReturn 0
+            on { swipeActionLeft } doReturn SwipeAction.DELETE
+            on { swipeActionRight } doReturn SwipeAction.ARCHIVE
         }
 
         itemFactory = NoteItemFactory(prefs)
@@ -198,20 +201,25 @@ class HomeViewModelTest {
     @Test
     fun `should only allow note swipe in active notes`() = mainCoroutineRule.runBlockingTest {
         viewModel.setDestination(HomeDestination.Status(NoteStatus.ACTIVE))
-        assertTrue(viewModel.isNoteSwipeEnabled)
+        assertEquals(SwipeAction.DELETE, viewModel.getNoteSwipeAction(NoteAdapter.SwipeDirection.LEFT))
+        assertEquals(SwipeAction.ARCHIVE, viewModel.getNoteSwipeAction(NoteAdapter.SwipeDirection.RIGHT))
 
         viewModel.setDestination(HomeDestination.Status(NoteStatus.ARCHIVED))
-        assertFalse(viewModel.isNoteSwipeEnabled)
+        assertEquals(SwipeAction.NONE, viewModel.getNoteSwipeAction(NoteAdapter.SwipeDirection.LEFT))
+        assertEquals(SwipeAction.NONE, viewModel.getNoteSwipeAction(NoteAdapter.SwipeDirection.RIGHT))
 
         viewModel.setDestination(HomeDestination.Status(NoteStatus.DELETED))
-        assertFalse(viewModel.isNoteSwipeEnabled)
+        assertEquals(SwipeAction.NONE, viewModel.getNoteSwipeAction(NoteAdapter.SwipeDirection.LEFT))
+        assertEquals(SwipeAction.NONE, viewModel.getNoteSwipeAction(NoteAdapter.SwipeDirection.RIGHT))
     }
 
     @Test
     fun `should not allow swiping if no action set`() = mainCoroutineRule.runBlockingTest {
         viewModel.setDestination(HomeDestination.Status(NoteStatus.ACTIVE))
-        whenever(prefs.swipeAction) doReturn SwipeAction.NONE
-        assertFalse(viewModel.isNoteSwipeEnabled)
+        whenever(prefs.swipeActionLeft) doReturn SwipeAction.NONE
+        whenever(prefs.swipeActionRight) doReturn SwipeAction.NONE
+        assertEquals(SwipeAction.NONE, viewModel.getNoteSwipeAction(NoteAdapter.SwipeDirection.LEFT))
+        assertEquals(SwipeAction.NONE, viewModel.getNoteSwipeAction(NoteAdapter.SwipeDirection.RIGHT))
     }
 
     @Test
@@ -250,11 +258,9 @@ class HomeViewModelTest {
 
     @Test
     fun `should archive note on swipe`() = mainCoroutineRule.runBlockingTest {
-        whenever(prefs.swipeAction) doReturn SwipeAction.ARCHIVE
-
         val note = notesRepo.requireNoteById(1)
         viewModel.setDestination(HomeDestination.Status(NoteStatus.ACTIVE))
-        viewModel.onNoteSwiped(1)
+        viewModel.onNoteSwiped(1, NoteAdapter.SwipeDirection.RIGHT)
 
         assertEquals(NoteStatus.ARCHIVED, notesRepo.requireNoteById(1).status)
         assertLiveDataEventSent(viewModel.statusChangeEvent, StatusChange(
@@ -263,11 +269,9 @@ class HomeViewModelTest {
 
     @Test
     fun `should delete note on swipe`() = mainCoroutineRule.runBlockingTest {
-        whenever(prefs.swipeAction) doReturn SwipeAction.DELETE
-
         val note = notesRepo.requireNoteById(1)
         viewModel.setDestination(HomeDestination.Status(NoteStatus.ACTIVE))
-        viewModel.onNoteSwiped(1)
+        viewModel.onNoteSwiped(1, NoteAdapter.SwipeDirection.LEFT)
 
         assertEquals(NoteStatus.DELETED, notesRepo.requireNoteById(1).status)
         assertLiveDataEventSent(viewModel.statusChangeEvent, StatusChange(

@@ -34,6 +34,8 @@ import com.maltaisn.notes.ui.getOrAwaitValue
 import com.maltaisn.notes.ui.navigation.HomeDestination
 import com.maltaisn.notes.ui.note.NoteItemFactory
 import com.maltaisn.notes.ui.note.NoteViewModel
+import com.maltaisn.notes.ui.note.SwipeAction
+import com.maltaisn.notes.ui.note.adapter.NoteAdapter
 import com.maltaisn.notes.ui.note.adapter.NoteItem
 import com.maltaisn.notes.ui.note.adapter.NoteListLayoutMode
 import com.nhaarman.mockitokotlin2.doReturn
@@ -179,6 +181,13 @@ class HomeViewModelLabelsTest {
                 NoteStatus.ACTIVE, PinnedStatus.UNPINNED, false),
                 viewModel.currentSelection.getOrAwaitValue())
         }
+
+    @Test
+    fun `should not allow swipe actions`() = mainCoroutineRule.runBlockingTest {
+        viewModel.setDestination(HomeDestination.Labels(labelsRepo.requireLabelById(3)))
+        assertEquals(SwipeAction.NONE, viewModel.getNoteSwipeAction(NoteAdapter.SwipeDirection.LEFT))
+        assertEquals(SwipeAction.NONE, viewModel.getNoteSwipeAction(NoteAdapter.SwipeDirection.RIGHT))
+    }
 
     // the rest is already tested in NoteViewModelTest
 
