@@ -25,7 +25,7 @@ import com.maltaisn.notes.model.entity.NoteType
 import com.maltaisn.notes.model.entity.PinnedStatus
 import java.util.Date
 import kotlin.random.Random
-import kotlin.time.Duration
+import kotlin.time.Duration.Companion.days
 
 /**
  * This is used to generate random notes for testing debug builds.
@@ -84,7 +84,7 @@ object DebugUtils {
 
     private fun getRandomDate(min: Date? = null): Date {
         val current = System.currentTimeMillis()
-        val minDate = min?.time ?: (current - Duration.days(5).inWholeMilliseconds)
+        val minDate = min?.time ?: (current - 5.days.inWholeMilliseconds)
         return Date((minDate..current).random())
     }
 

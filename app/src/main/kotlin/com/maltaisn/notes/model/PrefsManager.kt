@@ -31,7 +31,7 @@ import org.jetbrains.annotations.TestOnly
 import javax.inject.Inject
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
-import kotlin.time.Duration
+import kotlin.time.Duration.Companion.days
 
 /**
  * Preference manager. This class interacts with [SharedPreferences]
@@ -177,23 +177,23 @@ class PrefsManager @Inject constructor(
         /**
          * Delay after which notes in trash are automatically deleted forever.
          */
-        val TRASH_AUTO_DELETE_DELAY = Duration.days(7)
+        val TRASH_AUTO_DELETE_DELAY = 7.days
 
         /**
          * Required delay before showing the trash reminder delay after user dismisses it.
          */
-        val TRASH_REMINDER_DELAY = Duration.days(60)
+        val TRASH_REMINDER_DELAY = 60.days
 
         /**
          * Required delay before showing a notice that restricted battery mode will impact
          * reminders, after user dismisses it.
          */
-        val RESTRICTED_BATTERY_REMINDER_DELAY = Duration.days(60)
+        val RESTRICTED_BATTERY_REMINDER_DELAY = 60.days
 
         /**
          * Minimum delay between each automatic export.
          */
-        val AUTO_EXPORT_DELAY = Duration.days(1)
+        val AUTO_EXPORT_DELAY = 1.days
 
         const val AUTO_EXPORT_NO_URI = ""
 

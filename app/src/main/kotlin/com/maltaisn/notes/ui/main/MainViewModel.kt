@@ -38,7 +38,7 @@ import kotlinx.coroutines.launch
 import java.io.OutputStream
 import java.util.Date
 import javax.inject.Inject
-import kotlin.time.Duration
+import kotlin.time.Duration.Companion.hours
 
 class MainViewModel @Inject constructor(
     private val notesRepository: NotesRepository,
@@ -139,6 +139,6 @@ class MainViewModel @Inject constructor(
     }
 
     companion object {
-        private val PERIODIC_TASK_INTERVAL = Duration.hours(1)
+        private val PERIODIC_TASK_INTERVAL = 1.hours
     }
 }

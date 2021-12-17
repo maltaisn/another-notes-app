@@ -174,7 +174,6 @@ class HomeViewModel @AssistedInject constructor(
             is HomeDestination.Status -> destination.status == NoteStatus.ACTIVE
             is HomeDestination.Labels -> true
             is HomeDestination.Reminders -> true
-            else -> error("Unknown destination")
         } && selectedNotes.isEmpty()
     }
 
@@ -382,7 +381,6 @@ class HomeViewModel @AssistedInject constructor(
         is HomeDestination.Labels -> {
             PlaceholderData(R.drawable.ic_label_outline, R.string.label_notes_empty_placeholder)
         }
-        else -> error("Unknown destination")
     }
 
     data class NewNoteSettings(val labelId: Long, val initialReminder: Boolean)
