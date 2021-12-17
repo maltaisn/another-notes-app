@@ -168,7 +168,8 @@
     <string name="pref_preview_lines_text">Lignes dans les notes textuelles</string>
     <string name="pref_preview_lines_list">Éléments dans les listes</string>
     <string name="pref_group_behavior">Comportement</string>
-    <string name="pref_behavior_swipe_action">Action de glissement</string>
+    <string name="pref_behavior_swipe_action_left">Action de glissement à gauche</string>
+    <string name="pref_behavior_swipe_action_right">Action de glissement à droite</string>
     <string name="pref_behavior_move_checked">Déplacer les éléments cochés vers le bas</string>
     <string name="pref_group_data">Données</string>
     <string name="pref_data_export">Exporter les données</string>

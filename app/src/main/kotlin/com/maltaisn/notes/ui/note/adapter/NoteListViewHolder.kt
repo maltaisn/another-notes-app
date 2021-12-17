@@ -21,6 +21,7 @@ import android.text.format.DateUtils
 import android.text.style.BackgroundColorSpan
 import android.text.style.ForegroundColorSpan
 import android.view.View
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.text.set
 import androidx.core.view.isGone
@@ -58,7 +59,9 @@ sealed class NoteViewHolder<T : NoteItem>(itemView: View) :
         DateFormat.getDateInstance(DateFormat.SHORT).format(date)
     }
 
-    protected abstract val cardView: MaterialCardView
+    abstract val cardView: MaterialCardView
+    abstract val swipeImv: ImageView
+
     protected abstract val titleTxv: TextView
     protected abstract val dateTxv: TextView
     protected abstract val reminderChip: Chip
@@ -175,6 +178,8 @@ class TextNoteViewHolder(private val binding: ItemNoteTextBinding) :
     NoteViewHolder<NoteItemText>(binding.root) {
 
     override val cardView = binding.cardView
+    override val swipeImv = binding.swipeImv
+
     override val titleTxv = binding.titleTxv
     override val dateTxv = binding.dateTxv
     override val reminderChip = binding.reminderChip
@@ -196,6 +201,8 @@ class ListNoteViewHolder(private val binding: ItemNoteListBinding) :
     NoteViewHolder<NoteItemList>(binding.root) {
 
     override val cardView = binding.cardView
+    override val swipeImv = binding.swipeImv
+
     override val titleTxv = binding.titleTxv
     override val dateTxv = binding.dateTxv
     override val reminderChip = binding.reminderChip

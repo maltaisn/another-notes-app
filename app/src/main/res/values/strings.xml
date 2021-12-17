@@ -192,7 +192,8 @@
     <string name="pref_preview_lines_list">Items in list note preview</string>
 
     <string name="pref_group_behavior">Behavior</string>
-    <string name="pref_behavior_swipe_action">Swipe action</string>
+    <string name="pref_behavior_swipe_action_left">Swipe left action</string>
+    <string name="pref_behavior_swipe_action_right">Swipe right action</string>
     <string name="pref_behavior_move_checked">Move checked items to the bottom</string>
 
     <string name="pref_group_data">Data</string>

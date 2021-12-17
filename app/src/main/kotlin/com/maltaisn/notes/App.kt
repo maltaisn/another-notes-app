@@ -47,7 +47,8 @@ class App : Application() {
 
         appComponent.inject(this)
 
-        // Set default preference values
+        // Initialize shared preferences
+        prefs.migratePreferences()
         prefs.setDefaults(this)
         updateTheme(prefs.theme)
 

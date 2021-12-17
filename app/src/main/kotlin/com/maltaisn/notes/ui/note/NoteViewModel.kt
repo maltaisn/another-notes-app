@@ -392,9 +392,9 @@ abstract class NoteViewModel(
         // Do nothing.
     }
 
-    override val isNoteSwipeEnabled = false
+    override fun getNoteSwipeAction(direction: NoteAdapter.SwipeDirection) = SwipeAction.NONE
 
-    override fun onNoteSwiped(pos: Int) {
+    override fun onNoteSwiped(pos: Int, direction: NoteAdapter.SwipeDirection) {
         // Do nothing.
     }
 

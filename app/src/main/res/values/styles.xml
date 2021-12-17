@@ -91,6 +91,15 @@
         <item name="android:insetBottom">0dp</item>
     </style>
 
+    <style name="NoteSwipeIconStyle">
+        <item name="android:layout_width">30dp</item>
+        <item name="android:layout_height">45dp</item>
+        <item name="android:layout_marginStart">24dp</item>
+        <item name="android:layout_marginEnd">24dp</item>
+        <item name="android:tintMode">src_in</item>
+        <item name="tint">@color/material_on_background_emphasis_medium</item>
+    </style>
+
     <style name="PlaceholderImageViewStyle">
         <item name="android:layout_width">144dp</item>
         <item name="android:layout_height">144dp</item>

@@ -1,3 +1,6 @@
+## v1.5.0
+- Added separate swipe left & right actions, with animated icon shown on swipe (#36).
+
 ## v1.4.3
 - Fixed critical crash occuring when using reminders (#61, #62).
 - Allow blank notes with a reminder.

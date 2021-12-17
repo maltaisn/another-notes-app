@@ -46,7 +46,8 @@ class PrefsManager @Inject constructor(
     val strikethroughChecked: Boolean by preference(STRIKETHROUGH_CHECKED, false)
     val moveCheckedToBottom: Boolean by preference(MOVE_CHECKED_TO_BOTTOM, false)
     var listLayoutMode: NoteListLayoutMode by enumPreference(LIST_LAYOUT_MODE, NoteListLayoutMode.LIST)
-    val swipeAction: SwipeAction by enumPreference(SWIPE_ACTION, SwipeAction.ARCHIVE)
+    val swipeActionLeft: SwipeAction by enumPreference(SWIPE_ACTION_LEFT, SwipeAction.ARCHIVE)
+    val swipeActionRight: SwipeAction by enumPreference(SWIPE_ACTION_RIGHT, SwipeAction.ARCHIVE)
     val shownDateField: ShownDateField by enumPreference(SHOWN_DATE, ShownDateField.NONE)
     val maximumPreviewLabels: Int by preference(PREVIEW_LABELS, 0)
 
@@ -139,6 +140,28 @@ class PrefsManager @Inject constructor(
             }
         }
 
+    /**
+     * Used to migrate preferences from an older version of the app to a newer one.
+     * This is needed if a key name is changed for example.
+     */
+    fun migratePreferences() {
+        val editorDelegate = lazy { prefs.edit() }
+        val editor by editorDelegate
+
+        // v1.4.2 -> v1.5.0
+        val swipeAction = prefs.getString(SWIPE_ACTION, null)
+        if (swipeAction != null) {
+            // split value into two keys, one per direction
+            editor.remove(SWIPE_ACTION)
+                .putString(SWIPE_ACTION_LEFT, swipeAction)
+                .putString(SWIPE_ACTION_RIGHT, swipeAction)
+        }
+
+        if (editorDelegate.isInitialized()) {
+            editor.apply()
+        }
+    }
+
     companion object {
         // Settings keys
         const val THEME = "theme"
@@ -151,7 +174,8 @@ class PrefsManager @Inject constructor(
         const val STRIKETHROUGH_CHECKED = "strikethrough_checked"
         const val MOVE_CHECKED_TO_BOTTOM = "move_checked_to_bottom"
         const val SHOWN_DATE = "shown_date"
-        const val SWIPE_ACTION = "swipe_action"
+        const val SWIPE_ACTION_LEFT = "swipe_action_left"
+        const val SWIPE_ACTION_RIGHT = "swipe_action_right"
         const val EXPORT_DATA = "export_data"
         const val AUTO_EXPORT = "auto_export"
         const val IMPORT_DATA = "import_data"
@@ -168,6 +192,9 @@ class PrefsManager @Inject constructor(
         private const val LAST_RESTRICTED_BATTERY_REMIND_TIME = "last_restricted_battery_remind_time"
         private const val LAST_AUTO_EXPORT_TIME = "last_auto_export_time"
         private const val AUTO_EXPORT_FAILED = "auto_export_failed"
+
+        // Legacy keys
+        private const val SWIPE_ACTION = "swipe_action"
 
         private val PREFS_XML = listOf(
             R.xml.prefs,

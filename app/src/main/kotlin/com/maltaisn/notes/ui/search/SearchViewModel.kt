@@ -93,8 +93,6 @@ class SearchViewModel @AssistedInject constructor(
             else -> NoteStatus.ARCHIVED
         }
 
-    override val isNoteSwipeEnabled = false
-
     private fun createListItems(notes: List<NoteWithLabels>) {
         listItems = buildList {
             var addedArchivedHeader = false

@@ -32,6 +32,7 @@ import com.maltaisn.notes.sync.databinding.ItemNoteLabelBinding
 import com.maltaisn.notes.sync.databinding.ItemNoteListBinding
 import com.maltaisn.notes.sync.databinding.ItemNoteListItemBinding
 import com.maltaisn.notes.sync.databinding.ItemNoteTextBinding
+import com.maltaisn.notes.ui.note.SwipeAction
 
 class NoteAdapter(
     val context: Context,
@@ -151,6 +152,10 @@ class NoteAdapter(
         LIST_NOTE
     }
 
+    enum class SwipeDirection {
+        LEFT, RIGHT
+    }
+
     interface Callback {
         /** Called when a note [item] at [pos] is clicked. */
         fun onNoteItemClicked(item: NoteItem, pos: Int)
@@ -164,11 +169,11 @@ class NoteAdapter(
         /** Called when a note's action button is clicked. */
         fun onNoteActionButtonClicked(item: NoteItem, pos: Int)
 
-        /** Whether notes can be swiped in this list. */
-        val isNoteSwipeEnabled: Boolean
+        /** Returns the action for the given swipe direction. */
+        fun getNoteSwipeAction(direction: SwipeDirection): SwipeAction
 
         /** Called when a [NoteItem] at [pos] is swiped. */
-        fun onNoteSwiped(pos: Int)
+        fun onNoteSwiped(pos: Int, direction: NoteAdapter.SwipeDirection)
 
         /** Whether strikethrough should be added to checked items or not. */
         val strikethroughCheckedItems: Boolean

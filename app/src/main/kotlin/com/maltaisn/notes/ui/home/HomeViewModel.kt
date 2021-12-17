@@ -206,14 +206,20 @@ class HomeViewModel @AssistedInject constructor(
         changeListItems { it.removeAt(pos) }
     }
 
-    override val isNoteSwipeEnabled: Boolean
-        get() = currentDestination == HomeDestination.Status(NoteStatus.ACTIVE) &&
-                selectedNotes.isEmpty() && prefs.swipeAction != SwipeAction.NONE
+    override fun getNoteSwipeAction(direction: NoteAdapter.SwipeDirection): SwipeAction {
+        return if (currentDestination == HomeDestination.Status(NoteStatus.ACTIVE) && selectedNotes.isEmpty()) {
+            when (direction) {
+                NoteAdapter.SwipeDirection.LEFT -> prefs.swipeActionLeft
+                NoteAdapter.SwipeDirection.RIGHT -> prefs.swipeActionRight
+            }
+        } else {
+            SwipeAction.NONE
+        }
+    }
 
-    override fun onNoteSwiped(pos: Int) {
-        // Archive note
+    override fun onNoteSwiped(pos: Int, direction: NoteAdapter.SwipeDirection) {
         val note = (noteItems.value!![pos] as NoteItem).note
-        changeNotesStatus(setOf(note), when (prefs.swipeAction) {
+        changeNotesStatus(setOf(note), when (getNoteSwipeAction(direction)) {
             SwipeAction.ARCHIVE -> NoteStatus.ARCHIVED
             SwipeAction.DELETE -> NoteStatus.DELETED
             SwipeAction.NONE -> return  // should not happen

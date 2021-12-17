@@ -70,8 +70,17 @@
             app:defaultValue="archive"
             app:entries="@array/pref_swipe_action_entries"
             app:entryValues="@array/pref_swipe_action_values"
-            app:key="swipe_action"
-            app:title="@string/pref_behavior_swipe_action"
+            app:key="swipe_action_left"
+            app:title="@string/pref_behavior_swipe_action_left"
+            app:useSimpleSummaryProvider="true"
+            />
+
+        <DropDownPreference
+            app:defaultValue="archive"
+            app:entries="@array/pref_swipe_action_entries"
+            app:entryValues="@array/pref_swipe_action_values"
+            app:key="swipe_action_right"
+            app:title="@string/pref_behavior_swipe_action_right"
             app:useSimpleSummaryProvider="true"
             />
 
