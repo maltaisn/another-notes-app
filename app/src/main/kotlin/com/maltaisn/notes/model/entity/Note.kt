@@ -215,8 +215,8 @@ data class Note(
     /**
      * Convert this note to text, including both the title and the content.
      */
-    fun asText(includeTitle: Boolean = true): String {
-        val textNote = asTextNote(true)
+    fun asText(includeTitle: Boolean = true, keepCheckedItems: Boolean = true): String {
+        val textNote = asTextNote(keepCheckedItems)
         return buildString {
             if (includeTitle && title.isNotBlank()) {
                 appendLine(textNote.title)

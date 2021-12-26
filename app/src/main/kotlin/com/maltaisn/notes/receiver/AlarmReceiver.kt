@@ -75,7 +75,8 @@ class AlarmReceiver : BroadcastReceiver() {
             .setSmallIcon(R.drawable.ic_app_icon)
             .setGroup(NOTIFICATION_GROUP)
             .setContentTitle(note.title.ifBlank { null })
-            .setContentText(note.asText(includeTitle = false).ifBlank { null })
+            .setContentText(note.asText(includeTitle = false,
+                    keepCheckedItems = false).ifBlank { null })
             .setAutoCancel(true)
 
         // Edit/view main action
