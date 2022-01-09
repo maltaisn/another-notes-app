@@ -42,6 +42,7 @@
     <string name="action_open">Ouvrir</string>
     <string name="action_pin">Épingler</string>
     <string name="action_postpone">Reporter</string>
+    <string name="action_redo">Rétablir</string>
     <string name="action_reminder_add">Ajouter un rappel</string>
     <string name="action_reminder_edit">Modifier le rappel</string>
     <string name="action_rename">Renommer</string>

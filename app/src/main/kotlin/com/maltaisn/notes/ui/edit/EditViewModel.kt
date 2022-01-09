@@ -50,16 +50,23 @@ import com.maltaisn.notes.ui.edit.adapter.EditItemItem
 import com.maltaisn.notes.ui.edit.adapter.EditListItem
 import com.maltaisn.notes.ui.edit.adapter.EditTitleItem
 import com.maltaisn.notes.ui.edit.adapter.EditableText
+import com.maltaisn.notes.ui.edit.undo.ItemUndoAction
+import com.maltaisn.notes.ui.edit.undo.NoteUndoAction
+import com.maltaisn.notes.ui.edit.undo.TextUndoAction
+import com.maltaisn.notes.ui.edit.undo.UndoAction
+import com.maltaisn.notes.ui.edit.undo.UndoManager
 import com.maltaisn.notes.ui.note.ShownDateField
 import com.maltaisn.notes.ui.send
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.text.Collator
 import java.util.Collections
 import java.util.Date
 import javax.inject.Inject
+import kotlin.time.Duration.Companion.milliseconds
 
 /**
  * View model for the edit note screen.
@@ -135,6 +142,17 @@ class EditViewModel @Inject constructor(
      */
     private val listItems: MutableList<EditListItem> = mutableListOf()
 
+    /**
+     * Class used to manage the undo queue.
+     */
+    private val undoManager = UndoManager()
+
+    /** Flag used during undo or redo operation to ignore text change callbacks. */
+    private var ignoreTextChanges = false
+
+    /** Job used to debounce end of batch for text edit undo actions. */
+    private var undoAppendJob: Job? = null
+
     private val _editActionsVisibility = MutableLiveData<EditActionsVisibility>()
     val editActionsVisibility: LiveData<EditActionsVisibility>
         get() = _editActionsVisibility
@@ -147,8 +165,8 @@ class EditViewModel @Inject constructor(
     val noteCreateEvent: LiveData<Event<Long>>
         get() = _noteCreateEvent
 
-    private val _focusEvent = MutableLiveData<Event<FocusChange>>()
-    val focusEvent: LiveData<Event<FocusChange>>
+    private val _focusEvent = MutableLiveData<Event<EditFocusChange>>()
+    val focusEvent: LiveData<Event<EditFocusChange>>
         get() = _focusEvent
 
     private val _messageEvent = MutableLiveData<Event<EditMessage>>()
@@ -293,6 +311,8 @@ class EditViewModel @Inject constructor(
 
             savedStateHandle[KEY_NOTE_ID] = note.id
 
+            undoAppendJob = null
+
             recreateListItems()
             updateEditActionsVisibility()
 
@@ -357,12 +377,14 @@ class EditViewModel @Inject constructor(
         }
     }
 
-    fun updateEditActionsVisibility() {
+    private fun updateEditActionsVisibility() {
         val isList = note.type == NoteType.LIST
         val inTrash = isNoteInTrash
         val anyChecked = listItems.asSequence().filterIsInstance<EditItemItem>().any { it.checked }
 
         _editActionsVisibility.value = EditActionsVisibility(
+            undo = undoManager.canUndo,
+            redo = undoManager.canRedo,
             convertToList = !isList && !inTrash,
             convertToText = isList && !inTrash,
             reminderAdd = !inTrash && reminder == null,
@@ -380,6 +402,66 @@ class EditViewModel @Inject constructor(
             deleteChecked = isList && anyChecked && !inTrash,
             sortItems = isList && !inTrash,
         )
+    }
+
+    fun undo() {
+        undoAppendJob?.cancel()
+        undoAppendJob = null
+        doUndoRedo(undoManager.undo()) { action ->
+            when (action) {
+                is ItemUndoAction -> {
+                    action.undo(listItems)
+                }
+                is NoteUndoAction -> {
+                    note = action.undo()
+                    null
+                }
+            }
+        }
+    }
+
+    fun redo() {
+        undoAppendJob?.cancel()
+        undoAppendJob = null
+        doUndoRedo(undoManager.redo()) { action ->
+            when (action) {
+                is ItemUndoAction -> {
+                    action.redo(listItems)
+                }
+                is NoteUndoAction -> {
+                    note = action.redo()
+                    null
+                }
+            }
+        }
+    }
+
+    private fun doUndoRedo(action: UndoAction?, work: (UndoAction) -> EditFocusChange?) {
+        if (action == null) {
+            // Shouldn't happen because buttons are not enabled when not available.
+            return
+        }
+
+        ignoreTextChanges = true
+        val focusChange = work(action)
+        ignoreTextChanges = false
+
+        // Update the items for the performed change
+        when (action) {
+            is ItemUndoAction -> {
+                updateListItems()
+            }
+            is NoteUndoAction -> {
+                recreateListItems()
+                focusFirstItem()
+            }
+        }
+
+        if (focusChange != null) {
+            _focusEvent.send(focusChange)
+        }
+
+        updateEditActionsVisibility()
     }
 
     fun toggleNoteType() {
@@ -401,16 +483,23 @@ class EditViewModel @Inject constructor(
 
         // Update list items
         recreateListItems()
+        focusFirstItem()
+    }
 
+    private fun focusFirstItem() {
         // Go to first focusable item
         when (note.type) {
             NoteType.TEXT -> {
+                // Focus end of content
                 val contentPos = listItems.indexOfLast { it is EditContentItem }
-                focusItemAt(contentPos, (listItems[contentPos] as EditContentItem).content.text.length, false)
+                focusItemAt(contentPos, (listItems[contentPos] as EditContentItem).text.text.length, false)
             }
             NoteType.LIST -> {
                 val lastItemPos = listItems.indexOfLast { it is EditItemItem }
-                focusItemAt(lastItemPos, (listItems[lastItemPos] as EditItemItem).content.text.length, false)
+                if (lastItemPos != -1) {
+                    // Focus end of first item
+                    focusItemAt(lastItemPos, (listItems[lastItemPos] as EditItemItem).text.text.length, false)
+                }
             }
         }
     }
@@ -496,7 +585,7 @@ class EditViewModel @Inject constructor(
             }
 
             // Update title item
-            findItem<EditTitleItem>().title.replaceAll(newTitle)
+            findItem<EditTitleItem>().text.replaceAll(newTitle)
             focusItemAt(findItemPos<EditTitleItem>(), newTitle.length, true)
         }
     }
@@ -557,7 +646,7 @@ class EditViewModel @Inject constructor(
         // Remove all items, sort them, then add them back.
         val firstPos = listItems.indexOfFirst { it is EditItemItem }
         val sortedItems = listItems.asSequence().filterIsInstance<EditItemItem>().sortedWith { a, b ->
-            collator.compare(a.content.text.toString().trimStart(), b.content.text.toString().trimStart())
+            collator.compare(a.text.text.toString().trimStart(), b.text.text.toString().trimStart())
         }.toList()
 
         for ((i, item) in sortedItems.withIndex()) {
@@ -572,7 +661,7 @@ class EditViewModel @Inject constructor(
         if (note.type == NoteType.TEXT) {
             val contentItemPos = findItemPos<EditContentItem>()
             val contentItem = listItems[contentItemPos] as EditContentItem
-            focusItemAt(contentItemPos, contentItem.content.text.length, true)
+            focusItemAt(contentItemPos, contentItem.text.text.length, true)
         }
     }
 
@@ -627,12 +716,12 @@ class EditViewModel @Inject constructor(
         }
 
         // Create note
-        val title = findItem<EditTitleItem>().title.text.toString()
+        val title = findItem<EditTitleItem>().text.text.toString()
         val content: String
         val metadata: NoteMetadata
         when (note.type) {
             NoteType.TEXT -> {
-                content = findItem<EditContentItem>().content.text.toString()
+                content = findItem<EditContentItem>().text.text.toString()
                 metadata = BlankNoteMetadata
             }
             NoteType.LIST -> {
@@ -643,7 +732,7 @@ class EditViewModel @Inject constructor(
                         items[item.actualPos] = item
                     }
                 }
-                content = items.joinToString("\n") { it.content.text }
+                content = items.joinToString("\n") { it.text.text }
                 metadata = ListNoteMetadata(items.map { it.checked })
             }
         }
@@ -741,6 +830,26 @@ class EditViewModel @Inject constructor(
         _editItems.value = listItems.toMutableList()
     }
 
+    override fun onTextChanged(undoAction: TextUndoAction) {
+        if (ignoreTextChanges) {
+            // Currently undoing or redoing something, ignore text changes.
+            return
+        }
+
+        // For text edits, batch all actions and stop if inactive for a certain delay.
+        if (!undoManager.isInBatchMode) {
+            undoManager.startBatch()
+        }
+        undoAppendJob?.cancel()
+        undoAppendJob = viewModelScope.launch {
+            delay(UNDO_TEXT_DEBOUNCE_DELAY)
+            undoManager.endBatch()
+        }
+
+        undoManager.append(undoAction)
+        updateEditActionsVisibility()
+    }
+
     override fun onNoteItemChanged(pos: Int, isPaste: Boolean) {
         val item = listItems.getOrNull(pos) as? EditItemItem?
         debugCheck(item != null)
@@ -750,11 +859,11 @@ class EditViewModel @Inject constructor(
             return
         }
 
-        if ('\n' in item.content.text) {
+        if ('\n' in item.text.text) {
             // User inserted line breaks in list items, split it into multiple items.
             // If this happens in the checked group when moving checked to the bottom, new items will be checked.
-            val lines = item.content.text.split('\n')
-            item.content.replaceAll(lines.first())
+            val lines = item.text.text.split('\n')
+            item.text.replaceAll(lines.first())
             for (listItem in listItems) {
                 if (listItem is EditItemItem && listItem.actualPos > item.actualPos) {
                     listItem.actualPos += lines.size - 1
@@ -792,7 +901,7 @@ class EditViewModel @Inject constructor(
     private fun focusEndOfTitle() {
         // Backspace in the content, focus the end of the title.
         val titlePos = findItemPos<EditTitleItem>()
-        val titleLength = (listItems[titlePos] as EditTitleItem).title.text.length
+        val titleLength = (listItems[titlePos] as EditTitleItem).text.text.length
         focusItemAt(titlePos, titleLength, true)
     }
 
@@ -805,9 +914,9 @@ class EditViewModel @Inject constructor(
                     is EditItemItem -> {
                         // Previous item is also a note list item. Merge the two items content,
                         // and delete the current item.
-                        val prevText = prevItem.content
+                        val prevText = prevItem.text
                         val prevLength = prevText.text.length
-                        prevText.append((listItems[pos] as EditItemItem).content.text)
+                        prevText.append((listItems[pos] as EditItemItem).text.text)
                         deleteListItemAt(pos)
 
                         // Set focus on merge boundary.
@@ -825,12 +934,12 @@ class EditViewModel @Inject constructor(
         val prevItem = listItems[pos - 1]
         if (prevItem is EditItemItem) {
             // Set focus at the end of previous item.
-            focusItemAt(pos - 1, prevItem.content.text.length, true)
+            focusItemAt(pos - 1, prevItem.text.text.length, true)
         } else {
             val nextItem = listItems.getOrNull(pos + 1)
             if (nextItem is EditItemItem) {
                 // Set focus at the end of next item.
-                focusItemAt(pos + 1, nextItem.content.text.length, true)
+                focusItemAt(pos + 1, nextItem.text.text.length, true)
             }
         }
 
@@ -896,7 +1005,7 @@ class EditViewModel @Inject constructor(
         get() = prefs.textSize.toFloat()
 
     private fun focusItemAt(pos: Int, textPos: Int, itemExists: Boolean) {
-        _focusEvent.send(FocusChange(pos, textPos, itemExists))
+        _focusEvent.send(EditFocusChange(pos, textPos, itemExists))
     }
 
     private fun onListItemsChanged() {
@@ -966,8 +1075,6 @@ class EditViewModel @Inject constructor(
         return listItems.indexOfFirst { it is T }
     }
 
-    data class FocusChange(val itemPos: Int, val pos: Int, val itemExists: Boolean)
-
     /**
      * The default class used for editable item text, backed by StringBuilder.
      * When items are bound by the adapter, this is changed to AndroidEditableText instead.
@@ -980,8 +1087,8 @@ class EditViewModel @Inject constructor(
             this.text.append(text)
         }
 
-        override fun replaceAll(text: CharSequence) {
-            this.text.replace(0, this.text.length, text.toString())
+        override fun replace(start: Int, end: Int, text: CharSequence) {
+            this.text.replace(start, end, text.toString())
         }
 
         override fun equals(other: Any?) = (other is DefaultEditableText &&
@@ -1001,5 +1108,7 @@ class EditViewModel @Inject constructor(
         private const val KEY_LINK_URL = "linkUrl"
 
         private val TEMP_ITEM = EditItemItem(DefaultEditableText(), checked = false, editable = false, actualPos = 0)
+
+        val UNDO_TEXT_DEBOUNCE_DELAY = 500.milliseconds
     }
 }

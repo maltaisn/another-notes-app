@@ -37,7 +37,6 @@ import com.maltaisn.notes.ui.MockAlarmCallback
 import com.maltaisn.notes.ui.ShareData
 import com.maltaisn.notes.ui.StatusChange
 import com.maltaisn.notes.ui.assertLiveDataEventSent
-import com.maltaisn.notes.ui.edit.EditViewModel.DefaultEditableText
 import com.maltaisn.notes.ui.edit.actions.EditActionsVisibility
 import com.maltaisn.notes.ui.edit.adapter.EditCheckedHeaderItem
 import com.maltaisn.notes.ui.edit.adapter.EditChipsItem
@@ -45,10 +44,13 @@ import com.maltaisn.notes.ui.edit.adapter.EditContentItem
 import com.maltaisn.notes.ui.edit.adapter.EditDateItem
 import com.maltaisn.notes.ui.edit.adapter.EditItemAddItem
 import com.maltaisn.notes.ui.edit.adapter.EditItemItem
+import com.maltaisn.notes.ui.edit.adapter.EditTextItem
 import com.maltaisn.notes.ui.edit.adapter.EditTitleItem
-import com.maltaisn.notes.ui.edit.adapter.EditableText
+import com.maltaisn.notes.ui.edit.undo.TextUndoAction
+import com.maltaisn.notes.ui.edit.undo.TextUndoActionType
 import com.maltaisn.notes.ui.getOrAwaitValue
 import com.maltaisn.notes.ui.note.ShownDateField
+import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
@@ -62,6 +64,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
+import kotlin.time.Duration.Companion.milliseconds
 
 class EditViewModelTest {
 
@@ -302,7 +305,7 @@ class EditViewModelTest {
 
         val firstItem = viewModel.editItems.getOrAwaitValue()[2] as EditItemItem
         firstItem.checked = false
-        firstItem.content.replaceAll("modified item")
+        firstItem.text.replaceAll("modified item")
 
         viewModel.saveNote()
 
@@ -634,7 +637,7 @@ class EditViewModelTest {
         viewModel.start(2)
 
         val item = viewModel.editItems.getOrAwaitValue()[2] as EditItemItem
-        item.content.append("\n")
+        item.text.append("\n")
 
         viewModel.onNoteItemChanged(2, false)
 
@@ -656,7 +659,7 @@ class EditViewModelTest {
             viewModel.start(2)
 
             val item = viewModel.editItems.getOrAwaitValue()[2] as EditItemItem
-            item.content.append("\nnew item first\nnew item second")
+            item.text.append("\nnew item first\nnew item second")
 
             viewModel.onNoteItemChanged(2, true)
 
@@ -1150,7 +1153,7 @@ class EditViewModelTest {
         viewModel.start(2)
 
         val item = viewModel.editItems.getOrAwaitValue()[5] as EditItemItem
-        item.content.append("\n")
+        item.text.append("\n")
 
         viewModel.onNoteItemChanged(5, false)
 
@@ -1321,21 +1324,59 @@ class EditViewModelTest {
         ), viewModel.editItems.getOrAwaitValue())
     }
 
+    @Test
+    fun `should undo and redo text change`() = runTest {
+        viewModel.start(1)
+        val item = viewModel.editItems.getOrAwaitValue()[1] as EditTitleItem
+        item.text.replaceAll("tiananmen square")  // Will I get blacklisted in China??
+
+        viewModel.onTextChanged(TextUndoAction.create(1, TextUndoActionType.TITLE, 2, 5, "tle", "ananmen square"))
+
+        var visibility = viewModel.editActionsVisibility.getOrAwaitValue()
+        assertTrue(visibility.undo)
+        assertFalse(visibility.redo)
+
+        viewModel.undo()
+        assertWasFocused(1, 4)
+        assertEquals("title", item.text.text.toString())
+
+        visibility = viewModel.editActionsVisibility.getOrAwaitValue()
+        assertFalse(visibility.undo)
+        assertTrue(visibility.redo)
+
+        viewModel.redo()
+        assertWasFocused(1, 15)
+        visibility = viewModel.editActionsVisibility.getOrAwaitValue()
+        assertEquals("tiananmen square", item.text.text.toString())
+        assertTrue(visibility.undo)
+        assertFalse(visibility.redo)
+    }
+
+    @Test
+    fun `should batch undo actions`() = runTest {
+        viewModel.start(1)
+        val item = viewModel.editItems.getOrAwaitValue()[2] as EditContentItem
+        item.text.replaceAll("abc")
+
+        viewModel.onTextChanged(TextUndoAction.create(2, TextUndoActionType.CONTENT, 0, 7, "content", "a"))
+        viewModel.onTextChanged(TextUndoAction.create(2, TextUndoActionType.CONTENT, 1, 1, "", "b"))
+        advanceTimeBy(EditViewModel.UNDO_TEXT_DEBOUNCE_DELAY + 100.milliseconds)
+        viewModel.onTextChanged(TextUndoAction.create(2, TextUndoActionType.CONTENT, 2, 2, "", "c"))
+
+        viewModel.undo()
+        assertWasFocused(2, 2)
+        assertEquals("ab", item.text.text.toString())
+        viewModel.undo()
+        assertWasFocused(2, 7)
+        assertEquals("content", item.text.text.toString())
+    }
+
     private fun replaceItemText(pos: Int, replacement: String) {
-        val item = viewModel.editItems.getOrAwaitValue()[pos]
-        val text = when (item) {
-            is EditTitleItem -> item.title
-            is EditContentItem -> item.content
-            is EditItemItem -> item.content
-            else -> error("no text in item")
-        }
+        val text = (viewModel.editItems.getOrAwaitValue()[pos] as EditTextItem).text
         text.replaceAll(replacement)
     }
 
     private fun assertWasFocused(itemPos: Int, pos: Int, itemExists: Boolean = true) {
-        assertLiveDataEventSent(viewModel.focusEvent, EditViewModel.FocusChange(itemPos, pos, itemExists))
+        assertLiveDataEventSent(viewModel.focusEvent, EditFocusChange(itemPos, pos, itemExists))
     }
-
-    private val String.e: EditableText
-        get() = DefaultEditableText(this)
 }

@@ -46,6 +46,7 @@
     <string name="action_open">Open</string>
     <string name="action_pin">Pin</string>
     <string name="action_postpone">Postpone</string>
+    <string name="action_redo">Redo</string>
     <string name="action_reminder_add">Add reminder</string>
     <string name="action_reminder_edit">Edit reminder</string>
     <string name="action_rename">Rename</string>

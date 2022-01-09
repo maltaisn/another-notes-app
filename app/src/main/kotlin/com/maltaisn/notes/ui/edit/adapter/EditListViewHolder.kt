@@ -17,6 +17,7 @@
 package com.maltaisn.notes.ui.edit.adapter
 
 import android.text.Editable
+import android.text.TextWatcher
 import android.text.format.DateUtils
 import android.view.KeyEvent
 import android.view.LayoutInflater
@@ -24,7 +25,6 @@ import android.view.View
 import android.view.inputmethod.EditorInfo
 import androidx.core.view.isInvisible
 import androidx.core.widget.doAfterTextChanged
-import androidx.core.widget.doOnTextChanged
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.chip.Chip
 import com.maltaisn.notes.R
@@ -42,6 +42,8 @@ import com.maltaisn.notes.model.entity.Reminder
 import com.maltaisn.notes.showKeyboard
 import com.maltaisn.notes.strikethroughText
 import com.maltaisn.notes.ui.edit.BulletTextWatcher
+import com.maltaisn.notes.ui.edit.undo.TextUndoAction
+import com.maltaisn.notes.ui.edit.undo.TextUndoActionType
 import com.maltaisn.notes.utils.RelativeDateFormatter
 import java.text.DateFormat
 
@@ -79,9 +81,13 @@ class EditTitleViewHolder(binding: ItemEditTitleBinding, callback: EditAdapter.C
             callback.onNoteClickedToEdit()
         }
         titleEdt.doAfterTextChanged { editable ->
-            if (editable != item?.title?.text) {
-                item?.title = AndroidEditableText(editable ?: return@doAfterTextChanged)
+            if (editable != null && editable != item?.text?.text) {
+                item?.text = AndroidEditableText(editable)
             }
+        }
+        titleEdt.onTextChangedForUndoListener = { start, end, oldText, newText ->
+            callback.onTextChanged(TextUndoAction.create(bindingAdapterPosition,
+                TextUndoActionType.CONTENT, start, end, oldText, newText))
         }
         titleEdt.setOnEditorActionListener { _, action, event ->
             if (action == EditorInfo.IME_ACTION_NEXT) {
@@ -98,7 +104,7 @@ class EditTitleViewHolder(binding: ItemEditTitleBinding, callback: EditAdapter.C
         this.item = item
         titleEdt.isFocusable = item.editable
         titleEdt.isFocusableInTouchMode = item.editable
-        titleEdt.setText(item.title.text)
+        titleEdt.setTextIgnoringUndo(item.text.text)
     }
 
     override fun setFocus(pos: Int) {
@@ -117,9 +123,13 @@ class EditContentViewHolder(binding: ItemEditContentBinding, callback: EditAdapt
     init {
         contentEdt.addTextChangedListener(BulletTextWatcher())
         contentEdt.doAfterTextChanged { editable ->
-            if (editable != null && editable != item?.content?.text) {
-                item?.content = AndroidEditableText(editable)
+            if (editable != null && editable != item?.text?.text) {
+                item?.text = AndroidEditableText(editable)
             }
+        }
+        contentEdt.onTextChangedForUndoListener = { start, end, oldText, newText ->
+            callback.onTextChanged(TextUndoAction.create(bindingAdapterPosition,
+                TextUndoActionType.CONTENT, start, end, oldText, newText))
         }
         contentEdt.setOnKeyListener { _, _, event ->
             val isCursorAtStart =
@@ -146,7 +156,7 @@ class EditContentViewHolder(binding: ItemEditContentBinding, callback: EditAdapt
         this.item = item
         contentEdt.isFocusable = item.editable
         contentEdt.isFocusableInTouchMode = item.editable
-        contentEdt.setText(item.content.text)
+        contentEdt.setTextIgnoringUndo(item.text.text)
     }
 
     override fun setFocus(pos: Int) {
@@ -183,19 +193,30 @@ class EditItemViewHolder(binding: ItemEditItemBinding, callback: EditAdapter.Cal
             }
         }
 
-        itemEdt.doOnTextChanged { _, _, _, count ->
-            if (itemEdt.text != item?.content?.text) {
-                item?.content = AndroidEditableText(itemEdt.text!!)
+        itemEdt.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
             }
 
-            // This is used to detect when user enters line breaks into the input, so the
-            // item can be split into multiple items. When user enters a single line break,
-            // selection is set at the beginning of new item. On paste, i.e. when more than one
-            // character is entered, selection is set at the end of last new item.
-            val pos = bindingAdapterPosition
-            if (pos != RecyclerView.NO_POSITION) {
-                callback.onNoteItemChanged(pos, count > 1)
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                // This is used to detect when user enters line breaks into the input, so the
+                // item can be split into multiple items. When user enters a single line break,
+                // selection is set at the beginning of new item. On paste, i.e. when more than one
+                // character is entered, selection is set at the end of last new item.
+                val pos = bindingAdapterPosition
+                if (pos != RecyclerView.NO_POSITION) {
+                    callback.onNoteItemChanged(pos, count > 1)
+                }
             }
+
+            override fun afterTextChanged(s: Editable?) {
+                if (s != null && s != item?.text?.text) {
+                    item?.text = AndroidEditableText(s)
+                }
+            }
+        })
+        itemEdt.onTextChangedForUndoListener = { start, end, oldText, newText ->
+            callback.onTextChanged(TextUndoAction.create(bindingAdapterPosition,
+                TextUndoActionType.LIST_ITEM, start, end, oldText, newText))
         }
         itemEdt.setOnFocusChangeListener { _, hasFocus ->
             // Only show delete icon for currently focused item.
@@ -234,7 +255,7 @@ class EditItemViewHolder(binding: ItemEditItemBinding, callback: EditAdapter.Cal
 
         itemEdt.isFocusable = item.editable
         itemEdt.isFocusableInTouchMode = item.editable
-        itemEdt.setText(item.content.text)
+        itemEdt.setTextIgnoringUndo(item.text.text)
         itemEdt.isActivated = !item.checked
 
         itemCheck.isChecked = item.checked
@@ -329,6 +350,10 @@ private class AndroidEditableText(override val text: Editable) : EditableText {
 
     override fun append(text: CharSequence) {
         this.text.append(text)
+    }
+
+    override fun replace(start: Int, end: Int, text: CharSequence) {
+        this.text.replace(start, end, text)
     }
 
     override fun replaceAll(text: CharSequence) {

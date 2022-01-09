@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Nicolas Maltais
+ * Copyright 2022 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,11 @@ sealed class EditListItem {
     abstract val type: ViewType
 }
 
+interface EditTextItem {
+    var text: EditableText
+    val editable: Boolean
+}
+
 data class EditDateItem(
     val date: Long
 ) : EditListItem() {
@@ -30,27 +35,27 @@ data class EditDateItem(
 }
 
 data class EditTitleItem(
-    var title: EditableText,
-    val editable: Boolean
-) : EditListItem() {
+    override var text: EditableText,
+    override val editable: Boolean,
+) : EditListItem(), EditTextItem {
 
     override val type get() = ViewType.TITLE
 }
 
 data class EditContentItem(
-    var content: EditableText,
-    val editable: Boolean
-) : EditListItem() {
+    override var text: EditableText,
+    override val editable: Boolean,
+) : EditListItem(), EditTextItem {
 
     override val type get() = ViewType.CONTENT
 }
 
 data class EditItemItem(
-    var content: EditableText,
+    override var text: EditableText,
     var checked: Boolean,
-    val editable: Boolean,
+    override val editable: Boolean,
     var actualPos: Int,
-) : EditListItem() {
+) : EditListItem(), EditTextItem {
 
     override val type get() = ViewType.ITEM
 }
@@ -85,6 +90,9 @@ interface EditableText {
     val text: CharSequence
 
     fun append(text: CharSequence)
-    fun replaceAll(text: CharSequence)
+    fun replace(start: Int, end: Int, text: CharSequence)
 
+    fun replaceAll(text: CharSequence) {
+        replace(0, this.text.length, text)
+    }
 }

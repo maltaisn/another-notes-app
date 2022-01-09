@@ -18,6 +18,8 @@ package com.maltaisn.notes.ui.edit.adapter
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.text.Editable
+import android.text.TextWatcher
 import android.text.style.CharacterStyle
 import android.text.util.Linkify
 import android.util.AttributeSet
@@ -27,7 +29,6 @@ import android.widget.EditText
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.core.text.getSpans
 import androidx.core.text.util.LinkifyCompat
-import androidx.core.widget.doAfterTextChanged
 import com.maltaisn.notes.R
 import com.maltaisn.notes.ui.edit.EditFragment
 import com.maltaisn.notes.ui.edit.LinkArrowKeyMovementMethod
@@ -45,6 +46,9 @@ class EditEditText @JvmOverloads constructor(
     val textSizeMultiplier: Float
 
     var onLinkClickListener: ((text: String, url: String) -> Unit)? = null
+    var onTextChangedForUndoListener: ((start: Int, end: Int, oldText: String, newText: String) -> Unit)? = null
+
+    private var ignoreTextChanges: Boolean = false
 
     init {
         @SuppressLint("UseKtx")
@@ -53,31 +57,52 @@ class EditEditText @JvmOverloads constructor(
         textSizeMultiplier = attrs.getFloat(R.styleable.EditEditText_textSizeMultiplier, 1.0f)
         attrs.recycle()
 
-        doAfterTextChanged { editable ->
-            if (editable == null) return@doAfterTextChanged
-            // Might not remove all spans but will work for most of them.
-            val spansToRemove = editable.getSpans<CharacterStyle>()
-            for (span in spansToRemove) {
-                editable.removeSpan(span)
+        addTextChangedListener(object : TextWatcher {
+            private var oldText: String = ""
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+                oldText = s?.substring(start, start + count).orEmpty()
             }
-        }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                if (!ignoreTextChanges) {
+                    onTextChangedForUndoListener?.invoke(
+                        start, start + before, oldText, s?.substring(start, start + count) ?: "")
+                }
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+                if (s == null) return
+
+                // Might not remove all spans but will work for most of them.
+                val spansToRemove = s.getSpans<CharacterStyle>()
+                for (span in spansToRemove) {
+                    s.removeSpan(span)
+                }
+
+                if (autoLink) {
+                    // Add new links
+                    // Maybe this should be debounced for performance?
+                    LinkifyCompat.addLinks(s, Linkify.EMAIL_ADDRESSES or Linkify.WEB_URLS or Linkify.PHONE_NUMBERS)
+                }
+            }
+        })
 
         addOnAttachStateChangeListener(PrepareCursorControllersListener())
 
         if (autoLink) {
-            doAfterTextChanged { editable ->
-                // Add new links
-                if (editable == null) return@doAfterTextChanged
-                LinkifyCompat.addLinks(editable,
-                    Linkify.EMAIL_ADDRESSES or Linkify.WEB_URLS or Linkify.PHONE_NUMBERS)
-            }
-
             movementMethod = LinkArrowKeyMovementMethod.getInstance()
         }
     }
 
     fun onLinkClicked(text: String, url: String) {
         onLinkClickListener?.invoke(text, url)
+    }
+
+    fun setTextIgnoringUndo(text: CharSequence) {
+        ignoreTextChanges = true
+        this.setText(text)
+        ignoreTextChanges = false
     }
 
     fun setAutoTextSize(size: Float) {

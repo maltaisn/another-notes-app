@@ -42,6 +42,7 @@
     <string name="action_open">Abrir</string>
     <string name="action_pin">Fijar</string>
     <string name="action_postpone">Posponer</string>
+    <string name="action_redo">Rehacer</string>
     <string name="action_reminder_add">Añadir recordatorio</string>
     <string name="action_reminder_edit">Editar recordatorio</string>
     <string name="action_rename">Renombrar</string>

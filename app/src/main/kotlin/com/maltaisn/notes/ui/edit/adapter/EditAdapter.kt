@@ -32,7 +32,8 @@ import com.maltaisn.notes.databinding.ItemEditItemBinding
 import com.maltaisn.notes.databinding.ItemEditLabelsBinding
 import com.maltaisn.notes.databinding.ItemEditTitleBinding
 import com.maltaisn.notes.hideKeyboard
-import com.maltaisn.notes.ui.edit.EditViewModel
+import com.maltaisn.notes.ui.edit.EditFocusChange
+import com.maltaisn.notes.ui.edit.undo.TextUndoAction
 
 class EditAdapter(val context: Context, val callback: Callback) :
     ListAdapter<EditListItem, RecyclerView.ViewHolder>(EditDiffCallback()) {
@@ -51,7 +52,7 @@ class EditAdapter(val context: Context, val callback: Callback) :
      * Pending focus change to be made when item will be bound
      * by RecyclerView, or `null` if none is pending.
      */
-    private var pendingFocusChange: EditViewModel.FocusChange? = null
+    private var pendingFocusChange: EditFocusChange? = null
 
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
         this.recyclerView = recyclerView
@@ -115,7 +116,7 @@ class EditAdapter(val context: Context, val callback: Callback) :
 
     override fun getItemViewType(position: Int) = getItem(position).type.ordinal
 
-    fun setItemFocus(focus: EditViewModel.FocusChange) {
+    fun setItemFocus(focus: EditFocusChange) {
         val rcv = recyclerView ?: return
 
         // If item to focus on doesn't exist yet, save it for later.
@@ -145,6 +146,11 @@ class EditAdapter(val context: Context, val callback: Callback) :
     }
 
     interface Callback {
+        /**
+         * Called when the title is edited.
+         */
+        fun onTextChanged(undoAction: TextUndoAction)
+
         /**
          * Called when an [EditItemItem] at [pos] text is changed by user,
          * either from the keyboard or from a paste event.

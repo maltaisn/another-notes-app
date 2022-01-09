@@ -31,6 +31,8 @@ data class EditAction(
 )
 
 data class EditActionsVisibility(
+    val undo: Boolean = false,
+    val redo: Boolean = false,
     val convertToList: Boolean = false,
     val convertToText: Boolean = false,
     val reminderAdd: Boolean = false,
@@ -51,6 +53,16 @@ data class EditActionsVisibility(
 
     fun createActions(context: Context): List<EditAction> {
         return listOf(
+            EditAction(undo,
+                R.string.action_undo,
+                R.drawable.ic_undo,
+                true,
+                EditViewModel::undo),
+            EditAction(redo,
+                R.string.action_redo,
+                R.drawable.ic_redo,
+                true,
+                EditViewModel::redo),
             EditAction(convertToList,
                 R.string.action_convert_to_list,
                 R.drawable.ic_checkbox,
