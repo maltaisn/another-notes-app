@@ -1,3 +1,3 @@
-- Added sorting options.
-- Show more highlights in search screen.
-- Many bug fixes.
+- Added translations to Arabic, Italian, Polish, Russian, Turkish, Ukrainian. Thank you to all contributors!
+- Change behavior to select label after creating it.
+- Several bug fixes.
