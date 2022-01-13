@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  Copyright 2021 Nicolas Maltais
+  Copyright 2022 Nicolas Maltais
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -158,7 +158,8 @@
     <string name="pref_preview_lines_text">Количество строк текстовых заметок</string>
     <string name="pref_preview_lines_list">Количество пунктов в заметках в виде списка</string>
     <string name="pref_group_behavior">Поведение</string>
-    <string name="pref_behavior_swipe_action">Действие при свайпе</string>
+    <string name="pref_behavior_swipe_action_left">Действие при свайпе</string>
+    <string name="pref_behavior_swipe_action_right">Действие при свайпе</string>
     <string name="pref_behavior_move_checked">Перемещать отмеченные пункты в конец</string>
     <string name="pref_group_data">Данные</string>
     <string name="pref_data_export">Экспорт данных</string>

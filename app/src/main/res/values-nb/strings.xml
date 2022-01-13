@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  Copyright 2021 Nicolas Maltais
+  Copyright 2022 Nicolas Maltais
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -167,7 +167,8 @@
     <string name="pref_preview_lines_text">Linjer i tekstnotatforhåndsvisning</string>
     <string name="pref_preview_lines_list">Elementer i listenotatforhåndsvisning</string>
     <string name="pref_group_behavior">Virkemåte</string>
-    <string name="pref_behavior_swipe_action">Sveipehandling</string>
+    <string name="pref_behavior_swipe_action_left">Sveipehandling</string>
+    <string name="pref_behavior_swipe_action_right">Sveipehandling</string>
     <string name="pref_behavior_move_checked">Flytt avmerkede elementer til bunnen</string>
     <string name="pref_group_data">Data</string>
     <string name="pref_data_export">Eksporter data</string>

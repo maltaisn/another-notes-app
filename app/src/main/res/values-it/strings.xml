@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  Copyright 2021 Nicolas Maltais
+  Copyright 2022 Nicolas Maltais
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -166,7 +166,8 @@
     <string name="pref_preview_lines_text">Righe nell\'anteprima delle note di testo</string>
     <string name="pref_preview_lines_list">Elementi nell\'anteprima delle note a elenco</string>
     <string name="pref_group_behavior">Comportamento</string>
-    <string name="pref_behavior_swipe_action">Azione dello scorrimento</string>
+    <string name="pref_behavior_swipe_action_left">Azione dello scorrimento</string>
+    <string name="pref_behavior_swipe_action_right">Azione dello scorrimento</string>
     <string name="pref_behavior_move_checked">Sposta in fondo gli elementi spuntati</string>
     <string name="pref_group_data">Dati</string>
     <string name="pref_data_export">Esporta dati</string>

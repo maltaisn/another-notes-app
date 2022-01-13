@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  Copyright 2021 Nicolas Maltais
+  Copyright 2022 Nicolas Maltais
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -166,7 +166,8 @@
     <string name="pref_preview_lines_text">Líneas de texto en la miniatura</string>
     <string name="pref_preview_lines_list">Elementos listados en la miniatura</string>
     <string name="pref_group_behavior">Comportamiento</string>
-    <string name="pref_behavior_swipe_action">Acción al deslizar</string>
+    <string name="pref_behavior_swipe_action_left">Acción al deslizar</string>
+    <string name="pref_behavior_swipe_action_right">Acción al deslizar</string>
     <string name="pref_behavior_move_checked">Mover los elementos marcados al final</string>
     <string name="pref_group_data">Datos</string>
     <string name="pref_data_export">Exportar datos</string>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  Copyright 2021 Nicolas Maltais
+  Copyright 2022 Nicolas Maltais
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -196,7 +196,8 @@
     <string name="pref_preview_lines_text">معاينة ملاحظة نصية</string>
     <string name="pref_preview_lines_list">معاينة ملاحظة قائمة</string>
     <string name="pref_group_behavior">السلوك</string>
-    <string name="pref_behavior_swipe_action">الإجراء عند السحب</string>
+    <string name="pref_behavior_swipe_action_left">الإجراء عند السحب</string>
+    <string name="pref_behavior_swipe_action_right">الإجراء عند السحب</string>
     <string name="pref_behavior_move_checked">تحريك العناصر المؤشَرة للأسفل</string>
     <string name="pref_group_data">البيانات</string>
     <string name="pref_data_export">تصدير البيانات</string>

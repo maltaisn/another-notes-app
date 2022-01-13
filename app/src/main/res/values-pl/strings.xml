@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  Copyright 2021 Nicolas Maltais
+  Copyright 2022 Nicolas Maltais
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -182,7 +182,8 @@
     <string name="pref_preview_lines_text">Wiersze w podglądzie notatki tekstowej</string>
     <string name="pref_preview_lines_list">Elementy w podglądzie notatki tekstowej</string>
     <string name="pref_group_behavior">Zachowanie</string>
-    <string name="pref_behavior_swipe_action">Akcja przesunięcia</string>
+    <string name="pref_behavior_swipe_action_left">Akcja przesunięcia</string>
+    <string name="pref_behavior_swipe_action_right">Akcja przesunięcia</string>
     <string name="pref_behavior_move_checked">Przenieś zaznaczone elementy na koniec</string>
     <string name="pref_group_data">Dane</string>
     <string name="pref_data_export">Eksportuj dane</string>
