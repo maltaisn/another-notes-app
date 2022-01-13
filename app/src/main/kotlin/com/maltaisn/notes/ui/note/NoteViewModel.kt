@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Nicolas Maltais
+ * Copyright 2022 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -333,11 +333,13 @@ abstract class NoteViewModel(
             .ifEmpty { return }
 
         viewModelScope.launch {
+            val date = Date()
             val newNotes = mutableListOf<Note>()
             for (note in oldNotes) {
                 newNotes += note.copy(status = newStatus,
                     pinned = if (newStatus == NoteStatus.ACTIVE) PinnedStatus.UNPINNED else PinnedStatus.CANT_PIN,
-                    reminder = note.reminder.takeIf { newStatus != NoteStatus.DELETED })
+                    reminder = note.reminder.takeIf { newStatus != NoteStatus.DELETED },
+                    lastModifiedDate = date)
                 if (newStatus == NoteStatus.DELETED) {
                     if (note.reminder != null) {
                         // Remove reminder alarm for deleted note.

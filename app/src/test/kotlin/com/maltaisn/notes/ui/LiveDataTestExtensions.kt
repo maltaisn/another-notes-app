@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Nicolas Maltais
+ * Copyright 2022 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,11 +24,12 @@ import java.util.concurrent.TimeoutException
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.time.Duration
+import kotlin.time.Duration.Companion.seconds
 
 /**
  * Gets the value of a [LiveData] or waits for it to have one, with a timeout.
  */
-fun <T> LiveData<T>.getOrAwaitValue(time: Duration = Duration.seconds(1)): T {
+fun <T> LiveData<T>.getOrAwaitValue(time: Duration = 1.seconds): T {
     var data: T? = null
     val latch = CountDownLatch(1)
     val observer = object : Observer<T> {

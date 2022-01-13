@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Nicolas Maltais
+ * Copyright 2022 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -300,10 +300,9 @@ class EditViewModel @AssistedInject constructor(
                 // Note was changed.
                 // To know whether last modified date should be changed, compare note
                 // with a copy that has the original values for fields we don't care about.
-                val changeLastModified = (oldNote != note.copy(
-                    pinned = oldNote.pinned,
-                    status = oldNote.status))
-                if (changeLastModified) {
+                val noteForComparison = note.copy(
+                    pinned = if (note.status == oldNote.status) oldNote.pinned else note.pinned)
+                if (oldNote != noteForComparison) {
                     note = note.copy(lastModifiedDate = Date())
                 }
 
