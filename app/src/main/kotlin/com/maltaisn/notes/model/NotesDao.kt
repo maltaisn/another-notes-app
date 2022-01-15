@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Nicolas Maltais
+ * Copyright 2022 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -80,6 +80,13 @@ interface NotesDao {
     @Transaction
     @Query("SELECT * FROM notes WHERE id == :id")
     suspend fun getByIdWithLabels(id: Long): NoteWithLabels?
+
+    /**
+     * Get the last created note, as indicated by creation date.
+     * Returns `null` if there's no notes in database.
+     */
+    @Query("SELECT * FROM notes ORDER BY added_date DESC LIMIT 1")
+    suspend fun getLastCreatedNote(): Note?
 
     /**
      * Get all notes with a [status], sorted by last modified date, with pinned notes first.

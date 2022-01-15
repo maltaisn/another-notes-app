@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Nicolas Maltais
+ * Copyright 2022 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -154,6 +154,8 @@ class MockNotesRepository(private val labelsRepository: MockLabelsRepository) : 
     fun requireNoteById(id: Long) = notes.getOrElse(id) {
         error("No note with ID $id")
     }
+
+    override suspend fun getLastCreatedNote() = notes.values.maxByOrNull { it.addedDate }
 
     override fun getNotesWithReminder() = changeFlow.map {
         notes.values.asSequence()

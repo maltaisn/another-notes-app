@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Nicolas Maltais
+ * Copyright 2022 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -65,6 +65,12 @@ class MainViewModel @Inject constructor(
             // Update all alarms for recurring reminders in case the previous alarm wasn't triggered.
             // This shouldn't technically happen, but there have been cases where recurring reminders failed.
             reminderAlarmManager.updateAllAlarms()
+
+            // Check if last added note is blank, in which case delete it.
+            val lastCreatedNote = notesRepository.getLastCreatedNote()
+            if (lastCreatedNote?.isBlank == true) {
+                notesRepository.deleteNote(lastCreatedNote)
+            }
 
             // Periodically remove old notes in trash, and auto export if needed.
             while (true) {
