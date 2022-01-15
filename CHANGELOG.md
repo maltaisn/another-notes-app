@@ -1,4 +1,5 @@
 ## v1.4.3
+- Allow blank notes with a reminder.
 - Fixed deleting and archiving notes not changing last modified date, messing with recycle bin delay (#56).
 
 ## v1.4.2

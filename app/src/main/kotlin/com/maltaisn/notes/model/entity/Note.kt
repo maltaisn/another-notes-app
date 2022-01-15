@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Nicolas Maltais
+ * Copyright 2022 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -125,9 +125,10 @@ data class Note(
     /**
      * Returns `true` if note has no title and no content.
      * Metadata is not taken into account.
+     * If a reminder is set, the note is not blank.
      */
     val isBlank: Boolean
-        get() = title.isBlank() && content.isBlank()
+        get() = title.isBlank() && content.isBlank() && reminder == null
 
     /**
      * If note is a list note, returns a list of the items in it.

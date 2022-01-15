@@ -319,7 +319,7 @@ class EditViewModel @AssistedInject constructor(
         if (note.isBlank) {
             // Delete blank note
             viewModelScope.launch {
-                notesRepository.deleteNote(note)
+                deleteNoteInternal()
                 _messageEvent.send(EditMessage.BLANK_NOTE_DISCARDED)
                 _exitEvent.send()
             }
@@ -465,7 +465,7 @@ class EditViewModel @AssistedInject constructor(
 
     fun deleteNoteForeverAndExit() {
         viewModelScope.launch {
-            notesRepository.deleteNote(note)
+            deleteNoteInternal()
         }
         exit()
     }
@@ -572,6 +572,11 @@ class EditViewModel @AssistedInject constructor(
         }
         note = note.copy(title = title, content = content,
             metadata = metadata, status = status, pinned = pinned, reminder = reminder)
+    }
+
+    private suspend fun deleteNoteInternal() {
+        notesRepository.deleteNote(note)
+        reminderAlarmManager.removeAlarm(note.id)
     }
 
     /**

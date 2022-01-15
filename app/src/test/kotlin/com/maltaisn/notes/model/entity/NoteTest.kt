@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Nicolas Maltais
+ * Copyright 2022 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -129,11 +129,14 @@ class NoteTest {
         val note2 = testNote(content = "content")
         val note3 = testNote(title = "   ", content = "")
         val note4 = listNote(listOf(ListNoteItem("  ", true)), title = "  ")
+        val note5 = testNote(title = "", content = "", reminder = Reminder(dateFor("2022-01-01"),
+            null, dateFor("2022-01-01"), 1, false))
 
         assertFalse(note1.isBlank)
         assertFalse(note2.isBlank)
         assertTrue(note3.isBlank)
         assertTrue(note4.isBlank)
+        assertFalse(note5.isBlank)
     }
 
     @Test
@@ -154,7 +157,6 @@ class NoteTest {
             ListNoteItem("2", false)))
         assertNoteEquals(listNote, textNote.asListNote(), ignoreId = false)
     }
-
 
     @Test
     fun `should convert text note with bullets to list (pre trim)`() {
