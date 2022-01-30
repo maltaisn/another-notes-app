@@ -1,3 +1,1 @@
-- Ajout de traductions en arabe, italien, polonais, russe, turque, ukrainien. Merci à tous les contributeurs!
-- Les étiquettes nouvellement crées sont maintenant sélectionnées automatiquement.
-- Plusieurs bugs corrigés.
+- Quelques bugs corrigés.
