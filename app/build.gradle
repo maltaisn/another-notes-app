@@ -27,8 +27,8 @@ android {
         applicationId "com.maltaisn.notes.sync"
         minSdkVersion 21
         targetSdkVersion 31
-        versionCode 10402
-        versionName "1.4.2"
+        versionCode 10403
+        versionName "1.4.3"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
         kapt {
@@ -92,8 +92,9 @@ android {
                     takingScreenshots == null ? "true" : (!takingScreenshots.toBoolean()).toString()
         }
         release {
-            minifyEnabled true
-            shrinkResources true
+            applicationIdSuffix ".beta"
+//            minifyEnabled true
+//            shrinkResources true
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
             signingConfig signingConfigs.release
             buildConfigField "boolean", "ENABLE_DEBUG_FEATURES", "false"

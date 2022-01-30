@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Nicolas Maltais
+ * Copyright 2022 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,6 +55,10 @@ class ReceiverAlarmCallback @Inject constructor(
             action = AlarmReceiver.ACTION_ALARM
             putExtra(AlarmReceiver.EXTRA_NOTE_ID, noteId)
         }
-        return PendingIntent.getBroadcast(context, noteId.toInt(), receiverIntent, 0)
+        var flags = 0
+        if (Build.VERSION.SDK_INT >= 23) {
+            flags = flags or PendingIntent.FLAG_IMMUTABLE
+        }
+        return PendingIntent.getBroadcast(context, noteId.toInt(), receiverIntent, flags)
     }
 }

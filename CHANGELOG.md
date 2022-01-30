@@ -1,4 +1,5 @@
 ## v1.4.3
+- Fixed critical crash occuring when using reminders (#61, #62).
 - Allow blank notes with a reminder.
 - Fixed deleting and archiving notes not changing last modified date, messing with recycle bin delay (#56).
 
