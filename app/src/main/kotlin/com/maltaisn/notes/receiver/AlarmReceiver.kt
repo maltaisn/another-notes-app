@@ -71,6 +71,11 @@ class AlarmReceiver : BroadcastReceiver() {
 
         reminderAlarmManager.setNextNoteReminderAlarm(note)
 
+        var pendingIntentBaseFlags = 0
+        if (Build.VERSION.SDK_INT >= 23) {
+            pendingIntentBaseFlags = pendingIntentBaseFlags or PendingIntent.FLAG_IMMUTABLE
+        }
+
         val noteText = note.asText(includeTitle = false).ifBlank { null }
         val builder = NotificationCompat.Builder(context, App.NOTIFICATION_CHANNEL_ID)
             .setPriority(NotificationCompat.PRIORITY_MAX)
@@ -86,14 +91,12 @@ class AlarmReceiver : BroadcastReceiver() {
             action = MainActivity.INTENT_ACTION_EDIT
             putExtra(EXTRA_NOTE_ID, noteId)
         }
-        builder.setContentIntent(PendingIntent.getActivity(context, noteId.toInt(), notifIntent, 0))
+        builder.setContentIntent(PendingIntent.getActivity(context,
+            noteId.toInt(), notifIntent, pendingIntentBaseFlags))
 
         // Add actions for non-recurring reminders
         if (note.reminder?.recurrence == null) {
-            var pendingIntentFlags = PendingIntent.FLAG_UPDATE_CURRENT
-            if (Build.VERSION.SDK_INT >= 23) {
-                pendingIntentFlags = pendingIntentFlags or PendingIntent.FLAG_IMMUTABLE
-            }
+            val pendingIntentFlags = pendingIntentBaseFlags or PendingIntent.FLAG_UPDATE_CURRENT
 
             // Mark done action
             val markDoneIntent = Intent(context, AlarmReceiver::class.java).apply {
