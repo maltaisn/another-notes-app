@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Nicolas Maltais
+ * Copyright 2022 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@ package com.maltaisn.notes.ui.edit.adapter
 import android.text.Editable
 import android.text.TextWatcher
 import android.text.format.DateUtils
-import android.text.method.LinkMovementMethod
 import android.text.style.CharacterStyle
 import android.text.util.Linkify
 import android.view.KeyEvent
@@ -48,6 +47,7 @@ import com.maltaisn.notes.sync.databinding.ItemEditItemBinding
 import com.maltaisn.notes.sync.databinding.ItemEditLabelsBinding
 import com.maltaisn.notes.sync.databinding.ItemEditTitleBinding
 import com.maltaisn.notes.ui.edit.BulletTextWatcher
+import com.maltaisn.notes.ui.edit.LinkArrowKeyMovementMethod
 import com.maltaisn.notes.utils.RelativeDateFormatter
 import java.text.DateFormat
 
@@ -118,7 +118,7 @@ class EditContentViewHolder(binding: ItemEditContentBinding, callback: EditAdapt
     init {
         contentEdt.addTextChangedListener(BulletTextWatcher())
         contentEdt.addTextChangedListener(clearSpansTextWatcher)
-        contentEdt.movementMethod = LinkMovementMethod.getInstance()  // Clickable links
+        contentEdt.movementMethod = LinkArrowKeyMovementMethod.getInstance()  // Clickable links
         contentEdt.doAfterTextChanged { editable ->
             // Add new links
             LinkifyCompat.addLinks(editable ?: return@doAfterTextChanged,
@@ -202,7 +202,7 @@ class EditItemViewHolder(binding: ItemEditItemBinding, callback: EditAdapter.Cal
                 LinkifyCompat.addLinks(editable ?: return@addTextChangedListener,
                     Linkify.WEB_URLS or Linkify.EMAIL_ADDRESSES)
             })
-        itemEdt.movementMethod = LinkMovementMethod.getInstance()  // Clickable links
+        itemEdt.movementMethod = LinkArrowKeyMovementMethod.getInstance()  // Clickable links
         itemEdt.setOnFocusChangeListener { _, hasFocus ->
             // Only show delete icon for currently focused item.
             deleteImv.isInvisible = !hasFocus
