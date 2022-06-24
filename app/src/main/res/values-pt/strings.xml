@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Copyright 2022 Nicolas Maltais
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  -->
+<resources>
+    <!-- Do not translate the app name -->
+    <!-- Can be translated to provided a sensible localized name for a "Notes" app -->
+    <string name="app_name_short">Notas</string>
+    <string name="action_archive">Arquivar</string>
+    <string name="action_cancel">Cancelar</string>
+    <string name="action_clear">Apagar</string>
+    <string name="action_convert_to_list">Converter para lista</string>
+    <string name="action_convert_to_text">Converta para texto</string>
+    <string name="action_copy">Fazer uma cópia</string>
+    <string name="action_delete">Apagar</string>
+    <string name="action_delete_checked">Excluir itens marcados</string>
+    <string name="action_delete_forever">Apagar permanentemente</string>
+    <string name="action_delete_selection">Apagar seleção</string>
+    <string name="action_delete_selection_forever">Apagar seleção permanentemente</string>
+    <string name="action_empty_trash">Esvaziar lixeira</string>
+    <string name="action_empty_trash_short">Esvaziar</string>
+    <string name="action_keep">Manter</string>
+    <string name="action_labels">Alterar etiquetas</string>
+    <string name="action_layout_grid">Exibir como grade</string>
+    <string name="action_layout_list">Exibir como lista</string>
+    <string name="action_manage">Gerenciar</string>
+    <string name="action_mark_as_done">Marcar como concluído</string>
+    <string name="action_none">Nenhum</string>
+    <string name="action_ok">OK</string>
+    <string name="action_pin">Fixar</string>
+    <string name="action_postpone">Adiar</string>
+    <string name="action_reminder_add">Adicionar lembrete</string>
+    <string name="action_reminder_edit">Editar lembrete</string>
+    <string name="action_rename">Renomear</string>
+    <string name="action_restore">Restaurar</string>
+    <string name="action_search">Pesquisar</string>
+    <string name="action_select_all">Selecionar tudo</string>
+    <string name="action_settings">Configurações</string>
+    <string name="action_share">Compartilhar</string>
+    <string name="action_unarchive">Desarquivar</string>
+    <string name="action_uncheck_all">Desmarcar todos os itens</string>
+    <string name="action_undo">Desfazer</string>
+    <string name="action_unpin">Desafixar</string>
+    <!-- Shortcuts -->
+    <!-- Note: normal length is ideally 25 chars or less, short is 10 chars or less. -->
+    <string name="shortcut_text_note">Nova nota de texto</string>
+    <string name="shortcut_text_note_short">Novo texto</string>
+    <string name="shortcut_list_note">Nova nota de lista</string>
+    <string name="shortcut_list_note_short">Nova lista</string>
+    <string name="shortcut_reminders">Lembretes</string>
+    <string name="shortcut_reminders_short">Lembretes</string>
+    <!-- Home -->
+    <string name="note_location_active">Notas</string>
+    <string name="note_location_archived">Arquivado</string>
+    <string name="note_location_deleted">Excluído</string>
+    <string name="note_location_labels">Etiquetas</string>
+    <string name="note_pinned">Fixado</string>
+    <string name="note_not_pinned">Outros</string>
+    <string name="note_placeholder_active">Você não possui notas.\nClique no + para adicionar uma.</string>
+    <string name="note_placeholder_archived">Nenhuma nota arquivada</string>
+    <string name="note_placeholder_deleted">A lixeira está vazia</string>
+    <plurals name="note_list_item_info">
+        <item quantity="one">+ %d outro item da lista</item>
+        <item quantity="other">+ %d outros itens da lista</item>
+    </plurals>
+    <plurals name="note_list_item_info_checked">
+        <item quantity="one">+ %d item marcado</item>
+        <item quantity="other">+ %d itens marcados</item>
+    </plurals>
+    <string name="trash_reminder_message">As notas na lixeira são excluídas automaticamente após %d dias.</string>
+    <string name="trash_delete_message">Esta nota será excluída permanentemente.</string>
+    <string name="trash_delete_selected_message">As notas selecionadas serão excluídas permanentemente.</string>
+    <string name="trash_empty_message">Todas as notas na lixeira serão excluídas permanentemente.</string>
+    <string name="search_hint">Pesquisar notas</string>
+    <string name="search_empty_placeholder">Nenhuma nota encontrada para sua pesquisa.</string>
+    <string name="sort_title">Opções de ordenação</string>
+    <string name="sort_direction">Direção da ordenação</string>
+    <string name="sort_direction_ascending">Crescente</string>
+    <string name="sort_direction_descending">Decrescente</string>
+    <string name="sort_field">Ordenar por</string>
+    <string name="sort_field_created">Data de criação</string>
+    <string name="sort_field_modified">Data de modificação</string>
+    <string name="sort_field_title">Título</string>
+    <!-- Edit -->
+    <string name="edit_add_title">Criar nota</string>
+    <string name="edit_change_title">Editar nota</string>
+    <string name="edit_hint_note_title">Título</string>
+    <string name="edit_hint_note_content">Nota</string>
+    <string name="edit_hint_note_item">Item da lista</string>
+    <string name="edit_message_blank_note_discarded">Nota em branco descartada.</string>
+    <plurals name="edit_move_archive_message">
+        <item quantity="one">Nota arquivada.</item>
+        <item quantity="other">Notas arquivadas.</item>
+    </plurals>
+    <plurals name="edit_message_move_delete">
+        <item quantity="one">Nota movida para a lixeira.</item>
+        <item quantity="other">Notas movidas para a lixeira.</item>
+    </plurals>
+    <plurals name="edit_message_move_restore">
+        <item quantity="one">Nota restaurada.</item>
+        <item quantity="other">Notas restauradas.</item>
+    </plurals>
+    <plurals name="edit_message_move_unarchive">
+        <item quantity="one">Nota desarquivada.</item>
+        <item quantity="other">Notas desarquivadas.</item>
+    </plurals>
+    <string name="edit_in_trash_message">Não é possível editar uma nota na lixeira.</string>
+    <string name="edit_copy_suffix">Copiar</string>
+    <string name="edit_copy_untitled_name">Sem título</string>
+    <string name="edit_convert_keep_checked">Remover itens marcados?</string>
+    <plurals name="edit_checked_items">
+        <item quantity="one">%d item marcado</item>
+        <item quantity="other">%d itens marcados</item>
+    </plurals>
+    <!-- Reminder -->
+    <string name="note_reminders">Lembretes</string>
+    <string name="reminder_upcoming">Em breve</string>
+    <string name="reminder_today">Hoje</string>
+    <string name="reminder_overdue">Atrasado</string>
+    <string name="reminder_date">Data</string>
+    <string name="reminder_time">Hora</string>
+    <string name="reminder_invalid_time">Esta hora já passou.</string>
+    <string name="reminder_notif_channel_title">Lembretes</string>
+    <string name="reminder_notif_channel_descr">Lembretes definidos em notas</string>
+    <string name="reminder_empty_placeholder">Nenhum lembrete definido</string>
+    <string name="reminder_restricted_battery">Os alarmes de lembretes podem não funcionar corretamente porque o app
+    possui o uso de bateria restrito. Isso pode ser alterado nas configurações do app.</string>
+    <!-- Labels -->
+    <string name="label_create">Criar nova etiqueta</string>
+    <string name="label_edit">Editar nome da etiqueta</string>
+    <string name="label_manage">Gerenciar etiquetas</string>
+    <string name="label_select">Selecionar etiquetas</string>
+    <string name="label_already_exists">Uma etiqueta com este nome já existe.</string>
+    <string name="label_hidden_option">Ocultar notas com esta etiqueta das seções de notas ativas e arquivadas</string>
+    <string name="label_empty_placeholder">Nenhuma etiqueta criada</string>
+    <string name="label_delete_message">As etiquetas selecionadas serão excluídas, mas as notas associadas
+    a elas serão mantidas.</string>
+    <string name="label_notes_empty_placeholder">Nenhuma nota com essa etiqueta</string>
+    <!-- Settings -->
+    <string name="pref_group_appearance">Aparência</string>
+    <string name="pref_theme">Tema do aplicativo</string>
+    <string name="pref_theme_light">Claro</string>
+    <string name="pref_theme_dark">Escuro</string>
+    <string name="pref_theme_system">O mesmo do sistema</string>
+    <string name="pref_strikethrough_checked">Riscar itens de lista marcados</string>
+    <string name="pref_preview_labels">Número máximo de etiquetas na pré-visualização</string>
+    <string name="pref_shown_date">Data mostrada para as notas</string>
+    <string name="pref_shown_date_added">Data de criação</string>
+    <string name="pref_shown_date_modified">Data da última modificação</string>
+    <string name="pref_shown_date_none">Não mostrar data</string>
+    <string name="pref_preview_lines">Máximo de linhas nas pré-visualizações</string>
+    <string name="pref_preview_lines_summary">Configurar quantas linhas e itens são mostrados nas notas,
+        para cada modo de exibição e tipo de nota</string>
+    <string name="pref_preview_lines_grid_layout">Exibição em grade</string>
+    <string name="pref_preview_lines_list_layout">Exibição em lista</string>
+    <string name="pref_preview_lines_text">Linhas na pré-visualização da nota de texto</string>
+    <string name="pref_preview_lines_list">Itens na pré-visualização da nota de lista</string>
+    <string name="pref_group_behavior">Comportamento</string>
+    <string name="pref_behavior_move_checked">Mover os itens marcados para o final</string>
+    <string name="pref_group_data">Dados</string>
+    <string name="pref_data_export">Exportar dados</string>
+    <string name="pref_data_export_summary">Exportar dados das notas como JSON</string>
+    <string name="pref_data_auto_export">Exportação automática dos dados</string>
+    <string name="pref_data_auto_export_summary">Exportar automaticamente os dados do app para um arquivo uma vez por dia.</string>
+    <string name="pref_data_auto_export_date">(Última exportação em %s)</string>
+    <string name="pref_data_import">Importar dados</string>
+    <string name="pref_data_import_summary">Importar dados JSON exportados anteriormente, mesclando com os dados existentes.</string>
+    <string name="pref_data_clear">Limpar todos os dados</string>
+    <string name="pref_data_clear_confirm_message">Todos os dados de notas serão apagadas permanentemente!
+        Isso não pode ser desfeito.</string>
+    <string name="pref_data_clear_success_message">Todos os dados foram apagados com sucesso.</string>
+    <string name="pref_group_about">Sobre</string>
+    <string name="pref_about_view_source">Ver no GitHub</string>
+    <string name="pref_about_view_licenses">Licenças de código aberto</string>
+    <string name="pref_about_version">Versão</string>
+    <!-- Import/export data messages -->
+    <string name="export_success">Dados exportados com sucesso!</string>
+    <string name="export_fail">Ocorreu um erro durante a exportação dos dados.</string>
+    <string name="import_success">Dados importados com sucesso!</string>
+    <string name="import_future_version">Dados importados com sucesso! Tenha em mente que algumas informações podem
+        ter sido perdidas porque os dados originam de uma versão posterior.</string>
+    <string name="import_bad_input">Ocorreu um erro ao tentar ler este arquivo.</string>
+    <string name="import_bad_format">Não foi possível importar os dados, dados JSON inválidos.</string>
+    <string name="import_bad_data">Não foi possível importar os dados, alguns campos têm valores inválidos.
+        Isto pode acontecer ao importar dados de uma versão posterior, tente atualizar o aplicativo.</string>
+    <string name="auto_export_message">Para habilitar a exportação automática, um arquivo deve ser escolhido para
+        salvar os dados. Os dados do aplicativo serão exportados uma vez por dia enquanto o aplicativo é aberto.
+        Clique em OK para continuar.</string>
+    <string name="auto_export_fail">Falha ao exportar os dados automaticamente. Certifique-se de que o local de exportação
+        ainda existe e é acessível e então reconfigure a exportação automática.</string>
+    <!-- Content description -->
+    <string name="content_descrp_open_drawer">Abrir painel lateral</string>
+    <string name="content_descrp_back">Voltar</string>
+    <string name="content_descrp_label_hidden">Notas com esta etiqueta estão escondidas</string>
+    <!-- Relative date time format -->
+    <string name="date_rel_today">Hoje, %s</string>
+    <string name="date_rel_yesterday">Ontem, %s</string>
+    <string name="date_rel_tomorrow">Amanhã, %s</string>
+    <plurals name="date_rel_days_past">
+        <item quantity="one">Há %d dia, %s</item>
+        <!-- used with quantity >= 2, format values: number of days, time -->
+        <item quantity="other">Há %d dias, %s</item>
+    </plurals>
+    <plurals name="date_rel_days_future">
+        <item quantity="one">Em %d dia, %s</item>
+        <!-- used with quantity >= 2, format values: number of days, time -->
+        <item quantity="other">Em %d dias, %s</item>
+    </plurals>
+    <!-- format values: date, time -->
+    <string name="date_rel_absolute">%1$s, %2$s</string>
+</resources>

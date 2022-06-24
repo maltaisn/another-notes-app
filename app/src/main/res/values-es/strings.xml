@@ -126,7 +126,7 @@
         <item quantity="other">%d elementos seleccionados</item>
     </plurals>
     <!-- Reminder -->
-    <string name="note_reminders" comment="note_reminders&#10;Reminder&#10;&#10;IMPORTANT: reminders can have a recurrence, which is selected using a dialog provided by another library which I maintain. For the app to be fully translated, this library needs to be translated too. The library can be translated at https://crowdin.com/translate/recurpickerlib">Recordatorios</string>
+    <string name="note_reminders">Recordatorios</string>
     <string name="reminder_upcoming">Próximos</string>
     <string name="reminder_today">Hoy</string>
     <string name="reminder_overdue">Vencida</string>
@@ -166,8 +166,6 @@
     <string name="pref_preview_lines_text">Líneas de texto en la miniatura</string>
     <string name="pref_preview_lines_list">Elementos listados en la miniatura</string>
     <string name="pref_group_behavior">Comportamiento</string>
-    <string name="pref_behavior_swipe_action_left">Acción al deslizar</string>
-    <string name="pref_behavior_swipe_action_right">Acción al deslizar</string>
     <string name="pref_behavior_move_checked">Mover los elementos marcados al final</string>
     <string name="pref_group_data">Datos</string>
     <string name="pref_data_export">Exportar datos</string>
@@ -202,12 +200,12 @@
     <string name="date_rel_today">Hoy, %s</string>
     <string name="date_rel_yesterday">Ayer, %s</string>
     <string name="date_rel_tomorrow">Mañana, %s</string>
-    <plurals name="date_rel_days_past" comment="date_rel_days_past&#10;used with quantity &gt;= 2, format values: number of days, time&#10;No need to provide translation for quantities &lt; 2">
+    <plurals name="date_rel_days_past">
         <item quantity="one">hace %d día, %s</item>
         <!-- used with quantity >= 2, format values: number of days, time -->
         <item quantity="other">hace %d días, %s</item>
     </plurals>
-    <plurals name="date_rel_days_future" comment="date_rel_days_future&#10;used with quantity &gt;= 2, format values: number of days, time&#10;No need to provide translation for quantities &lt; 2">
+    <plurals name="date_rel_days_future">
         <item quantity="one">En %d día, %s</item>
         <!-- used with quantity >= 2, format values: number of days, time -->
         <item quantity="other">En %d días, %s</item>

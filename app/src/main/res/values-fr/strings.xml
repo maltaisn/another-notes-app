@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  Copyright 2021 Nicolas Maltais
+  Copyright 2022 Nicolas Maltais
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -125,7 +125,7 @@
         <item quantity="other">%d élément cochés</item>
     </plurals>
     <!-- Reminder -->
-    <string name="note_reminders" comment="note_reminders&#10;Reminder&#10;&#10;IMPORTANT: reminders can have a recurrence, which is selected using a dialog provided by another library which I maintain. For the app to be fully translated, this library needs to be translated too. The library can be translated at https://crowdin.com/translate/recurpickerlib">Rappels</string>
+    <string name="note_reminders">Rappels</string>
     <string name="reminder_upcoming">À venir</string>
     <string name="reminder_today">Aujourd\'hui</string>
     <string name="reminder_overdue">En retard</string>
@@ -168,8 +168,8 @@
     <string name="pref_preview_lines_text">Lignes dans les notes textuelles</string>
     <string name="pref_preview_lines_list">Éléments dans les listes</string>
     <string name="pref_group_behavior">Comportement</string>
-    <string name="pref_behavior_swipe_action_left">Action de glissement à gauche</string>
-    <string name="pref_behavior_swipe_action_right">Action de glissement à droite</string>
+    <string name="pref_behavior_swipe_action_left">Glissement à gauche</string>
+    <string name="pref_behavior_swipe_action_right">Glissement à droite</string>
     <string name="pref_behavior_move_checked">Déplacer les éléments cochés vers le bas</string>
     <string name="pref_group_data">Données</string>
     <string name="pref_data_export">Exporter les données</string>

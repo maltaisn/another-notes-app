@@ -115,7 +115,7 @@
         <item quantity="other">%d отмеченных пунктов</item>
     </plurals>
     <!-- Reminder -->
-    <string name="note_reminders" comment="note_reminders&#10;Reminder&#10;&#10;IMPORTANT: reminders can have a recurrence, which is selected using a dialog provided by another library which I maintain. For the app to be fully translated, this library needs to be translated too. The library can be translated at https://crowdin.com/translate/recurpickerlib">Напоминания</string>
+    <string name="note_reminders">Напоминания</string>
     <string name="reminder_upcoming">Предстоящее</string>
     <string name="reminder_today">Сегодня</string>
     <string name="reminder_overdue">Просрочено</string>
@@ -158,8 +158,6 @@
     <string name="pref_preview_lines_text">Количество строк текстовых заметок</string>
     <string name="pref_preview_lines_list">Количество пунктов в заметках в виде списка</string>
     <string name="pref_group_behavior">Поведение</string>
-    <string name="pref_behavior_swipe_action_left">Действие при свайпе</string>
-    <string name="pref_behavior_swipe_action_right">Действие при свайпе</string>
     <string name="pref_behavior_move_checked">Перемещать отмеченные пункты в конец</string>
     <string name="pref_group_data">Данные</string>
     <string name="pref_data_export">Экспорт данных</string>
@@ -200,14 +198,14 @@
     <string name="date_rel_today">Сегодня, %s</string>
     <string name="date_rel_yesterday">Вчера, %s</string>
     <string name="date_rel_tomorrow">Завтра, %s</string>
-    <plurals name="date_rel_days_past" comment="date_rel_days_past&#10;used with quantity &gt;= 2, format values: number of days, time&#10;No need to provide translation for quantities &lt; 2">
+    <plurals name="date_rel_days_past">
         <item quantity="one">%d день назад, %s</item>
         <item quantity="few">%d дня назад, %s</item>
         <item quantity="many">%d дней назад, %s</item>
         <!-- used with quantity >= 2, format values: number of days, time -->
         <item quantity="other">%d дней назад, %s</item>
     </plurals>
-    <plurals name="date_rel_days_future" comment="date_rel_days_future&#10;used with quantity &gt;= 2, format values: number of days, time&#10;No need to provide translation for quantities &lt; 2">
+    <plurals name="date_rel_days_future">
         <item quantity="one">Через %d день, %s</item>
         <item quantity="few">Через %d дня, %s</item>
         <item quantity="many">Через %d дней, %s</item>

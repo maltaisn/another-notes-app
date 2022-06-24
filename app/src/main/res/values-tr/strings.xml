@@ -125,7 +125,7 @@
         <item quantity="other">%d işaretlenmiş ögeler</item>
     </plurals>
     <!-- Reminder -->
-    <string name="note_reminders" comment="note_reminders&#10;Reminder&#10;&#10;IMPORTANT: reminders can have a recurrence, which is selected using a dialog provided by another library which I maintain. For the app to be fully translated, this library needs to be translated too. The library can be translated at https://crowdin.com/translate/recurpickerlib">Hatırlatıcılar</string>
+    <string name="note_reminders">Hatırlatıcılar</string>
     <string name="reminder_upcoming">Yaklaşan</string>
     <string name="reminder_today">Bugün</string>
     <string name="reminder_overdue">Geçmiş</string>
@@ -168,8 +168,6 @@
     <string name="pref_preview_lines_text">Metin notu ön izlemesindeki satır sayısı</string>
     <string name="pref_preview_lines_list">Liste notu ön izlemesindeki öge sayısı</string>
     <string name="pref_group_behavior">Davranış</string>
-    <string name="pref_behavior_swipe_action_left">Kaydırma eylemi</string>
-    <string name="pref_behavior_swipe_action_right">Kaydırma eylemi</string>
     <string name="pref_behavior_move_checked">İşaretli ögeleri en alta taşı</string>
     <string name="pref_group_data">Veriler</string>
     <string name="pref_data_export">Verileri dışa aktar</string>
@@ -198,7 +196,7 @@
     <string name="import_bad_data">Bazı alanlar geçersiz değerlere sahip olduğundan veriler içe aktarılamadı. 
  Daha yeni bir sürümden içe aktarım yapılıyorsa bu olabilir, uygulamayı güncellemeyi deneyiniz.</string>
     <string name="auto_export_message">Otomatik dışa aktarımı aktifleştirmek için, verinin aktarılacağı 
- bir dosya seçilmelidir. Uygulamadaki veriler, uygulama açıldığında günde bir kez dışa dışa aktarılacaktır. 
+ bir dosya seçilmelidir. Uygulamadaki veriler, uygulama açıldığında günde bir kez dışa aktarılacaktır. 
  Devam etmek için TAMAM\'a basın.</string>
     <string name="auto_export_fail">Veriler otomatik olarak aktarılırken hata oluştu. Notların dışa aktarılma yerinin halen mevcut  ve ulaşılabilir olduğundan emin olun, sonra yeniden otomatik dışa aktarmayı yapılandırın.</string>
     <!-- Content description -->
@@ -209,12 +207,12 @@
     <string name="date_rel_today">Bugün, %s</string>
     <string name="date_rel_yesterday">Dün, %s</string>
     <string name="date_rel_tomorrow">Yarın, %s</string>
-    <plurals name="date_rel_days_past" comment="date_rel_days_past&#10;used with quantity &gt;= 2, format values: number of days, time&#10;No need to provide translation for quantities &lt; 2">
+    <plurals name="date_rel_days_past">
         <item quantity="one">%d gün önce, %s</item>
         <!-- used with quantity >= 2, format values: number of days, time -->
         <item quantity="other">%d gün önce, %s</item>
     </plurals>
-    <plurals name="date_rel_days_future" comment="date_rel_days_future&#10;used with quantity &gt;= 2, format values: number of days, time&#10;No need to provide translation for quantities &lt; 2">
+    <plurals name="date_rel_days_future">
         <item quantity="one">%d gün içinde, %s</item>
         <!-- used with quantity >= 2, format values: number of days, time -->
         <item quantity="other">%d gün içinde, %s</item>
