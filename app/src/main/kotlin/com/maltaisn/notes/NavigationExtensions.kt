@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Nicolas Maltais
+ * Copyright 2022 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,7 @@ fun NavController.navigateSafe(directions: NavDirections, allowSameDest: Boolean
     if (dest is NavGraph) {
         // Action destination is a nested graph, which isn't a real destination.
         // The real destination is the start destination of that graph so resolve it.
-        destId = dest.startDestination
+        destId = dest.startDestinationId
     }
     if (allowSameDest || currentDestination?.id != destId) {
         navigate(directions)

@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Nicolas Maltais
+ * Copyright 2022 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -113,8 +113,8 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
         }
     }
 
-    override fun onDestinationChanged(ctl: NavController, dst: NavDestination, args: Bundle?) {
-        drawerLayout.setDrawerLockMode(if (dst.id == R.id.fragment_home) {
+    override fun onDestinationChanged(controller: NavController, destination: NavDestination, arguments: Bundle?) {
+        drawerLayout.setDrawerLockMode(if (destination.id == R.id.fragment_home) {
             DrawerLayout.LOCK_MODE_UNLOCKED
         } else {
             DrawerLayout.LOCK_MODE_LOCKED_CLOSED

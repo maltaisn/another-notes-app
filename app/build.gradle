@@ -28,7 +28,7 @@ android {
         minSdkVersion 21
         targetSdkVersion 31
         versionCode 10403
-        versionName "1.4.3"
+        versionName "1.4.4"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
         kapt {
