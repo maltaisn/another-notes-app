@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Nicolas Maltais
+ * Copyright 2022 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -139,8 +139,12 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener, ConfirmDialog.
             }
         }
         rcv.setOnTouchListener { _, event ->
-            // Dispatch touch events to underlaying background view
-            binding.viewBackground.dispatchTouchEvent(event)
+            // Special case to dispatch touch events to underlaying background view to focus content view.
+            // This is only done if content view is not taller than RecyclerView to avoid scrolling issues (#63).
+            val contentEdt = rcv.findViewById<View>(R.id.content_edt)
+            if (contentEdt != null && contentEdt.height < rcv.height) {
+                binding.viewBackground.dispatchTouchEvent(event)
+            }
             false
         }
         binding.viewBackground.setOnClickListener {
