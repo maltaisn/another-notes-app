@@ -1,5 +1,8 @@
-## v1.5.0
+## v1.4.4
 - Added separate swipe left & right actions, with animated icon shown on swipe (#36).
+- Fixed cursor going to end of note when scrolling long text notes (#63, potentially #60).
+- Fixed movement with arrow keys not working in text fields when editing note (#67).
+- Fixed crash with notification on Android 12 (#65).
 
 ## v1.4.3
 - Fixed critical crash occuring when using reminders (#61, #62).

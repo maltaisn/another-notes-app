@@ -1,1 +1,2 @@
+- Added configurable left & right swipe actions.
 - A few bug fixes
