@@ -259,8 +259,6 @@ public class LinkArrowKeyMovementMethod extends ArrowKeyMovementMethod {
                             buffer.getSpanEnd(link));
                 }
                 return true;
-            } else {
-                Selection.removeSelection(buffer);
             }
         }
 
