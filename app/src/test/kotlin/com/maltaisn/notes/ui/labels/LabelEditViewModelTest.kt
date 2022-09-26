@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Nicolas Maltais
+ * Copyright 2022 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ import com.maltaisn.notes.model.MockLabelsRepository
 import com.maltaisn.notes.model.entity.Label
 import com.maltaisn.notes.ui.assertLiveDataEventSent
 import com.maltaisn.notes.ui.getOrAwaitValue
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -51,7 +51,7 @@ class LabelEditViewModelTest {
     }
 
     @Test
-    fun `should add label`() = mainCoroutineRule.runBlockingTest {
+    fun `should add label`() = runTest {
         viewModel.start(Label.NO_ID)
         assertLiveDataEventSent(viewModel.setLabelEvent, Label(Label.NO_ID, "", false))
         viewModel.onNameChanged("      \t     my label    \t    ")  // should be trimmed correctly
@@ -61,7 +61,7 @@ class LabelEditViewModelTest {
     }
 
     @Test
-    fun `should rename label`() = mainCoroutineRule.runBlockingTest {
+    fun `should rename label`() = runTest {
         viewModel.start(1)
         assertLiveDataEventSent(viewModel.setLabelEvent, Label(1, "label0", false))
         viewModel.onNameChanged("edited label")
@@ -71,7 +71,7 @@ class LabelEditViewModelTest {
     }
 
     @Test
-    fun `should set label hidden`() = mainCoroutineRule.runBlockingTest {
+    fun `should set label hidden`() = runTest {
         viewModel.start(1)
         assertLiveDataEventSent(viewModel.setLabelEvent, Label(1, "label0", false))
         viewModel.onHiddenChanged(true)
@@ -80,14 +80,14 @@ class LabelEditViewModelTest {
     }
 
     @Test
-    fun `should not change label`() = mainCoroutineRule.runBlockingTest {
+    fun `should not change label`() = runTest {
         viewModel.start(2)
         viewModel.addLabel()
         assertEquals(Label(2, "label1", true), labelsRepo.getLabelById(2))
     }
 
     @Test
-    fun `should have error if name is empty`() = mainCoroutineRule.runBlockingTest {
+    fun `should have error if name is empty`() = runTest {
         viewModel.start(Label.NO_ID)
         assertEquals(LabelEditViewModel.Error.BLANK, viewModel.nameError.getOrAwaitValue())
         viewModel.onNameChanged("    ")
@@ -99,7 +99,7 @@ class LabelEditViewModelTest {
     }
 
     @Test
-    fun `should have error if name exists`() = mainCoroutineRule.runBlockingTest {
+    fun `should have error if name exists`() = runTest {
         viewModel.start(Label.NO_ID)
         viewModel.onNameChanged("label0")
         assertEquals(LabelEditViewModel.Error.DUPLICATE, viewModel.nameError.getOrAwaitValue())
@@ -110,8 +110,7 @@ class LabelEditViewModelTest {
     }
 
     @Test
-    fun `should not have error if name is the one of edited label`() =
-        mainCoroutineRule.runBlockingTest {
+    fun `should not have error if name is the one of edited label`() = runTest {
             viewModel.start(1)
             viewModel.onNameChanged("label0")
             assertEquals(LabelEditViewModel.Error.NONE, viewModel.nameError.getOrAwaitValue())

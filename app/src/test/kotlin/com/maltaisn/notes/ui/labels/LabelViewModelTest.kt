@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Nicolas Maltais
+ * Copyright 2022 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@ import com.maltaisn.notes.model.entity.LabelRef
 import com.maltaisn.notes.ui.assertLiveDataEventSent
 import com.maltaisn.notes.ui.getOrAwaitValue
 import com.maltaisn.notes.ui.labels.adapter.LabelListItem
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -70,7 +70,7 @@ class LabelViewModelTest {
     }
 
     @Test
-    fun `should show all labels`() = mainCoroutineRule.runBlockingTest {
+    fun `should show all labels`() = runTest {
         viewModel.start(emptyList())
         assertEquals(listOf(
             LabelListItem(1, labelsRepo.requireLabelById(1), false),
@@ -82,7 +82,7 @@ class LabelViewModelTest {
     }
 
     @Test
-    fun `should select all or no labels (management)`() = mainCoroutineRule.runBlockingTest {
+    fun `should select all or no labels (management)`() = runTest {
         viewModel.start(emptyList())
         viewModel.selectAll()
 
@@ -98,7 +98,7 @@ class LabelViewModelTest {
     }
 
     @Test
-    fun `should toggle selection of label on long click (management)`() = mainCoroutineRule.runBlockingTest {
+    fun `should toggle selection of label on long click (management)`() = runTest {
         viewModel.start(emptyList())
         viewModel.onLabelItemLongClicked(getLabelItemAt(0), 0)
         assertTrue(getLabelItemAt(0).checked)
@@ -110,7 +110,7 @@ class LabelViewModelTest {
     }
 
     @Test
-    fun `should toggle selection of label on icon click (management)`() = mainCoroutineRule.runBlockingTest {
+    fun `should toggle selection of label on icon click (management)`() = runTest {
         viewModel.start(emptyList())
         viewModel.onLabelItemIconClicked(getLabelItemAt(0), 0)
         assertTrue(getLabelItemAt(0).checked)
@@ -123,7 +123,7 @@ class LabelViewModelTest {
 
     @Test
     fun `should toggle selection on label on click after first selected (management)`() =
-        mainCoroutineRule.runBlockingTest {
+        runTest {
             // Select a first label by long click
             viewModel.start(emptyList())
             viewModel.onLabelItemLongClicked(getLabelItemAt(0), 0)
@@ -136,7 +136,7 @@ class LabelViewModelTest {
         }
 
     @Test
-    fun `should update placeholder visibility`() = mainCoroutineRule.runBlockingTest {
+    fun `should update placeholder visibility`() = runTest {
         viewModel.start(emptyList())
         assertFalse(viewModel.placeholderShown.getOrAwaitValue())
         labelsRepo.clearAllData()
@@ -144,14 +144,14 @@ class LabelViewModelTest {
     }
 
     @Test
-    fun `should show rename dialog`() = mainCoroutineRule.runBlockingTest {
+    fun `should show rename dialog`() = runTest {
         viewModel.start(emptyList())
         viewModel.onLabelItemClicked(getLabelItemAt(3), 3)  // label 3
         assertLiveDataEventSent(viewModel.showRenameDialogEvent, 3)
     }
 
     @Test
-    fun `should show rename dialog for selection`() = mainCoroutineRule.runBlockingTest {
+    fun `should show rename dialog for selection`() = runTest {
         viewModel.start(emptyList())
         viewModel.onLabelItemLongClicked(getLabelItemAt(0), 0)
         viewModel.renameSelection()
@@ -164,7 +164,7 @@ class LabelViewModelTest {
     }
 
     @Test
-    fun `should delete label without showing confirmation`() = mainCoroutineRule.runBlockingTest {
+    fun `should delete label without showing confirmation`() = runTest {
         viewModel.start(emptyList())
         viewModel.onLabelItemLongClicked(getLabelItemAt(4), 4) // label 2
         viewModel.deleteSelectionPre()
@@ -172,7 +172,7 @@ class LabelViewModelTest {
     }
 
     @Test
-    fun `should delete labels showing confirmation before`() = mainCoroutineRule.runBlockingTest {
+    fun `should delete labels showing confirmation before`() = runTest {
         viewModel.start(emptyList())
         viewModel.onLabelItemLongClicked(getLabelItemAt(0), 0)
         viewModel.onLabelItemLongClicked(getLabelItemAt(1), 1)
@@ -181,7 +181,7 @@ class LabelViewModelTest {
     }
 
     @Test
-    fun `should keep selection after editing label`() = mainCoroutineRule.runBlockingTest {
+    fun `should keep selection after editing label`() = runTest {
         viewModel.start(emptyList())
         viewModel.onLabelItemLongClicked(getLabelItemAt(0), 0)
         assertEquals(1, viewModel.labelSelection.getOrAwaitValue())
@@ -190,7 +190,7 @@ class LabelViewModelTest {
     }
 
     @Test
-    fun `should init with subset of labels shared by all notes`() = mainCoroutineRule.runBlockingTest {
+    fun `should init with subset of labels shared by all notes`() = runTest {
         viewModel.start(listOf(1, 2, 3))
         assertEquals(listOf(
             LabelListItem(1, labelsRepo.requireLabelById(1), true),
@@ -202,7 +202,7 @@ class LabelViewModelTest {
     }
 
     @Test
-    fun `should update labels on all notes`() = mainCoroutineRule.runBlockingTest {
+    fun `should update labels on all notes`() = runTest {
         viewModel.start(listOf(1, 2, 3))
         // deselect label 1
         viewModel.onLabelItemClicked(getLabelItemAt(0), 0)
@@ -221,7 +221,7 @@ class LabelViewModelTest {
     }
 
     @Test
-    fun `should select newly created label (case 1)`() = mainCoroutineRule.runBlockingTest {
+    fun `should select newly created label (case 1)`() = runTest {
         // Case 1: list gets updated before call to select it
         viewModel.start(listOf(1))
         val label = Label(10, "new label")
@@ -231,7 +231,7 @@ class LabelViewModelTest {
     }
 
     @Test
-    fun `should select newly created label (case 2)`() = mainCoroutineRule.runBlockingTest {
+    fun `should select newly created label (case 2)`() = runTest {
         // Case 2: list gets updated after call to select it
         viewModel.start(listOf(1))
         val label = Label(10, "new label")

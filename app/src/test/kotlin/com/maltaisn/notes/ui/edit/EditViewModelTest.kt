@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Nicolas Maltais
+ * Copyright 2022 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,7 +52,7 @@ import com.maltaisn.notes.ui.note.ShownDateField
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -141,7 +141,7 @@ class EditViewModelTest {
     }
 
     @Test
-    fun `should create new blank note`() = mainCoroutineRule.runBlockingTest {
+    fun `should create new blank note`() = runTest {
         viewModel.start()
 
         assertNoteEquals(testNote(title = "", content = ""), notesRepo.lastAddedNote!!)
@@ -158,7 +158,7 @@ class EditViewModelTest {
     }
 
     @Test
-    fun `should keep editing same new note if started twice`() = mainCoroutineRule.runBlockingTest {
+    fun `should keep editing same new note if started twice`() = runTest {
         viewModel.start()  // new blank note
         val note = notesRepo.lastAddedNote!!
         viewModel.start()
@@ -166,7 +166,7 @@ class EditViewModelTest {
     }
 
     @Test
-    fun `should create new blank note with initial label`() = mainCoroutineRule.runBlockingTest {
+    fun `should create new blank note with initial label`() = runTest {
         viewModel.start(labelId = 1)
 
         assertEquals(listOf(
@@ -177,13 +177,13 @@ class EditViewModelTest {
     }
 
     @Test
-    fun `should create new blank note and change reminder`() = mainCoroutineRule.runBlockingTest {
+    fun `should create new blank note and change reminder`() = runTest {
         viewModel.start(changeReminder = true)
         assertLiveDataEventSent(viewModel.showReminderDialogEvent, notesRepo.lastNoteId)
     }
 
     @Test
-    fun `should edit existing text note`() = mainCoroutineRule.runBlockingTest {
+    fun `should edit existing text note`() = runTest {
         viewModel.start(1)
 
         assertEquals(NoteStatus.ACTIVE, viewModel.noteStatus.getOrAwaitValue())
@@ -198,7 +198,7 @@ class EditViewModelTest {
     }
 
     @Test
-    fun `should edit existing list note`() = mainCoroutineRule.runBlockingTest {
+    fun `should edit existing list note`() = runTest {
         viewModel.start(2)
 
         assertEquals(NoteStatus.ACTIVE, viewModel.noteStatus.getOrAwaitValue())
@@ -216,7 +216,7 @@ class EditViewModelTest {
 
     @Test
     fun `should open existing text note in trash, not editable`() =
-        mainCoroutineRule.runBlockingTest {
+        runTest {
             viewModel.start(4)
 
             assertEquals(viewModel.noteStatus.getOrAwaitValue(), NoteStatus.DELETED)
@@ -230,7 +230,7 @@ class EditViewModelTest {
         }
 
     @Test
-    fun `should open existing list note in trash, not editable`() = mainCoroutineRule.runBlockingTest {
+    fun `should open existing list note in trash, not editable`() = runTest {
         viewModel.start(5)
 
         assertEquals(NoteStatus.DELETED, viewModel.noteStatus.getOrAwaitValue())
@@ -245,7 +245,7 @@ class EditViewModelTest {
     }
 
     @Test
-    fun `should save changed text note`() = mainCoroutineRule.runBlockingTest {
+    fun `should save changed text note`() = runTest {
         val oldNote = notesRepo.requireNoteById(1)
 
         viewModel.start(1)
@@ -257,7 +257,7 @@ class EditViewModelTest {
     }
 
     @Test
-    fun `should save changed list note`() = mainCoroutineRule.runBlockingTest {
+    fun `should save changed list note`() = runTest {
         val oldNote = notesRepo.requireNoteById(2)
 
         viewModel.start(2)
@@ -276,7 +276,7 @@ class EditViewModelTest {
     }
 
     @Test
-    fun `should not save unchanged note`() = mainCoroutineRule.runBlockingTest {
+    fun `should not save unchanged note`() = runTest {
         val note = notesRepo.requireNoteById(1)
 
         viewModel.start(1)
@@ -286,7 +286,7 @@ class EditViewModelTest {
     }
 
     @Test
-    fun `should discard blank note on exit`() = mainCoroutineRule.runBlockingTest {
+    fun `should discard blank note on exit`() = runTest {
         viewModel.start()
         viewModel.exit()
 
@@ -296,7 +296,7 @@ class EditViewModelTest {
     }
 
     @Test
-    fun `should convert text note to list note`() = mainCoroutineRule.runBlockingTest {
+    fun `should convert text note to list note`() = runTest {
         viewModel.start(1)
         viewModel.toggleNoteType()
 
@@ -312,7 +312,7 @@ class EditViewModelTest {
     }
 
     @Test
-    fun `should convert list note without checked items to text note`() = mainCoroutineRule.runBlockingTest {
+    fun `should convert list note without checked items to text note`() = runTest {
         viewModel.start(3)
         viewModel.toggleNoteType()
 
@@ -329,7 +329,7 @@ class EditViewModelTest {
 
     @Test
     fun `should ask user to delete items before converting list note with checked items`() =
-        mainCoroutineRule.runBlockingTest {
+        runTest {
             viewModel.start(2)
             viewModel.toggleNoteType()
 
@@ -337,7 +337,7 @@ class EditViewModelTest {
         }
 
     @Test
-    fun `should convert list note to text note deleting checked items`() = mainCoroutineRule.runBlockingTest {
+    fun `should convert list note to text note deleting checked items`() = runTest {
         viewModel.start(2)
         viewModel.convertToText(false)
 
@@ -350,7 +350,7 @@ class EditViewModelTest {
     }
 
     @Test
-    fun `should convert list note to text note keeping checked items`() = mainCoroutineRule.runBlockingTest {
+    fun `should convert list note to text note keeping checked items`() = runTest {
         viewModel.start(2)
         viewModel.convertToText(true)
 
@@ -363,7 +363,7 @@ class EditViewModelTest {
     }
 
     @Test
-    fun `should move active note to archive`() = mainCoroutineRule.runBlockingTest {
+    fun `should move active note to archive`() = runTest {
         val oldNote = notesRepo.requireNoteById(1)
 
         viewModel.start(1)
@@ -377,7 +377,7 @@ class EditViewModelTest {
     }
 
     @Test
-    fun `should move archived note to active`() = mainCoroutineRule.runBlockingTest {
+    fun `should move archived note to active`() = runTest {
         val oldNote = notesRepo.requireNoteById(6)
 
         viewModel.start(6)
@@ -391,7 +391,7 @@ class EditViewModelTest {
     }
 
     @Test
-    fun `should move deleted note to active`() = mainCoroutineRule.runBlockingTest {
+    fun `should move deleted note to active`() = runTest {
         val oldNote = notesRepo.requireNoteById(4)
 
         viewModel.start(4)
@@ -405,7 +405,7 @@ class EditViewModelTest {
     }
 
     @Test
-    fun `should restore deleted text note and allow edit`() = mainCoroutineRule.runBlockingTest {
+    fun `should restore deleted text note and allow edit`() = runTest {
         val oldNote = notesRepo.requireNoteById(4)
 
         viewModel.start(4)
@@ -426,7 +426,7 @@ class EditViewModelTest {
     }
 
     @Test
-    fun `should restore deleted list note and allow edit`() = mainCoroutineRule.runBlockingTest {
+    fun `should restore deleted list note and allow edit`() = runTest {
         viewModel.start(5)
         viewModel.restoreNoteAndEdit()
 
@@ -442,7 +442,7 @@ class EditViewModelTest {
     }
 
     @Test
-    fun `should copy note`() = mainCoroutineRule.runBlockingTest {
+    fun `should copy note`() = runTest {
         viewModel.start(3)
         viewModel.copyNote("untitled", "Copy")
 
@@ -470,7 +470,7 @@ class EditViewModelTest {
     }
 
     @Test
-    fun `should not copy blank note, only change title`() = mainCoroutineRule.runBlockingTest {
+    fun `should not copy blank note, only change title`() = runTest {
         viewModel.start()
         val lastAdded = notesRepo.lastAddedNote!!
 
@@ -485,7 +485,7 @@ class EditViewModelTest {
     }
 
     @Test
-    fun `should share note text`() = mainCoroutineRule.runBlockingTest {
+    fun `should share note text`() = runTest {
         val note = notesRepo.requireNoteById(5)
         viewModel.start(5)
         viewModel.shareNote()
@@ -494,7 +494,7 @@ class EditViewModelTest {
     }
 
     @Test
-    fun `should delete note`() = mainCoroutineRule.runBlockingTest {
+    fun `should delete note`() = runTest {
         val oldNote = notesRepo.requireNoteById(6)
         viewModel.start(6)
         viewModel.deleteNote()
@@ -507,7 +507,7 @@ class EditViewModelTest {
     }
 
     @Test
-    fun `should delete note with reminder`() = mainCoroutineRule.runBlockingTest {
+    fun `should delete note with reminder`() = runTest {
         alarmCallback.addAlarm(3, 10)
         val oldNote = notesRepo.requireNoteById(3)
         viewModel.start(3)
@@ -525,7 +525,7 @@ class EditViewModelTest {
     }
 
     @Test
-    fun `should ask confirmation when deleting deleted note`() = mainCoroutineRule.runBlockingTest {
+    fun `should ask confirmation when deleting deleted note`() = runTest {
         viewModel.start(4)
         viewModel.deleteNote()
 
@@ -533,7 +533,7 @@ class EditViewModelTest {
     }
 
     @Test
-    fun `should delete deleted note forever and exit`() = mainCoroutineRule.runBlockingTest {
+    fun `should delete deleted note forever and exit`() = runTest {
         viewModel.start(4)
         viewModel.deleteNoteForeverAndExit()
 
@@ -542,7 +542,7 @@ class EditViewModelTest {
     }
 
     @Test
-    fun `should uncheck all items in list note`() = mainCoroutineRule.runBlockingTest {
+    fun `should uncheck all items in list note`() = runTest {
         viewModel.start(2)
         viewModel.uncheckAllItems()
 
@@ -557,7 +557,7 @@ class EditViewModelTest {
     }
 
     @Test
-    fun `should delete checked items in list note`() = mainCoroutineRule.runBlockingTest {
+    fun `should delete checked items in list note`() = runTest {
         viewModel.start(2)
         viewModel.deleteCheckedItems()
 
@@ -571,7 +571,7 @@ class EditViewModelTest {
     }
 
     @Test
-    fun `should split list note item on new line`() = mainCoroutineRule.runBlockingTest {
+    fun `should split list note item on new line`() = runTest {
         viewModel.start(2)
 
         val item = viewModel.editItems.getOrAwaitValue()[2] as EditItemItem
@@ -594,7 +594,7 @@ class EditViewModelTest {
 
     @Test
     fun `should split list note item in multiple items on paste`() =
-        mainCoroutineRule.runBlockingTest {
+        runTest {
             viewModel.start(2)
 
             val item = viewModel.editItems.getOrAwaitValue()[2] as EditItemItem
@@ -618,7 +618,7 @@ class EditViewModelTest {
 
     @Test
     fun `should merge list note item with previous on backspace`() =
-        mainCoroutineRule.runBlockingTest {
+        runTest {
             viewModel.start(2)
             viewModel.onNoteItemBackspacePressed(3)
 
@@ -635,7 +635,7 @@ class EditViewModelTest {
 
     @Test
     fun `should do nothing with note first item on backspace`() =
-        mainCoroutineRule.runBlockingTest {
+        runTest {
             viewModel.start(2)
             viewModel.onNoteItemBackspacePressed(1)
 
@@ -650,7 +650,7 @@ class EditViewModelTest {
         }
 
     @Test
-    fun `should delete list note item and focus previous`() = mainCoroutineRule.runBlockingTest {
+    fun `should delete list note item and focus previous`() = runTest {
         viewModel.start(2)
         viewModel.onNoteItemDeleteClicked(3)
 
@@ -666,7 +666,7 @@ class EditViewModelTest {
     }
 
     @Test
-    fun `should delete list note item and focus next`() = mainCoroutineRule.runBlockingTest {
+    fun `should delete list note item and focus next`() = runTest {
         viewModel.start(2)
         viewModel.onNoteItemDeleteClicked(2)
 
@@ -682,7 +682,7 @@ class EditViewModelTest {
     }
 
     @Test
-    fun `should add blank list note item and focus it`() = mainCoroutineRule.runBlockingTest {
+    fun `should add blank list note item and focus it`() = runTest {
         viewModel.start(2)
         viewModel.onNoteItemAddClicked(4)
 
@@ -701,7 +701,7 @@ class EditViewModelTest {
 
     @Test
     fun `should show can't edit message on try to edit in trash`() =
-        mainCoroutineRule.runBlockingTest {
+        runTest {
             viewModel.start(5)
             viewModel.onNoteClickedToEdit()
 
@@ -709,25 +709,25 @@ class EditViewModelTest {
         }
 
     @Test
-    fun `should allow note drag`() = mainCoroutineRule.runBlockingTest {
+    fun `should allow note drag`() = runTest {
         viewModel.start(2)
         assertTrue(viewModel.isNoteDragEnabled)
     }
 
     @Test
-    fun `should prevent note drag on text note`() = mainCoroutineRule.runBlockingTest {
+    fun `should prevent note drag on text note`() = runTest {
         viewModel.start(1)
         assertFalse(viewModel.isNoteDragEnabled)
     }
 
     @Test
-    fun `should prevent note drag on deleted note`() = mainCoroutineRule.runBlockingTest {
+    fun `should prevent note drag on deleted note`() = runTest {
         viewModel.start(5)
         assertFalse(viewModel.isNoteDragEnabled)
     }
 
     @Test
-    fun `should swap list items`() = mainCoroutineRule.runBlockingTest {
+    fun `should swap list items`() = runTest {
         viewModel.start(2)
         viewModel.onNoteItemSwapped(3, 2)
         viewModel.onNoteItemAddClicked(4)  // swap doesn't update live data, force it to update
@@ -751,31 +751,31 @@ class EditViewModelTest {
     }
 
     @Test
-    fun `should set correct pinned status (unpinned)`() = mainCoroutineRule.runBlockingTest {
+    fun `should set correct pinned status (unpinned)`() = runTest {
         viewModel.start(1)
         assertEquals(PinnedStatus.UNPINNED, viewModel.notePinned.getOrAwaitValue())
     }
 
     @Test
-    fun `should set correct pinned status (pinned)`() = mainCoroutineRule.runBlockingTest {
+    fun `should set correct pinned status (pinned)`() = runTest {
         viewModel.start(3)
         assertEquals(PinnedStatus.PINNED, viewModel.notePinned.getOrAwaitValue())
     }
 
     @Test
-    fun `should set correct pinned status (can't pin)`() = mainCoroutineRule.runBlockingTest {
+    fun `should set correct pinned status (can't pin)`() = runTest {
         viewModel.start(4)
         assertEquals(PinnedStatus.CANT_PIN, viewModel.notePinned.getOrAwaitValue())
     }
 
     @Test
-    fun `should set correct reminder (no reminder)`() = mainCoroutineRule.runBlockingTest {
+    fun `should set correct reminder (no reminder)`() = runTest {
         viewModel.start(1)
         assertNull(viewModel.noteReminder.getOrAwaitValue())
     }
 
     @Test
-    fun `should set correct reminder (has reminder)`() = mainCoroutineRule.runBlockingTest {
+    fun `should set correct reminder (has reminder)`() = runTest {
         viewModel.start(3)
         assertEquals(notesRepo.requireNoteById(3).reminder,
             viewModel.noteReminder.getOrAwaitValue())
@@ -783,7 +783,7 @@ class EditViewModelTest {
 
     @Test
     fun `should edit existing text note (modified date field)`() =
-        mainCoroutineRule.runBlockingTest {
+        runTest {
             whenever(prefs.shownDateField) doReturn ShownDateField.MODIFIED
             viewModel.start(1)
 
@@ -799,7 +799,7 @@ class EditViewModelTest {
         }
 
     @Test
-    fun `should edit existing text note (no date field)`() = mainCoroutineRule.runBlockingTest {
+    fun `should edit existing text note (no date field)`() = runTest {
         whenever(prefs.shownDateField) doReturn ShownDateField.NONE
         viewModel.start(1)
 
@@ -814,7 +814,7 @@ class EditViewModelTest {
     }
 
     @Test
-    fun `should separate checked and unchecked items (both)`() = mainCoroutineRule.runBlockingTest {
+    fun `should separate checked and unchecked items (both)`() = runTest {
         whenever(prefs.moveCheckedToBottom) doReturn true
         viewModel.start(2)
 
@@ -830,7 +830,7 @@ class EditViewModelTest {
     }
 
     @Test
-    fun `should separate checked and unchecked items (unchecked only)`() = mainCoroutineRule.runBlockingTest {
+    fun `should separate checked and unchecked items (unchecked only)`() = runTest {
         whenever(prefs.moveCheckedToBottom) doReturn true
         viewModel.start(3)
 
@@ -846,7 +846,7 @@ class EditViewModelTest {
     }
 
     @Test
-    fun `should separate checked and unchecked items (checked only)`() = mainCoroutineRule.runBlockingTest {
+    fun `should separate checked and unchecked items (checked only)`() = runTest {
         whenever(prefs.moveCheckedToBottom) doReturn true
         viewModel.start(5)
 
@@ -860,7 +860,7 @@ class EditViewModelTest {
     }
 
     @Test
-    fun `should remove checked group after deleting last checked item`() = mainCoroutineRule.runBlockingTest {
+    fun `should remove checked group after deleting last checked item`() = runTest {
         whenever(prefs.moveCheckedToBottom) doReturn true
         viewModel.start(2)
         viewModel.onNoteItemDeleteClicked(5)
@@ -875,7 +875,7 @@ class EditViewModelTest {
     }
 
     @Test
-    fun `should remove checked group after unchecking last checked item`() = mainCoroutineRule.runBlockingTest {
+    fun `should remove checked group after unchecking last checked item`() = runTest {
         whenever(prefs.moveCheckedToBottom) doReturn true
         viewModel.start(2)
         viewModel.onNoteItemCheckChanged(5, false)
@@ -891,7 +891,7 @@ class EditViewModelTest {
     }
 
     @Test
-    fun `should add unchecked group after unchecking first item`() = mainCoroutineRule.runBlockingTest {
+    fun `should add unchecked group after unchecking first item`() = runTest {
         whenever(prefs.moveCheckedToBottom) doReturn true
         viewModel.start(5)
         viewModel.restoreNoteAndEdit()  // note 5 is in trash, we want to edit it
@@ -908,7 +908,7 @@ class EditViewModelTest {
     }
 
     @Test
-    fun `should add checked group after checking first item`() = mainCoroutineRule.runBlockingTest {
+    fun `should add checked group after checking first item`() = runTest {
         whenever(prefs.moveCheckedToBottom) doReturn true
         viewModel.start(3)
         viewModel.onNoteItemCheckChanged(2, true)
@@ -926,7 +926,7 @@ class EditViewModelTest {
     }
 
     @Test
-    fun `should update existing checked group after checking item`() = mainCoroutineRule.runBlockingTest {
+    fun `should update existing checked group after checking item`() = runTest {
         whenever(prefs.moveCheckedToBottom) doReturn true
         viewModel.start(7)
         viewModel.onNoteItemCheckChanged(2, true)
@@ -944,7 +944,7 @@ class EditViewModelTest {
     }
 
     @Test
-    fun `should update existing checked group after unchecking item`() = mainCoroutineRule.runBlockingTest {
+    fun `should update existing checked group after unchecking item`() = runTest {
         whenever(prefs.moveCheckedToBottom) doReturn true
         viewModel.start(7)
         viewModel.onNoteItemCheckChanged(7, false)
@@ -962,7 +962,7 @@ class EditViewModelTest {
     }
 
     @Test
-    fun `should update existing checked group after deleting checked item`() = mainCoroutineRule.runBlockingTest {
+    fun `should update existing checked group after deleting checked item`() = runTest {
         whenever(prefs.moveCheckedToBottom) doReturn true
         viewModel.start(7)
         viewModel.onNoteItemDeleteClicked(7)
@@ -988,7 +988,7 @@ class EditViewModelTest {
     }
 
     @Test
-    fun `should keep actual pos order when checking and unchecking`() = mainCoroutineRule.runBlockingTest {
+    fun `should keep actual pos order when checking and unchecking`() = runTest {
         whenever(prefs.moveCheckedToBottom) doReturn true
         viewModel.start(7)
 
@@ -1018,7 +1018,7 @@ class EditViewModelTest {
     }
 
     @Test
-    fun `should add new items in unchecked section`() = mainCoroutineRule.runBlockingTest {
+    fun `should add new items in unchecked section`() = runTest {
         whenever(prefs.moveCheckedToBottom) doReturn true
         viewModel.start(2)
         viewModel.onNoteItemAddClicked(3)
@@ -1036,7 +1036,7 @@ class EditViewModelTest {
     }
 
     @Test
-    fun `should add new checked items if newlines inserted in checked section`() = mainCoroutineRule.runBlockingTest {
+    fun `should add new checked items if newlines inserted in checked section`() = runTest {
         whenever(prefs.moveCheckedToBottom) doReturn true
         viewModel.start(2)
 
@@ -1058,7 +1058,7 @@ class EditViewModelTest {
     }
 
     @Test
-    fun `should delete checked items in list note (move checked to bottom)`() = mainCoroutineRule.runBlockingTest {
+    fun `should delete checked items in list note (move checked to bottom)`() = runTest {
         viewModel.start(7)
         viewModel.deleteCheckedItems()
 
@@ -1072,7 +1072,7 @@ class EditViewModelTest {
     }
 
     @Test
-    fun `should keep note changes on conversion`() = mainCoroutineRule.runBlockingTest {
+    fun `should keep note changes on conversion`() = runTest {
         viewModel.start(1)
 
         val contentItem = viewModel.editItems.getOrAwaitValue()[2] as EditContentItem
@@ -1090,7 +1090,7 @@ class EditViewModelTest {
     }
 
     @Test
-    fun `should keep note changes on reminder change`() = mainCoroutineRule.runBlockingTest {
+    fun `should keep note changes on reminder change`() = runTest {
         viewModel.start(1)
 
         val contentItem = viewModel.editItems.getOrAwaitValue()[2] as EditContentItem

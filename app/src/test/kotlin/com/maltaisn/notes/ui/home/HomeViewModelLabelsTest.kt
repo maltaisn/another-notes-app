@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Nicolas Maltais
+ * Copyright 2022 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,7 +40,7 @@ import com.maltaisn.notes.ui.note.adapter.NoteItem
 import com.maltaisn.notes.ui.note.adapter.NoteListLayoutMode
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -100,49 +100,46 @@ class HomeViewModelLabelsTest {
     }
 
     @Test
-    fun `should show all notes with headers (pinned, unpinned, archived)`() =
-        mainCoroutineRule.runBlockingTest {
-            viewModel.setDestination(HomeDestination.Labels(labelsRepo.requireLabelById(1)))
-            assertTrue(viewModel.fabShown.getOrAwaitValue())
+    fun `should show all notes with headers (pinned, unpinned, archived)`() = runTest {
+        viewModel.setDestination(HomeDestination.Labels(labelsRepo.requireLabelById(1)))
+        assertTrue(viewModel.fabShown.getOrAwaitValue())
 
-            assertEquals(listOf(
-                HomeViewModel.PINNED_HEADER_ITEM,
-                noteItem(notesRepo.requireNoteById(1), listOf(labelsRepo.requireLabelById(2))),
-                HomeViewModel.NOT_PINNED_HEADER_ITEM,
-                noteItem(notesRepo.requireNoteById(2), listOf(labelsRepo.requireLabelById(3))),
-                HomeViewModel.ARCHIVED_HEADER_ITEM,
-                noteItem(notesRepo.requireNoteById(3), listOf(
-                    labelsRepo.requireLabelById(2), labelsRepo.requireLabelById(3))),
-            ), viewModel.noteItems.getOrAwaitValue())
-        }
-
-    @Test
-    fun `should show all notes with headers (pinned, archived)`() =
-        mainCoroutineRule.runBlockingTest {
-            viewModel.setDestination(HomeDestination.Labels(labelsRepo.requireLabelById(2)))
-            assertEquals(listOf(
-                HomeViewModel.PINNED_HEADER_ITEM,
-                noteItem(notesRepo.requireNoteById(1), listOf(labelsRepo.requireLabelById(1))),
-                HomeViewModel.ARCHIVED_HEADER_ITEM,
-                noteItem(notesRepo.requireNoteById(3), listOf(
-                    labelsRepo.requireLabelById(1), labelsRepo.requireLabelById(3))),
-            ), viewModel.noteItems.getOrAwaitValue())
-        }
+        assertEquals(listOf(
+            HomeViewModel.PINNED_HEADER_ITEM,
+            noteItem(notesRepo.requireNoteById(1), listOf(labelsRepo.requireLabelById(2))),
+            HomeViewModel.NOT_PINNED_HEADER_ITEM,
+            noteItem(notesRepo.requireNoteById(2), listOf(labelsRepo.requireLabelById(3))),
+            HomeViewModel.ARCHIVED_HEADER_ITEM,
+            noteItem(notesRepo.requireNoteById(3), listOf(
+                labelsRepo.requireLabelById(2), labelsRepo.requireLabelById(3))),
+        ), viewModel.noteItems.getOrAwaitValue())
+    }
 
     @Test
-    fun `should show all notes with headers (not pinned, archived)`() =
-        mainCoroutineRule.runBlockingTest {
-            viewModel.setDestination(HomeDestination.Labels(labelsRepo.requireLabelById(3)))
-            assertEquals(listOf(
-                noteItem(notesRepo.requireNoteById(2), listOf(labelsRepo.requireLabelById(1))),
-                HomeViewModel.ARCHIVED_HEADER_ITEM,
-                noteItem(notesRepo.requireNoteById(3), listOf(
-                    labelsRepo.requireLabelById(1), labelsRepo.requireLabelById(2))),
-            ), viewModel.noteItems.getOrAwaitValue())
-        }
+    fun `should show all notes with headers (pinned, archived)`() = runTest {
+        viewModel.setDestination(HomeDestination.Labels(labelsRepo.requireLabelById(2)))
+        assertEquals(listOf(
+            HomeViewModel.PINNED_HEADER_ITEM,
+            noteItem(notesRepo.requireNoteById(1), listOf(labelsRepo.requireLabelById(1))),
+            HomeViewModel.ARCHIVED_HEADER_ITEM,
+            noteItem(notesRepo.requireNoteById(3), listOf(
+                labelsRepo.requireLabelById(1), labelsRepo.requireLabelById(3))),
+        ), viewModel.noteItems.getOrAwaitValue())
+    }
 
     @Test
-    fun `should update list when data is changed`() = mainCoroutineRule.runBlockingTest {
+    fun `should show all notes with headers (not pinned, archived)`() = runTest {
+        viewModel.setDestination(HomeDestination.Labels(labelsRepo.requireLabelById(3)))
+        assertEquals(listOf(
+            noteItem(notesRepo.requireNoteById(2), listOf(labelsRepo.requireLabelById(1))),
+            HomeViewModel.ARCHIVED_HEADER_ITEM,
+            noteItem(notesRepo.requireNoteById(3), listOf(
+                labelsRepo.requireLabelById(1), labelsRepo.requireLabelById(2))),
+        ), viewModel.noteItems.getOrAwaitValue())
+    }
+
+    @Test
+    fun `should update list when data is changed`() = runTest {
         viewModel.setDestination(HomeDestination.Labels(labelsRepo.requireLabelById(3)))
         labelsRepo.deleteLabelRefs(listOf(LabelRef(3, 3)))
         assertEquals(listOf(
@@ -151,39 +148,36 @@ class HomeViewModelLabelsTest {
     }
 
     @Test
-    fun `should consider selection as active and unpinned`() =
-        mainCoroutineRule.runBlockingTest {
-            viewModel.setDestination(HomeDestination.Labels(labelsRepo.requireLabelById(1)))
-            viewModel.onNoteItemLongClicked(getNoteItemAt(1), 1)
-            viewModel.onNoteItemLongClicked(getNoteItemAt(3), 3)
-            assertEquals(NoteViewModel.NoteSelection(2,
-                NoteStatus.ACTIVE, PinnedStatus.UNPINNED, false),
-                viewModel.currentSelection.getOrAwaitValue())
-        }
+    fun `should consider selection as active and unpinned`() = runTest {
+        viewModel.setDestination(HomeDestination.Labels(labelsRepo.requireLabelById(1)))
+        viewModel.onNoteItemLongClicked(getNoteItemAt(1), 1)
+        viewModel.onNoteItemLongClicked(getNoteItemAt(3), 3)
+        assertEquals(NoteViewModel.NoteSelection(2,
+            NoteStatus.ACTIVE, PinnedStatus.UNPINNED, false),
+            viewModel.currentSelection.getOrAwaitValue())
+    }
 
     @Test
-    fun `should consider selection as archived`() =
-        mainCoroutineRule.runBlockingTest {
-            viewModel.setDestination(HomeDestination.Labels(labelsRepo.requireLabelById(3)))
-            viewModel.onNoteItemLongClicked(getNoteItemAt(2), 2)
-            assertEquals(NoteViewModel.NoteSelection(1,
-                NoteStatus.ARCHIVED, PinnedStatus.CANT_PIN, false),
-                viewModel.currentSelection.getOrAwaitValue())
-        }
+    fun `should consider selection as archived`() = runTest {
+        viewModel.setDestination(HomeDestination.Labels(labelsRepo.requireLabelById(3)))
+        viewModel.onNoteItemLongClicked(getNoteItemAt(2), 2)
+        assertEquals(NoteViewModel.NoteSelection(1,
+            NoteStatus.ARCHIVED, PinnedStatus.CANT_PIN, false),
+            viewModel.currentSelection.getOrAwaitValue())
+    }
 
     @Test
-    fun `should consider selection as active (active + archived selected)`() =
-        mainCoroutineRule.runBlockingTest {
-            viewModel.setDestination(HomeDestination.Labels(labelsRepo.requireLabelById(3)))
-            viewModel.onNoteItemLongClicked(getNoteItemAt(0), 0)
-            viewModel.onNoteItemLongClicked(getNoteItemAt(2), 2)
-            assertEquals(NoteViewModel.NoteSelection(2,
-                NoteStatus.ACTIVE, PinnedStatus.UNPINNED, false),
-                viewModel.currentSelection.getOrAwaitValue())
-        }
+    fun `should consider selection as active (active + archived selected)`() = runTest {
+        viewModel.setDestination(HomeDestination.Labels(labelsRepo.requireLabelById(3)))
+        viewModel.onNoteItemLongClicked(getNoteItemAt(0), 0)
+        viewModel.onNoteItemLongClicked(getNoteItemAt(2), 2)
+        assertEquals(NoteViewModel.NoteSelection(2,
+            NoteStatus.ACTIVE, PinnedStatus.UNPINNED, false),
+            viewModel.currentSelection.getOrAwaitValue())
+    }
 
     @Test
-    fun `should not allow swipe actions`() = mainCoroutineRule.runBlockingTest {
+    fun `should not allow swipe actions`() = runTest {
         viewModel.setDestination(HomeDestination.Labels(labelsRepo.requireLabelById(3)))
         assertEquals(SwipeAction.NONE, viewModel.getNoteSwipeAction(NoteAdapter.SwipeDirection.LEFT))
         assertEquals(SwipeAction.NONE, viewModel.getNoteSwipeAction(NoteAdapter.SwipeDirection.RIGHT))
@@ -194,5 +188,4 @@ class HomeViewModelLabelsTest {
     private fun getNoteItemAt(pos: Int) = viewModel.noteItems.getOrAwaitValue()[pos] as NoteItem
 
     private fun noteItem(note: Note, labels: List<Label>) = itemFactory.createItem(note, labels, false)
-
 }

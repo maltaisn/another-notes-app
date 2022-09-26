@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Nicolas Maltais
+ * Copyright 2022 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,7 +39,9 @@ import com.maltaisn.notes.ui.note.adapter.NoteItem
 import com.maltaisn.notes.ui.note.adapter.NoteListLayoutMode
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.advanceTimeBy
+import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -83,13 +85,13 @@ class SearchViewModelTest {
     }
 
     @Test
-    fun `should show nothing if query is blank`() = mainCoroutineRule.runBlockingTest {
+    fun `should show nothing if query is blank`() = runTest {
         searchNotesAndWait("    ")
         assertTrue(viewModel.noteItems.getOrAwaitValue().isEmpty())
     }
 
     @Test
-    fun `should show search results for query (only active)`() = mainCoroutineRule.runBlockingTest {
+    fun `should show search results for query (only active)`() = runTest {
         searchNotesAndWait("1")
         assertEquals(listOf(
             noteItem(notesRepo.requireNoteById(1), listOf(labelsRepo.requireLabelById(1)))
@@ -98,7 +100,7 @@ class SearchViewModelTest {
 
     @Test
     fun `should show search results for query (only archived)`() =
-        mainCoroutineRule.runBlockingTest {
+        runTest {
             searchNotesAndWait("2")
             assertEquals(listOf(
                 HeaderItem(-1, R.string.note_location_archived),
@@ -108,7 +110,7 @@ class SearchViewModelTest {
 
     @Test
     fun `should show search results for query (active + archived)`() =
-        mainCoroutineRule.runBlockingTest {
+        runTest {
             searchNotesAndWait("3")
             assertEquals(listOf(
                 noteItem(notesRepo.requireNoteById(1), listOf(labelsRepo.requireLabelById(1))),
@@ -119,7 +121,7 @@ class SearchViewModelTest {
 
     @Test
     fun `should consider selection as active (only active selected)`() =
-        mainCoroutineRule.runBlockingTest {
+        runTest {
             searchNotesAndWait("3")
             viewModel.onNoteItemLongClicked(getNoteItemAt(0), 0)
             assertEquals(NoteSelection(1, NoteStatus.ACTIVE, PinnedStatus.UNPINNED, false),
@@ -128,7 +130,7 @@ class SearchViewModelTest {
 
     @Test
     fun `should consider selection as archived (only archived selected)`() =
-        mainCoroutineRule.runBlockingTest {
+        runTest {
             searchNotesAndWait("3")
             viewModel.onNoteItemLongClicked(getNoteItemAt(2), 2)
             assertEquals(NoteSelection(1, NoteStatus.ARCHIVED, PinnedStatus.CANT_PIN, false),
@@ -137,7 +139,7 @@ class SearchViewModelTest {
 
     @Test
     fun `should consider selection as active (active + archived selected)`() =
-        mainCoroutineRule.runBlockingTest {
+        runTest {
             searchNotesAndWait("3")
             viewModel.onNoteItemLongClicked(getNoteItemAt(0), 0)
             viewModel.onNoteItemLongClicked(getNoteItemAt(2), 2)
@@ -146,15 +148,15 @@ class SearchViewModelTest {
         }
 
     @Test
-    fun `should check selected items when creating them`() = mainCoroutineRule.runBlockingTest {
+    fun `should check selected items when creating them`() = runTest {
         searchNotesAndWait("3")
         viewModel.onNoteItemLongClicked(getNoteItemAt(0), 0)
         assertTrue(getNoteItemAt(0).checked)
     }
 
-    private fun searchNotesAndWait(query: String) {
+    private fun TestScope.searchNotesAndWait(query: String) {
         viewModel.searchNotes(query)
-        mainCoroutineRule.advanceTimeBy(1000)
+        advanceTimeBy(1000)
     }
 
     private fun getNoteItemAt(pos: Int) = viewModel.noteItems.getOrAwaitValue()[pos] as NoteItem

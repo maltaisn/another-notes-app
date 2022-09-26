@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Nicolas Maltais
+ * Copyright 2022 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,7 +41,7 @@ import com.maltaisn.notes.ui.note.adapter.NoteListLayoutMode
 import com.maltaisn.recurpicker.Recurrence
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -100,8 +100,7 @@ class HomeViewModelRemindersTest {
     }
 
     @Test
-    fun `should show all reminders with headers`() =
-        mainCoroutineRule.runBlockingTest {
+    fun `should show all reminders with headers`() = runTest {
             assertTrue(viewModel.fabShown.getOrAwaitValue())
             assertEquals(listOf(
                 HomeViewModel.OVERDUE_HEADER_ITEM,
@@ -115,8 +114,7 @@ class HomeViewModelRemindersTest {
         }
 
     @Test
-    fun `should mark reminder as done on action button click`() =
-        mainCoroutineRule.runBlockingTest {
+    fun `should mark reminder as done on action button click`() = runTest {
             val note = notesRepo.requireNoteById(4)
             viewModel.onNoteActionButtonClicked(noteItem(note), 1)
             assertEquals(note.copy(reminder = note.reminder?.markAsDone()),
@@ -124,7 +122,7 @@ class HomeViewModelRemindersTest {
         }
 
     @Test
-    fun `should update list when data is changed`() = mainCoroutineRule.runBlockingTest {
+    fun `should update list when data is changed`() = runTest {
         notesRepo.deleteNote(1)
         notesRepo.deleteNote(2)
         notesRepo.deleteNote(3)
@@ -139,8 +137,7 @@ class HomeViewModelRemindersTest {
     }
 
     @Test
-    fun `should consider selection as active (only active selected)`() =
-        mainCoroutineRule.runBlockingTest {
+    fun `should consider selection as active (only active selected)`() = runTest {
             viewModel.onNoteItemLongClicked(getNoteItemAt(4), 4)
             viewModel.onNoteItemLongClicked(getNoteItemAt(6), 6)
             assertEquals(NoteViewModel.NoteSelection(2,
@@ -149,8 +146,7 @@ class HomeViewModelRemindersTest {
         }
 
     @Test
-    fun `should consider selection as archived (only archived selected)`() =
-        mainCoroutineRule.runBlockingTest {
+    fun `should consider selection as archived (only archived selected)`() = runTest {
             viewModel.onNoteItemLongClicked(getNoteItemAt(1), 1)
             assertEquals(NoteViewModel.NoteSelection(1,
                 NoteStatus.ARCHIVED, PinnedStatus.CANT_PIN, true),
@@ -158,8 +154,7 @@ class HomeViewModelRemindersTest {
         }
 
     @Test
-    fun `should consider selection as active (active + archived selected)`() =
-        mainCoroutineRule.runBlockingTest {
+    fun `should consider selection as active (active + archived selected)`() = runTest {
             viewModel.onNoteItemLongClicked(getNoteItemAt(1), 1)
             viewModel.onNoteItemLongClicked(getNoteItemAt(4), 4)
             assertEquals(NoteViewModel.NoteSelection(2,
@@ -168,7 +163,7 @@ class HomeViewModelRemindersTest {
         }
 
     @Test
-    fun `should not allow swipe actions`() = mainCoroutineRule.runBlockingTest {
+    fun `should not allow swipe actions`() = runTest {
         assertEquals(SwipeAction.NONE, viewModel.getNoteSwipeAction(NoteAdapter.SwipeDirection.LEFT))
         assertEquals(SwipeAction.NONE, viewModel.getNoteSwipeAction(NoteAdapter.SwipeDirection.RIGHT))
     }

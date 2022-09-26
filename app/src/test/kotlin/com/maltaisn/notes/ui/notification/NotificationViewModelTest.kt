@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Nicolas Maltais
+ * Copyright 2022 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,8 @@ import com.maltaisn.notes.testNote
 import com.maltaisn.notes.ui.MockAlarmCallback
 import com.maltaisn.notes.ui.assertLiveDataEventSent
 import com.maltaisn.notes.ui.getOrAwaitValue
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.advanceTimeBy
+import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -68,7 +69,7 @@ class NotificationViewModelTest {
     }
 
     @Test
-    fun `should change date and time for reminder`() = mainCoroutineRule.runBlockingTest {
+    fun `should change date and time for reminder`() = runTest {
         val oldNote = notesRepo.requireNoteById(1)
         viewModel.onPostponeClicked(1)
 
@@ -95,7 +96,7 @@ class NotificationViewModelTest {
     }
 
     @Test
-    fun `should cancel postpone on date dialog`() = mainCoroutineRule.runBlockingTest {
+    fun `should cancel postpone on date dialog`() = runTest {
         val oldNote = notesRepo.requireNoteById(1)
         viewModel.onPostponeClicked(1)
         viewModel.cancelPostpone()
@@ -105,7 +106,7 @@ class NotificationViewModelTest {
     }
 
     @Test
-    fun `should cancel postpone on time dialog`() = mainCoroutineRule.runBlockingTest {
+    fun `should cancel postpone on time dialog`() = runTest {
         val oldNote = notesRepo.requireNoteById(1)
         viewModel.onPostponeClicked(1)
         viewModel.setPostponeDate(2021, Calendar.JANUARY, 1)
@@ -116,7 +117,7 @@ class NotificationViewModelTest {
     }
 
     @Test
-    fun `should exit if note has no reminder`() = mainCoroutineRule.runBlockingTest {
+    fun `should exit if note has no reminder`() = runTest {
         val oldNote = notesRepo.requireNoteById(2)
         viewModel.onPostponeClicked(2)
         assertLiveDataEventSent(viewModel.exitEvent)
@@ -125,7 +126,7 @@ class NotificationViewModelTest {
     }
 
     @Test
-    fun `should exit if note has no reminder at the end`() = mainCoroutineRule.runBlockingTest {
+    fun `should exit if note has no reminder at the end`() = runTest {
         viewModel.onPostponeClicked(1)
         viewModel.setPostponeDate(2100, Calendar.JANUARY, 1)
 
@@ -140,7 +141,7 @@ class NotificationViewModelTest {
     }
 
     @Test
-    fun `should do nothing if postponed in the past`() = mainCoroutineRule.runBlockingTest {
+    fun `should do nothing if postponed in the past`() = runTest {
         val oldNote = notesRepo.requireNoteById(1)
         viewModel.onPostponeClicked(1)
         viewModel.setPostponeDate(2000, Calendar.JANUARY, 1)
@@ -151,7 +152,7 @@ class NotificationViewModelTest {
     }
 
     @Test
-    fun `should postpone reminder bug 1`() = mainCoroutineRule.runBlockingTest {
+    fun `should postpone reminder bug 1`() = runTest {
         // bug was due to using HOUR instead of HOUR_OF_DAY
         val oldNote = notesRepo.requireNoteById(3)
         viewModel.onPostponeClicked(3)

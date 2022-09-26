@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Nicolas Maltais
+ * Copyright 2022 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@ import com.maltaisn.notes.model.entity.NoteStatus
 import com.maltaisn.notes.model.entity.PinnedStatus
 import com.maltaisn.notes.model.entity.Reminder
 import com.maltaisn.notes.testNote
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -60,31 +60,28 @@ class SharedViewModelTest {
     }
 
     @Test
-    fun `should do and undo status change`() =
-        mainCoroutineRule.runBlockingTest {
-            val note1 = notesRepo.requireNoteById(1)
-            val note2 = notesRepo.requireNoteById(2)
-            notesRepo.updateNote(note1.copy(status = NoteStatus.ARCHIVED,
-                pinned = PinnedStatus.CANT_PIN))
-            val statusChange = StatusChange(listOf(note1, note2),
-                NoteStatus.ACTIVE, NoteStatus.ARCHIVED)
-            viewModel.onStatusChange(statusChange)
-            assertLiveDataEventSent(viewModel.statusChangeEvent, statusChange)
+    fun `should do and undo status change`() = runTest {
+        val note1 = notesRepo.requireNoteById(1)
+        val note2 = notesRepo.requireNoteById(2)
+        notesRepo.updateNote(note1.copy(status = NoteStatus.ARCHIVED,
+            pinned = PinnedStatus.CANT_PIN))
+        val statusChange = StatusChange(listOf(note1, note2),
+            NoteStatus.ACTIVE, NoteStatus.ARCHIVED)
+        viewModel.onStatusChange(statusChange)
+        assertLiveDataEventSent(viewModel.statusChangeEvent, statusChange)
 
-            viewModel.undoStatusChange()
-            assertEquals(note2, notesRepo.getNoteById(2))
-        }
+        viewModel.undoStatusChange()
+        assertEquals(note2, notesRepo.getNoteById(2))
+    }
 
     @Test
-    fun `should undo status change and set reminder alarm back`() =
-        mainCoroutineRule.runBlockingTest {
-            val note = notesRepo.requireNoteById(3)
-            alarmCallback.addAlarm(3, 10)
-            viewModel.onStatusChange(StatusChange(listOf(note),
-                NoteStatus.ACTIVE, NoteStatus.DELETED))
-            alarmCallback.removeAlarm(3)  // usually done by NoteViewModel or EditViewModel
-            viewModel.undoStatusChange()
-            assertEquals(10, alarmCallback.alarms[3])
-        }
-
+    fun `should undo status change and set reminder alarm back`() = runTest {
+        val note = notesRepo.requireNoteById(3)
+        alarmCallback.addAlarm(3, 10)
+        viewModel.onStatusChange(StatusChange(listOf(note),
+            NoteStatus.ACTIVE, NoteStatus.DELETED))
+        alarmCallback.removeAlarm(3)  // usually done by NoteViewModel or EditViewModel
+        viewModel.undoStatusChange()
+        assertEquals(10, alarmCallback.alarms[3])
+    }
 }
