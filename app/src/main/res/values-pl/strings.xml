@@ -182,6 +182,8 @@
     <string name="pref_preview_lines_text">Wiersze w podglądzie notatki tekstowej</string>
     <string name="pref_preview_lines_list">Elementy w podglądzie notatki tekstowej</string>
     <string name="pref_group_behavior">Zachowanie</string>
+    <string name="pref_behavior_swipe_action_left">Akcja przesunięcia w lewo</string>
+    <string name="pref_behavior_swipe_action_right">Akcja przesunięcia w prawo</string>
     <string name="pref_behavior_move_checked">Przenieś zaznaczone elementy na koniec</string>
     <string name="pref_group_data">Dane</string>
     <string name="pref_data_export">Eksportuj dane</string>

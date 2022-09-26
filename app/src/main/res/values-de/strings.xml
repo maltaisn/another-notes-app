@@ -165,6 +165,8 @@
     <string name="pref_preview_lines_text">Zeilen in der Textnotiz-Vorschau</string>
     <string name="pref_preview_lines_list">Elemente in der Vorschau der Listennotiz</string>
     <string name="pref_group_behavior">Verhalten</string>
+    <string name="pref_behavior_swipe_action_left">Wischen nach links</string>
+    <string name="pref_behavior_swipe_action_right">Wischen nach rechts</string>
     <string name="pref_behavior_move_checked">Markierte Elemente nach unten verschieben</string>
     <string name="pref_group_data">Daten</string>
     <string name="pref_data_export">Daten exportieren</string>

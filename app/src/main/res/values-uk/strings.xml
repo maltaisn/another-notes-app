@@ -182,6 +182,8 @@
     <string name="pref_preview_lines_text">Рядків при перегляді текстової нотатки</string>
     <string name="pref_preview_lines_list">Пунктів при перегляді списку</string>
     <string name="pref_group_behavior">Поведінка</string>
+    <string name="pref_behavior_swipe_action_left">Дія совганням вліво</string>
+    <string name="pref_behavior_swipe_action_right">Дія совганням вправо</string>
     <string name="pref_behavior_move_checked">Переміщати відмічені пункти вниз</string>
     <string name="pref_group_data">Дані</string>
     <string name="pref_data_export">Експорт даних</string>
