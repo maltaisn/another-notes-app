@@ -1,15 +1,15 @@
-## v1.4.4
+## v1.4.4 (2022-07-24)
 - Added separate swipe left & right actions, with animated icon shown on swipe (#36).
 - Fixed cursor going to end of note when scrolling long text notes (#63, potentially #60).
 - Fixed movement with arrow keys not working in text fields when editing note (#67).
 - Fixed crash with notification on Android 12 (#65).
 
-## v1.4.3
+## v1.4.3 (2022-01-30)
 - Fixed critical crash occuring when using reminders (#61, #62).
 - Allow blank notes with a reminder.
 - Fixed deleting and archiving notes not changing last modified date, messing with recycle bin delay (#56).
 
-## v1.4.2
+## v1.4.2 (2022-01-09)
 - Added new translations:
     - Arabic: @afmbsr
     - Italian: carallo
@@ -30,7 +30,7 @@
 - Fixed input field cut off in landscape mode in edit label dialog (#53).
 - Fixed broken long press after converting note twice (#34).
 
-## v1.4.1
+## v1.4.1 (2021-09-06)
 - Added dialog to change sort field and direction (#31).
 - Ellipsize start of content when search highlight falls outside of preview (#32).
 - Set the initial reminder time from a list of presets instead of the same hour every time.
@@ -48,7 +48,7 @@
 - Fixed postpone check failing if note reminder is changed before postponing.
 - Remove check for internal list note consistency between content and metadata.
 
-## v1.4.0
+## v1.4.0 (2021-07-30)
 - Added a label attribute to hide all notes with that label in active & archive destinations.
 The notes are still visible in the trash and in the label's destination.
 - Added clickable links for website & email in edit screen.
@@ -63,7 +63,7 @@ The notes are still visible in the trash and in the label's destination.
 - Fixed disabled RTL layout & RTL layout improvements.
 - Fixed note conversion from text with bullets to list not removing bullets if note had whitespace before first item.
 
-## v1.3.0
+## v1.3.0 (2021-06-13)
 - Added import data feature, from exported JSON data (#11).
 - Added periodical auto export feature.
 - Added option to separate checked and unchecked items in list notes.
@@ -71,7 +71,7 @@ The notes are still visible in the trash and in the label's destination.
 - Attenuated impact of potential bug where recurring alarms are not set.
   If this happens now, launching the app will set the alarm correctly again.
 
-## v1.2.0
+## v1.2.0 (2021-05-14)
 - Added reminders with notifications
     - Reminder can be added from main screen or edit screen
     - Next reminder event date is shown as chip in note preview
@@ -97,12 +97,12 @@ the Snackbar, in search fragment.
 - Fixed selection action mode not dismissed when using edit intent.
 - Fixed concurrent exception when restoring main fragment after process death.
 
-## v1.1.0
+## v1.1.0 (2020-07-02)
 - Removed synchronization feature.
 - Fixed crash when navigating to two destination at the same time.
 
-### v1.0.1
+### v1.0.1 (2020-04-30)
 - Fixed links in Settings screen for privacy policy and terms & conditions.
 
-# v1.0.0
+# v1.0.0 (2020-04-27)
 - **Initial release**
