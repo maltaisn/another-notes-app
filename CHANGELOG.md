@@ -1,3 +1,6 @@
+## v1.4.5 (2022-09-25)
+- Fixed cursor moving to first line when scrolling (#60, thanks to @nhoeher)
+
 ## v1.4.4 (2022-07-24)
 - Added separate swipe left & right actions, with animated icon shown on swipe (#36).
 - Fixed cursor going to end of note when scrolling long text notes (#63, potentially #60).

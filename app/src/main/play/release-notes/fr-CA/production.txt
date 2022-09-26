@@ -1,2 +1,2 @@
-- Action de glissement configurable selon la direction.
-- Quelques bugs corrigés.
+- Correction d'un bug
+- Mise à jour des traductions

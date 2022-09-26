@@ -86,7 +86,7 @@ fun <VM : ViewModel> createLazyViewModel(
     savedStateRegistryOwnerProducer: () -> SavedStateRegistryOwner,
     viewModelStoreOwnerProducer: () -> ViewModelStoreOwner,
     viewModelProvider: (SavedStateHandle) -> VM
-) = ViewModelLazy(viewModelClass, { viewModelStoreOwnerProducer().viewModelStore }) {
+) = ViewModelLazy(viewModelClass, { viewModelStoreOwnerProducer().viewModelStore }, {
     object : AbstractSavedStateViewModelFactory(savedStateRegistryOwnerProducer(), Bundle()) {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(
@@ -95,7 +95,7 @@ fun <VM : ViewModel> createLazyViewModel(
             handle: SavedStateHandle
         ) = viewModelProvider(handle) as T
     }
-}
+})
 
 interface AssistedSavedStateViewModelFactory<T> {
     fun create(savedStateHandle: SavedStateHandle): T
