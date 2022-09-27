@@ -98,6 +98,14 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
                 null
             })
         }
+
+        viewModel.createNoteEvent.observeEvent(this) { newNoteData ->
+            navController.navigateSafe(NavGraphMainDirections.actionEditNote(
+                type = newNoteData.type.value,
+                title = newNoteData.title,
+                content = newNoteData.content
+            ))
+        }
     }
 
     override fun onNewIntent(intent: Intent) {

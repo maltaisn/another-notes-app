@@ -24,19 +24,14 @@ import com.maltaisn.notes.model.JsonManager
 import com.maltaisn.notes.model.NotesRepository
 import com.maltaisn.notes.model.PrefsManager
 import com.maltaisn.notes.model.ReminderAlarmManager
-import com.maltaisn.notes.model.entity.BlankNoteMetadata
-import com.maltaisn.notes.model.entity.ListNoteMetadata
-import com.maltaisn.notes.model.entity.Note
-import com.maltaisn.notes.model.entity.NoteStatus
 import com.maltaisn.notes.model.entity.NoteType
-import com.maltaisn.notes.model.entity.PinnedStatus
 import com.maltaisn.notes.ui.Event
 import com.maltaisn.notes.ui.send
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Semaphore
 import java.io.OutputStream
-import java.util.Date
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.hours
 
@@ -55,6 +50,15 @@ class MainViewModel @Inject constructor(
     val autoExportEvent: LiveData<Event<String>>
         get() = _autoExportEvent
 
+    private val _createNoteEvent = MutableLiveData<Event<NewNoteData>>()
+    val createNoteEvent: LiveData<Event<NewNoteData>>
+        get() = _createNoteEvent
+
+    // This semaphore is used to signal that the process of deleting old blank notes is finished and
+    // new notes can safely be created. Otherwise newly created notes might be instantly deleted,
+    // depending on the timing of the different coroutines.
+    private val _deletionFinishedSignal = Semaphore(1, 1)
+
     init {
         viewModelScope.launch {
             if (prefsManager.shouldAutoExport && prefsManager.autoExportUri == PrefsManager.AUTO_EXPORT_NO_URI) {
@@ -65,12 +69,6 @@ class MainViewModel @Inject constructor(
             // Update all alarms for recurring reminders in case the previous alarm wasn't triggered.
             // This shouldn't technically happen, but there have been cases where recurring reminders failed.
             reminderAlarmManager.updateAllAlarms()
-
-            // Check if last added note is blank, in which case delete it.
-            val lastCreatedNote = notesRepository.getLastCreatedNote()
-            if (lastCreatedNote?.isBlank == true) {
-                notesRepository.deleteNote(lastCreatedNote)
-            }
 
             // Periodically remove old notes in trash, and auto export if needed.
             while (true) {
@@ -90,29 +88,20 @@ class MainViewModel @Inject constructor(
 
     fun onStart() {
         viewModelScope.launch {
-            notesRepository.deleteOldNotesInTrash()
+            // Check if last added note is blank, in which case delete it.
+            val lastCreatedNote = notesRepository.getLastCreatedNote()
+            if (lastCreatedNote?.isBlank == true) {
+                notesRepository.deleteNote(lastCreatedNote)
+            }
+            _deletionFinishedSignal.release()
         }
     }
 
     fun createNote(type: NoteType, title: String = "", content: String = "") {
-        // Add note to database, then edit it.
         viewModelScope.launch {
-            val date = Date()
-            val note = Note(Note.NO_ID,
-                type,
-                title,
-                content,
-                when (type) {
-                    NoteType.TEXT -> BlankNoteMetadata
-                    NoteType.LIST -> ListNoteMetadata(List(content.lines().size) { false })
-                },
-                date,
-                date,
-                NoteStatus.ACTIVE,
-                PinnedStatus.UNPINNED,
-                null)
-            val id = notesRepository.insertNote(note)
-            _editNoteEvent.send(id)
+            // Wait until older notes have been checked / deleted
+            _deletionFinishedSignal.acquire()
+            _createNoteEvent.send(NewNoteData(type, title, content))
         }
     }
 
@@ -143,6 +132,8 @@ class MainViewModel @Inject constructor(
             prefsManager.autoExportFailed = true
         }
     }
+
+    data class NewNoteData(val type: NoteType, val title: String, val content: String)
 
     companion object {
         private val PERIODIC_TASK_INTERVAL = 1.hours
