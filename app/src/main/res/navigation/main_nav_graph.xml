@@ -73,6 +73,21 @@
             android:defaultValue="false"
             app:argType="boolean"
             />
+        <argument
+            android:name="type"
+            android:defaultValue="0"
+            app:argType="integer"
+            />
+        <argument
+            android:name="title"
+            android:defaultValue=""
+            app:argType="string"
+            />
+        <argument
+            android:name="content"
+            android:defaultValue=""
+            app:argType="string"
+            />
     </fragment>
 
     <dialog

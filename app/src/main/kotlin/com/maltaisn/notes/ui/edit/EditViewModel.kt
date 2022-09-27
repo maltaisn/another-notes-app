@@ -215,7 +215,8 @@ class EditViewModel @AssistedInject constructor(
      * @param noteId Can be [Note.NO_ID] to create a new blank note.
      * @param labelId Can be different from [Label.NO_ID] to initially set a label on a new note.
      */
-    fun start(noteId: Long = Note.NO_ID, labelId: Long = Label.NO_ID, changeReminder: Boolean = false) {
+    fun start(noteId: Long = Note.NO_ID, labelId: Long = Label.NO_ID, changeReminder: Boolean = false,
+              type: NoteType = NoteType.TEXT, title: String = "", content: String = "") {
         viewModelScope.launch {
             // If fragment was very briefly destroyed then recreated, it's possible that this job is launched
             // before the job to save the note on fragment destruction is called.
@@ -237,10 +238,12 @@ class EditViewModel @AssistedInject constructor(
             var labels = noteWithLabels?.labels
 
             if (note == null || labels == null) {
-                // Note doesn't exist, create new blank text note.
+                // Note doesn't exist, create new blank note of the corresponding type.
                 // This is the expected path for creating a new note (by passing Note.NO_ID)
                 val date = Date()
-                note = BLANK_NOTE.copy(addedDate = date, lastModifiedDate = date)
+                note = BLANK_NOTE.copy(addedDate = date, lastModifiedDate = date, title = title, content = content)
+                if (type == NoteType.LIST) note = note.asListNote()
+
                 val id = notesRepository.insertNote(note)
                 note = note.copy(id = id)
 

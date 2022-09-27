@@ -20,5 +20,9 @@ import com.maltaisn.notes.model.ValueEnum
 
 enum class NoteType(override val value: Int) : ValueEnum<Int> {
     TEXT(0),
-    LIST(1)
+    LIST(1);
+
+    companion object {
+        fun fromInt(i: Int) = values().first { it.value == i }
+    }
 }
