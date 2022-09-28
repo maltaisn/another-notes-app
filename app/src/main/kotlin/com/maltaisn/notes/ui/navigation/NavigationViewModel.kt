@@ -71,13 +71,8 @@ class NavigationViewModel @AssistedInject constructor(
             _navigationItems.value = value
         }
 
-    private var checkedId = 0L
-        set(value) {
-            field = value
-            savedStateHandle[KEY_CHECKED_ID] = value
-        }
-
     init {
+        NavigationViewModel.savedStateHandle = savedStateHandle
         checkedId = savedStateHandle[KEY_CHECKED_ID] ?: ITEM_ID_ACTIVE
         viewModelScope.launch {
             // Navigation items are constant, except for labels.
@@ -251,5 +246,17 @@ class NavigationViewModel @AssistedInject constructor(
 
         private const val KEY_HOME_DESTINATION = "destination"
         private const val KEY_CHECKED_ID = "checkedId"
+
+        private lateinit var savedStateHandle : SavedStateHandle
+        private var checkedId = 0L
+            set(value) {
+                field = value
+                savedStateHandle[KEY_CHECKED_ID] = value
+            }
+
+        fun onRemindersShortcut() {
+            checkedId = ITEM_ID_REMINDERS
+        }
+
     }
 }

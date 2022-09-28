@@ -40,6 +40,7 @@ import com.maltaisn.notes.sync.databinding.ActivityMainBinding
 import com.maltaisn.notes.ui.SharedViewModel
 import com.maltaisn.notes.ui.navGraphViewModel
 import com.maltaisn.notes.ui.navigation.HomeDestination
+import com.maltaisn.notes.ui.navigation.NavigationViewModel
 import com.maltaisn.notes.ui.observeEvent
 import com.maltaisn.notes.ui.viewModel
 import javax.inject.Inject
@@ -161,6 +162,7 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
                 }
                 INTENT_ACTION_SHOW_REMINDERS -> {
                     // Show reminders screen in HomeFragment. Used by launcher shortcut.
+                    NavigationViewModel.onRemindersShortcut()
                     sharedViewModel.changeHomeDestination(HomeDestination.Reminders)
                 }
             }
