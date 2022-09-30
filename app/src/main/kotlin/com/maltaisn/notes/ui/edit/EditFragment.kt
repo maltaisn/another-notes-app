@@ -17,13 +17,13 @@
 package com.maltaisn.notes.ui.edit
 
 import android.annotation.SuppressLint
+import android.graphics.Color
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.MenuItem
-import android.view.View
-import android.view.ViewGroup
+import androidx.transition.Transition
+import android.view.*
 import androidx.activity.addCallback
 import androidx.appcompat.widget.Toolbar
+import androidx.core.view.*
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.asFlow
 import androidx.lifecycle.asLiveData
@@ -32,7 +32,10 @@ import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.transition.TransitionListenerAdapter
 import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.transition.MaterialContainerTransform
+import com.google.android.material.transition.MaterialContainerTransform.FADE_MODE_CROSS
 import com.maltaisn.notes.App
 import com.maltaisn.notes.hideKeyboard
 import com.maltaisn.notes.model.entity.Note
@@ -72,6 +75,24 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener, ConfirmDialog.
     private val binding get() = _binding!!
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        sharedElementEnterTransition = MaterialContainerTransform(requireContext(), true).apply {
+            fadeMode = FADE_MODE_CROSS
+            duration = resources.getInteger(R.integer.material_motion_duration_long_1).toLong()
+        }
+
+        sharedElementReturnTransition = MaterialContainerTransform(requireContext(), false).apply {
+            scrimColor = Color.TRANSPARENT
+            fadeMode = FADE_MODE_CROSS
+            duration = resources.getInteger(R.integer.material_motion_duration_long_1).toLong()
+        }
+
+        // Send an event via the sharedViewModel when the transition has finished playing
+        (sharedElementReturnTransition as MaterialContainerTransform).addListener(object : TransitionListenerAdapter() {
+            override fun onTransitionEnd(transition: Transition) {
+                sharedViewModel.sharedElementTransitionFinished()
+            }
+        })
+
         super.onCreate(savedInstanceState)
         (requireContext().applicationContext as App).appComponent.inject(this)
     }
@@ -82,6 +103,11 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener, ConfirmDialog.
         state: Bundle?
     ): View {
         _binding = FragmentEditBinding.inflate(inflater, container, false)
+        val noteId = args.noteId
+        ViewCompat.setTransitionName(
+            binding.fragmentEditLayout,
+            "noteContainer$noteId"
+        )
         return binding.root
     }
 
@@ -159,7 +185,24 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener, ConfirmDialog.
             viewModel.focusNoteContent()
         }
 
+        // Dynamically adjust the padding on the bottom of the RecyclerView.
+        // This enables edge-to-edge functionality and also handles resizing
+        // when the keyboard is opened / closed.
+        val initialPadding = (resources.displayMetrics.density * 16 + 0.5).toInt()
+        ViewCompat.setOnApplyWindowInsetsListener(rcv) { _, insets ->
+            val sysWindow = insets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.ime())
+            rcv.updatePadding(bottom = sysWindow.bottom + initialPadding)
+            insets
+        }
+
         setupViewModelObservers(adapter)
+
+        // Delay the shared element transition until the recyclerView is ready to be drawn
+        OneShotPreDrawListener.add(binding.recyclerView) {
+            // Start shared element transition
+            startPostponedEnterTransition()
+        }
+        postponeEnterTransition()
     }
 
     @SuppressLint("WrongConstant")
@@ -179,16 +222,23 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener, ConfirmDialog.
 
         viewModel.focusEvent.observeEvent(viewLifecycleOwner, adapter::setItemFocus)
 
+        viewModel.noteCreateEvent.observeEvent(viewLifecycleOwner) { noteId ->
+            sharedViewModel.noteCreated(noteId)
+        }
+
         val restoreNoteSnackbar by lazy {
             Snackbar.make(requireView(), R.string.edit_in_trash_message,
                 CANT_EDIT_SNACKBAR_DURATION)
+                .setGestureInsetBottomIgnored(true)
                 .setAction(R.string.action_restore) { viewModel.restoreNoteAndEdit() }
         }
         viewModel.messageEvent.observeEvent(viewLifecycleOwner) { message ->
             when (message) {
                 EditMessage.BLANK_NOTE_DISCARDED -> sharedViewModel.onBlankNoteDiscarded()
                 EditMessage.RESTORED_NOTE -> Snackbar.make(requireView(), resources.getQuantityText(
-                    R.plurals.edit_message_move_restore, 1), Snackbar.LENGTH_SHORT).show()
+                    R.plurals.edit_message_move_restore, 1), Snackbar.LENGTH_SHORT)
+                    .setGestureInsetBottomIgnored(true)
+                    .show()
                 EditMessage.CANT_EDIT_IN_TRASH -> restoreNoteSnackbar.show()
             }
         }

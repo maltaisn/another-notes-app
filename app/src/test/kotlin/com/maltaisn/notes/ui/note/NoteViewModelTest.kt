@@ -168,7 +168,7 @@ class NoteViewModelTest {
         // Select a first note by long click
         viewModel.onNoteItemClicked(viewModel.getNoteItemAt(2), 2)
 
-        assertLiveDataEventSent(viewModel.editItemEvent, 3)
+        assertLiveDataEventSent(viewModel.editItemEvent, Pair(3, 2))
     }
 
     @Test

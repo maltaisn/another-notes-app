@@ -24,7 +24,7 @@
     android:paddingBottom="2dp"
     android:paddingStart="8dp"
     android:paddingEnd="16dp"
-    android:background="?android:colorBackground"
+    android:background="?colorSurface"
     >
 
     <ImageView

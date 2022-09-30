@@ -144,6 +144,10 @@ class EditViewModel @AssistedInject constructor(
     val editItems: LiveData<out List<EditListItem>>
         get() = _editItems
 
+    private val _noteCreateEvent = MutableLiveData<Event<Long>>()
+    val noteCreateEvent: LiveData<Event<Long>>
+        get() = _noteCreateEvent
+
     private val _focusEvent = MutableLiveData<Event<FocusChange>>()
     val focusEvent: LiveData<Event<FocusChange>>
         get() = _focusEvent
@@ -257,6 +261,8 @@ class EditViewModel @AssistedInject constructor(
                     labelsRepository.insertLabelRefs(listOf(LabelRef(id, labelId)))
                 }
 
+                _noteCreateEvent.send(id)
+
                 isNewNote = true
                 savedStateHandle[KEY_IS_NEW_NOTE] = isNewNote
             }
@@ -321,14 +327,13 @@ class EditViewModel @AssistedInject constructor(
      * Send exit event. If note is blank, it's discarded.
      */
     fun exit() {
-        if (note.isBlank) {
-            // Delete blank note
-            viewModelScope.launch {
+        viewModelScope.launch {
+            updateNoteJob?.join()
+            if (note.isBlank) {
+                // Delete blank note
                 deleteNoteInternal()
                 _messageEvent.send(EditMessage.BLANK_NOTE_DISCARDED)
-                _exitEvent.send()
             }
-        } else {
             _exitEvent.send()
         }
     }

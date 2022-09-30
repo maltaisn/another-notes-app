@@ -19,16 +19,18 @@ package com.maltaisn.notes.ui.reminder
 import android.app.Dialog
 import android.content.DialogInterface
 import android.os.Bundle
-import android.view.LayoutInflater
 import androidx.appcompat.app.AlertDialog
 import androidx.core.view.isVisible
 import androidx.fragment.app.DialogFragment
-import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import com.google.android.material.datepicker.CalendarConstraints
+import com.google.android.material.datepicker.DateValidatorPointForward
+import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.timepicker.MaterialTimePicker
+import com.google.android.material.timepicker.TimeFormat
 import com.maltaisn.notes.App
 import com.maltaisn.notes.contains
-import com.maltaisn.notes.navigateSafe
 import com.maltaisn.notes.setMaxWidth
 import com.maltaisn.notes.sync.R
 import com.maltaisn.notes.sync.databinding.DialogReminderBinding
@@ -44,6 +46,7 @@ import com.maltaisn.recurpicker.picker.RecurrencePickerCallback
 import com.maltaisn.recurpicker.picker.RecurrencePickerDialog
 import debugCheck
 import java.text.DateFormat
+import java.util.*
 import javax.inject.Inject
 import javax.inject.Provider
 
@@ -61,6 +64,7 @@ class ReminderDialog : DialogFragment(), RecurrenceListCallback, RecurrencePicke
 
     private val dateFormat = DateFormat.getDateInstance(DateFormat.MEDIUM)
     private val timeFormat = DateFormat.getTimeInstance(DateFormat.SHORT)
+    private var isUsing24HourFormat: Boolean = true
     private val recurrenceFormat = RecurrenceFormatter(dateFormat)
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -70,7 +74,9 @@ class ReminderDialog : DialogFragment(), RecurrenceListCallback, RecurrencePicke
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val context = requireContext()
-        val binding = DialogReminderBinding.inflate(LayoutInflater.from(context), null, false)
+        val binding = DialogReminderBinding.inflate(layoutInflater, null, false)
+
+        isUsing24HourFormat = android.text.format.DateFormat.is24HourFormat(context)
 
         binding.dateForegroundView.setOnClickListener {
             viewModel.onDateClicked()
@@ -118,11 +124,43 @@ class ReminderDialog : DialogFragment(), RecurrenceListCallback, RecurrencePicke
         }
 
         viewModel.showDateDialogEvent.observeEvent(this) { date ->
-            findNavController().navigateSafe(ReminderDialogDirections.actionReminderDate(date))
+
+            val calendarConstraints = CalendarConstraints.Builder()
+                .setStart(System.currentTimeMillis())
+                .setValidator(DateValidatorPointForward.now())
+                .build()
+
+            val datePicker = MaterialDatePicker.Builder.datePicker()
+                .setSelection(System.currentTimeMillis())
+                .setCalendarConstraints(calendarConstraints)
+                .setSelection(date)
+                .build()
+
+            datePicker.addOnPositiveButtonClickListener { selection ->
+                viewModel.changeDate(selection)
+            }
+
+            datePicker.show(childFragmentManager, datePicker.tag)
         }
 
-        viewModel.showTimeDialogEvent.observeEvent(this) { date ->
-            findNavController().navigateSafe(ReminderDialogDirections.actionReminderTime(date))
+        viewModel.showTimeDialogEvent.observeEvent(this) { time ->
+
+            val timeFormat = if (isUsing24HourFormat) TimeFormat.CLOCK_24H else TimeFormat.CLOCK_12H
+
+            val calendar = Calendar.getInstance()
+            calendar.timeInMillis = time
+
+            val timePicker = MaterialTimePicker.Builder()
+                .setHour(calendar[Calendar.HOUR_OF_DAY])
+                .setMinute(calendar[Calendar.MINUTE])
+                .setTimeFormat(timeFormat)
+                .build()
+
+            timePicker.addOnPositiveButtonClickListener {
+                viewModel.changeTime(timePicker.hour, timePicker.minute)
+            }
+
+            timePicker.show(childFragmentManager, timePicker.tag)
         }
 
         viewModel.showRecurrenceListDialogEvent.observeEvent(this) { details ->

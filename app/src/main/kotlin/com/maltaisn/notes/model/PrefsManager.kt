@@ -43,6 +43,7 @@ class PrefsManager @Inject constructor(
 ) {
 
     val theme: AppTheme by enumPreference(THEME, AppTheme.SYSTEM)
+    val dynamicColors: Boolean by preference(DYNAMIC_COLORS, true)
     val strikethroughChecked: Boolean by preference(STRIKETHROUGH_CHECKED, false)
     val moveCheckedToBottom: Boolean by preference(MOVE_CHECKED_TO_BOTTOM, false)
     var listLayoutMode: NoteListLayoutMode by enumPreference(LIST_LAYOUT_MODE, NoteListLayoutMode.LIST)
@@ -165,6 +166,7 @@ class PrefsManager @Inject constructor(
     companion object {
         // Settings keys
         const val THEME = "theme"
+        const val DYNAMIC_COLORS="dynamic_colors"
         const val PREVIEW_LABELS = "preview_labels"
         const val PREVIEW_LINES = "preview_lines"
         const val PREVIEW_LINES_TEXT_LIST = "preview_lines_text_list"

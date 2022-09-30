@@ -16,30 +16,39 @@
 
 package com.maltaisn.notes.ui.main
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import com.maltaisn.notes.model.JsonManager
-import com.maltaisn.notes.model.NotesRepository
-import com.maltaisn.notes.model.PrefsManager
-import com.maltaisn.notes.model.ReminderAlarmManager
-import com.maltaisn.notes.model.entity.NoteType
+import android.view.Menu
+import android.view.MenuItem
+import androidx.core.view.contains
+import androidx.lifecycle.*
+import androidx.navigation.NavDirections
+import com.maltaisn.notes.model.*
+import com.maltaisn.notes.model.entity.*
+import com.maltaisn.notes.sync.NavGraphMainDirections
+import com.maltaisn.notes.sync.R
+import com.maltaisn.notes.ui.AssistedSavedStateViewModelFactory
 import com.maltaisn.notes.ui.Event
+import com.maltaisn.notes.ui.home.HomeFragmentDirections
+import com.maltaisn.notes.ui.navigation.HomeDestination
 import com.maltaisn.notes.ui.send
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Semaphore
 import java.io.OutputStream
-import javax.inject.Inject
+import java.util.Date
 import kotlin.time.Duration.Companion.hours
 
-class MainViewModel @Inject constructor(
+class MainViewModel @AssistedInject constructor(
     private val notesRepository: NotesRepository,
+    private val labelsRepository: LabelsRepository,
     private val prefsManager: PrefsManager,
     private val jsonManager: JsonManager,
-    private val reminderAlarmManager: ReminderAlarmManager
+    private val reminderAlarmManager: ReminderAlarmManager,
+    @Assisted savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
     private val _editNoteEvent = MutableLiveData<Event<Long>>()
@@ -58,6 +67,33 @@ class MainViewModel @Inject constructor(
     // new notes can safely be created. Otherwise newly created notes might be instantly deleted,
     // depending on the timing of the different coroutines.
     private val _deletionFinishedSignal = Semaphore(1, 1)
+
+    private val _navDirectionsEvent = MutableLiveData<Event<NavDirections>>()
+    val navDirectionsEvent: LiveData<Event<NavDirections>>
+        get() = _navDirectionsEvent
+
+    private val _currentHomeDestination = savedStateHandle.getLiveData<HomeDestination>(
+        KEY_HOME_DESTINATION, HomeDestination.Status(NoteStatus.ACTIVE))
+    val currentHomeDestination: LiveData<HomeDestination>
+        get() = _currentHomeDestination
+
+    private val _drawerCloseEvent = MutableLiveData<Event<Unit>>()
+    val drawerCloseEvent: LiveData<Event<Unit>>
+        get() = _drawerCloseEvent
+
+    private val _clearLabelsEvent = MutableLiveData<Event<Unit>>()
+    val clearLabelsEvent: LiveData<Event<Unit>>
+        get() = _clearLabelsEvent
+
+    private val _labelsAddEvent = MutableLiveData<Event<List<Label>?>>()
+    val labelsAddEvent: LiveData<Event<List<Label>?>>
+        get() = _labelsAddEvent
+
+    private val _manageLabelsVisibility = MutableLiveData<Boolean>()
+    val manageLabelsVisibility: LiveData<Boolean>
+        get() = _manageLabelsVisibility
+
+    private var labelsJob: Job? = null
 
     init {
         viewModelScope.launch {
@@ -99,6 +135,72 @@ class MainViewModel @Inject constructor(
         }
     }
 
+    fun startPopulatingDrawerWithLabels() {
+        labelsJob?.cancel()
+        // Coroutine to populate drawer with labels
+        labelsJob = viewModelScope.launch {
+            var oldLabelsList: List<Label> = listOf()
+            labelsRepository.getAllLabelsByUsage().collect { labelsList ->
+                if (oldLabelsList != labelsList) {
+                    oldLabelsList = labelsList
+
+                    // Check if the currently shown label still exists.
+                    // If the label has been deleted, navigate to the main notes view
+                    if (_currentHomeDestination.value is HomeDestination.Labels) {
+                        if ((_currentHomeDestination.value as HomeDestination.Labels).label !in labelsList) {
+                            _currentHomeDestination.value = HomeDestination.Status(NoteStatus.ACTIVE)
+                        }
+                    }
+
+                    // Update the labels in the navigation drawer
+                    _clearLabelsEvent.send()
+                    _labelsAddEvent.send(labelsList)
+                    _manageLabelsVisibility.value = labelsList.isNotEmpty()
+                }
+            }
+        }
+    }
+
+    fun selectLabel(label: Label) {
+        _currentHomeDestination.value = HomeDestination.Labels(label)
+    }
+
+    fun navigationItemSelected(item: MenuItem, labelsMenu: Menu) {
+        _drawerCloseEvent.send()
+
+        when (item.itemId) {
+            R.id.drawer_item_notes -> {
+                _currentHomeDestination.value = HomeDestination.Status(NoteStatus.ACTIVE)
+            }
+            R.id.drawer_item_reminders -> {
+                _currentHomeDestination.value = HomeDestination.Reminders
+            }
+            R.id.drawer_item_create_label -> {
+                _navDirectionsEvent.send(HomeFragmentDirections.actionHomeToLabelEdit())
+            }
+            R.id.drawer_item_edit_labels -> {
+                _navDirectionsEvent.send(NavGraphMainDirections.actionLabel(longArrayOf()))
+            }
+            R.id.drawer_item_archived -> {
+                _currentHomeDestination.value = HomeDestination.Status(NoteStatus.ARCHIVED)
+            }
+            R.id.drawer_item_deleted -> {
+                _currentHomeDestination.value = HomeDestination.Status(NoteStatus.DELETED)
+            }
+            R.id.drawer_item_settings -> {
+                _navDirectionsEvent.send(HomeFragmentDirections.actionHomeToSettings())
+            }
+        }
+
+        // Navigate to label, if it has been selected
+        if (labelsMenu.contains(item)) {
+            viewModelScope.launch {
+                val label = labelsRepository.getLabelByName(item.title as String)
+                if (label != null) selectLabel(label)
+            }
+        }
+    }
+
     fun createNote(type: NoteType, title: String = "", content: String = "") {
         viewModelScope.launch {
             // Wait until older notes have been checked / deleted
@@ -135,9 +237,16 @@ class MainViewModel @Inject constructor(
         }
     }
 
+    @AssistedFactory
+    interface Factory : AssistedSavedStateViewModelFactory<MainViewModel> {
+        override fun create(savedStateHandle: SavedStateHandle): MainViewModel
+    }
+
     data class NewNoteData(val type: NoteType, val title: String, val content: String)
 
     companion object {
+        private const val KEY_HOME_DESTINATION = "destination"
+
         private val PERIODIC_TASK_INTERVAL = 1.hours
     }
 }

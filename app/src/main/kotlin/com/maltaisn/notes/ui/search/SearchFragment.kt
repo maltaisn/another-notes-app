@@ -22,6 +22,7 @@ import androidx.appcompat.widget.SearchView
 import androidx.core.view.isVisible
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.SimpleItemAnimator
+import com.google.android.material.transition.MaterialElevationScale
 import com.maltaisn.notes.App
 import com.maltaisn.notes.hideKeyboard
 import com.maltaisn.notes.showKeyboard
@@ -40,6 +41,13 @@ class SearchFragment : NoteFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         (requireContext().applicationContext as App).appComponent.inject(this)
+
+        enterTransition = MaterialElevationScale(false).apply {
+            duration = resources.getInteger(R.integer.material_motion_duration_short_2).toLong()
+        }
+        exitTransition = MaterialElevationScale(true).apply {
+            duration = resources.getInteger(R.integer.material_motion_duration_short_2).toLong()
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -78,6 +86,9 @@ class SearchFragment : NoteFragment() {
                 return false
             }
         })
+
+        // Disable lift on scroll so that the toolbar is always a different color than the background.
+        binding.toolbarLayout.isLiftOnScroll = false
 
         // Focus search view when search fragment is shown.
         searchView.setOnQueryTextFocusChangeListener { editText, hasFocus ->

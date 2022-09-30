@@ -18,16 +18,21 @@ package com.maltaisn.notes.ui.notification
 
 import android.content.Intent
 import android.os.Bundle
+import android.text.format.DateFormat
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationManagerCompat
-import androidx.navigation.findNavController
+import com.google.android.material.datepicker.CalendarConstraints
+import com.google.android.material.datepicker.DateValidatorPointForward
+import com.google.android.material.datepicker.MaterialDatePicker
+import com.google.android.material.timepicker.MaterialTimePicker
+import com.google.android.material.timepicker.TimeFormat
 import com.maltaisn.notes.App
 import com.maltaisn.notes.model.entity.Note
-import com.maltaisn.notes.navigateSafe
 import com.maltaisn.notes.receiver.AlarmReceiver
 import com.maltaisn.notes.sync.R
 import com.maltaisn.notes.ui.navGraphViewModel
 import com.maltaisn.notes.ui.observeEvent
+import java.util.*
 import javax.inject.Inject
 
 class NotificationActivity : AppCompatActivity() {
@@ -48,13 +53,52 @@ class NotificationActivity : AppCompatActivity() {
     }
 
     private fun setupViewModelObservers() {
-        val navController = findNavController(R.id.nav_host_fragment)
 
         viewModel.showDateDialogEvent.observeEvent(this) { date ->
-            navController.navigateSafe(NotificationFragmentDirections.actionReminderPostponeDate(date))
+            val calendarConstraints = CalendarConstraints.Builder()
+                .setStart(System.currentTimeMillis())
+                .setValidator(DateValidatorPointForward.now())
+                .build()
+
+            val datePicker = MaterialDatePicker.Builder.datePicker()
+                .setSelection(System.currentTimeMillis())
+                .setCalendarConstraints(calendarConstraints)
+                .setSelection(date)
+                .build()
+
+            datePicker.addOnPositiveButtonClickListener { selection ->
+                viewModel.setPostponeDate(selection)
+            }
+
+            datePicker.addOnNegativeButtonClickListener {
+                viewModel.cancelPostpone()
+            }
+
+            datePicker.show(supportFragmentManager, datePicker.tag)
         }
+
         viewModel.showTimeDialogEvent.observeEvent(this) { date ->
-            navController.navigateSafe(NotificationFragmentDirections.actionReminderPostponeTime(date))
+            val isUsing24HourFormat = DateFormat.is24HourFormat(this)
+            val timeFormat = if (isUsing24HourFormat) TimeFormat.CLOCK_24H else TimeFormat.CLOCK_12H
+
+            val calendar = Calendar.getInstance()
+            calendar.timeInMillis = date
+
+            val timePicker = MaterialTimePicker.Builder()
+                .setHour(calendar[Calendar.HOUR_OF_DAY])
+                .setMinute(calendar[Calendar.MINUTE])
+                .setTimeFormat(timeFormat)
+                .build()
+
+            timePicker.addOnPositiveButtonClickListener {
+                viewModel.setPostponeTime(timePicker.hour, timePicker.minute)
+            }
+
+            timePicker.addOnNegativeButtonClickListener {
+                viewModel.cancelPostpone()
+            }
+
+            timePicker.show(supportFragmentManager, timePicker.tag)
         }
 
         viewModel.clearNotificationEvent.observeEvent(this) { noteId ->

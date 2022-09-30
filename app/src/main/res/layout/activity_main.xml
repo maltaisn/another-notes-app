@@ -38,15 +38,10 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start"
-        android:fitsSystemWindows="true"
+        app:menu="@menu/navigation_drawer"
+        app:headerLayout="@layout/drawer_header"
+        app:subheaderColor="?colorPrimary"
         >
-        <androidx.fragment.app.FragmentContainerView
-            android:id="@+id/navigation_fragment"
-            android:name="com.maltaisn.notes.ui.navigation.NavigationFragment"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_gravity="start"
-            />
     </com.google.android.material.navigation.NavigationView>
 
 

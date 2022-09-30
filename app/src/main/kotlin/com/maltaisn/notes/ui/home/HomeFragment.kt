@@ -26,8 +26,10 @@ import android.view.View
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.transition.Hold
 import com.maltaisn.notes.App
 import com.maltaisn.notes.model.entity.NoteStatus
 import com.maltaisn.notes.navigateSafe
@@ -86,6 +88,7 @@ class HomeFragment : NoteFragment(), Toolbar.OnMenuItemClickListener {
         }
 
         // Floating action button
+        binding.fab.transitionName = "createNoteTransition"
         binding.fab.setOnClickListener {
             viewModel.createNote()
         }
@@ -95,7 +98,9 @@ class HomeFragment : NoteFragment(), Toolbar.OnMenuItemClickListener {
 
     private fun setupViewModelObservers() {
         viewModel.messageEvent.observeEvent(viewLifecycleOwner) { messageId ->
-            Snackbar.make(requireView(), messageId, Snackbar.LENGTH_SHORT).show()
+            Snackbar.make(requireView(), messageId, Snackbar.LENGTH_SHORT)
+                .setGestureInsetBottomIgnored(true)
+                .show()
         }
 
         viewModel.listLayoutMode.observe(viewLifecycleOwner) { mode ->
@@ -118,8 +123,16 @@ class HomeFragment : NoteFragment(), Toolbar.OnMenuItemClickListener {
         }
 
         viewModel.createNoteEvent.observeEvent(viewLifecycleOwner) { settings ->
+            exitTransition = Hold().apply {
+                duration = resources.getInteger(R.integer.material_motion_duration_medium_2).toLong()
+            }
+
+            val extras = FragmentNavigatorExtras(
+                binding.fab to "noteContainer0"
+            )
+
             findNavController().navigateSafe(NavGraphMainDirections.actionEditNote(
-                labelId = settings.labelId, changeReminder = settings.initialReminder))
+                labelId = settings.labelId, changeReminder = settings.initialReminder), extras = extras)
         }
 
         viewModel.showEmptyTrashDialogEvent.observeEvent(viewLifecycleOwner) {

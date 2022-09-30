@@ -25,19 +25,12 @@ import com.maltaisn.notes.model.LabelsRepository
 import com.maltaisn.notes.model.NotesRepository
 import com.maltaisn.notes.model.PrefsManager
 import com.maltaisn.notes.model.ReminderAlarmManager
-import com.maltaisn.notes.model.entity.LabelRef
-import com.maltaisn.notes.model.entity.Note
-import com.maltaisn.notes.model.entity.NoteStatus
-import com.maltaisn.notes.model.entity.PinnedStatus
+import com.maltaisn.notes.model.entity.*
 import com.maltaisn.notes.sync.BuildConfig
 import com.maltaisn.notes.ui.Event
 import com.maltaisn.notes.ui.ShareData
 import com.maltaisn.notes.ui.StatusChange
-import com.maltaisn.notes.ui.note.adapter.MessageItem
-import com.maltaisn.notes.ui.note.adapter.NoteAdapter
-import com.maltaisn.notes.ui.note.adapter.NoteItem
-import com.maltaisn.notes.ui.note.adapter.NoteListItem
-import com.maltaisn.notes.ui.note.adapter.NoteListLayoutMode
+import com.maltaisn.notes.ui.note.adapter.*
 import com.maltaisn.notes.ui.send
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -101,8 +94,8 @@ abstract class NoteViewModel(
     val listLayoutMode: LiveData<NoteListLayoutMode>
         get() = _listLayoutMode
 
-    private val _editItemEvent = MutableLiveData<Event<Long>>()
-    val editItemEvent: LiveData<Event<Long>>
+    private val _editItemEvent = MutableLiveData<Event<Pair<Long, Int>>>()
+    val editItemEvent: LiveData<Event<Pair<Long, Int>>>
         get() = _editItemEvent
 
     private val _shareEvent = MutableLiveData<Event<ShareData>>()
@@ -370,7 +363,7 @@ abstract class NoteViewModel(
     override fun onNoteItemClicked(item: NoteItem, pos: Int) {
         if (selectedNotes.isEmpty()) {
             // Edit item
-            _editItemEvent.send(item.note.id)
+            _editItemEvent.send(Pair(item.note.id, pos))
         } else {
             // Toggle item selection
             toggleItemChecked(item, pos)

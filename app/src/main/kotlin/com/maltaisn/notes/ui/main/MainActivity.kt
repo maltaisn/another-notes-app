@@ -20,28 +20,31 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.GravityCompat
+import androidx.core.view.*
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.fragment.NavHostFragment
+import com.google.android.material.color.DynamicColors
 //import com.github.venom.Venom
 import com.maltaisn.notes.App
 import com.maltaisn.notes.TAG
+import com.maltaisn.notes.model.PrefsManager
 import com.maltaisn.notes.model.converter.NoteTypeConverter
 import com.maltaisn.notes.model.entity.Note
+import com.maltaisn.notes.model.entity.NoteStatus
 import com.maltaisn.notes.model.entity.NoteType
 import com.maltaisn.notes.navigateSafe
 import com.maltaisn.notes.receiver.AlarmReceiver
 import com.maltaisn.notes.sync.NavGraphMainDirections
 import com.maltaisn.notes.sync.R
 import com.maltaisn.notes.sync.databinding.ActivityMainBinding
-import com.maltaisn.notes.ui.SharedViewModel
-import com.maltaisn.notes.ui.navGraphViewModel
+import com.maltaisn.notes.ui.*
 import com.maltaisn.notes.ui.navigation.HomeDestination
-import com.maltaisn.notes.ui.observeEvent
-import com.maltaisn.notes.ui.viewModel
 import javax.inject.Inject
 import javax.inject.Provider
 
@@ -52,8 +55,11 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
     private val sharedViewModel by navGraphViewModel(R.id.nav_graph_main) { sharedViewModelProvider.get() }
 
     @Inject
-    lateinit var viewModelProvider: Provider<MainViewModel>
-    private val viewModel by viewModel { viewModelProvider.get() }
+    lateinit var viewModelFactory: MainViewModel.Factory
+    private val viewModel by viewModel { viewModelFactory.create(it) }
+
+    @Inject
+    lateinit var prefs: PrefsManager
 
     lateinit var drawerLayout: DrawerLayout
 
@@ -66,6 +72,10 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
         super.onCreate(savedInstanceState)
         (applicationContext as App).appComponent.inject(this)
 
+        // Apply dynamic colors
+        if (prefs.dynamicColors)
+            DynamicColors.applyToActivityIfAvailable(this)
+
         // For triggering process death during debug
 //        val venom = Venom.createInstance(this)
 //        venom.initialize()
@@ -75,14 +85,77 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
         drawerLayout = binding.drawerLayout
         setContentView(binding.root)
 
+        // Allow for transparent status and navigation bars
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         navController = navHostFragment.navController
         navController.addOnDestinationChangedListener(this)
+
+        binding.navView.setNavigationItemSelectedListener { item ->
+            viewModel.navigationItemSelected(
+                item,
+                binding.navView.menu.findItem(R.id.drawer_labels).subMenu!!
+            )
+            true
+        }
+        viewModel.startPopulatingDrawerWithLabels()
 
         setupViewModelObservers()
     }
 
     private fun setupViewModelObservers() {
+        val menu = binding.navView.menu
+        val labelSubmenu = menu.findItem(R.id.drawer_labels).subMenu!!
+        var currentHomeDestination: HomeDestination = HomeDestination.Status(NoteStatus.ACTIVE)
+
+        viewModel.currentHomeDestination.observe(this) { newHomeDestination ->
+            sharedViewModel.changeHomeDestination(newHomeDestination)
+            currentHomeDestination = newHomeDestination
+        }
+
+        viewModel.navDirectionsEvent.observeEvent(this) { navDirections ->
+            navController.navigateSafe(navDirections)
+        }
+
+        viewModel.drawerCloseEvent.observeEvent(this) {
+            drawerLayout.closeDrawers()
+        }
+
+        viewModel.clearLabelsEvent.observeEvent(this) {
+            labelSubmenu.clear()
+        }
+
+        viewModel.labelsAddEvent.observeEvent(this) { labels ->
+            if (labels != null) {
+                for (label in labels) {
+                    labelSubmenu.add(Menu.NONE, View.generateViewId(), Menu.NONE, label.name)
+                        .setIcon(R.drawable.ic_label_outline).isCheckable = true
+                }
+            }
+
+            // Select the current label in the navigation drawer, if it isn't already.
+            if (currentHomeDestination is HomeDestination.Labels) {
+                val currentLabelName = (currentHomeDestination as HomeDestination.Labels).label.name
+                if (binding.navView.checkedItem != null && (
+                        binding.navView.checkedItem!! !in labelSubmenu ||
+                        binding.navView.checkedItem!!.title != currentLabelName)
+                    || binding.navView.checkedItem == null
+                ) {
+                    labelSubmenu.forEach { item : MenuItem ->
+                        if (item.title == currentLabelName) {
+                            binding.navView.setCheckedItem(item)
+                            return@forEach
+                        }
+                    }
+                }
+            }
+        }
+
+        viewModel.manageLabelsVisibility.observe(this) { isVisible ->
+            menu.findItem(R.id.drawer_item_edit_labels).isVisible = isVisible
+        }
+
         viewModel.editItemEvent.observeEvent(this) { noteId ->
             // Allow navigating to same destination, in case notification is clicked while already editing a note.
             // In this case the EditFragment will be opened multiple times.
@@ -131,6 +204,14 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
 
     override fun onStart() {
         super.onStart()
+
+        // Go to label, if it has been newly created
+        sharedViewModel.labelAddEventNav.observeEvent(this) { label ->
+            if (navController.previousBackStackEntry?.destination?.id == R.id.fragment_home) {
+                viewModel.selectLabel(label)
+            }
+        }
+
         viewModel.onStart()
     }
 
@@ -169,6 +250,7 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
                 }
                 INTENT_ACTION_SHOW_REMINDERS -> {
                     // Show reminders screen in HomeFragment. Used by launcher shortcut.
+                    binding.navView.menu.findItem(R.id.drawer_item_reminders).isChecked = true
                     sharedViewModel.changeHomeDestination(HomeDestination.Reminders)
                 }
             }

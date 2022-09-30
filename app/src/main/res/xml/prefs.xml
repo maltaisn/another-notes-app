@@ -34,6 +34,12 @@
 
         <SwitchPreferenceCompat
             android:defaultValue="true"
+            app:key="dynamic_colors"
+            app:title="@string/pref_dynamic_colors"
+            />
+
+        <SwitchPreferenceCompat
+            android:defaultValue="true"
             app:key="strikethrough_checked"
             app:title="@string/pref_strikethrough_checked"
             />

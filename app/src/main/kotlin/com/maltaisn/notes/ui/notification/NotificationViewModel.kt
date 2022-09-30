@@ -30,7 +30,6 @@ import com.maltaisn.notes.ui.send
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.Calendar
 
@@ -95,17 +94,17 @@ class NotificationViewModel @AssistedInject constructor(
         }
     }
 
-    fun setPostponeDate(year: Int, month: Int, day: Int) {
+    fun setPostponeDate(date: Long) {
         calendar.timeInMillis = postponeTime
-        calendar.set(year, month, day)
+
+        val cal = Calendar.getInstance()
+        cal.timeInMillis = date
+
+        calendar.set(cal[Calendar.YEAR], cal[Calendar.MONTH], cal[Calendar.DAY_OF_MONTH])
         postponeTime = calendar.timeInMillis
 
         // Open time dialog next
-        viewModelScope.launch {
-            // TODO thats ugly
-            delay(INTER_DIALOG_DELAY)
-            _showTimeDialogEvent.send(postponeTime)
-        }
+        _showTimeDialogEvent.send(postponeTime)
     }
 
     fun setPostponeTime(hour: Int, minute: Int) {
@@ -146,8 +145,6 @@ class NotificationViewModel @AssistedInject constructor(
     }
 
     companion object {
-        private const val INTER_DIALOG_DELAY = 250L
-
         private const val KEY_NOTE_ID = "note_id"
         private const val KEY_POSTPONE_TIME = "postpone_time"
     }

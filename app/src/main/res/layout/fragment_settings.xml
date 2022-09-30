@@ -14,7 +14,7 @@
   limitations under the License.
   -->
 
-<LinearLayout
+<androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -22,6 +22,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:fitsSystemWindows="true"
+    android:background="?colorSurface"
     >
 
     <com.google.android.material.appbar.AppBarLayout
@@ -29,6 +31,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="0"
+        android:fitsSystemWindows="true"
+        app:layout_behavior="com.google.android.material.appbar.AppBarLayout$Behavior"
+        app:liftOnScroll="true"
+        app:liftOnScrollTargetViewId="@id/recycler_view"
         >
 
         <com.google.android.material.appbar.MaterialToolbar
@@ -44,12 +50,24 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <FrameLayout
-        android:id="@android:id/list_container"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        tools:targetApi="n"
-        />
+        android:layout_height="match_parent"
+        app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"
+        android:fitsSystemWindows="false">
 
-</LinearLayout>
+        <FrameLayout
+            android:id="@android:id/list_container"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_weight="1"
+            tools:targetApi="n"
+            />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

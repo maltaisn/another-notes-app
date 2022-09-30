@@ -152,6 +152,7 @@
     <string name="pref_theme_light">Hell</string>
     <string name="pref_theme_dark">Dunkel</string>
     <string name="pref_theme_system">System folgen</string>
+    <string name="pref_dynamic_colors">Verwende dynamische Farben</string>
     <string name="pref_strikethrough_checked">Erledigte Listen Elemente durchstreichen</string>
     <string name="pref_preview_labels">Maximale Anzahl von Etiketten in der Vorschau</string>
     <string name="pref_shown_date">Datum für Notizen angezeigen</string>
@@ -183,6 +184,10 @@
     <string name="pref_about_view_source">Bei Github anzeigen</string>
     <string name="pref_about_view_licenses">Open-Source-Lizenzen</string>
     <string name="pref_about_version">Version</string>
+
+    <string name="pref_restart_dialog_title">Neustart erforderlich!</string>
+    <string name="pref_restart_dialog_description">Ein Neustart ist erforderlich, um die Änderungen anzuwenden. Möchten Sie die App jetzt neustarten?</string>
+
     <!-- Import/export data messages -->
     <string name="export_success">Daten erfolgreich exportiert!</string>
     <string name="export_fail">Beim Datenexport ist ein Fehler aufgetreten.</string>

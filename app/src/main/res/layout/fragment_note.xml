@@ -22,6 +22,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:fitsSystemWindows="true"
+    android:transitionGroup="true"
+    android:background="?colorSurface"
     >
 
     <com.google.android.material.appbar.AppBarLayout
@@ -29,19 +32,22 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="0"
+        android:fitsSystemWindows="true"
         app:layout_behavior="com.google.android.material.appbar.AppBarLayout$Behavior"
+        app:liftOnScroll="true"
+        app:liftOnScrollTargetViewId="@id/recycler_view"
+        android:transitionName="toolbar"
         >
 
-        <com.google.android.material.appbar.MaterialToolbar
-            android:id="@+id/toolbar"
-            style="?toolbarStyle"
-            android:layout_width="match_parent"
-            android:layout_height="?actionBarSize"
-            app:titleTextColor="?colorControlNormal"
-            tools:menu="@menu/toolbar_home"
-            tools:navigationIcon="@drawable/ic_menu"
-            tools:title="@string/note_location_active"
-            />
+            <com.google.android.material.appbar.MaterialToolbar
+                android:id="@+id/toolbar"
+                style="?toolbarStyle"
+                android:layout_width="match_parent"
+                android:layout_height="?actionBarSize"
+                app:titleTextColor="?colorControlNormal"
+                tools:menu="@menu/toolbar_home"
+                tools:navigationIcon="@drawable/ic_menu"
+                tools:title="@string/note_location_active"/>
 
     </com.google.android.material.appbar.AppBarLayout>
 
@@ -49,6 +55,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"
+        android:fitsSystemWindows="false"
         >
 
         <androidx.appcompat.widget.AppCompatImageView
@@ -88,7 +95,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             android:paddingTop="5dp"
-            android:paddingBottom="10dp"
             android:paddingStart="5dp"
             android:paddingEnd="5dp"
             android:clipToPadding="false"
@@ -107,7 +113,7 @@
         android:layout_gravity="bottom|end"
         android:src="@drawable/ic_plus"
         android:contentDescription="@string/edit_add_title"
-        app:layout_behavior="com.google.android.material.floatingactionbutton.FloatingActionButton$Behavior"
+        app:layout_behavior="com.maltaisn.notes.ui.common.SnackBarFloatingActionButtonBehaviour"
         />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

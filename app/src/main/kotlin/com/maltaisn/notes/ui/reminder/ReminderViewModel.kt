@@ -168,9 +168,13 @@ class ReminderViewModel @AssistedInject constructor(
         _showDateDialogEvent.send(date)
     }
 
-    fun changeDate(year: Int, month: Int, day: Int) {
+    fun changeDate(newDate: Long) {
         calendar.timeInMillis = date
-        calendar.set(year, month, day)
+
+        val cal = Calendar.getInstance()
+        cal.timeInMillis = newDate
+
+        calendar.set(cal[Calendar.YEAR], cal[Calendar.MONTH], cal[Calendar.DAY_OF_MONTH])
 
         date = calendar.timeInMillis
         savedStateHandle[KEY_DATE] = date

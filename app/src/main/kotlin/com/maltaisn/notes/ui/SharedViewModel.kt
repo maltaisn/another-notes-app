@@ -73,6 +73,18 @@ class SharedViewModel @Inject constructor(
     val currentHomeDestination: LiveData<HomeDestination>
         get() = _currentHomeDestination
 
+    private val _currentHomeDestinationChangeEvent = MutableLiveData<Event<Unit>>()
+    val currentHomeDestinationChangeEvent: LiveData<Event<Unit>>
+        get() = _currentHomeDestinationChangeEvent
+
+    private val _sharedElementTransitionFinishedEvent = MutableLiveData<Event<Unit>>()
+    val sharedElementTransitionFinishedEvent: LiveData<Event<Unit>>
+        get() = _sharedElementTransitionFinishedEvent
+
+    private val _noteCreatedEvent = MutableLiveData<Event<Long>>()
+    val noteCreatedEvent: LiveData<Event<Long>>
+        get() = _noteCreatedEvent
+
     fun onBlankNoteDiscarded() {
         // Not shown from EditFragment so that FAB is pushed up.
         _messageEvent.send(R.string.edit_message_blank_note_discarded)
@@ -120,5 +132,14 @@ class SharedViewModel @Inject constructor(
      */
     fun changeHomeDestination(destination: HomeDestination) {
         _currentHomeDestination.value = destination
+        _currentHomeDestinationChangeEvent.send()
+    }
+
+    fun sharedElementTransitionFinished() {
+        _sharedElementTransitionFinishedEvent.send()
+    }
+
+    fun noteCreated(noteId: Long) {
+        _noteCreatedEvent.send(noteId)
     }
 }

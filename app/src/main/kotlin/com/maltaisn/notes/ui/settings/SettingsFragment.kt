@@ -27,12 +27,18 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.StringRes
 import androidx.core.os.bundleOf
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import androidx.navigation.fragment.findNavController
 import androidx.preference.DropDownPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.SwitchPreferenceCompat
+import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.color.DynamicColors
 import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.transition.MaterialElevationScale
 import com.maltaisn.notes.App
 import com.maltaisn.notes.TAG
 import com.maltaisn.notes.model.PrefsManager
@@ -42,6 +48,7 @@ import com.maltaisn.notes.sync.R
 import com.maltaisn.notes.sync.databinding.FragmentSettingsBinding
 import com.maltaisn.notes.ui.AppTheme
 import com.maltaisn.notes.ui.common.ConfirmDialog
+import com.maltaisn.notes.ui.main.MainActivity
 import com.maltaisn.notes.ui.observeEvent
 import com.maltaisn.notes.ui.viewModel
 import com.mikepenz.aboutlibraries.LibsBuilder
@@ -119,6 +126,13 @@ class SettingsFragment : PreferenceFragmentCompat(), ConfirmDialog.Callback {
                 }
             }
         }
+
+        enterTransition = MaterialElevationScale(false).apply {
+            duration = resources.getInteger(R.integer.material_motion_duration_short_2).toLong()
+        }
+        exitTransition = MaterialElevationScale(true).apply {
+            duration = resources.getInteger(R.integer.material_motion_duration_short_2).toLong()
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -127,6 +141,15 @@ class SettingsFragment : PreferenceFragmentCompat(), ConfirmDialog.Callback {
 
         binding.toolbar.setNavigationOnClickListener {
             findNavController().popBackStack()
+        }
+
+        // Apply padding so that the settings don't overlap with the navigation bar
+        val rcv = view.findViewById<RecyclerView>(R.id.recycler_view)
+
+        ViewCompat.setOnApplyWindowInsetsListener(rcv) { _, insets ->
+            val sysWindow = insets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.ime())
+            rcv.updatePadding(bottom = sysWindow.bottom)
+            insets
         }
 
         setupViewModelObservers()
@@ -155,6 +178,20 @@ class SettingsFragment : PreferenceFragmentCompat(), ConfirmDialog.Callback {
         requirePreference<DropDownPreference>(PrefsManager.THEME).setOnPreferenceChangeListener { _, theme ->
             (context.applicationContext as App).updateTheme(AppTheme.fromValue(theme as String))
             true
+        }
+
+        requirePreference<Preference>(PrefsManager.DYNAMIC_COLORS).apply {
+            if (DynamicColors.isDynamicColorAvailable())
+                setOnPreferenceClickListener {
+                    ConfirmDialog.newInstance(
+                        title = R.string.pref_restart_dialog_title,
+                        message = R.string.pref_restart_dialog_description,
+                        btnPositive = R.string.action_ok
+                    ).show(childFragmentManager, RESTART_DIALOG_TAG)
+                    true
+                }
+            // Hide dynamic color / material you preference on unsupported Android versions
+            else isVisible = false
         }
 
         requirePreference<Preference>(PrefsManager.PREVIEW_LINES).setOnPreferenceClickListener {
@@ -225,6 +262,7 @@ class SettingsFragment : PreferenceFragmentCompat(), ConfirmDialog.Callback {
 
     private fun showMessage(@StringRes messageId: Int) {
         val snackbar = Snackbar.make(requireView(), messageId, Snackbar.LENGTH_SHORT)
+            .setGestureInsetBottomIgnored(true)
         snackbar.view.findViewById<TextView>(com.google.android.material.R.id.snackbar_text).maxLines = 5
         snackbar.show()
     }
@@ -249,6 +287,11 @@ class SettingsFragment : PreferenceFragmentCompat(), ConfirmDialog.Callback {
 
     override fun onDialogPositiveButtonClicked(tag: String?) {
         when (tag) {
+            RESTART_DIALOG_TAG -> {
+                // Reload MainActivity to apply theming changes
+                requireActivity().finish()
+                startActivity(Intent(requireContext(), MainActivity::class.java))
+            }
             CLEAR_DATA_DIALOG_TAG -> {
                 viewModel.clearData()
             }
@@ -276,6 +319,7 @@ class SettingsFragment : PreferenceFragmentCompat(), ConfirmDialog.Callback {
     }
 
     companion object {
+        private const val RESTART_DIALOG_TAG = "restart_dialog"
         private const val CLEAR_DATA_DIALOG_TAG = "clear_data_dialog"
         private const val AUTOMATIC_EXPORT_DIALOG_TAG = "automatic_export_dialog"
     }

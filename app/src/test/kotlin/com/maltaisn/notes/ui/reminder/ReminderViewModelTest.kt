@@ -35,14 +35,8 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Date
-import java.util.GregorianCalendar
-import kotlin.test.assertEquals
-import kotlin.test.assertFailsWith
-import kotlin.test.assertFalse
-import kotlin.test.assertNull
-import kotlin.test.assertTrue
+import java.util.*
+import kotlin.test.*
 
 class ReminderViewModelTest {
 
@@ -157,10 +151,11 @@ class ReminderViewModelTest {
 
     @Test
     fun `should update reminder details when changing date`() = runTest {
+        val date = GregorianCalendar(2020, Calendar.JANUARY, 1).timeInMillis
         viewModel.start(listOf(2))
-        viewModel.changeDate(2020, Calendar.JANUARY, 1)
+        viewModel.changeDate(date)
         val details = viewModel.details.getOrAwaitValue()
-        assertOnSameDay(GregorianCalendar(2020, Calendar.JANUARY, 1).timeInMillis, details.date)
+        assertOnSameDay(date, details.date)
     }
 
     @Test
@@ -187,9 +182,7 @@ class ReminderViewModelTest {
 
         val calendar = Calendar.getInstance()
         calendar.add(Calendar.DATE, -1)
-        viewModel.changeDate(calendar[Calendar.YEAR],
-            calendar[Calendar.MONTH],
-            calendar[Calendar.DATE])
+        viewModel.changeDate(calendar.timeInMillis)
         assertTrue(viewModel.invalidTime.getOrAwaitValue())
         viewModel.changeTime(23, 59)
         assertTrue(viewModel.invalidTime.getOrAwaitValue())
@@ -200,9 +193,7 @@ class ReminderViewModelTest {
         viewModel.start(listOf(3))
 
         val calendar = Calendar.getInstance()
-        viewModel.changeDate(calendar[Calendar.YEAR],
-            calendar[Calendar.MONTH],
-            calendar[Calendar.DATE])
+        viewModel.changeDate(calendar.timeInMillis)
         viewModel.changeTime(0, 0)
         assertTrue(viewModel.invalidTime.getOrAwaitValue())
     }
@@ -211,9 +202,7 @@ class ReminderViewModelTest {
     fun `should be valid time if start date time is after now (today)`() = runTest {
         viewModel.start(listOf(3))
         val calendar = Calendar.getInstance()
-        viewModel.changeDate(calendar[Calendar.YEAR],
-            calendar[Calendar.MONTH],
-            calendar[Calendar.DATE])
+        viewModel.changeDate(calendar.timeInMillis)
         viewModel.changeTime(23, 59)
         assertFalse(viewModel.invalidTime.getOrAwaitValue())
     }
@@ -223,9 +212,7 @@ class ReminderViewModelTest {
         viewModel.start(listOf(3))
         val calendar = Calendar.getInstance()
         calendar.add(Calendar.DATE, 1)
-        viewModel.changeDate(calendar[Calendar.YEAR],
-            calendar[Calendar.MONTH],
-            calendar[Calendar.DATE])
+        viewModel.changeDate(calendar.timeInMillis)
         assertFalse(viewModel.invalidTime.getOrAwaitValue())
         viewModel.changeTime(0, 0)
         assertFalse(viewModel.invalidTime.getOrAwaitValue())
@@ -243,7 +230,8 @@ class ReminderViewModelTest {
         viewModel.changeRecurrence(Recurrence(Recurrence.Period.DAILY) {
             endDate = dateFor("2020-08-16").time
         })
-        viewModel.changeDate(2021, Calendar.JANUARY, 1)
+        val date = GregorianCalendar(2021, Calendar.JANUARY, 1).timeInMillis
+        viewModel.changeDate(date)
         val details = viewModel.details.getOrAwaitValue()
         assertEquals(Recurrence(Recurrence.Period.DAILY), details.recurrence)
     }
@@ -255,7 +243,8 @@ class ReminderViewModelTest {
             endDate = dateFor("2020-08-16").time
         }
         viewModel.changeRecurrence(recurrence)
-        viewModel.changeDate(2020, Calendar.AUGUST, 16)
+        val date = GregorianCalendar(2020, Calendar.AUGUST, 16).timeInMillis
+        viewModel.changeDate(date)
         val details = viewModel.details.getOrAwaitValue()
         assertEquals(recurrence, details.recurrence)
     }
@@ -263,11 +252,13 @@ class ReminderViewModelTest {
     @Test
     fun `should change monthly recurrence on last day if start date not on last day`() = runTest {
         viewModel.start(listOf(2))
-        viewModel.changeDate(2020, Calendar.JANUARY, 31)
+        val date1 = GregorianCalendar(2020, Calendar.JANUARY, 31).timeInMillis
+        viewModel.changeDate(date1)
         viewModel.changeRecurrence(Recurrence(Recurrence.Period.MONTHLY) {
             dayInMonth = -1
         })
-        viewModel.changeDate(2020, Calendar.JANUARY, 15)
+        val date2 = GregorianCalendar(2020, Calendar.JANUARY, 15).timeInMillis
+        viewModel.changeDate(date2)
         val details = viewModel.details.getOrAwaitValue()
         assertEquals(Recurrence(Recurrence.Period.MONTHLY), details.recurrence)
     }
@@ -275,7 +266,8 @@ class ReminderViewModelTest {
     @Test
     fun `should create reminder with changed fields`() = runTest {
         viewModel.start(listOf(3))
-        viewModel.changeDate(9999, Calendar.JANUARY, 1)
+        val date = GregorianCalendar(9999, Calendar.JANUARY, 1).timeInMillis
+        viewModel.changeDate(date)
         viewModel.changeTime(3, 14)
         viewModel.changeRecurrence(Recurrence(Recurrence.Period.WEEKLY))
         viewModel.createReminder()
@@ -293,7 +285,8 @@ class ReminderViewModelTest {
     @Test
     fun `should create non-recurring reminder`() = runTest {
         viewModel.start(listOf(3))
-        viewModel.changeDate(9999, Calendar.JANUARY, 1)
+        val date = GregorianCalendar(9999, Calendar.JANUARY, 1).timeInMillis
+        viewModel.changeDate(date)
         viewModel.changeTime(3, 14)
         viewModel.createReminder()
 
@@ -306,7 +299,8 @@ class ReminderViewModelTest {
     @Test
     fun `should not create reminder with no events`() = runTest {
         viewModel.start(listOf(1))
-        viewModel.changeDate(2100, Calendar.JANUARY, 1) // Friday
+        val date = GregorianCalendar(2100, Calendar.JANUARY, 1).timeInMillis
+        viewModel.changeDate(date) // Friday
         viewModel.changeRecurrence(Recurrence(Recurrence.Period.WEEKLY) {
             setDaysOfWeek(Recurrence.THURSDAY)
             endDate = dateFor("2100-01-01").time

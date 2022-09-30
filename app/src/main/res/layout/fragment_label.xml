@@ -22,6 +22,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:fitsSystemWindows="true"
+    android:background="?colorSurface"
     >
 
     <com.google.android.material.appbar.AppBarLayout
@@ -29,7 +31,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="0"
+        android:fitsSystemWindows="true"
         app:layout_behavior="com.google.android.material.appbar.AppBarLayout$Behavior"
+        app:liftOnScroll="true"
+        app:liftOnScrollTargetViewId="@id/recycler_view"
         >
 
         <com.google.android.material.appbar.MaterialToolbar
@@ -49,6 +54,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"
+        android:fitsSystemWindows="false"
         >
 
         <androidx.appcompat.widget.AppCompatImageView
@@ -105,7 +111,7 @@
         android:layout_gravity="bottom|end"
         android:src="@drawable/ic_plus"
         android:contentDescription="@string/label_create"
-        app:layout_behavior="com.google.android.material.floatingactionbutton.FloatingActionButton$Behavior"
+        app:layout_behavior="com.maltaisn.notes.ui.common.SnackBarFloatingActionButtonBehaviour"
         />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -24,6 +24,7 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.text.set
+import androidx.core.view.ViewCompat
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
@@ -76,6 +77,14 @@ sealed class NoteViewHolder<T : NoteItem>(itemView: View) :
         bindReminder(item)
         bindLabels(adapter, item)
         bindActionBtn(adapter, item)
+
+        // Set transition names for shared transitions
+        val noteId = item.note.id
+        ViewCompat.setTransitionName(
+            cardView,
+            "noteContainer$noteId"
+        )
+
 
         // Click listeners
         cardView.isChecked = item.checked

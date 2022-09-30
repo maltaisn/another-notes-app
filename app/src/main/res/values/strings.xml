@@ -22,6 +22,8 @@
     <!-- Can be translated to provided a sensible localized name for a "Notes" app -->
     <string name="app_name_short">Notes</string>
 
+    <string name="app_subtitle">Note-taking made easy.</string>
+
     <string name="action_archive">Archive</string>
     <string name="action_cancel">Cancel</string>
     <string name="action_clear">Clear</string>
@@ -175,6 +177,7 @@
     <string name="pref_theme_light">Light</string>
     <string name="pref_theme_dark">Dark</string>
     <string name="pref_theme_system">Follow system</string>
+    <string name="pref_dynamic_colors">Use dynamic colors</string>
     <string name="pref_strikethrough_checked">Strikethrough checked list items</string>
     <string name="pref_preview_labels">Maximum number of labels in preview</string>
 
@@ -213,6 +216,9 @@
     <string name="pref_about_view_source">View on Github</string>
     <string name="pref_about_view_licenses">Open source licenses</string>
     <string name="pref_about_version">Version</string>
+
+    <string name="pref_restart_dialog_title">Restart required!</string>
+    <string name="pref_restart_dialog_description">A restart is required for these changes to take effect. Do you want to restart the app now?</string>
 
     <!-- Import/export data messages -->
     <string name="export_success">Data exported successfully!</string>
