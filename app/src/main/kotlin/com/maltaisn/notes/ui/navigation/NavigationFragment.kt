@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Nicolas Maltais
+ * Copyright 2022 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -108,11 +108,18 @@ class NavigationFragment : Fragment() {
             // Somewhat ugly: post is used to delay sharedViewModel creation since this fragment
             // is created alongside the NavigationFragment and thus the navigation controller
             // doesn't (fully?) exist yet.
+
             sharedViewModel.labelAddEventNav.observeEvent(viewLifecycleOwner) { label ->
                 // If user is on home fragment, select the newly created label.
                 if (findNavController().previousBackStackEntry?.destination?.id == R.id.fragment_home) {
-                    viewModel.selectLabel(label)
+                    viewModel.selectDestination(HomeDestination.Labels(label))
                 }
+            }
+
+            sharedViewModel.currentHomeDestination.observe(viewLifecycleOwner) { destination ->
+                // Used to update navigation list selection when updated by the app and not the user.
+                // Redundant when destination updated by the user, that's fine.
+                viewModel.selectDestination(destination)
             }
         }
     }

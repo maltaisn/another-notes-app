@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Nicolas Maltais
+ * Copyright 2022 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -114,6 +114,10 @@ class SharedViewModel @Inject constructor(
         _sortChangeEvent.send(settings)
     }
 
+    /**
+     * This is the method to use whenever the home destination should be changed.
+     * The navigation list selection will be updated automatically and the rest of app can listen for these changes.
+     */
     fun changeHomeDestination(destination: HomeDestination) {
         _currentHomeDestination.value = destination
     }

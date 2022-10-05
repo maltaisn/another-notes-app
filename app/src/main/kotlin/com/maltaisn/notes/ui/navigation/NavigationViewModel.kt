@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Nicolas Maltais
+ * Copyright 2022 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,7 +40,6 @@ import com.maltaisn.notes.ui.send
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 class NavigationViewModel @AssistedInject constructor(
@@ -78,7 +77,11 @@ class NavigationViewModel @AssistedInject constructor(
         }
 
     init {
-        checkedId = savedStateHandle[KEY_CHECKED_ID] ?: ITEM_ID_ACTIVE
+        // The initial checked ID will be set later by a currentDestination observer.
+        // This avoids a concurrency issue involving restoreSelection canceling an initial destination
+        // for which the navigation fragment hasn't yet been notified.
+        checkedId = savedStateHandle[KEY_CHECKED_ID] ?: ITEM_ID_NONE
+
         viewModelScope.launch {
             // Navigation items are constant, except for labels.
             labelsRepository.getAllLabelsByUsage().collect { labels ->
@@ -87,16 +90,31 @@ class NavigationViewModel @AssistedInject constructor(
         }
     }
 
-    fun selectLabel(label: Label) {
-        checkedId = label.id
+    fun selectDestination(destination: HomeDestination) {
+        val id = when (destination) {
+            is HomeDestination.Reminders -> ITEM_ID_REMINDERS
+            is HomeDestination.Labels -> destination.label.id
+            is HomeDestination.Status -> when (destination.status) {
+                NoteStatus.ACTIVE -> ITEM_ID_ACTIVE
+                NoteStatus.ARCHIVED -> ITEM_ID_ARCHIVED
+                NoteStatus.DELETED -> ITEM_ID_DELETED
+            }
+        }
+        if (id == checkedId) {
+            return
+        }
+        checkedId = id
+
+        // Select item in navigation list
         val pos = listItems.indexOfFirst {
             it is NavigationDestinationItem
-                    && it.destination is HomeDestination.Labels
-                    && it.destination.label == label
+                    && it.id == id
+                    && it.destination == destination
         }
         if (pos != -1) {
             selectNavigationItem(listItems[pos] as NavigationDestinationItem, pos)
-        } // otherwise list wasn't updated yet for new label, select on update.
+        }
+        // If pos == -1, list wasn't updated yet for new label, in which case it is selected on update instead.
     }
 
     private fun createListItems(labels: List<Label>) = buildList {
@@ -167,6 +185,11 @@ class NavigationViewModel @AssistedInject constructor(
     }
 
     private fun restoreSelection(list: MutableList<NavigationItem>) {
+        if (checkedId == ITEM_ID_NONE) {
+            // No item was checked yet, nothing to restore.
+            return
+        }
+
         for ((i, item) in list.withIndex()) {
             if (item is NavigationDestinationItem && item.id == checkedId) {
                 list[i] = item.copy(checked = true)
@@ -246,6 +269,8 @@ class NavigationViewModel @AssistedInject constructor(
         private const val ITEM_ID_REMINDERS = -5L
         private const val ITEM_ID_SETTINGS = -6L
         private const val ITEM_ID_LABEL_ADD = -7L
+
+        private const val ITEM_ID_NONE = -100L
 
         private const val ITEM_ID_DIVIDER_MASK = 0x100000000L
 
