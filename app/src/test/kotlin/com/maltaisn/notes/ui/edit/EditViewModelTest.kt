@@ -154,7 +154,7 @@ class EditViewModelTest {
             EditContentItem("".e, true)
         ), viewModel.editItems.getOrAwaitValue())
 
-        assertLiveDataEventSent(viewModel.focusEvent, EditViewModel.FocusChange(1, 0, false))
+        assertLiveDataEventSent(viewModel.focusEvent, EditViewModel.FocusChange(0, 0, false))
     }
 
     @Test

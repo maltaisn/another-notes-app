@@ -275,8 +275,8 @@ class EditViewModel @AssistedInject constructor(
             recreateListItems()
 
             if (isFirstStart && isNewNote) {
-                // Focus on text content
-                focusItemAt(findItemPos<EditContentItem>(), 0, false)
+                // Focus on title
+                focusItemAt(findItemPos<EditTitleItem>(), 0, false)
 
                 if (changeReminder) {
                     changeReminder()
