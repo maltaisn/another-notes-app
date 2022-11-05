@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Nicolas Maltais
+ * Copyright 2022 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,9 +17,14 @@
 package com.maltaisn.notes.model.entity
 
 import com.maltaisn.notes.model.ValueEnum
+import com.maltaisn.notes.model.findValueEnum
 
 enum class NoteStatus(override val value: Int) : ValueEnum<Int> {
     ACTIVE(0),
     ARCHIVED(1),
-    DELETED(2)
+    DELETED(2);
+
+    companion object {
+        fun fromValue(value: Int): NoteStatus = findValueEnum(value)
+    }
 }

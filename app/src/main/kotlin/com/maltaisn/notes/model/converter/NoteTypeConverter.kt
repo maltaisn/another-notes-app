@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Nicolas Maltais
+ * Copyright 2022 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 package com.maltaisn.notes.model.converter
 
 import androidx.room.TypeConverter
-import com.maltaisn.notes.model.BadDataException
 import com.maltaisn.notes.model.entity.NoteType
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializer
@@ -35,8 +34,7 @@ object NoteTypeConverter : KSerializer<NoteType> {
 
     @TypeConverter
     @JvmStatic
-    fun toType(value: Int) = NoteType.values().find { it.value == value }
-        ?: throw BadDataException("Unknown note type value")
+    fun toType(value: Int) = NoteType.fromValue(value)
 
     override val descriptor = PrimitiveSerialDescriptor("NoteType", PrimitiveKind.INT)
 

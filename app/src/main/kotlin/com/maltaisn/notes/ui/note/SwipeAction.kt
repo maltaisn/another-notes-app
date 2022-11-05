@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Nicolas Maltais
+ * Copyright 2022 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package com.maltaisn.notes.ui.note
 
 import com.maltaisn.notes.model.ValueEnum
+import com.maltaisn.notes.model.findValueEnum
 import com.maltaisn.notes.sync.R
 
 /**
@@ -26,5 +27,9 @@ import com.maltaisn.notes.sync.R
 enum class SwipeAction(override val value: String) : ValueEnum<String> {
     ARCHIVE("archive"),
     DELETE("delete"),
-    NONE("none"),
+    NONE("none");
+
+    companion object {
+        fun fromValue(value: String): SwipeAction = findValueEnum(value)
+    }
 }

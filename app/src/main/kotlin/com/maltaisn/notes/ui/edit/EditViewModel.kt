@@ -242,7 +242,9 @@ class EditViewModel @AssistedInject constructor(
                 // This is the expected path for creating a new note (by passing Note.NO_ID)
                 val date = Date()
                 note = BLANK_NOTE.copy(addedDate = date, lastModifiedDate = date, title = title, content = content)
-                if (type == NoteType.LIST) note = note.asListNote()
+                if (type == NoteType.LIST) {
+                    note = note.asListNote()
+                }
 
                 val id = notesRepository.insertNote(note)
                 note = note.copy(id = id)

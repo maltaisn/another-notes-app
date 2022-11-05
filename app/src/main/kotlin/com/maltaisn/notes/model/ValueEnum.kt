@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Nicolas Maltais
+ * Copyright 2022 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,3 +23,11 @@ package com.maltaisn.notes.model
 interface ValueEnum<T> {
     val value: T
 }
+
+/**
+ * Get value enum constant from its value.
+ * Throws an exception if value doesn't match any enum constant.
+ */
+inline fun <reified V : ValueEnum<out T>, T> findValueEnum(value: T) =
+    V::class.java.enumConstants?.find { it.value == value }
+        ?: throw IllegalArgumentException("Unknown value")

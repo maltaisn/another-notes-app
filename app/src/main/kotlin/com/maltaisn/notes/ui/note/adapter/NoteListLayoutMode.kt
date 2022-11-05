@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Nicolas Maltais
+ * Copyright 2022 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,11 +17,16 @@
 package com.maltaisn.notes.ui.note.adapter
 
 import com.maltaisn.notes.model.ValueEnum
+import com.maltaisn.notes.model.findValueEnum
 
 /**
  * A note list layout mode.
  */
-enum class NoteListLayoutMode(override val value: Int): ValueEnum<Int> {
+enum class NoteListLayoutMode(override val value: Int) : ValueEnum<Int> {
     LIST(0),
-    GRID(1)
+    GRID(1);
+
+    companion object {
+        fun fromValue(value: Int): NoteListLayoutMode = findValueEnum(value)
+    }
 }

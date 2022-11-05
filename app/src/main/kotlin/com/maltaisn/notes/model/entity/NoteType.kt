@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Nicolas Maltais
+ * Copyright 2022 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,12 +17,13 @@
 package com.maltaisn.notes.model.entity
 
 import com.maltaisn.notes.model.ValueEnum
+import com.maltaisn.notes.model.findValueEnum
 
 enum class NoteType(override val value: Int) : ValueEnum<Int> {
     TEXT(0),
     LIST(1);
 
     companion object {
-        fun fromInt(i: Int) = values().first { it.value == i }
+        fun fromValue(value: Int): NoteType = findValueEnum(value)
     }
 }

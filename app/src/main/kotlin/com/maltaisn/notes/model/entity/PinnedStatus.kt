@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Nicolas Maltais
+ * Copyright 2022 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package com.maltaisn.notes.model.entity
 
 import com.maltaisn.notes.model.ValueEnum
+import com.maltaisn.notes.model.findValueEnum
 
 /**
  * Describes how a note or a group of notes are pinned.
@@ -24,5 +25,9 @@ import com.maltaisn.notes.model.ValueEnum
 enum class PinnedStatus(override val value: Int) : ValueEnum<Int> {
     CANT_PIN(0),
     UNPINNED(1),
-    PINNED(2)
+    PINNED(2);
+
+    companion object {
+        fun fromValue(value: Int): PinnedStatus = findValueEnum(value)
+    }
 }

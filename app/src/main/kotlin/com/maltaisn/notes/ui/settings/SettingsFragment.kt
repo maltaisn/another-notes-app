@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Nicolas Maltais
+ * Copyright 2022 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -153,7 +153,7 @@ class SettingsFragment : PreferenceFragmentCompat(), ConfirmDialog.Callback {
         setPreferencesFromResource(R.xml.prefs, rootKey)
 
         requirePreference<DropDownPreference>(PrefsManager.THEME).setOnPreferenceChangeListener { _, theme ->
-            (context.applicationContext as App).updateTheme(AppTheme.values().find { it.value == theme }!!)
+            (context.applicationContext as App).updateTheme(AppTheme.fromValue(theme as String))
             true
         }
 

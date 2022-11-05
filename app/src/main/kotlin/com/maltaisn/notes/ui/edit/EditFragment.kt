@@ -98,7 +98,7 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener, ConfirmDialog.
             args.noteId,
             args.labelId,
             args.changeReminder,
-            NoteType.fromInt(args.type),
+            NoteType.fromValue(args.type),
             args.title,
             args.content
         )
