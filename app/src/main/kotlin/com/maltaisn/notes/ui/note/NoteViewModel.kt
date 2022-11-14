@@ -215,6 +215,8 @@ abstract class NoteViewModel(
         _showLabelsFragmentEvent.send(selectedNoteIds.toList())
     }
 
+    protected open fun onListLayoutModeChanged(){}
+
     fun toggleListLayoutMode() {
         val mode = when (_listLayoutMode.value!!) {
             NoteListLayoutMode.LIST -> NoteListLayoutMode.GRID
@@ -222,6 +224,8 @@ abstract class NoteViewModel(
         }
         _listLayoutMode.value = mode
         prefs.listLayoutMode = mode
+
+        onListLayoutModeChanged()
     }
 
     fun moveSelectedNotes() {

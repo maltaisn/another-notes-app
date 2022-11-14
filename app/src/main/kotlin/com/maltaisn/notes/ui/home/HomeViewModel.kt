@@ -140,6 +140,11 @@ class HomeViewModel @AssistedInject constructor(
         updateNoteList()
     }
 
+    override fun onListLayoutModeChanged() {
+        // Updating the list layout mode doesn't trigger the database flow => Update manually.
+        updateNoteList()
+    }
+
     /** When user clicks on empty trash. */
     fun emptyTrashPre() {
         if (listItems.isNotEmpty()) {
