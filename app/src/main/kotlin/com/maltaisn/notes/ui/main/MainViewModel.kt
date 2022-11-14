@@ -70,6 +70,13 @@ class MainViewModel @Inject constructor(
             // This shouldn't technically happen, but there have been cases where recurring reminders failed.
             reminderAlarmManager.updateAllAlarms()
 
+            // Check if last added note is blank, in which case delete it.
+            val lastCreatedNote = notesRepository.getLastCreatedNote()
+            if (lastCreatedNote?.isBlank == true) {
+                notesRepository.deleteNote(lastCreatedNote)
+            }
+            _deletionFinishedSignal.release()
+
             // Periodically remove old notes in trash, and auto export if needed.
             while (true) {
                 notesRepository.deleteOldNotesInTrash()
@@ -88,12 +95,7 @@ class MainViewModel @Inject constructor(
 
     fun onStart() {
         viewModelScope.launch {
-            // Check if last added note is blank, in which case delete it.
-            val lastCreatedNote = notesRepository.getLastCreatedNote()
-            if (lastCreatedNote?.isBlank == true) {
-                notesRepository.deleteNote(lastCreatedNote)
-            }
-            _deletionFinishedSignal.release()
+            notesRepository.deleteOldNotesInTrash()
         }
     }
 
