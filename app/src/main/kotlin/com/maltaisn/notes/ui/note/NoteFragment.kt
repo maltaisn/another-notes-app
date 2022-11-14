@@ -75,6 +75,7 @@ abstract class NoteFragment : Fragment(), ActionMode.Callback, ConfirmDialog.Cal
 
     protected lateinit var drawerLayout: DrawerLayout
 
+    private var spanCount: Int = 1
     private var hideActionMode = false
 
     override fun onCreateView(
@@ -96,7 +97,7 @@ abstract class NoteFragment : Fragment(), ActionMode.Callback, ConfirmDialog.Cal
         val rcv = binding.recyclerView
         rcv.setHasFixedSize(true)
         val adapter = NoteAdapter(context, viewModel, prefsManager)
-        val layoutManager = StaggeredGridLayoutManager(1, StaggeredGridLayoutManager.VERTICAL)
+        val layoutManager = StaggeredGridLayoutManager(spanCount, StaggeredGridLayoutManager.VERTICAL)
         rcv.adapter = adapter
         rcv.layoutManager = layoutManager
 
@@ -120,6 +121,7 @@ abstract class NoteFragment : Fragment(), ActionMode.Callback, ConfirmDialog.Cal
                 NoteListLayoutMode.LIST -> R.integer.note_list_layout_span_count
                 NoteListLayoutMode.GRID -> R.integer.note_grid_layout_span_count
             })
+            spanCount = layoutManager.spanCount
             adapter.updateForListLayoutChange()
         }
 
@@ -145,6 +147,11 @@ abstract class NoteFragment : Fragment(), ActionMode.Callback, ConfirmDialog.Cal
             if (data != null) {
                 binding.placeholderImv.setImageResource(data.iconId)
                 binding.placeholderTxv.setText(data.messageId)
+            } else {
+                // Recreate layout manager to prevent an issue with weird spacing at the top of the recyclerview
+                // after the placeholder has been shown.
+                binding.recyclerView.layoutManager =
+                    StaggeredGridLayoutManager(spanCount, StaggeredGridLayoutManager.VERTICAL)
             }
         }
 
