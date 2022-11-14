@@ -56,6 +56,11 @@ class NotificationActivity : AppCompatActivity() {
         viewModel.showTimeDialogEvent.observeEvent(this) { date ->
             navController.navigateSafe(NotificationFragmentDirections.actionReminderPostponeTime(date))
         }
+
+        viewModel.clearNotificationEvent.observeEvent(this) { noteId ->
+            NotificationManagerCompat.from(this).cancel(noteId.toInt())
+        }
+
         viewModel.exitEvent.observeEvent(this) {
             finish()
         }
@@ -66,7 +71,6 @@ class NotificationActivity : AppCompatActivity() {
             when (intent.action) {
                 INTENT_ACTION_POSTPONE -> {
                     val noteId = intent.getLongExtra(AlarmReceiver.EXTRA_NOTE_ID, Note.NO_ID)
-                    NotificationManagerCompat.from(this).cancel(noteId.toInt())
                     viewModel.onPostponeClicked(noteId)
                 }
             }
