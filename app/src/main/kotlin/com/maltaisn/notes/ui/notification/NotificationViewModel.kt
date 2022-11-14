@@ -58,6 +58,10 @@ class NotificationViewModel @AssistedInject constructor(
     val showTimeDialogEvent: LiveData<Event<Long>>
         get() = _showTimeDialogEvent
 
+    private val _clearNotificationEvent = MutableLiveData<Event<Long>>()
+    val clearNotificationEvent: LiveData<Event<Long>>
+        get() = _clearNotificationEvent
+
     private val _exitEvent = MutableLiveData<Event<Unit>>()
     val exitEvent: LiveData<Event<Unit>>
         get() = _exitEvent
@@ -123,9 +127,11 @@ class NotificationViewModel @AssistedInject constructor(
                     notesRepository.updateNote(newNote)
                     reminderAlarmManager.setNoteReminderAlarm(newNote)
                 }
+                _clearNotificationEvent.send(noteId)
                 _exitEvent.send()
             }
         } else {
+            _clearNotificationEvent.send(noteId)
             _exitEvent.send()
         }
     }
