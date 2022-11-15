@@ -143,16 +143,17 @@ abstract class NoteFragment : Fragment(), ActionMode.Callback, ConfirmDialog.Cal
         }
 
         viewModel.placeholderData.observe(viewLifecycleOwner) { data ->
-            binding.placeholderGroup.isVisible = data != null
             if (data != null) {
                 binding.placeholderImv.setImageResource(data.iconId)
                 binding.placeholderTxv.setText(data.messageId)
-            } else {
+            } else if (binding.placeholderGroup.isVisible){
                 // Recreate layout manager to prevent an issue with weird spacing at the top of the recyclerview
                 // after the placeholder has been shown.
                 binding.recyclerView.layoutManager =
                     StaggeredGridLayoutManager(spanCount, StaggeredGridLayoutManager.VERTICAL)
             }
+
+            binding.placeholderGroup.isVisible = data != null
         }
 
         viewModel.showReminderDialogEvent.observeEvent(viewLifecycleOwner) { noteIds ->
