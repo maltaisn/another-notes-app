@@ -1,9 +1,11 @@
 ## v1.4.6 ()
 - Change default focus to title when creating a new note.
-- Only clear notification after reminder has been postponed (#86, @nhoener).
-- Fix title in drawer menu being cut of by status bar (#74, @nhoener).
-- Fix notes created from launcher shortcut not saved (#78, @nhoener).
-- Fix reminder launcher shortcut not working (#80, @nhoener).
+- Changes by @nhoeher
+    - Only clear notification after reminder has been postponed (#86).
+    - Fix title in drawer menu being cut of by status bar (#74).
+    - Fix notes created from launcher shortcut not saved (#78).
+    - Fix reminder launcher shortcut not working (#80).
+    - Fix note list preview lines not updated when changing layout mode (#88)
 
 ## v1.4.5 (2022-09-25)
 - Fixed cursor moving to first line when scrolling (#60, thanks to @nhoeher)

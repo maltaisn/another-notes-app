@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Nicolas Maltais
+ * Copyright 2022 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -75,7 +75,7 @@ abstract class NoteFragment : Fragment(), ActionMode.Callback, ConfirmDialog.Cal
 
     protected lateinit var drawerLayout: DrawerLayout
 
-    private var spanCount: Int = 1
+    private var spanCount = 1
     private var hideActionMode = false
 
     override fun onCreateView(
@@ -146,7 +146,7 @@ abstract class NoteFragment : Fragment(), ActionMode.Callback, ConfirmDialog.Cal
             if (data != null) {
                 binding.placeholderImv.setImageResource(data.iconId)
                 binding.placeholderTxv.setText(data.messageId)
-            } else if (binding.placeholderGroup.isVisible){
+            } else if (binding.placeholderGroup.isVisible) {
                 // Recreate layout manager to prevent an issue with weird spacing at the top of the recyclerview
                 // after the placeholder has been shown.
                 binding.recyclerView.layoutManager =

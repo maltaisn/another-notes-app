@@ -215,7 +215,7 @@ abstract class NoteViewModel(
         _showLabelsFragmentEvent.send(selectedNoteIds.toList())
     }
 
-    protected open fun onListLayoutModeChanged(){}
+    protected open fun onListLayoutModeChanged() = Unit
 
     fun toggleListLayoutMode() {
         val mode = when (_listLayoutMode.value!!) {
