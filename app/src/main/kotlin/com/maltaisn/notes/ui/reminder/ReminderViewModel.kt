@@ -130,7 +130,7 @@ class ReminderViewModel @AssistedInject constructor(
             }
 
             if (reminder != null) {
-                date = reminder.start.time
+                date = reminder.next.time
                 recurrence = reminder.recurrence ?: Recurrence.DOES_NOT_REPEAT
             } else {
                 // Check preset hours for today
