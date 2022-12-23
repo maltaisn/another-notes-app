@@ -1,6 +1,8 @@
-## v1.4.6 ()
+## v1.5.0
 - Change default focus to title when creating a new note.
 - Changes by @nhoeher
+    - Full Material 3 redesign.
+    - Change reminder start date to show next event date when editing.
     - Only clear notification after reminder has been postponed (#86).
     - Fix title in drawer menu being cut of by status bar (#74).
     - Fix notes created from launcher shortcut not saved (#78).

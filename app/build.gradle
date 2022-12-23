@@ -16,8 +16,8 @@ repositories {
 }
 
 android {
-    compileSdkVersion 32
-    buildToolsVersion "30.0.3"
+    compileSdkVersion 33
+    buildToolsVersion "33.0.1"
 
     def schemasLocation = "$projectDir/schemas"
 
@@ -26,9 +26,9 @@ android {
         // there was a sync flavor. Package can't be changed on Play Store so it was kept.
         applicationId "com.maltaisn.notes.sync"
         minSdkVersion 21
-        targetSdkVersion 32
-        versionCode 10406
-        versionName "1.4.6"
+        targetSdkVersion 33
+        versionCode 10500
+        versionName "1.5.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
         kapt {
@@ -36,12 +36,9 @@ android {
                 arg("room.schemaLocation", schemasLocation)
             }
         }
-
-        // prevent half-translated app, for example if recurpickerlib is available is one language,
-        // but the app is not, then the app should show entirely in one language.
-        // REMOVED: prevents layout from showing in RTL direction
-//        resConfigs "en", "fr", "nb", "es"
     }
+
+    namespace "com.maltaisn.notes.sync"
 
     buildFeatures {
         viewBinding = true
@@ -104,6 +101,7 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+
     kotlinOptions {
         jvmTarget = "1.8"
         freeCompilerArgs += [
@@ -114,6 +112,7 @@ android {
                 "-Xopt-in=kotlinx.serialization.ExperimentalSerializationApi",
         ]
     }
+
     testOptions {
         execution 'ANDROIDX_TEST_ORCHESTRATOR'
         unitTests.all {
