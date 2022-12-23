@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Nicolas Maltais
+ * Copyright 2022 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package com.maltaisn.notes
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.Date
+import java.util.Locale
 import java.util.TimeZone
 
 val datePatterns = listOf(
@@ -38,8 +39,8 @@ data class DatePattern(val pattern: String, val timeZone: TimeZone?, val length:
  * - `2020-01-05T09:12:11.000-07:00`: in specified time zone.
  * Throws an error if date can't be parsed according to any of these patterns.
  */
-internal fun dateFor(date: String): Date {
-    val dateFormat = SimpleDateFormat()
+fun dateFor(date: String): Date {
+    val dateFormat = SimpleDateFormat("", Locale.US)
     for (pattern in datePatterns) {
         if (pattern.length == null || date.length == pattern.length) {
             if (pattern.timeZone != null) {

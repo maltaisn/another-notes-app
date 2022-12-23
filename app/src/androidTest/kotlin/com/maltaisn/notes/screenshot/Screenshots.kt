@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Nicolas Maltais
+ * Copyright 2022 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -65,7 +65,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.util.Calendar
-import com.maltaisn.notes.sync.debug.test.R as RT
+import com.maltaisn.notes.sync.test.R as RT
 
 /**
  * Screenshots should be taken with release build type, or debug features will appear.

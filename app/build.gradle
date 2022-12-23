@@ -49,22 +49,11 @@ android {
         main {
             java.srcDirs += "src/main/kotlin"
         }
-
         debug {
             java.srcDirs += "src/debug/kotlin"
         }
         release {
             java.srcDirs += "src/release/kotlin"
-        }
-
-        // All test source sets have a shared source set.
-        def sharedTestDir = "src/sharedTest/kotlin"
-        test {
-            java.srcDirs += [sharedTestDir, "src/test/kotlin"]
-        }
-        androidTest {
-            java.srcDirs += [sharedTestDir, "src/androidTest/kotlin"]
-            assets.srcDirs += files(schemasLocation)
         }
     }
 
@@ -104,13 +93,7 @@ android {
 
     kotlinOptions {
         jvmTarget = "1.8"
-        freeCompilerArgs += [
-                "-Xopt-in=kotlin.ExperimentalStdlibApi",
-                "-Xopt-in=kotlin.time.ExperimentalTime",
-                "-Xopt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
-                "-Xopt-in=kotlinx.coroutines.FlowPreview",
-                "-Xopt-in=kotlinx.serialization.ExperimentalSerializationApi",
-        ]
+        freeCompilerArgs += project.kotlinFlags
     }
 
     testOptions {
@@ -118,6 +101,11 @@ android {
         unitTests.all {
             useJUnitPlatform()
         }
+    }
+
+    packagingOptions {
+        // see https://stackoverflow.com/questions/44342455
+        resources.excludes.add("META-INF/*")
     }
 }
 
@@ -162,29 +150,18 @@ dependencies {
     debugImplementation "com.github.YarikSOffice.Venom:venom:$venomVersion"
     releaseImplementation "com.github.YarikSOffice.Venom:venom-no-op:$venomVersion"
 
+    // NOTE: dependencies for 'test' and 'androidTest' source sets include several
+    // dependencies declared as `api` in sharedTest/build.gradle.
+
     // Dependencies for local unit tests
-    testImplementation "org.jetbrains.kotlin:kotlin-test:$kotlinVersion"
-    testImplementation "org.jetbrains.kotlin:kotlin-test-junit5:$kotlinVersion"
-    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion"
-    testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:$kotlinMockitoVersion"
-    testImplementation "androidx.arch.core:core-testing:$androidxArchTestingVersion"
-    testImplementation "androidx.test:core:$androidxTestCoreVersion"
-    testImplementation "androidx.test:core-ktx:$androidxTestCoreKtxVersion"
-    testImplementation "androidx.test.ext:junit-ktx:$androidxTestExtVersion"
-    testImplementation "androidx.test:rules:$androidxTestRulesVersion"
+    testImplementation project(":sharedTest")
     testImplementation "org.junit.jupiter:junit-jupiter-engine:$jupiterEngineVersion"
     testImplementation "org.junit.vintage:junit-vintage-engine:$jupiterEngineVersion"
 
     // Dependencies for android tests
+    androidTestImplementation project(":sharedTest")
     androidTestImplementation "androidx.test:runner:$androidxTestRunnerVersion"
-    androidTestImplementation "androidx.test.ext:junit-ktx:$androidxTestExtVersion"
-    androidTestImplementation "androidx.test:core-ktx:$androidxTestCoreKtxVersion"
-    androidTestImplementation "androidx.test:rules:$androidxTestRulesVersion"
-    androidTestImplementation "org.jetbrains.kotlin:kotlin-test:$kotlinVersion"
-    androidTestImplementation "org.jetbrains.kotlin:kotlin-test-junit:$kotlinVersion"
     androidTestImplementation "org.mockito:mockito-android:$mockitoAndroidVersion"
-    androidTestImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:$kotlinMockitoVersion"
-    androidTestImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion"
     androidTestImplementation "androidx.room:room-testing:$roomVersion"
     // For screenshots
     androidTestImplementation "androidx.test.espresso:espresso-core:$espressoVersion"

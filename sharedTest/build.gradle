@@ -1,0 +1,47 @@
+// The sharedTest module is meant to be included in the app module 'test' and 'androidTest'
+// source sets, but instead takes the shape of an Android library to work correctly with Android Studio.
+
+plugins {
+    id "com.android.library"
+    id "org.jetbrains.kotlin.android"
+}
+
+android {
+    namespace "com.maltaisn.notes"
+    compileSdk 33
+
+    defaultConfig {
+        minSdk 21
+        targetSdk 33
+    }
+
+    sourceSets {
+        // This just add "kotlin" folder to source sets since the default is "java".
+        main {
+            java.srcDirs += "src/main/kotlin"
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = "1.8"
+        freeCompilerArgs += project.kotlinFlags
+    }
+}
+
+dependencies {
+    implementation project(":app")
+
+    api "org.jetbrains.kotlin:kotlin-test:$kotlinVersion"
+    api "org.jetbrains.kotlin:kotlin-test-junit5:$kotlinVersion"
+    api "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion"
+    api "com.nhaarman.mockitokotlin2:mockito-kotlin:$kotlinMockitoVersion"
+    api "androidx.arch.core:core-testing:$androidxArchTestingVersion"
+    api "androidx.test:core:$androidxTestCoreVersion"
+    api "androidx.test:core-ktx:$androidxTestCoreKtxVersion"
+    api "androidx.test.ext:junit-ktx:$androidxTestExtVersion"
+    api "androidx.test:rules:$androidxTestRulesVersion"
+}
