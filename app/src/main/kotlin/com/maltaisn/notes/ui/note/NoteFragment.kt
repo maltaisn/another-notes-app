@@ -438,6 +438,8 @@ abstract class NoteFragment : Fragment(), ActionMode.Callback, ConfirmDialog.Cal
         actionMode?.finish()
         _binding = null
 
+        rcvOneShotPreDrawListener = null
+
         findNavController().removeOnDestinationChangedListener(this)
     }
 

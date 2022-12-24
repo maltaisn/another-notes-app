@@ -23,6 +23,7 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import androidx.activity.addCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.core.view.WindowCompat
@@ -105,6 +106,18 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
             true
         }
         viewModel.startPopulatingDrawerWithLabels()
+
+        onBackPressedDispatcher.addCallback(this) {
+            if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+                drawerLayout.closeDrawers()
+            } else {
+                // The dispatcher only calls the topmost enabled callback, so temporarily
+                // disable it to be able to call the next callback on the stack.
+                isEnabled = false
+                onBackPressedDispatcher.onBackPressed()
+                isEnabled = true
+            }
+        }
 
         setupViewModelObservers()
     }
@@ -189,14 +202,6 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         this.intent = intent
-    }
-
-    override fun onBackPressed() {
-        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
-            drawerLayout.closeDrawers()
-        } else {
-            super.onBackPressed()
-        }
     }
 
     override fun onDestinationChanged(controller: NavController, destination: NavDestination, arguments: Bundle?) {
