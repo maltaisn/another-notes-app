@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Nicolas Maltais
+ * Copyright 2022 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,7 +42,6 @@ import kotlin.test.assertNull
 
 @RunWith(AndroidJUnit4::class)
 class NotesDaoTest {
-//search
 
     private lateinit var database: NotesDatabase
     private lateinit var notesDao: NotesDao

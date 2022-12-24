@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Nicolas Maltais
+ * Copyright 2022 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,7 @@ import com.maltaisn.notes.receiver.AlarmReceiver
 import com.maltaisn.notes.sync.R
 import com.maltaisn.notes.ui.navGraphViewModel
 import com.maltaisn.notes.ui.observeEvent
-import java.util.*
+import java.util.Calendar
 import javax.inject.Inject
 
 class NotificationActivity : AppCompatActivity() {
@@ -129,5 +129,4 @@ class NotificationActivity : AppCompatActivity() {
 
         const val INTENT_ACTION_POSTPONE = "com.maltaisn.notes.reminder.POSTPONE"
     }
-
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Nicolas Maltais
+ * Copyright 2022 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -114,7 +114,9 @@ class NoteItemFactoryTest {
 
     @Test
     fun `should create text note, highlight in title, ellipsized (list layout)`() {
-        val note = testNote(id = 2, title = "haystack haystack haystack haystack haystack needle haystack", content = "content")
+        val note = testNote(id = 2,
+            title = "haystack haystack haystack haystack haystack needle haystack",
+            content = "content")
         factory.query = "needle"
         val item = factory.createItem(note, emptyList(), false)
         assertEquals(NoteItemText(2, note, emptyList(), false,
@@ -181,7 +183,8 @@ class NoteItemFactoryTest {
 
     @Test
     fun `should create text note, highlight in content, ellipsized (less preview lines)`() {
-        val note = testNote(id = 2, title = "title", content = "haystack haystack haystack haystack haystack needle haystack")
+        val note =
+            testNote(id = 2, title = "title", content = "haystack haystack haystack haystack haystack needle haystack")
         factory.query = "needle"
         whenever(prefs.getMaximumPreviewLines(NoteType.TEXT)) doReturn 2
         val item = factory.createItem(note, emptyList(), false)

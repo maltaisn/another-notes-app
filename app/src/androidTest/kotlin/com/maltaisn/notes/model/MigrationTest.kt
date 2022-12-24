@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Nicolas Maltais
+ * Copyright 2022 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,8 +36,7 @@ class MigrationTest {
 
     @get:Rule
     val helper = MigrationTestHelper(InstrumentationRegistry.getInstrumentation(),
-        NotesDatabase::class.java.canonicalName,
-        FrameworkSQLiteOpenHelperFactory())
+        NotesDatabase::class.java, emptyList(), FrameworkSQLiteOpenHelperFactory())
 
     @Test
     @Throws(IOException::class)

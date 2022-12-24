@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?><!--
-  Copyright 2021 Nicolas Maltais
+  Copyright 2022 Nicolas Maltais
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -33,5 +33,4 @@
     tools:text="Thu. March 30, 2021"
     android:clickable="true"
     android:focusable="true"
-    />
-<!-- clickable and focusable is set so that click on item won't focus text note content as would a background click. -->
+    /><!-- clickable and focusable is set so that click on item won't focus text note content as would a background click. -->

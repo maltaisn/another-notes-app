@@ -24,13 +24,15 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.*
+import androidx.core.view.GravityCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.contains
+import androidx.core.view.forEach
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.fragment.NavHostFragment
 import com.google.android.material.color.DynamicColors
-//import com.github.venom.Venom
 import com.maltaisn.notes.App
 import com.maltaisn.notes.TAG
 import com.maltaisn.notes.model.PrefsManager
@@ -43,8 +45,11 @@ import com.maltaisn.notes.receiver.AlarmReceiver
 import com.maltaisn.notes.sync.NavGraphMainDirections
 import com.maltaisn.notes.sync.R
 import com.maltaisn.notes.sync.databinding.ActivityMainBinding
-import com.maltaisn.notes.ui.*
+import com.maltaisn.notes.ui.SharedViewModel
+import com.maltaisn.notes.ui.navGraphViewModel
 import com.maltaisn.notes.ui.navigation.HomeDestination
+import com.maltaisn.notes.ui.observeEvent
+import com.maltaisn.notes.ui.viewModel
 import javax.inject.Inject
 import javax.inject.Provider
 
@@ -138,11 +143,11 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
             if (currentHomeDestination is HomeDestination.Labels) {
                 val currentLabelName = (currentHomeDestination as HomeDestination.Labels).label.name
                 if (binding.navView.checkedItem != null && (
-                        binding.navView.checkedItem!! !in labelSubmenu ||
-                        binding.navView.checkedItem!!.title != currentLabelName)
+                            binding.navView.checkedItem!! !in labelSubmenu ||
+                                    binding.navView.checkedItem!!.title != currentLabelName)
                     || binding.navView.checkedItem == null
                 ) {
-                    labelSubmenu.forEach { item : MenuItem ->
+                    labelSubmenu.forEach { item: MenuItem ->
                         if (item.title == currentLabelName) {
                             binding.navView.setCheckedItem(item)
                             return@forEach

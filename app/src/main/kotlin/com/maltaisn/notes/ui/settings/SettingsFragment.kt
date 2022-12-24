@@ -181,7 +181,7 @@ class SettingsFragment : PreferenceFragmentCompat(), ConfirmDialog.Callback {
         }
 
         requirePreference<Preference>(PrefsManager.DYNAMIC_COLORS).apply {
-            if (DynamicColors.isDynamicColorAvailable())
+            if (DynamicColors.isDynamicColorAvailable()) {
                 setOnPreferenceClickListener {
                     ConfirmDialog.newInstance(
                         title = R.string.pref_restart_dialog_title,
@@ -190,8 +190,10 @@ class SettingsFragment : PreferenceFragmentCompat(), ConfirmDialog.Callback {
                     ).show(childFragmentManager, RESTART_DIALOG_TAG)
                     true
                 }
-            // Hide dynamic color / material you preference on unsupported Android versions
-            else isVisible = false
+            } else {
+                // Hide dynamic color / material you preference on unsupported Android versions
+                isVisible = false
+            }
         }
 
         requirePreference<Preference>(PrefsManager.PREVIEW_LINES).setOnPreferenceClickListener {

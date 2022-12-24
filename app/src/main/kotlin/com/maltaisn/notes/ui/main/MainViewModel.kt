@@ -19,10 +19,20 @@ package com.maltaisn.notes.ui.main
 import android.view.Menu
 import android.view.MenuItem
 import androidx.core.view.contains
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavDirections
-import com.maltaisn.notes.model.*
-import com.maltaisn.notes.model.entity.*
+import com.maltaisn.notes.model.JsonManager
+import com.maltaisn.notes.model.LabelsRepository
+import com.maltaisn.notes.model.NotesRepository
+import com.maltaisn.notes.model.PrefsManager
+import com.maltaisn.notes.model.ReminderAlarmManager
+import com.maltaisn.notes.model.entity.Label
+import com.maltaisn.notes.model.entity.NoteStatus
+import com.maltaisn.notes.model.entity.NoteType
 import com.maltaisn.notes.sync.NavGraphMainDirections
 import com.maltaisn.notes.sync.R
 import com.maltaisn.notes.ui.AssistedSavedStateViewModelFactory
@@ -39,7 +49,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Semaphore
 import java.io.OutputStream
-import java.util.Date
 import kotlin.time.Duration.Companion.hours
 
 class MainViewModel @AssistedInject constructor(

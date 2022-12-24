@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?><!--
-  Copyright 2021 Nicolas Maltais
+  Copyright 2022 Nicolas Maltais
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
   -->
 
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:color="?colorPrimary" android:state_activated="true"/>
+    <item android:color="?colorPrimary" android:state_activated="true" />
     <!-- Technically the item is on surface color, but that's the color I want! -->
-    <item android:color="?colorOnBackground"/>
+    <item android:color="?colorOnBackground" />
 </selector>

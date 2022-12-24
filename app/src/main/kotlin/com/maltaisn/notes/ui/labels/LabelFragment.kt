@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Nicolas Maltais
+ * Copyright 2022 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -234,7 +234,7 @@ class LabelFragment : DialogFragment(), Toolbar.OnMenuItemClickListener,
         }
 
         if (endAsTransparent) {
-            anim.addListener( onEnd = {
+            anim.addListener(onEnd = {
                 // Wait 50ms before resetting the status bar color to prevent flickering, when the
                 // regular toolbar isn't yet visible again.
                 Executors.newSingleThreadScheduledExecutor().schedule({
@@ -280,5 +280,4 @@ class LabelFragment : DialogFragment(), Toolbar.OnMenuItemClickListener,
 
         private const val DELETE_CONFIRM_DIALOG_TAG = "delete_confirm_dialog"
     }
-
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Nicolas Maltais
+ * Copyright 2022 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -108,7 +108,7 @@ class LabelEditViewModel @AssistedInject constructor(
         }
     }
 
-    private fun updateError(){
+    private fun updateError() {
         viewModelScope.launch {
             // Label name must not be empty and must not exist.
             // Ignore name clash if label is the one being edited.

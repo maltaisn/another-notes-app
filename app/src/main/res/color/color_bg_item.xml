@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?><!--
-  Copyright 2021 Nicolas Maltais
+  Copyright 2022 Nicolas Maltais
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -17,6 +17,6 @@
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
     <!-- Ideally I would've used "?colorPrimary" like elsewhere but it fails pre API 24.
          The result will be exactly the same though. -->
-    <item android:alpha="0.2" android:color="?colorPrimary" android:state_activated="true"/>
-    <item android:color="@android:color/transparent"/>
+    <item android:alpha="0.2" android:color="?colorPrimary" android:state_activated="true" />
+    <item android:color="@android:color/transparent" />
 </selector>

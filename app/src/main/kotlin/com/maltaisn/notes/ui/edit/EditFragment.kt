@@ -19,11 +19,16 @@ package com.maltaisn.notes.ui.edit
 import android.annotation.SuppressLint
 import android.graphics.Color
 import android.os.Bundle
-import androidx.transition.Transition
-import android.view.*
+import android.view.LayoutInflater
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
 import androidx.activity.addCallback
 import androidx.appcompat.widget.Toolbar
-import androidx.core.view.*
+import androidx.core.view.OneShotPreDrawListener
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.asFlow
 import androidx.lifecycle.asLiveData
@@ -32,10 +37,10 @@ import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.transition.Transition
 import androidx.transition.TransitionListenerAdapter
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.transition.MaterialContainerTransform
-import com.google.android.material.transition.MaterialContainerTransform.FADE_MODE_CROSS
 import com.maltaisn.notes.App
 import com.maltaisn.notes.hideKeyboard
 import com.maltaisn.notes.model.entity.Note
@@ -76,13 +81,13 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener, ConfirmDialog.
 
     override fun onCreate(savedInstanceState: Bundle?) {
         sharedElementEnterTransition = MaterialContainerTransform(requireContext(), true).apply {
-            fadeMode = FADE_MODE_CROSS
+            fadeMode = MaterialContainerTransform.FADE_MODE_CROSS
             duration = resources.getInteger(R.integer.material_motion_duration_long_1).toLong()
         }
 
         sharedElementReturnTransition = MaterialContainerTransform(requireContext(), false).apply {
             scrimColor = Color.TRANSPARENT
-            fadeMode = FADE_MODE_CROSS
+            fadeMode = MaterialContainerTransform.FADE_MODE_CROSS
             duration = resources.getInteger(R.integer.material_motion_duration_long_1).toLong()
         }
 
@@ -409,6 +414,5 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener, ConfirmDialog.
         private const val REMOVE_CHECKED_CONFIRM_DIALOG_TAG = "remove_checked_confirm_dialog"
 
         private const val CANT_EDIT_SNACKBAR_DURATION = 5000
-
     }
 }

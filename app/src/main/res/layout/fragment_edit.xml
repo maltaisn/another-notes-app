@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?><!--
-  Copyright 2021 Nicolas Maltais
+  Copyright 2022 Nicolas Maltais
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -72,7 +72,8 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler_view"
@@ -86,7 +87,8 @@
             app:layout_constraintStart_toStartOf="parent"
             tools:itemCount="4"
             tools:listitem="@layout/item_edit_item"
-            android:fitsSystemWindows="true"/>
+            android:fitsSystemWindows="true"
+            />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

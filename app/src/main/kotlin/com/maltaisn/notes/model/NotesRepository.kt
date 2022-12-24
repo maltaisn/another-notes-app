@@ -45,5 +45,4 @@ interface NotesRepository {
     suspend fun deleteOldNotesInTrash()
 
     suspend fun clearAllData()
-
 }

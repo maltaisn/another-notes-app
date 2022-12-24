@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Nicolas Maltais
+ * Copyright 2022 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,15 +16,17 @@
 
 package com.maltaisn.notes.model
 
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import com.maltaisn.notes.MainCoroutineRule
 import com.maltaisn.notes.dateFor
 import com.maltaisn.notes.model.entity.Reminder
 import com.maltaisn.notes.testNote
 import com.maltaisn.notes.ui.MockAlarmCallback
 import com.maltaisn.recurpicker.Recurrence
 import com.maltaisn.recurpicker.RecurrenceFinder
-import kotlinx.coroutines.test.TestCoroutineScope
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.runTest
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import java.util.Calendar
 import kotlin.test.assertEquals
@@ -38,7 +40,11 @@ class ReminderAlarmManagerTest {
     private lateinit var notesRepo: MockNotesRepository
     private lateinit var alarmCallback: MockAlarmCallback
 
-    private var coroutineScope = TestCoroutineScope()
+    @get:Rule
+    var mainCoroutineRule = MainCoroutineRule()
+
+    @get:Rule
+    var instantExecutorRule = InstantTaskExecutorRule()
 
     @Before
     fun before() {
@@ -68,78 +74,71 @@ class ReminderAlarmManagerTest {
     }
 
     @Test
-    fun `should set reminder alarm`() =
-        coroutineScope.runBlockingTest {
-            val note = notesRepo.requireNoteById(1)
-            alarmManager.setNoteReminderAlarm(note)
-            assertEquals(dateFor("2021-01-01").time, alarmCallback.alarms[1])
-        }
+    fun `should set reminder alarm`() = runTest {
+        val note = notesRepo.requireNoteById(1)
+        alarmManager.setNoteReminderAlarm(note)
+        assertEquals(dateFor("2021-01-01").time, alarmCallback.alarms[1])
+    }
 
     @Test
-    fun `should remove reminder alarm`() =
-        coroutineScope.runBlockingTest {
-            alarmCallback.addAlarm(4, 1000)
-            val note = notesRepo.requireNoteById(4)
-            alarmManager.setNoteReminderAlarm(note)
-            assertNull(alarmCallback.alarms[4])
-        }
+    fun `should remove reminder alarm`() = runTest {
+        alarmCallback.addAlarm(4, 1000)
+        val note = notesRepo.requireNoteById(4)
+        alarmManager.setNoteReminderAlarm(note)
+        assertNull(alarmCallback.alarms[4])
+    }
 
     @Test
-    fun `should set next alarm for non-recurring reminder (does nothing)`() =
-        coroutineScope.runBlockingTest {
-            val note = notesRepo.requireNoteById(1)
-            alarmManager.setNextNoteReminderAlarm(note)
-            assertNull(alarmCallback.alarms[1])
-        }
+    fun `should set next alarm for non-recurring reminder (does nothing)`() = runTest {
+        val note = notesRepo.requireNoteById(1)
+        alarmManager.setNextNoteReminderAlarm(note)
+        assertNull(alarmCallback.alarms[1])
+    }
 
     @Test
-    fun `should set next alarm for recurring reminder (same event)`() = coroutineScope.runBlockingTest {
-            alarmManager.setNextNoteReminderAlarm(notesRepo.requireNoteById(2))
-            assertEquals(dateFor("2100-01-01").time, alarmCallback.alarms[2])
-            alarmCallback.removeAlarm(2)
-        }
+    fun `should set next alarm for recurring reminder (same event)`() = runTest {
+        alarmManager.setNextNoteReminderAlarm(notesRepo.requireNoteById(2))
+        assertEquals(dateFor("2100-01-01").time, alarmCallback.alarms[2])
+        alarmCallback.removeAlarm(2)
+    }
 
     @Test
-    fun `should set next alarm for recurring reminder (skipping events)`() = coroutineScope.runBlockingTest {
-            alarmManager.setNextNoteReminderAlarm(notesRepo.requireNoteById(7))
-            val year = Calendar.getInstance()[Calendar.YEAR]
-            assertEquals(dateFor("$year-12-31T23:59:59.999").time, alarmCallback.alarms[7])
-        }
+    fun `should set next alarm for recurring reminder (skipping events)`() = runTest {
+        alarmManager.setNextNoteReminderAlarm(notesRepo.requireNoteById(7))
+        val year = Calendar.getInstance()[Calendar.YEAR]
+        assertEquals(dateFor("$year-12-31T23:59:59.999").time, alarmCallback.alarms[7])
+    }
 
     @Test
-    fun `should mark reminder as done`() =
-        coroutineScope.runBlockingTest {
-            alarmManager.markReminderAsDone(1)
-            assertTrue(notesRepo.requireNoteById(1).reminder!!.done)
-        }
+    fun `should mark reminder as done`() = runTest {
+        alarmManager.markReminderAsDone(1)
+        assertTrue(notesRepo.requireNoteById(1).reminder!!.done)
+    }
 
     @Test
-    fun `should update all alarms`() =
-        coroutineScope.runBlockingTest {
-            alarmCallback.addAlarm(1, dateFor("2021-01-01").time)
-            alarmCallback.addAlarm(6, dateFor("2000-03-01").time)
+    fun `should update all alarms`() = runTest {
+        alarmCallback.addAlarm(1, dateFor("2021-01-01").time)
+        alarmCallback.addAlarm(6, dateFor("2000-03-01").time)
 
-            alarmManager.updateAllAlarms()
+        alarmManager.updateAllAlarms()
 
-            assertNull(alarmCallback.alarms[1])
-            assertNull(alarmCallback.alarms[3])
-            assertNull(alarmCallback.alarms[4])
-            assertEquals(dateFor("2100-01-01").time, alarmCallback.alarms[2])
-            assertEquals(dateFor("2100-02-01").time, alarmCallback.alarms[5])
-            assertEquals(dateFor("2100-03-01").time, alarmCallback.alarms[6])
+        assertNull(alarmCallback.alarms[1])
+        assertNull(alarmCallback.alarms[3])
+        assertNull(alarmCallback.alarms[4])
+        assertEquals(dateFor("2100-01-01").time, alarmCallback.alarms[2])
+        assertEquals(dateFor("2100-02-01").time, alarmCallback.alarms[5])
+        assertEquals(dateFor("2100-03-01").time, alarmCallback.alarms[6])
 
-            assertEquals(dateFor("2100-03-01"), notesRepo.requireNoteById(6).reminder!!.next)
-        }
+        assertEquals(dateFor("2100-03-01"), notesRepo.requireNoteById(6).reminder!!.next)
+    }
 
     @Test
-    fun `should remove all alarms`() =
-        coroutineScope.runBlockingTest {
-            alarmCallback.addAlarm(1, dateFor("2021-01-01").time)
-            alarmCallback.addAlarm(6, dateFor("2000-03-01").time)
+    fun `should remove all alarms`() = runTest {
+        alarmCallback.addAlarm(1, dateFor("2021-01-01").time)
+        alarmCallback.addAlarm(6, dateFor("2000-03-01").time)
 
-            alarmManager.removeAllAlarms()
+        alarmManager.removeAllAlarms()
 
-            assertEquals(0, alarmCallback.alarms.size)
-        }
-
+        assertEquals(0, alarmCallback.alarms.size)
+    }
 }

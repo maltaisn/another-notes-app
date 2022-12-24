@@ -111,9 +111,8 @@ class LabelEditViewModelTest {
 
     @Test
     fun `should not have error if name is the one of edited label`() = runTest {
-            viewModel.start(1)
-            viewModel.onNameChanged("label0")
-            assertEquals(LabelEditViewModel.Error.NONE, viewModel.nameError.getOrAwaitValue())
-        }
-
+        viewModel.start(1)
+        viewModel.onNameChanged("label0")
+        assertEquals(LabelEditViewModel.Error.NONE, viewModel.nameError.getOrAwaitValue())
+    }
 }

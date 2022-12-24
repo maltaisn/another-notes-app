@@ -35,8 +35,14 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import java.text.SimpleDateFormat
-import java.util.*
-import kotlin.test.*
+import java.util.Calendar
+import java.util.Date
+import java.util.GregorianCalendar
+import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
+import kotlin.test.assertFalse
+import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 class ReminderViewModelTest {
 

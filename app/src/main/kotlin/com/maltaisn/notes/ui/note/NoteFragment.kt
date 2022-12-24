@@ -21,10 +21,20 @@ import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.graphics.Color
 import android.os.Bundle
-import android.view.*
+import android.view.ActionMode
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
 import androidx.core.animation.addListener
 import androidx.core.app.SharedElementCallback
-import androidx.core.view.*
+import androidx.core.view.OneShotPreDrawListener
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.children
+import androidx.core.view.isVisible
+import androidx.core.view.updatePadding
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
@@ -38,15 +48,21 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.transition.Hold
 import com.google.android.material.transition.MaterialElevationScale
 import com.maltaisn.notes.model.PrefsManager
-import com.maltaisn.notes.model.entity.*
+import com.maltaisn.notes.model.entity.NoteStatus
+import com.maltaisn.notes.model.entity.PinnedStatus
 import com.maltaisn.notes.navigateSafe
 import com.maltaisn.notes.sync.NavGraphMainDirections
 import com.maltaisn.notes.sync.R
 import com.maltaisn.notes.sync.databinding.FragmentNoteBinding
-import com.maltaisn.notes.ui.*
+import com.maltaisn.notes.ui.SharedViewModel
+import com.maltaisn.notes.ui.StatusChange
 import com.maltaisn.notes.ui.common.ConfirmDialog
 import com.maltaisn.notes.ui.main.MainActivity
-import com.maltaisn.notes.ui.note.adapter.*
+import com.maltaisn.notes.ui.navGraphViewModel
+import com.maltaisn.notes.ui.note.adapter.NoteAdapter
+import com.maltaisn.notes.ui.note.adapter.NoteListLayoutMode
+import com.maltaisn.notes.ui.observeEvent
+import com.maltaisn.notes.ui.startSharingData
 import com.maltaisn.notes.ui.utils.startSafeActionMode
 import java.text.NumberFormat
 import java.util.concurrent.Executors
@@ -90,7 +106,7 @@ abstract class NoteFragment : Fragment(), ActionMode.Callback, ConfirmDialog.Cal
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        setExitSharedElementCallback(object: SharedElementCallback() {
+        setExitSharedElementCallback(object : SharedElementCallback() {
             override fun onMapSharedElements(
                 names: MutableList<String>?,
                 sharedElements: MutableMap<String, View>?
@@ -99,7 +115,6 @@ abstract class NoteFragment : Fragment(), ActionMode.Callback, ConfirmDialog.Cal
                 super.onMapSharedElements(names, sharedElements)
             }
         })
-
     }
 
     override fun onCreateView(
@@ -203,7 +218,8 @@ abstract class NoteFragment : Fragment(), ActionMode.Callback, ConfirmDialog.Cal
             exitTransition = Hold()
                 .apply { duration = resources.getInteger(R.integer.material_motion_duration_medium_2).toLong() }
 
-            val itemView: View = binding.recyclerView.findViewHolderForAdapterPosition(pos)!!.itemView.findViewById(R.id.card_view)
+            val itemView: View =
+                binding.recyclerView.findViewHolderForAdapterPosition(pos)!!.itemView.findViewById(R.id.card_view)
 
             val extras = FragmentNavigatorExtras(
                 itemView to "noteContainer$noteId"
@@ -213,7 +229,8 @@ abstract class NoteFragment : Fragment(), ActionMode.Callback, ConfirmDialog.Cal
             val firstVisibleItem = layoutManager.findFirstCompletelyVisibleItemPositions(null).minOrNull()
             val lastVisibleItem = layoutManager.findLastCompletelyVisibleItemPositions(null).maxOrNull()
             if (firstVisibleItem != null && lastVisibleItem != null &&
-                (pos < firstVisibleItem || pos > lastVisibleItem)) {
+                (pos < firstVisibleItem || pos > lastVisibleItem)
+            ) {
                 binding.recyclerView.scrollToPosition(pos)
             }
             navController.navigateSafe(NavGraphMainDirections.actionEditNote(noteId), extras = extras)
@@ -288,7 +305,7 @@ abstract class NoteFragment : Fragment(), ActionMode.Callback, ConfirmDialog.Cal
 
                 // Change the transition names, so that the shared element transition returns to
                 // the newly created note item in the recyclerview instead of to the FAB.
-                for (c: View in binding.recyclerView.children) {
+                for (c in binding.recyclerView.children) {
                     if (c.findViewById<View>(R.id.card_view)?.transitionName == "noteContainer$noteId") {
                         binding.fab.transitionName = ""
                         c.transitionName = "createNoteTransition"
@@ -449,7 +466,7 @@ abstract class NoteFragment : Fragment(), ActionMode.Callback, ConfirmDialog.Cal
         }
 
         if (endAsTransparent) {
-            anim.addListener( onEnd = {
+            anim.addListener(onEnd = {
                 // Wait 50ms before resetting the status bar color to prevent flickering, when the
                 // regular toolbar isn't yet visible again.
                 Executors.newSingleThreadScheduledExecutor().schedule({

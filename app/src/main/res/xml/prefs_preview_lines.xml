@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?><!--
-  Copyright 2021 Nicolas Maltais
+  Copyright 2022 Nicolas Maltais
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -20,9 +20,7 @@
     app:title="@string/pref_preview_lines"
     >
 
-    <PreferenceCategory
-        app:title="@string/pref_preview_lines_list_layout"
-        >
+    <PreferenceCategory app:title="@string/pref_preview_lines_list_layout">
 
         <SeekBarPreference
             android:defaultValue="5"
@@ -44,9 +42,7 @@
 
     </PreferenceCategory>
 
-    <PreferenceCategory
-        app:title="@string/pref_preview_lines_grid_layout"
-        >
+    <PreferenceCategory app:title="@string/pref_preview_lines_grid_layout">
 
         <SeekBarPreference
             android:defaultValue="10"

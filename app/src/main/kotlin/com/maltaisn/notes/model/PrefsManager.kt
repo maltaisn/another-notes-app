@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Nicolas Maltais
+ * Copyright 2022 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -166,7 +166,7 @@ class PrefsManager @Inject constructor(
     companion object {
         // Settings keys
         const val THEME = "theme"
-        const val DYNAMIC_COLORS="dynamic_colors"
+        const val DYNAMIC_COLORS = "dynamic_colors"
         const val PREVIEW_LABELS = "preview_labels"
         const val PREVIEW_LINES = "preview_lines"
         const val PREVIEW_LINES_TEXT_LIST = "preview_lines_text_list"

@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Nicolas Maltais
+ * Copyright 2022 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,8 +33,10 @@ import java.util.Calendar
  *
  * @property absoluteDateFormatter Date formatter used for absolute dates.
  */
-class RelativeDateFormatter(private val resources: Resources,
-                            private val absoluteDateFormatter: (date: Long) -> String) {
+class RelativeDateFormatter(
+    private val resources: Resources,
+    private val absoluteDateFormatter: (date: Long) -> String
+) {
 
     private val calendar = Calendar.getInstance()
 
@@ -68,5 +70,4 @@ class RelativeDateFormatter(private val resources: Resources,
         this[Calendar.SECOND] = 0
         this[Calendar.MILLISECOND] = 0
     }
-
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Nicolas Maltais
+ * Copyright 2022 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -168,28 +168,28 @@ class DefaultJsonManagerTest {
 
         assertEquals(setOf(
             NoteWithLabels(Note(id = 1,
-            type = NoteType.TEXT,
-            title = "note",
-            content = "content",
-            metadata = BlankNoteMetadata,
-            addedDate = dateFor("2020-01-01"),
-            lastModifiedDate = dateFor("2020-02-01"),
-            status = NoteStatus.ACTIVE,
-            pinned = PinnedStatus.PINNED,
-            reminder = Reminder(dateFor("2020-03-01"), Recurrence(Recurrence.Period.DAILY),
-                dateFor("2020-03-02"), 1, false)
-        ), listOf(label1, label10)),
-           NoteWithLabels(Note(id = 9,
-            type = NoteType.LIST,
-            title = "list",
-            content = "item 1\nitem 2",
-            metadata = ListNoteMetadata(listOf(false, true)),
-            addedDate = dateFor("2019-01-01"),
-            lastModifiedDate = dateFor("2019-02-01"),
-            status = NoteStatus.ARCHIVED,
-            pinned = PinnedStatus.CANT_PIN,
-            reminder = null
-        ), listOf(label1, label3)),
+                type = NoteType.TEXT,
+                title = "note",
+                content = "content",
+                metadata = BlankNoteMetadata,
+                addedDate = dateFor("2020-01-01"),
+                lastModifiedDate = dateFor("2020-02-01"),
+                status = NoteStatus.ACTIVE,
+                pinned = PinnedStatus.PINNED,
+                reminder = Reminder(dateFor("2020-03-01"), Recurrence(Recurrence.Period.DAILY),
+                    dateFor("2020-03-02"), 1, false)
+            ), listOf(label1, label10)),
+            NoteWithLabels(Note(id = 9,
+                type = NoteType.LIST,
+                title = "list",
+                content = "item 1\nitem 2",
+                metadata = ListNoteMetadata(listOf(false, true)),
+                addedDate = dateFor("2019-01-01"),
+                lastModifiedDate = dateFor("2019-02-01"),
+                status = NoteStatus.ARCHIVED,
+                pinned = PinnedStatus.CANT_PIN,
+                reminder = null
+            ), listOf(label1, label3)),
         ), notesDao.getAll().toSet())
     }
 
@@ -354,6 +354,4 @@ class DefaultJsonManagerTest {
 "path":"M10,10h10v10h-10Z"}},"data":"data"}
         """.trim().replace("\n", "")))
     }
-
-
 }

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?><!--
-  Copyright 2021 Nicolas Maltais
+  Copyright 2022 Nicolas Maltais
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -39,15 +39,16 @@
         android:transitionName="toolbar"
         >
 
-            <com.google.android.material.appbar.MaterialToolbar
-                android:id="@+id/toolbar"
-                style="?toolbarStyle"
-                android:layout_width="match_parent"
-                android:layout_height="?actionBarSize"
-                app:titleTextColor="?colorControlNormal"
-                tools:menu="@menu/toolbar_home"
-                tools:navigationIcon="@drawable/ic_menu"
-                tools:title="@string/note_location_active"/>
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar"
+            style="?toolbarStyle"
+            android:layout_width="match_parent"
+            android:layout_height="?actionBarSize"
+            app:titleTextColor="?colorControlNormal"
+            tools:menu="@menu/toolbar_home"
+            tools:navigationIcon="@drawable/ic_menu"
+            tools:title="@string/note_location_active"
+            />
 
     </com.google.android.material.appbar.AppBarLayout>
 

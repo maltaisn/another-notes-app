@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Nicolas Maltais
+ * Copyright 2022 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -137,8 +137,8 @@ class ReminderViewModel @AssistedInject constructor(
                 calendar.timeInMillis = System.currentTimeMillis()
                 val currHour = calendar[Calendar.HOUR_OF_DAY]
                 val todayReminderHour = DEFAULT_REMINDER_HOURS.find { it > currHour + REMINDER_HOUR_MIN_DISTANCE }
-                calendar[Calendar.HOUR_OF_DAY] = todayReminderHour ?:
-                        DEFAULT_REMINDER_HOURS.first { it > currHour + REMINDER_HOUR_MIN_DISTANCE - HOURS_IN_DAY }
+                calendar[Calendar.HOUR_OF_DAY] = todayReminderHour
+                    ?: DEFAULT_REMINDER_HOURS.first { it > currHour + REMINDER_HOUR_MIN_DISTANCE - HOURS_IN_DAY }
                 calendar[Calendar.MINUTE] = 0
                 calendar[Calendar.SECOND] = 0
                 calendar[Calendar.MILLISECOND] = 0

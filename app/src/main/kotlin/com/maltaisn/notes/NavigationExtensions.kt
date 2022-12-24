@@ -26,7 +26,11 @@ import androidx.navigation.Navigator
  * This will also prevent adding the same destination to the backstack more than once.
  * @param [allowSameDest] Whether to allow navigating from the current destination to itself.
  */
-fun NavController.navigateSafe(directions: NavDirections, allowSameDest: Boolean = false, extras: Navigator.Extras? = null) {
+fun NavController.navigateSafe(
+    directions: NavDirections,
+    allowSameDest: Boolean = false,
+    extras: Navigator.Extras? = null
+) {
     // Get action by ID. If action doesn't exist, return.
     val action = (currentDestination ?: graph).getAction(directions.actionId) ?: return
     var destId = action.destinationId

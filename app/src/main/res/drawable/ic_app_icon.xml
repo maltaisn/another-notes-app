@@ -1,5 +1,5 @@
 <!--
-  Copyright 2021 Nicolas Maltais
+  Copyright 2022 Nicolas Maltais
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -22,11 +22,11 @@
     android:viewportWidth="6.35"
     android:width="24dp"
     >
-  <!-- Looks almost the same as ic_pencil but there are slight differences.
-       This is a monochrome version of the app icon. -->
-  <path
-      android:fillColor="#FF000000"
-      android:fillType="evenOdd"
-      android:pathData="M5.68,1.7a0.49,0.49 0,0 0,0 -0.68L5.34,0.67a0.49,0.49 0,0 0,-0.69 0l-0.52,0.51 1.04,1.04zM4.65,2.73L3.62,1.7 0.52,4.8v1.02h1.04z"
-      />
+    <!-- Looks almost the same as ic_pencil but there are slight differences.
+         This is a monochrome version of the app icon. -->
+    <path
+        android:fillColor="#FF000000"
+        android:fillType="evenOdd"
+        android:pathData="M5.68,1.7a0.49,0.49 0,0 0,0 -0.68L5.34,0.67a0.49,0.49 0,0 0,-0.69 0l-0.52,0.51 1.04,1.04zM4.65,2.73L3.62,1.7 0.52,4.8v1.02h1.04z"
+        />
 </vector>

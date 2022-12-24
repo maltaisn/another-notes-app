@@ -1,6 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
-  Copyright 2021 Nicolas Maltais
+<?xml version="1.0" encoding="utf-8"?><!--
+  Copyright 2022 Nicolas Maltais
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -23,13 +22,13 @@
     android:padding="16dp"
     >
 
-<!--    <include layout="@layout/view_label_chip_edit"/>-->
-<!--    <include layout="@layout/view_label_chip_edit"/>-->
-<!--    <include layout="@layout/view_label_chip_edit"/>-->
-<!--    <include layout="@layout/view_label_chip_edit"/>-->
-<!--    <include layout="@layout/view_label_chip_edit"/>-->
-<!--    <include layout="@layout/view_label_chip_edit"/>-->
-<!--    <include layout="@layout/view_label_chip_edit"/>-->
-<!--    <include layout="@layout/view_label_chip_edit"/>-->
+    <!--    <include layout="@layout/view_label_chip_edit"/>-->
+    <!--    <include layout="@layout/view_label_chip_edit"/>-->
+    <!--    <include layout="@layout/view_label_chip_edit"/>-->
+    <!--    <include layout="@layout/view_label_chip_edit"/>-->
+    <!--    <include layout="@layout/view_label_chip_edit"/>-->
+    <!--    <include layout="@layout/view_label_chip_edit"/>-->
+    <!--    <include layout="@layout/view_label_chip_edit"/>-->
+    <!--    <include layout="@layout/view_label_chip_edit"/>-->
 
 </com.google.android.material.chip.ChipGroup>

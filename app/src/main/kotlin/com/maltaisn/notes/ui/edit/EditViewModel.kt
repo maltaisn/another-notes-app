@@ -216,11 +216,18 @@ class EditViewModel @AssistedInject constructor(
      * The view model can only be started once to edit a note.
      * Subsequent calls with different arguments will do nothing and previous note will be edited.
      *
-     * @param noteId Can be [Note.NO_ID] to create a new blank note.
+     * @param noteId Can be [Note.NO_ID] to create a new note with [type], [title] and [content].
      * @param labelId Can be different from [Label.NO_ID] to initially set a label on a new note.
+     * @param changeReminder Whether to start editing note by first changing the reminder.
      */
-    fun start(noteId: Long = Note.NO_ID, labelId: Long = Label.NO_ID, changeReminder: Boolean = false,
-              type: NoteType = NoteType.TEXT, title: String = "", content: String = "") {
+    fun start(
+        noteId: Long = Note.NO_ID,
+        labelId: Long = Label.NO_ID,
+        changeReminder: Boolean = false,
+        type: NoteType = NoteType.TEXT,
+        title: String = "",
+        content: String = "",
+    ) {
         viewModelScope.launch {
             // If fragment was very briefly destroyed then recreated, it's possible that this job is launched
             // before the job to save the note on fragment destruction is called.
@@ -826,7 +833,7 @@ class EditViewModel @AssistedInject constructor(
                 val firstUncheckedPos = listItems.indexOfFirst { it is EditItemItem }
                 listItems.subList(firstUncheckedPos, lastUncheckedPos).sortBy { (it as EditItemItem).actualPos }
             } else {
-               lastUncheckedPos = findItemPos<EditTitleItem>() + 1
+                lastUncheckedPos = findItemPos<EditTitleItem>() + 1
             }
 
             // Re-add the checked group if any checked items, items sorted by actual pos

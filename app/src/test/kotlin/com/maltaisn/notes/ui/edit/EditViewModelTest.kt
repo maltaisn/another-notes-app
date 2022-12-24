@@ -1109,5 +1109,4 @@ class EditViewModelTest {
 
     private val String.e: EditableText
         get() = DefaultEditableText(this)
-
 }

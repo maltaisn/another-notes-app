@@ -119,7 +119,7 @@ class AlarmReceiver : BroadcastReceiver() {
 
         NotificationManagerCompat.from(context).notify(noteId.toInt(), builder.build())
     }
-    
+
     private suspend fun markReminderAsDone(context: Context, noteId: Long) {
         reminderAlarmManager.markReminderAsDone(noteId)
         withContext(Dispatchers.Main) {
@@ -134,5 +134,4 @@ class AlarmReceiver : BroadcastReceiver() {
         const val EXTRA_NOTE_ID = "com.maltaisn.notes.reminder.NOTE_ID"
         const val NOTIFICATION_GROUP = "com.maltaisn.notes.reminder.REMINDERS"
     }
-
 }
