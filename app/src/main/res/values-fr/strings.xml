@@ -155,6 +155,7 @@
     <string name="pref_theme_light">Clair</string>
     <string name="pref_theme_dark">Sombre</string>
     <string name="pref_theme_system">Par défaut</string>
+    <string name="pref_dynamic_colors">Utiliser les couleurs dynamiques</string>
     <string name="pref_strikethrough_checked">Barrer les éléments cochés</string>
     <string name="pref_preview_labels">Maximum d\'étiquettes dans l\'aperçu</string>
     <string name="pref_shown_date">Date affichée pour les notes</string>
@@ -188,6 +189,8 @@
     <string name="pref_about_view_source">Voir sur GitHub</string>
     <string name="pref_about_view_licenses">Licences open source</string>
     <string name="pref_about_version">Version</string>
+    <string name="pref_restart_dialog_title">Redémarrage requis!</string>
+    <string name="pref_restart_dialog_description">Un redémarrage est nécessaire pour que ces modifications prennent effet. Voulez-vous redémarrer l\'application maintenant?</string>
     <!-- Import/export data messages -->
     <string name="export_success">Les données ont été exportées avec succès !</string>
     <string name="export_fail">Une erreur est survenue lors de l\'exportation des données.</string>
@@ -212,6 +215,16 @@
     <string name="date_rel_today">Aujourd\'hui, %s</string>
     <string name="date_rel_yesterday">Hier, %s</string>
     <string name="date_rel_tomorrow">Demain, %s</string>
+    <plurals name="date_rel_days_past">
+        <item quantity="one">Il y a %d jour, %s</item>
+        <!-- used with quantity >= 2, format values: number of days, time -->
+        <item quantity="other">Il y a %d jours, %s</item>
+    </plurals>
+    <plurals name="date_rel_days_future">
+        <item quantity="one">Dans %d jour, %s</item>
+        <!-- used with quantity >= 2, format values: number of days, time -->
+        <item quantity="other">Dans %d jours, %s</item>
+    </plurals>
     <!-- format values: date, time -->
     <string name="date_rel_absolute">%1$s, %2$s</string>
 </resources>
