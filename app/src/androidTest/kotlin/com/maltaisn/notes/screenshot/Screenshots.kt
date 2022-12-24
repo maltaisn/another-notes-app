@@ -60,7 +60,6 @@ import org.hamcrest.Matcher
 import org.hamcrest.Matchers.allOf
 import org.hamcrest.Matchers.endsWith
 import org.junit.Before
-import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -72,7 +71,7 @@ import com.maltaisn.notes.sync.test.R as RT
  */
 @RunWith(AndroidJUnit4::class)
 @LargeTest
-@Ignore("not a test, comment this annotation to take screenshots")
+//@Ignore("not a test, comment this annotation to take screenshots")
 class Screenshots {
 
     @get:Rule

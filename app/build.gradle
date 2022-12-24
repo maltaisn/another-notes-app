@@ -1,7 +1,6 @@
 plugins {
     id "com.android.application"
     id "kotlin-android"
-    id "org.jetbrains.kotlin.kapt"
     id "org.jetbrains.kotlin.plugin.serialization"
     id "kotlin-allopen"
     id "androidx.navigation.safeargs.kotlin"
@@ -9,10 +8,7 @@ plugins {
     id "com.github.breadmoirai.github-release"
     id "com.mikepenz.aboutlibraries.plugin"
     id "kotlin-parcelize"
-}
-
-repositories {
-    maven { url "https://jitpack.io" }
+    id "kotlin-kapt"
 }
 
 android {
@@ -29,6 +25,7 @@ android {
         targetSdkVersion 33
         versionCode 10500
         versionName "1.5.0"
+
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
         kapt {
@@ -80,7 +77,7 @@ android {
         release {
             minifyEnabled true
             shrinkResources true
-            proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+            proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
             signingConfig signingConfigs.release
             buildConfigField "boolean", "ENABLE_DEBUG_FEATURES", "false"
         }
@@ -94,6 +91,9 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
         freeCompilerArgs += project.kotlinFlags
+        freeCompilerArgs += [
+                "-opt-in=kotlinx.serialization.ExperimentalSerializationApi",
+        ]
     }
 
     testOptions {
@@ -155,8 +155,6 @@ dependencies {
 
     // Dependencies for local unit tests
     testImplementation project(":sharedTest")
-    testImplementation "org.junit.jupiter:junit-jupiter-engine:$jupiterEngineVersion"
-    testImplementation "org.junit.vintage:junit-vintage-engine:$jupiterEngineVersion"
 
     // Dependencies for android tests
     androidTestImplementation project(":sharedTest")

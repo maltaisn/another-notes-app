@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Nicolas Maltais
+ * Copyright 2022 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,18 +16,15 @@
 
 package com.maltaisn.notes.screenshot
 
+import android.content.ContentValues
 import android.content.Intent
 import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.os.Build
 import android.os.Environment
 import android.os.LocaleList
-import androidx.test.core.app.ApplicationProvider
+import android.provider.MediaStore
 import androidx.test.platform.app.InstrumentationRegistry
-import androidx.test.runner.screenshot.BasicScreenCaptureProcessor
-import androidx.test.runner.screenshot.ScreenCaptureProcessor
-import androidx.test.runner.screenshot.Screenshot
-import com.maltaisn.notes.App
 import com.maltaisn.notes.listNote
 import com.maltaisn.notes.model.entity.Label
 import com.maltaisn.notes.model.entity.ListNoteItem
@@ -36,6 +33,7 @@ import com.maltaisn.notes.testNote
 import org.junit.rules.TestRule
 import org.junit.runner.Description
 import org.junit.runners.model.Statement
+import java.io.File
 import java.util.Locale
 
 object ScreenshotHelper {
@@ -81,23 +79,19 @@ object ScreenshotHelper {
     }
 
     fun takeScreenshot(name: String) {
-        val capture = Screenshot.capture()
-        capture.name = name
-        capture.format = Bitmap.CompressFormat.PNG
+        val capture = androidx.test.core.app.takeScreenshot()
 
-        val processors = hashSetOf<ScreenCaptureProcessor>(object : BasicScreenCaptureProcessor() {
-            init {
-                mTag = "CustonScreenCaptureProcessor"
-                mDefaultFilenamePrefix = "screenshot"
-                mDefaultScreenshotPath = ApplicationProvider.getApplicationContext<App>()
-                    .getExternalFilesDir(Environment.DIRECTORY_PICTURES)
-            }
-
-            override fun getFilename(prefix: String): String {
-                return prefix
-            }
-        })
-        capture.process(processors)
+        val context = InstrumentationRegistry.getInstrumentation().context
+        val resolver = context.contentResolver
+        val contentValues = ContentValues()
+        contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, name)
+        contentValues.put(MediaStore.MediaColumns.MIME_TYPE, "image/png")
+        contentValues.put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_PICTURES + File.separator + "screenshot_")
+        val imageUri = resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)!!
+        val fos = resolver.openOutputStream(imageUri)
+        fos.use {
+            capture.compress(Bitmap.CompressFormat.PNG, 100, it)
+        }
     }
 }
 
@@ -106,7 +100,7 @@ class ScreenshotTestRule : TestRule {
     private val testLocale = getLocaleArgument(ARG_TEST_LOCALE)
     private val endingLocale = getLocaleArgument(ARG_ENDING_LOCALE)
 
-    override fun apply(base: Statement, description: Description?): Statement {
+    override fun apply(base: Statement, description: Description): Statement {
         return object : Statement() {
             override fun evaluate() {
                 try {
@@ -147,7 +141,8 @@ class ScreenshotTestRule : TestRule {
             // config = amn.getConfiguration();
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 // getConfiguration moved from ActivityManagerNative to ActivityManagerProxy
-                amnClass = Class.forName(amn::class.java.name)
+                // Used to be: amnClass = Class.forName(amn::class.java.name), doesn't work anymore?
+                amnClass = amn::class.java
             }
             val methodGetConfiguration = amnClass.getMethod("getConfiguration")
             methodGetConfiguration.isAccessible = true

@@ -1,5 +1,5 @@
 <!--
-  Copyright 2021 Nicolas Maltais
+  Copyright 2022 Nicolas Maltais
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 <resources>
 
-    <string name="app_name" translatable="false">Another Notes (debug)</string>
+    <!-- So that I can differentiate the app I use and the app I'm testing on my phone! -->
+    <string name="app_name_short">Notes (debug)</string>
 
 </resources>
