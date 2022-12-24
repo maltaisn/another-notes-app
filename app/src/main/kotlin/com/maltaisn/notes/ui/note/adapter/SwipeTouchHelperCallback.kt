@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Nicolas Maltais
+ * Copyright 2022 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import android.widget.FrameLayout
 import androidx.core.view.isInvisible
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
+import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat
 import com.maltaisn.notes.sync.R
 import com.maltaisn.notes.ui.note.SwipeAction
 import com.maltaisn.notes.ui.note.adapter.NoteAdapter.SwipeDirection
@@ -104,7 +105,12 @@ class SwipeTouchHelperCallback(private val callback: NoteAdapter.Callback) : Ite
                 SwipeAction.DELETE -> R.drawable.avd_delete
                 else -> return // never happens
             })
-            (viewHolder.swipeImv.drawable as? AnimatedVectorDrawable)?.start()
+
+            // Start action drawable animation (type depends on API)
+            when (val drawable = viewHolder.swipeImv.drawable) {
+                is AnimatedVectorDrawable -> drawable.start()  // > API 24
+                is AnimatedVectorDrawableCompat -> drawable.start()  // < API 24
+            }
         }
     }
 
