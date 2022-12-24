@@ -22,8 +22,6 @@
     <!-- Can be translated to provided a sensible localized name for a "Notes" app -->
     <string name="app_name_short">Notes</string>
 
-    <string name="app_subtitle">Note-taking made easy.</string>
-
     <string name="action_archive">Archive</string>
     <string name="action_cancel">Cancel</string>
     <string name="action_clear">Clear</string>
