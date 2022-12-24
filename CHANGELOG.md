@@ -1,13 +1,15 @@
-## v1.5.0
-- Change default focus to title when creating a new note.
+## v1.5.0 (2022-12-28)
 - Changes by @nhoeher
-    - Full Material 3 redesign.
-    - Change reminder start date to show next event date when editing.
+    - Full Material 3 redesign, with support for dynamic colors.
+    - Added shared element transitions for all screens.
+    - Show next event date instead of start date when editing reminder.
     - Only clear notification after reminder has been postponed (#86).
     - Fix title in drawer menu being cut of by status bar (#74).
     - Fix notes created from launcher shortcut not saved (#78).
     - Fix reminder launcher shortcut not working (#80).
     - Fix note list preview lines not updated when changing layout mode (#88)
+- Change default focus to title when creating a new note.
+- Fix animated swipe icons not working on API <24.
 
 ## v1.4.5 (2022-09-25)
 - Fixed cursor moving to first line when scrolling (#60, thanks to @nhoeher)

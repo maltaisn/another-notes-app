@@ -1,2 +1,4 @@
-- Bug fix
-- Translations update
+- Full Material 3 redesign with support for dynamic colors.
+- Smooth transitions between screens.
+- Fixed app shortcuts not working.
+- Miscellaneous changes & fixes.
