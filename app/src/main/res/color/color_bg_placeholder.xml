@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?><!--
-  Copyright 2020 Nicolas Maltais
+  Copyright 2022 Nicolas Maltais
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -15,5 +15,7 @@
   -->
 
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:alpha="0.08" android:color="?colorOnBackground" />
+    <!-- Ideally I would've used "?colorOnBackground" like elsewhere but it fails pre API 23.
+         This means we need a separate selector for light and dark themes. -->
+    <item android:alpha="0.08" android:color="@color/md_theme_light_onBackground" />
 </selector>

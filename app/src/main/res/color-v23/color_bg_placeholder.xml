@@ -15,7 +15,5 @@
   -->
 
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- Ideally I would've used "?colorOnBackground" like elsewhere but it fails pre API 23.
-         This means we need a separate selector for light and dark themes. -->
-    <item android:alpha="0.2" android:color="@color/md_theme_dark_onBackground" />
+    <item android:alpha="0.08" android:color="?colorOnBackground" />
 </selector>
