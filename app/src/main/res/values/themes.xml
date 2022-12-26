@@ -85,7 +85,7 @@
     </style>
 
     <style name="MaterialAlertDialogThemeOverlay" parent="ThemeOverlay.Material3.MaterialAlertDialog">
-        <item name="alertDialogStyle">@style/MaterialAlertDialog.Material3</item>
+        <item name="alertDialogStyle">@style/MaterialAlertDialogStyle</item>
     </style>
 
     <style name="SearchViewThemeOverlay">
