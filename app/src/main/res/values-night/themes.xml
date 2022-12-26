@@ -14,9 +14,8 @@
   limitations under the License.
   -->
 
-<resources xmlns:tools="http://schemas.android.com/tools">
-
-    <style name="AppTheme.DayNight" parent="Base.AppTheme" tools:ignore="NewApi">
+<resources>
+    <style name="AppTheme.DayNight" parent="Base.AppTheme">
         <item name="colorOnErrorContainer">@color/md_theme_dark_onErrorContainer</item>
         <item name="colorOnError">@color/md_theme_dark_onError</item>
         <item name="colorErrorContainer">@color/md_theme_dark_errorContainer</item>
@@ -43,8 +42,5 @@
         <item name="colorPrimaryContainer">@color/md_theme_dark_primaryContainer</item>
         <item name="colorPrimary">@color/md_theme_dark_primary</item>
         <item name="colorPrimaryInverse">@color/md_theme_dark_inversePrimary</item>
-
-        <item name="android:windowLightStatusBar">false</item>
-        <item name="android:windowLightNavigationBar">false</item>
     </style>
 </resources>
