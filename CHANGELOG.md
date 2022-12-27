@@ -8,8 +8,10 @@
     - Fix notes created from launcher shortcut not saved (#78).
     - Fix reminder launcher shortcut not working (#80).
     - Fix note list preview lines not updated when changing layout mode (#88)
+    - Add monochrome icon for Android 13 (#98).
 - Change default focus to title when creating a new note.
-- Fix animated swipe icons not working on API <24.
+- Fix animated swipe icons not working on API <23.
+- Allow zero lines in note preview (#83).
 
 ## v1.4.5 (2022-09-25)
 - Fixed cursor moving to first line when scrolling (#60, thanks to @nhoeher)

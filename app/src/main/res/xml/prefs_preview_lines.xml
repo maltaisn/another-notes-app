@@ -26,7 +26,7 @@
             android:defaultValue="5"
             app:key="preview_lines_text_list"
             app:title="@string/pref_preview_lines_text"
-            app:min="1"
+            app:min="0"
             android:max="20"
             app:showSeekBarValue="true"
             />
@@ -35,7 +35,7 @@
             android:defaultValue="5"
             app:key="preview_lines_list_list"
             app:title="@string/pref_preview_lines_list"
-            app:min="1"
+            app:min="0"
             android:max="20"
             app:showSeekBarValue="true"
             />
@@ -48,7 +48,7 @@
             android:defaultValue="10"
             app:key="preview_lines_text_grid"
             app:title="@string/pref_preview_lines_text"
-            app:min="1"
+            app:min="0"
             android:max="20"
             app:showSeekBarValue="true"
             />
@@ -57,7 +57,7 @@
             android:defaultValue="10"
             app:key="preview_lines_list_grid"
             app:title="@string/pref_preview_lines_list"
-            app:min="1"
+            app:min="0"
             android:max="20"
             app:showSeekBarValue="true"
             />

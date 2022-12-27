@@ -198,10 +198,11 @@ class TextNoteViewHolder(private val binding: ItemNoteTextBinding) :
         super.bind(adapter, item)
 
         val contentTxv = binding.contentTxv
-        contentTxv.isVisible = item.note.content.isNotBlank()
+        val maxPreviewLines = adapter.prefsManager.getMaximumPreviewLines(NoteType.TEXT)
+        contentTxv.isVisible = maxPreviewLines > 0 && item.note.content.isNotBlank()
         contentTxv.text = getHighlightedText(item.content,
             adapter.highlightBackgroundColor, adapter.highlightForegroundColor)
-        contentTxv.maxLines = adapter.prefsManager.getMaximumPreviewLines(NoteType.TEXT)
+        contentTxv.maxLines = maxPreviewLines
     }
 }
 
