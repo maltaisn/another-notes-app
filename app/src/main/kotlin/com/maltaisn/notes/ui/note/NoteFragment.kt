@@ -95,7 +95,7 @@ abstract class NoteFragment : Fragment(), ActionMode.Callback, ConfirmDialog.Cal
     private var spanCount = 1
     private var hideActionMode = false
 
-    private lateinit var layoutManager: StaggeredGridLayoutManager
+    private var layoutManager: StaggeredGridLayoutManager? = null
     private var currentHomeDestinationChanged: Boolean = false
 
     private var isSharedElementTransitionPlaying: Boolean = false
@@ -136,7 +136,8 @@ abstract class NoteFragment : Fragment(), ActionMode.Callback, ConfirmDialog.Cal
         val rcv = binding.recyclerView
         rcv.setHasFixedSize(true)
         val adapter = NoteAdapter(context, viewModel, prefsManager)
-        layoutManager = StaggeredGridLayoutManager(spanCount, StaggeredGridLayoutManager.VERTICAL)
+        val layoutManager = StaggeredGridLayoutManager(spanCount, StaggeredGridLayoutManager.VERTICAL)
+        this.layoutManager = layoutManager
         rcv.adapter = adapter
         rcv.layoutManager = layoutManager
 
@@ -197,10 +198,7 @@ abstract class NoteFragment : Fragment(), ActionMode.Callback, ConfirmDialog.Cal
         }
     }
 
-    private fun setupViewModelObservers(
-        adapter: NoteAdapter,
-        layoutManager: StaggeredGridLayoutManager
-    ) {
+    private fun setupViewModelObservers(adapter: NoteAdapter, layoutManager: StaggeredGridLayoutManager) {
         val navController = findNavController()
 
         setupNoteItemsObserver(adapter)
@@ -438,6 +436,7 @@ abstract class NoteFragment : Fragment(), ActionMode.Callback, ConfirmDialog.Cal
         actionMode?.finish()
         _binding = null
 
+        layoutManager = null
         rcvOneShotPreDrawListener = null
         createdNote = null
         createdNoteId = null
