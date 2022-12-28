@@ -85,9 +85,9 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
         }
 
         // For triggering process death during debug
-//        val venom = Venom.createInstance(this)
-//        venom.initialize()
-//        venom.start()
+        val venom = Venom.createInstance(this)
+        venom.initialize()
+        venom.start()
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         drawerLayout = binding.drawerLayout
