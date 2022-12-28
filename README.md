@@ -40,7 +40,7 @@ Contributions are welcome, especially translations (see [`TRANSLATING.md`][trans
 - Please open an issue before submitting a pull request that adds a new feature, so it can be
     discussed.
 - All changes should be committed the `dev` branch, not `master`.
-- Make sure to follow existing code style (see `config/intellij-codestylexml` file).
+- Make sure to follow existing code style (see `config/intellij-codestyle.xml` file).
 
 ### License & credits
 - All code is licensed under Apache License 2.0.

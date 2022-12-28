@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Nicolas Maltais
+ * Copyright 2022 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,13 +34,18 @@ class ConfirmDialog : DialogFragment() {
         val context = requireContext()
         val args = requireArguments()
         val builder = MaterialAlertDialogBuilder(context)
-            .setTitle(args.getInt(ARG_TITLE))
             .setPositiveButton(args.getInt(ARG_BTN_POSITIVE)) { _, _ ->
                 callback.onDialogPositiveButtonClicked(tag)
             }
             .setNegativeButton(args.getInt(ARG_BTN_NEGATIVE)) { _, _ ->
                 callback.onDialogNegativeButtonClicked(tag)
             }
+
+        // Set title if there's one
+        val title = args.getInt(ARG_TITLE)
+        if (title != 0) {
+            builder.setTitle(title)
+        }
 
         // Set message if there's one.
         val message = args.getInt(ARG_MESSAGE)
@@ -77,7 +82,7 @@ class ConfirmDialog : DialogFragment() {
         private const val ARG_BTN_NEGATIVE = "btn_negative"
 
         fun newInstance(
-            @StringRes title: Int,
+            @StringRes title: Int = 0,
             @StringRes message: Int = 0,
             @StringRes btnPositive: Int,
             @StringRes btnNegative: Int = R.string.action_cancel
