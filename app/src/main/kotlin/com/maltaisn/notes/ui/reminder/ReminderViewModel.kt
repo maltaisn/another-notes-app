@@ -253,11 +253,11 @@ class ReminderViewModel @AssistedInject constructor(
         // Update notes in database
         // Note: changing reminder doesn't change the last modified date.
         val newNotes = noteIds.mapNotNull { id ->
-            val oldNote = notesRepository.getNoteById(id)!!
-            if (oldNote.reminder != reminder) {
-                oldNote.copy(reminder = reminder)
-            } else {
+            val oldNote = notesRepository.getNoteById(id)
+            if (oldNote == null || oldNote.reminder == reminder) {
                 null
+            } else {
+                oldNote.copy(reminder = reminder)
             }
         }
         notesRepository.updateNotes(newNotes)
