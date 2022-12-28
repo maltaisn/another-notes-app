@@ -101,9 +101,9 @@ class NotificationActivity : AppCompatActivity() {
             calendar.timeInMillis = date
 
             val timePicker = MaterialTimePicker.Builder()
+                .setTimeFormat(timeFormat)
                 .setHour(calendar[Calendar.HOUR_OF_DAY])
                 .setMinute(calendar[Calendar.MINUTE])
-                .setTimeFormat(timeFormat)
                 .build()
 
             timePicker.addOnPositiveButtonClickListener {

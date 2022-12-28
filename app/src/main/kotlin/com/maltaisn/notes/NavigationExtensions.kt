@@ -41,7 +41,10 @@ fun NavController.navigateSafe(
         destId = dest.startDestinationId
     }
     if (allowSameDest || currentDestination?.id != destId) {
-        if (extras != null) navigate(directions, extras)
-        else navigate(directions)
+        if (extras != null) {
+            navigate(directions, extras)
+        } else {
+            navigate(directions)
+        }
     }
 }

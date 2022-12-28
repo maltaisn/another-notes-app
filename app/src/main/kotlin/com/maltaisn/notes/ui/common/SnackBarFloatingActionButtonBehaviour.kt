@@ -48,8 +48,9 @@ class SnackBarFloatingActionButtonBehaviour(context: Context?, attrs: AttributeS
                     // Adjust the spacing between the two to match the margin of the FAB
                     + dependency.marginTop - child.marginBottom
         )
-        if (dependency.translationY != 0f)
+        if (dependency.translationY != 0f) {
             child.translationY = translationY
+        }
         return true
     }
 

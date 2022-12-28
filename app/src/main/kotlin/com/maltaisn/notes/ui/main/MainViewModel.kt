@@ -205,7 +205,9 @@ class MainViewModel @AssistedInject constructor(
         if (labelsMenu.contains(item)) {
             viewModelScope.launch {
                 val label = labelsRepository.getLabelByName(item.title as String)
-                if (label != null) selectLabel(label)
+                if (label != null) {
+                    selectLabel(label)
+                }
             }
         }
     }

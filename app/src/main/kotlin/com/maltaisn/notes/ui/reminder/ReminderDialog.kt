@@ -180,9 +180,9 @@ class ReminderDialog : DialogFragment(), RecurrenceListCallback, RecurrencePicke
             calendar.timeInMillis = time
 
             val timePicker = MaterialTimePicker.Builder()
+                .setTimeFormat(timeFormat)
                 .setHour(calendar[Calendar.HOUR_OF_DAY])
                 .setMinute(calendar[Calendar.MINUTE])
-                .setTimeFormat(timeFormat)
                 .build()
 
             timePicker.addOnPositiveButtonClickListener {

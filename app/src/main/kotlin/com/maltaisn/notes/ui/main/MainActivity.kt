@@ -33,6 +33,7 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.fragment.NavHostFragment
+import com.github.venom.Venom
 import com.google.android.material.color.DynamicColors
 import com.maltaisn.notes.App
 import com.maltaisn.notes.TAG
@@ -79,8 +80,9 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
         (applicationContext as App).appComponent.inject(this)
 
         // Apply dynamic colors
-        if (prefs.dynamicColors)
+        if (prefs.dynamicColors) {
             DynamicColors.applyToActivityIfAvailable(this)
+        }
 
         // For triggering process death during debug
 //        val venom = Venom.createInstance(this)
