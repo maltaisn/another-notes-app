@@ -197,16 +197,18 @@ class EditViewModel @AssistedInject constructor(
         get() = status == NoteStatus.DELETED
 
     private var updateNoteJob: Job? = null
+    private var restoreNoteJob: Job? = null
 
     init {
         if (KEY_NOTE_ID in savedStateHandle) {
-            viewModelScope.launch {
+            restoreNoteJob = viewModelScope.launch {
                 isNewNote = savedStateHandle[KEY_IS_NEW_NOTE] ?: false
 
                 val note = notesRepository.getNoteById(savedStateHandle[KEY_NOTE_ID] ?: Note.NO_ID)
                 if (note != null) {
                     this@EditViewModel.note = note
                 }
+                restoreNoteJob = null
             }
         }
     }
@@ -232,6 +234,8 @@ class EditViewModel @AssistedInject constructor(
             // If fragment was very briefly destroyed then recreated, it's possible that this job is launched
             // before the job to save the note on fragment destruction is called.
             updateNoteJob?.join()
+            // Also make sure note is restored after recreation before this is called.
+            restoreNoteJob?.join()
 
             val isFirstStart = (note == BLANK_NOTE)
 
@@ -248,7 +252,7 @@ class EditViewModel @AssistedInject constructor(
             var note = noteWithLabels?.note
             var labels = noteWithLabels?.labels
 
-            if (note == null || labels == null) {
+            if (note == null) {
                 // Note doesn't exist, create new blank note of the corresponding type.
                 // This is the expected path for creating a new note (by passing Note.NO_ID)
                 val date = Date()
@@ -271,11 +275,11 @@ class EditViewModel @AssistedInject constructor(
                 _noteCreateEvent.send(id)
 
                 isNewNote = true
-                savedStateHandle[KEY_IS_NEW_NOTE] = isNewNote
+                savedStateHandle[KEY_IS_NEW_NOTE] = true
             }
 
             this@EditViewModel.note = note
-            this@EditViewModel.labels = labels
+            this@EditViewModel.labels = labels!!
             status = note.status
             pinned = note.pinned
             reminder = note.reminder
@@ -284,6 +288,8 @@ class EditViewModel @AssistedInject constructor(
             _noteStatus.value = status
             _notePinned.value = pinned
             _noteReminder.value = reminder
+
+            savedStateHandle[KEY_NOTE_ID] = note.id
 
             recreateListItems()
 
@@ -632,7 +638,7 @@ class EditViewModel @AssistedInject constructor(
                     // Unchecked list items
                     for ((i, item) in noteItems.withIndex()) {
                         if (!item.checked) {
-                            listItems += EditItemItem(DefaultEditableText(item.content), item.checked, canEdit, i)
+                            listItems += EditItemItem(DefaultEditableText(item.content), false, canEdit, i)
                         }
                     }
 
@@ -647,7 +653,7 @@ class EditViewModel @AssistedInject constructor(
                         listItems += EditCheckedHeaderItem(checkCount)
                         for ((i, item) in noteItems.withIndex()) {
                             if (item.checked) {
-                                listItems += EditItemItem(DefaultEditableText(item.content), item.checked, canEdit, i)
+                                listItems += EditItemItem(DefaultEditableText(item.content), true, canEdit, i)
                             }
                         }
                     }
@@ -899,6 +905,6 @@ class EditViewModel @AssistedInject constructor(
         private const val KEY_NOTE_ID = "noteId"
         private const val KEY_IS_NEW_NOTE = "isNewNote"
 
-        private val TEMP_ITEM = EditItemItem(DefaultEditableText(), false, false, 0)
+        private val TEMP_ITEM = EditItemItem(DefaultEditableText(), checked = false, editable = false, actualPos = 0)
     }
 }

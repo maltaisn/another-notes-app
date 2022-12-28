@@ -84,6 +84,9 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
             DynamicColors.applyToActivityIfAvailable(this)
         }
 
+        // Can be useful when debugging after process death, debugging notification receiver, etc.
+//        Debug.waitForDebugger()
+
         // For triggering process death during debug
         val venom = Venom.createInstance(this)
         venom.initialize()
