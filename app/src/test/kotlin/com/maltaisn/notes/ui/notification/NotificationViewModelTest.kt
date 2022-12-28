@@ -167,4 +167,10 @@ class NotificationViewModelTest {
         val fmt = SimpleDateFormat("yyyy-MM-dd")
         assertEquals(fmt.format(expected), fmt.format(actual))
     }
+
+    private fun NotificationViewModel.setPostponeDate(newDate: Long) {
+        val calendar = Calendar.getInstance()
+        calendar.timeInMillis = newDate
+        this.setPostponeDate(calendar[Calendar.YEAR], calendar[Calendar.MONTH], calendar[Calendar.DAY_OF_MONTH])
+    }
 }

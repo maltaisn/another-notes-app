@@ -332,4 +332,10 @@ class ReminderViewModelTest {
         val fmt = SimpleDateFormat("yyyy-MM-dd")
         assertEquals(fmt.format(expected), fmt.format(actual))
     }
+
+    private fun ReminderViewModel.changeDate(newDate: Long) {
+        val calendar = Calendar.getInstance()
+        calendar.timeInMillis = newDate
+        this.changeDate(calendar[Calendar.YEAR], calendar[Calendar.MONTH], calendar[Calendar.DAY_OF_MONTH])
+    }
 }
