@@ -142,7 +142,8 @@ class NotificationActivity : AppCompatActivity() {
 
     private fun onDateChanged(selection: Long) {
         val calendar = Calendar.getInstance()
-        calendar.timeInMillis = selection
+        // MaterialDatePicker operates on UTC timezone... convert to local timezone (in UTC millis).
+        calendar.timeInMillis = selection - calendar.timeZone.getOffset(selection)
         viewModel.setPostponeDate(calendar[Calendar.YEAR], calendar[Calendar.MONTH], calendar[Calendar.DAY_OF_MONTH])
     }
 
