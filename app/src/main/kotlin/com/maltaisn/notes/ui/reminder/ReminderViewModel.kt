@@ -24,6 +24,7 @@ import androidx.lifecycle.viewModelScope
 import com.maltaisn.notes.model.NotesRepository
 import com.maltaisn.notes.model.ReminderAlarmManager
 import com.maltaisn.notes.model.entity.Reminder
+import com.maltaisn.notes.setToStartOfDay
 import com.maltaisn.notes.ui.AssistedSavedStateViewModelFactory
 import com.maltaisn.notes.ui.Event
 import com.maltaisn.notes.ui.send
@@ -45,7 +46,7 @@ class ReminderViewModel @AssistedInject constructor(
     private val calendar = Calendar.getInstance()
 
     private var noteIds = emptyList<Long>()
-    private var date: Long
+    private var date: Long   // UTC millis
     private var recurrence: Recurrence
 
     private val _details = MutableLiveData<ReminderDetails>()
@@ -137,11 +138,9 @@ class ReminderViewModel @AssistedInject constructor(
                 calendar.timeInMillis = System.currentTimeMillis()
                 val currHour = calendar[Calendar.HOUR_OF_DAY]
                 val todayReminderHour = DEFAULT_REMINDER_HOURS.find { it > currHour + REMINDER_HOUR_MIN_DISTANCE }
+                calendar.setToStartOfDay()
                 calendar[Calendar.HOUR_OF_DAY] = todayReminderHour
                     ?: DEFAULT_REMINDER_HOURS.first { it > currHour + REMINDER_HOUR_MIN_DISTANCE - HOURS_IN_DAY }
-                calendar[Calendar.MINUTE] = 0
-                calendar[Calendar.SECOND] = 0
-                calendar[Calendar.MILLISECOND] = 0
                 if (todayReminderHour == null) {
                     // All preset hours past for today, use first preset for tomorrow
                     calendar.add(Calendar.DATE, 1)
@@ -168,13 +167,9 @@ class ReminderViewModel @AssistedInject constructor(
         _showDateDialogEvent.send(date)
     }
 
-    fun changeDate(newDate: Long) {
+    fun changeDate(year: Int, month: Int, day: Int) {
         calendar.timeInMillis = date
-
-        val cal = Calendar.getInstance()
-        cal.timeInMillis = newDate
-
-        calendar.set(cal[Calendar.YEAR], cal[Calendar.MONTH], cal[Calendar.DAY_OF_MONTH])
+        calendar.set(year, month, day)
 
         date = calendar.timeInMillis
         savedStateHandle[KEY_DATE] = date

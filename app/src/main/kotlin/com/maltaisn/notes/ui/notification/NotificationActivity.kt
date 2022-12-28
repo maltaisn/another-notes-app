@@ -49,6 +49,25 @@ class NotificationActivity : AppCompatActivity() {
 
         setupViewModelObservers()
 
+        if (savedInstanceState != null) {
+            // Update dialog listeners if needed to avoid them referencing the old fragment instance,
+            // creating a memory leak and preventing correct callback sequence.
+            val timePicker = supportFragmentManager.findFragmentByTag(TIME_DIALOG_TAG) as MaterialTimePicker?
+            if (timePicker != null) {
+                timePicker.clearOnPositiveButtonClickListeners()
+                timePicker.addOnPositiveButtonClickListener {
+                    onTimeChanged(timePicker)
+                }
+            }
+
+            @Suppress("UNCHECKED_CAST")
+            val datePicker = supportFragmentManager.findFragmentByTag(DATE_DIALOG_TAG) as MaterialDatePicker<Long>?
+            if (datePicker != null) {
+                datePicker.clearOnPositiveButtonClickListeners()
+                datePicker.addOnPositiveButtonClickListener(::onDateChanged)
+            }
+        }
+
         handleIntent(intent)
     }
 
@@ -61,20 +80,17 @@ class NotificationActivity : AppCompatActivity() {
                 .build()
 
             val datePicker = MaterialDatePicker.Builder.datePicker()
-                .setSelection(System.currentTimeMillis())
                 .setCalendarConstraints(calendarConstraints)
                 .setSelection(date)
                 .build()
 
-            datePicker.addOnPositiveButtonClickListener { selection ->
-                viewModel.setPostponeDate(selection)
-            }
+            datePicker.addOnPositiveButtonClickListener(::onDateChanged)
 
             datePicker.addOnNegativeButtonClickListener {
                 viewModel.cancelPostpone()
             }
 
-            datePicker.show(supportFragmentManager, datePicker.tag)
+            datePicker.show(supportFragmentManager, DATE_DIALOG_TAG)
         }
 
         viewModel.showTimeDialogEvent.observeEvent(this) { date ->
@@ -91,14 +107,14 @@ class NotificationActivity : AppCompatActivity() {
                 .build()
 
             timePicker.addOnPositiveButtonClickListener {
-                viewModel.setPostponeTime(timePicker.hour, timePicker.minute)
+                onTimeChanged(timePicker)
             }
 
             timePicker.addOnNegativeButtonClickListener {
                 viewModel.cancelPostpone()
             }
 
-            timePicker.show(supportFragmentManager, timePicker.tag)
+            timePicker.show(supportFragmentManager, TIME_DIALOG_TAG)
         }
 
         viewModel.clearNotificationEvent.observeEvent(this) { noteId ->
@@ -124,7 +140,20 @@ class NotificationActivity : AppCompatActivity() {
         }
     }
 
+    private fun onDateChanged(selection: Long) {
+        val calendar = Calendar.getInstance()
+        calendar.timeInMillis = selection
+        viewModel.setPostponeDate(calendar[Calendar.YEAR], calendar[Calendar.MONTH], calendar[Calendar.DAY_OF_MONTH])
+    }
+
+    private fun onTimeChanged(picker: MaterialTimePicker) {
+        viewModel.setPostponeTime(picker.hour, picker.minute)
+    }
+
     companion object {
+        private const val DATE_DIALOG_TAG = "date-picker-dialog"
+        private const val TIME_DIALOG_TAG = "time-picker-dialog"
+
         private const val KEY_INTENT_HANDLED = "com.maltaisn.notes.INTENT_HANDLED"
 
         const val INTENT_ACTION_POSTPONE = "com.maltaisn.notes.reminder.POSTPONE"

@@ -64,7 +64,6 @@ class ReminderDialog : DialogFragment(), RecurrenceListCallback, RecurrencePicke
 
     private val dateFormat = DateFormat.getDateInstance(DateFormat.MEDIUM)
     private val timeFormat = DateFormat.getTimeInstance(DateFormat.SHORT)
-    private var isUsing24HourFormat: Boolean = true
     private val recurrenceFormat = RecurrenceFormatter(dateFormat)
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -75,8 +74,6 @@ class ReminderDialog : DialogFragment(), RecurrenceListCallback, RecurrencePicke
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val context = requireContext()
         val binding = DialogReminderBinding.inflate(layoutInflater, null, false)
-
-        isUsing24HourFormat = android.text.format.DateFormat.is24HourFormat(context)
 
         binding.dateForegroundView.setOnClickListener {
             viewModel.onDateClicked()
@@ -103,6 +100,25 @@ class ReminderDialog : DialogFragment(), RecurrenceListCallback, RecurrencePicke
 
         setupViewModelObservers(binding)
 
+        if (savedInstanceState != null) {
+            // Update dialog listeners if needed to avoid them referencing the old fragment instance,
+            // creating a memory leak and preventing correct callback sequence.
+            val timePicker = childFragmentManager.findFragmentByTag(TIME_DIALOG_TAG) as MaterialTimePicker?
+            if (timePicker != null) {
+                timePicker.clearOnPositiveButtonClickListeners()
+                timePicker.addOnPositiveButtonClickListener {
+                    onTimeChanged(timePicker)
+                }
+            }
+
+            @Suppress("UNCHECKED_CAST")
+            val datePicker = childFragmentManager.findFragmentByTag(DATE_DIALOG_TAG) as MaterialDatePicker<Long>?
+            if (datePicker != null) {
+                datePicker.clearOnPositiveButtonClickListeners()
+                datePicker.addOnPositiveButtonClickListener(::onDateChanged)
+            }
+        }
+
         viewModel.start(args.noteIds.toList())
 
         return dialog
@@ -124,27 +140,23 @@ class ReminderDialog : DialogFragment(), RecurrenceListCallback, RecurrencePicke
         }
 
         viewModel.showDateDialogEvent.observeEvent(this) { date ->
-
             val calendarConstraints = CalendarConstraints.Builder()
                 .setStart(System.currentTimeMillis())
                 .setValidator(DateValidatorPointForward.now())
                 .build()
 
             val datePicker = MaterialDatePicker.Builder.datePicker()
-                .setSelection(System.currentTimeMillis())
                 .setCalendarConstraints(calendarConstraints)
                 .setSelection(date)
                 .build()
 
-            datePicker.addOnPositiveButtonClickListener { selection ->
-                viewModel.changeDate(selection)
-            }
+            datePicker.addOnPositiveButtonClickListener(::onDateChanged)
 
-            datePicker.show(childFragmentManager, datePicker.tag)
+            datePicker.show(childFragmentManager, DATE_DIALOG_TAG)
         }
 
         viewModel.showTimeDialogEvent.observeEvent(this) { time ->
-
+            val isUsing24HourFormat = android.text.format.DateFormat.is24HourFormat(context)
             val timeFormat = if (isUsing24HourFormat) TimeFormat.CLOCK_24H else TimeFormat.CLOCK_12H
 
             val calendar = Calendar.getInstance()
@@ -157,10 +169,10 @@ class ReminderDialog : DialogFragment(), RecurrenceListCallback, RecurrencePicke
                 .build()
 
             timePicker.addOnPositiveButtonClickListener {
-                viewModel.changeTime(timePicker.hour, timePicker.minute)
+                onTimeChanged(timePicker)
             }
 
-            timePicker.show(childFragmentManager, timePicker.tag)
+            timePicker.show(childFragmentManager, TIME_DIALOG_TAG)
         }
 
         viewModel.showRecurrenceListDialogEvent.observeEvent(this) { details ->
@@ -188,6 +200,16 @@ class ReminderDialog : DialogFragment(), RecurrenceListCallback, RecurrencePicke
         viewModel.dismissEvent.observeEvent(this) {
             dismiss()
         }
+    }
+
+    private fun onDateChanged(selection: Long) {
+        val calendar = Calendar.getInstance()
+        calendar.timeInMillis = selection
+        viewModel.changeDate(calendar[Calendar.YEAR], calendar[Calendar.MONTH], calendar[Calendar.DAY_OF_MONTH])
+    }
+
+    private fun onTimeChanged(picker: MaterialTimePicker) {
+        viewModel.changeTime(picker.hour, picker.minute)
     }
 
     private fun onDialogShown(dialog: AlertDialog) {
@@ -224,6 +246,9 @@ class ReminderDialog : DialogFragment(), RecurrenceListCallback, RecurrencePicke
     }
 
     companion object {
+        private const val DATE_DIALOG_TAG = "date-picker-dialog"
+        private const val TIME_DIALOG_TAG = "time-picker-dialog"
+
         private const val RECURRENCE_LIST_DIALOG_TAG = "recurrence-list-dialog"
         private const val RECURRENCE_PICKER_DIALOG_TAG = "recurrence-picker-dialog"
     }

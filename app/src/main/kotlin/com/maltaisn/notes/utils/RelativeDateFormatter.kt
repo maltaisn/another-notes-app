@@ -19,6 +19,7 @@ package com.maltaisn.notes.utils
 import android.content.res.Resources
 import android.icu.text.RelativeDateTimeFormatter
 import android.text.format.DateUtils
+import com.maltaisn.notes.setToStartOfDay
 import com.maltaisn.notes.sync.R
 import java.text.DateFormat
 import java.util.Calendar
@@ -62,12 +63,5 @@ class RelativeDateFormatter(
             else -> resources.getString(R.string.date_rel_absolute,
                 absoluteDateFormatter(date), timeStr)
         }
-    }
-
-    private fun Calendar.setToStartOfDay() {
-        this[Calendar.HOUR_OF_DAY] = 0
-        this[Calendar.MINUTE] = 0
-        this[Calendar.SECOND] = 0
-        this[Calendar.MILLISECOND] = 0
     }
 }

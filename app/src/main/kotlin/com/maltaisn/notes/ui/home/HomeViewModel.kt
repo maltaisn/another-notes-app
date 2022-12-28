@@ -29,6 +29,7 @@ import com.maltaisn.notes.model.entity.Label
 import com.maltaisn.notes.model.entity.NoteStatus
 import com.maltaisn.notes.model.entity.NoteWithLabels
 import com.maltaisn.notes.model.entity.PinnedStatus
+import com.maltaisn.notes.setToStartOfDay
 import com.maltaisn.notes.sync.R
 import com.maltaisn.notes.ui.AssistedSavedStateViewModelFactory
 import com.maltaisn.notes.ui.Event
@@ -318,10 +319,7 @@ class HomeViewModel @AssistedInject constructor(
 
     private fun createRemindersListItems(notes: List<NoteWithLabels>) = buildList {
         val calendar = Calendar.getInstance()
-        calendar[Calendar.HOUR_OF_DAY] = 0
-        calendar[Calendar.MINUTE] = 0
-        calendar[Calendar.SECOND] = 0
-        calendar[Calendar.MILLISECOND] = 0
+        calendar.setToStartOfDay()
         calendar.add(Calendar.DATE, 1)
         val endOfToday = calendar.timeInMillis
         val now = System.currentTimeMillis()
