@@ -76,7 +76,7 @@ class ReminderDialog : DialogFragment(), RecurrenceListCallback, RecurrencePicke
     private val timeFormat = DateFormat.getTimeInstance(DateFormat.SHORT)
     private val recurrenceFormat = RecurrenceFormatter(dateFormat)
 
-    private lateinit var requestPermissionLauncher: ActivityResultLauncher<String>
+    private var requestPermissionLauncher: ActivityResultLauncher<String>? = null
     private var permissionRequested = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -139,6 +139,11 @@ class ReminderDialog : DialogFragment(), RecurrenceListCallback, RecurrencePicke
         viewModel.start(args.noteIds.toList())
 
         return dialog
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        requestPermissionLauncher = null
     }
 
     private fun setupViewModelObservers(binding: DialogReminderBinding) {
@@ -252,7 +257,7 @@ class ReminderDialog : DialogFragment(), RecurrenceListCallback, RecurrencePicke
                 permissionRequested = true
             }
             else -> {
-                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                requestPermissionLauncher?.launch(Manifest.permission.POST_NOTIFICATIONS)
             }
         }
     }
@@ -306,7 +311,7 @@ class ReminderDialog : DialogFragment(), RecurrenceListCallback, RecurrencePicke
             when (tag) {
                 NOTIF_PERMISSION_DIALOG -> {
                     // First time asking, can request normally.
-                    requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                    requestPermissionLauncher?.launch(Manifest.permission.POST_NOTIFICATIONS)
                 }
                 NOTIF_PERMISSION_DENIED_DIALOG -> {
                     // Not first time asking, open notification settings window to let user do it.

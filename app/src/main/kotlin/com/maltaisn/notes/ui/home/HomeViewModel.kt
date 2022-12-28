@@ -66,6 +66,7 @@ class HomeViewModel @AssistedInject constructor(
         private set
 
     private var batteryRestricted = false
+    private var notificationsRestricted = false
 
     private val _fabShown = MutableLiveData<Boolean>()
     val fabShown: LiveData<Boolean>
@@ -159,8 +160,14 @@ class HomeViewModel @AssistedInject constructor(
         }
     }
 
-    fun notifyBatteryRestricted() {
-        batteryRestricted = true
+    /** Update restrictions status so that appropriate warnings may be shown to user. */
+    fun updateRestrictions(battery: Boolean, notifications: Boolean) {
+        val updateList = battery != batteryRestricted || notifications != notificationsRestricted
+        batteryRestricted = battery
+        notificationsRestricted = notifications
+        if (updateList) {
+            updateNoteList()
+        }
     }
 
     fun doExtraAction() {
@@ -324,13 +331,17 @@ class HomeViewModel @AssistedInject constructor(
         val endOfToday = calendar.timeInMillis
         val now = System.currentTimeMillis()
 
-        // If needed, add reminder that notifications won't work properly if battery is restricted.
+        // If needed, add warning that notifications won't work properly if battery is restricted.
         if (batteryRestricted && notes.isNotEmpty() &&
             now - prefs.lastRestrictedBatteryReminderTime >
             PrefsManager.RESTRICTED_BATTERY_REMINDER_DELAY.inWholeMilliseconds
         ) {
-            this += MessageItem(BATTERY_RESTRICTED_ITEM_ID,
-                R.string.reminder_restricted_battery)
+            this += MessageItem(BATTERY_RESTRICTED_ITEM_ID, R.string.reminder_restricted_battery)
+        }
+
+        // If needed, add warning that notification permission has been denied.
+        if (notes.isNotEmpty() && notificationsRestricted) {
+            this += MessageItem(NOTIFICATION_DENIED_ITEM_ID, R.string.reminder_notif_permission_denied)
         }
 
         var addedOverdueHeader = false
@@ -402,6 +413,7 @@ class HomeViewModel @AssistedInject constructor(
         private const val TRASH_REMINDER_ITEM_ID = -1L
         private const val BATTERY_RESTRICTED_ITEM_ID = -8L
         private const val AUTO_EXPORT_FAIL_ITEM_ID = -9L
+        private const val NOTIFICATION_DENIED_ITEM_ID = -10L
 
         val PINNED_HEADER_ITEM = HeaderItem(-2, R.string.note_pinned)
         val NOT_PINNED_HEADER_ITEM = HeaderItem(-3, R.string.note_not_pinned)

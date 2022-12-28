@@ -157,7 +157,9 @@
     <string name="reminder_restricted_battery">Reminder alarms may not work correctly because the
     app has restricted battery usage. This can be changed in the app settings.</string>
     <string name="reminder_notif_permission">To be able to send reminder notifications, the app needs a permission.
-        Click OK to show the permission request. You will be able to set a reminder afterwards.</string>
+    Click OK to show the permission request. You will be able to set a reminder afterwards.</string>
+    <string name="reminder_notif_permission_denied">The notification permission has been denied.
+    Reminder alarms will not work until enabled.</string>
 
     <!-- Labels -->
     <string name="label_create">Create new label</string>

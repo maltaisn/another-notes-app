@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Nicolas Maltais
+ * Copyright 2022 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +16,17 @@
 
 package com.maltaisn.notes.ui.home
 
+import android.Manifest
 import android.app.ActivityManager
 import android.content.Context
+import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.view.ActionMode
 import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.widget.Toolbar
+import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.fragment.FragmentNavigatorExtras
@@ -59,15 +62,32 @@ class HomeFragment : NoteFragment(), Toolbar.OnMenuItemClickListener {
 
         val context = requireContext()
         (context.applicationContext as App).appComponent.inject(this)
+    }
 
+    override fun onResume() {
+        super.onResume()
+
+        val context = requireContext()
+
+        var batteryRestricted = false
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             // Detect battery restriction as it affects reminder alarms.
-            val activityManager = context.getSystemService(Context.ACTIVITY_SERVICE)
-                    as? ActivityManager
+            val activityManager = context.getSystemService(Context.ACTIVITY_SERVICE) as? ActivityManager
             if (activityManager?.isBackgroundRestricted == true) {
-                viewModel.notifyBatteryRestricted()
+                batteryRestricted = true
             }
         }
+
+        var notificationRestricted = false
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(context,
+                    Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_DENIED
+            ) {
+                notificationRestricted = true
+            }
+        }
+
+        viewModel.updateRestrictions(batteryRestricted, notificationRestricted)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
