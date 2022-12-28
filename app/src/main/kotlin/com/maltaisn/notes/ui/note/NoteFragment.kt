@@ -20,6 +20,7 @@ import android.animation.ArgbEvaluator
 import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
 import android.view.ActionMode
 import android.view.LayoutInflater
@@ -483,11 +484,13 @@ abstract class NoteFragment : Fragment(), ActionMode.Callback, ConfirmDialog.Cal
 
     override fun onCreateActionMode(mode: ActionMode, menu: Menu): Boolean {
         mode.menuInflater.inflate(R.menu.cab_note_selection, menu)
-        switchStatusBarColor(
-            (binding.toolbarLayout.background as MaterialShapeDrawable).resolvedTintColor,
-            MaterialColors.getColor(requireView(), R.attr.colorSurfaceVariant),
-            resources.getInteger(R.integer.material_motion_duration_long_2).toLong()
-        )
+        if (Build.VERSION.SDK_INT >= 23) {
+            switchStatusBarColor(
+                (binding.toolbarLayout.background as MaterialShapeDrawable).resolvedTintColor,
+                MaterialColors.getColor(requireView(), R.attr.colorSurfaceVariant),
+                resources.getInteger(R.integer.material_motion_duration_long_2).toLong()
+            )
+        }
         return true
     }
 
@@ -498,12 +501,14 @@ abstract class NoteFragment : Fragment(), ActionMode.Callback, ConfirmDialog.Cal
         if (!hideActionMode) {
             viewModel.clearSelection()
 
-            switchStatusBarColor(
-                MaterialColors.getColor(requireView(), R.attr.colorSurfaceVariant),
-                (binding.toolbarLayout.background as MaterialShapeDrawable).resolvedTintColor,
-                resources.getInteger(R.integer.material_motion_duration_long_1).toLong(),
-                true
-            )
+            if (Build.VERSION.SDK_INT >= 23) {
+                switchStatusBarColor(
+                    MaterialColors.getColor(requireView(), R.attr.colorSurfaceVariant),
+                    (binding.toolbarLayout.background as MaterialShapeDrawable).resolvedTintColor,
+                    resources.getInteger(R.integer.material_motion_duration_long_1).toLong(),
+                    true
+                )
+            }
         }
         hideActionMode = false
     }
@@ -523,12 +528,14 @@ abstract class NoteFragment : Fragment(), ActionMode.Callback, ConfirmDialog.Cal
         val noteIdsSize = arguments?.getLongArray("noteIds")?.size
         if (destination.id == R.id.fragment_label && noteIdsSize != null && noteIdsSize > 0) {
             // Change status bar color to match label fragment
-            switchStatusBarColor(
-                MaterialColors.getColor(requireView(), R.attr.colorSurfaceVariant),
-                MaterialColors.getColor(requireView(), R.attr.colorSurface),
-                resources.getInteger(R.integer.material_motion_duration_long_1).toLong() * 2,
-                true
-            )
+            if (Build.VERSION.SDK_INT >= 23) {
+                switchStatusBarColor(
+                    MaterialColors.getColor(requireView(), R.attr.colorSurfaceVariant),
+                    MaterialColors.getColor(requireView(), R.attr.colorSurface),
+                    resources.getInteger(R.integer.material_motion_duration_long_1).toLong() * 2,
+                    true
+                )
+            }
         }
     }
 

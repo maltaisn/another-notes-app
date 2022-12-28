@@ -19,6 +19,7 @@ package com.maltaisn.notes.ui.labels
 import android.animation.ArgbEvaluator
 import android.animation.ValueAnimator
 import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
 import android.view.ActionMode
 import android.view.LayoutInflater
@@ -248,11 +249,13 @@ class LabelFragment : DialogFragment(), Toolbar.OnMenuItemClickListener,
 
     override fun onCreateActionMode(mode: ActionMode, menu: Menu): Boolean {
         mode.menuInflater.inflate(R.menu.cab_label_selection, menu)
-        switchStatusBarColor(
-            (binding.toolbarLayout.background as MaterialShapeDrawable).resolvedTintColor,
-            MaterialColors.getColor(requireView(), R.attr.colorSurfaceVariant),
-            resources.getInteger(R.integer.material_motion_duration_long_2).toLong()
-        )
+        if (Build.VERSION.SDK_INT >= 23) {
+            switchStatusBarColor(
+                (binding.toolbarLayout.background as MaterialShapeDrawable).resolvedTintColor,
+                MaterialColors.getColor(requireView(), R.attr.colorSurfaceVariant),
+                resources.getInteger(R.integer.material_motion_duration_long_2).toLong()
+            )
+        }
         return true
     }
 
@@ -261,12 +264,14 @@ class LabelFragment : DialogFragment(), Toolbar.OnMenuItemClickListener,
     override fun onDestroyActionMode(mode: ActionMode) {
         actionMode = null
         viewModel.clearSelection()
-        switchStatusBarColor(
-            MaterialColors.getColor(requireView(), R.attr.colorSurfaceVariant),
-            (binding.toolbarLayout.background as MaterialShapeDrawable).resolvedTintColor,
-            resources.getInteger(R.integer.material_motion_duration_long_1).toLong(),
-            true
-        )
+        if (Build.VERSION.SDK_INT >= 23) {
+            switchStatusBarColor(
+                MaterialColors.getColor(requireView(), R.attr.colorSurfaceVariant),
+                (binding.toolbarLayout.background as MaterialShapeDrawable).resolvedTintColor,
+                resources.getInteger(R.integer.material_motion_duration_long_1).toLong(),
+                true
+            )
+        }
     }
 
     override fun onDialogPositiveButtonClicked(tag: String?) {
