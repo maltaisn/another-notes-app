@@ -57,6 +57,7 @@ import com.maltaisn.recurpicker.picker.RecurrencePickerDialog
 import debugCheck
 import java.text.DateFormat
 import java.util.Calendar
+import java.util.TimeZone
 import javax.inject.Inject
 import javax.inject.Provider
 
@@ -119,16 +120,14 @@ class ReminderDialog : DialogFragment(), RecurrenceListCallback, RecurrencePicke
             val timePicker = childFragmentManager.findFragmentByTag(TIME_DIALOG_TAG) as MaterialTimePicker?
             if (timePicker != null) {
                 timePicker.clearOnPositiveButtonClickListeners()
-                timePicker.addOnPositiveButtonClickListener {
-                    onTimeChanged(timePicker)
-                }
+                registerTimePickerListener(timePicker)
             }
 
             @Suppress("UNCHECKED_CAST")
             val datePicker = childFragmentManager.findFragmentByTag(DATE_DIALOG_TAG) as MaterialDatePicker<Long>?
             if (datePicker != null) {
                 datePicker.clearOnPositiveButtonClickListeners()
-                datePicker.addOnPositiveButtonClickListener(::onDateChanged)
+                registerDatePickerListener(datePicker)
             }
         }
 
@@ -169,11 +168,10 @@ class ReminderDialog : DialogFragment(), RecurrenceListCallback, RecurrencePicke
 
             val datePicker = MaterialDatePicker.Builder.datePicker()
                 .setCalendarConstraints(calendarConstraints)
-                .setSelection(date)
+                .setSelection(date + TimeZone.getDefault().getOffset(date))
                 .build()
 
-            datePicker.addOnPositiveButtonClickListener(::onDateChanged)
-
+            registerDatePickerListener(datePicker)
             datePicker.show(childFragmentManager, DATE_DIALOG_TAG)
         }
 
@@ -190,10 +188,7 @@ class ReminderDialog : DialogFragment(), RecurrenceListCallback, RecurrencePicke
                 .setMinute(calendar[Calendar.MINUTE])
                 .build()
 
-            timePicker.addOnPositiveButtonClickListener {
-                onTimeChanged(timePicker)
-            }
-
+            registerTimePickerListener(timePicker)
             timePicker.show(childFragmentManager, TIME_DIALOG_TAG)
         }
 
@@ -262,15 +257,19 @@ class ReminderDialog : DialogFragment(), RecurrenceListCallback, RecurrencePicke
         }
     }
 
-    private fun onDateChanged(selection: Long) {
-        val calendar = Calendar.getInstance()
-        // MaterialDatePicker operates on UTC timezone... convert to local timezone (in UTC millis).
-        calendar.timeInMillis = selection - calendar.timeZone.getOffset(selection)
-        viewModel.changeDate(calendar[Calendar.YEAR], calendar[Calendar.MONTH], calendar[Calendar.DAY_OF_MONTH])
+    private fun registerDatePickerListener(picker: MaterialDatePicker<Long>) {
+        picker.addOnPositiveButtonClickListener { selection ->
+            val calendar = Calendar.getInstance()
+            // MaterialDatePicker operates on UTC timezone... convert to local timezone (in UTC millis).
+            calendar.timeInMillis = selection - TimeZone.getDefault().getOffset(selection)
+            viewModel.changeDate(calendar[Calendar.YEAR], calendar[Calendar.MONTH], calendar[Calendar.DAY_OF_MONTH])
+        }
     }
 
-    private fun onTimeChanged(picker: MaterialTimePicker) {
-        viewModel.changeTime(picker.hour, picker.minute)
+    private fun registerTimePickerListener(picker: MaterialTimePicker) {
+        picker.addOnPositiveButtonClickListener {
+            viewModel.changeTime(picker.hour, picker.minute)
+        }
     }
 
     private fun onDialogShown(dialog: AlertDialog) {
