@@ -138,6 +138,8 @@
     <string name="reminder_restricted_battery">Les alarmes des rappels pourraient ne pas fonctionner
     correctement puisque l\'application a une restriction au niveau de l\'utilisation de la pile.
     Cela peut être changé dans les paramètres.</string>
+    <string name="reminder_notif_permission">Pour envoyer les notifications des rappels, l\'application nécessite une autorisation. Cliquer sur OK pour demander l\'autorisation. Vous pourrez définir un rappel par la suite.</string>
+    <string name="reminder_notif_permission_denied">L\'autorisation d\'envoi de notifications a été refusée. Les alarmes des rappels ne fonctionneront pas.</string>
     <!-- Labels -->
     <string name="label_create">Créer une étiquette</string>
     <string name="label_edit">Changer le nom de l\'étiquette</string>

@@ -136,6 +136,8 @@
     <string name="reminder_notif_channel_descr">Auf Notizen gesetzte Erinnerungen</string>
     <string name="reminder_empty_placeholder">Keine Erinnerungen eingestellt</string>
     <string name="reminder_restricted_battery">Erinnerungsalarme funktionieren möglicherweise nicht richtig, weil die App die Batterienutzung eingeschränkt hat. Dies kann in den Einstellungen der App geändert werden.</string>
+    <string name="reminder_notif_permission">Um Erinnerungsbenachrichtigungen senden zu können, benötigt die App eine Berechtigung. Klicken Sie auf OK, um die Berechtigungsanfrage anzuzeigen. Danach können Sie eine Erinnerung hinzufügen.</string>
+    <string name="reminder_notif_permission_denied">Die Berechtigung zum Senden von Benachrichtigungen wurde verweigert. Erinnerungen werden erst funktionieren, wenn diese gewährt wurde.</string>
     <!-- Labels -->
     <string name="label_create">Neues Etikett erstellen</string>
     <string name="label_edit">Etikettenname bearbeiten</string>
