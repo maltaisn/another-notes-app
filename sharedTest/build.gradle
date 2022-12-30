@@ -37,6 +37,11 @@ android {
     }
 }
 
+tasks.getByName("build") {
+    // don't test, don't lint, don't run detekt for build task.
+    setDependsOn(getDependsOn().findAll { it != "check" })
+}
+
 dependencies {
     implementation project(":app")
 

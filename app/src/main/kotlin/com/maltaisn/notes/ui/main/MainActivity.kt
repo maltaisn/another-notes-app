@@ -33,7 +33,6 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.fragment.NavHostFragment
-import com.github.venom.Venom
 import com.google.android.material.color.DynamicColors
 import com.maltaisn.notes.App
 import com.maltaisn.notes.TAG
@@ -88,9 +87,9 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
 //        Debug.waitForDebugger()
 
         // For triggering process death during debug
-        val venom = Venom.createInstance(this)
-        venom.initialize()
-        venom.start()
+//        val venom = Venom.createInstance(this)
+//        venom.initialize()
+//        venom.start()
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         drawerLayout = binding.drawerLayout
