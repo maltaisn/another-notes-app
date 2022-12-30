@@ -12,6 +12,7 @@
 - Change default focus to title when creating a new note.
 - Fix animated swipe icons not working on API <23.
 - Allow zero lines in note preview (#83).
+- Fix auto bullet feature not working with auto-suggesting keyboards.
 
 ## v1.4.5 (2022-09-25)
 - Fixed cursor moving to first line when scrolling (#60, thanks to @nhoeher)
