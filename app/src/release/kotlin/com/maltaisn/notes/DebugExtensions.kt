@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Nicolas Maltais
+ * Copyright 2023 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,8 @@
  * For checks only performed in debug mode.
  * A failing check should be handled correctly in release mode.
  */
+@Suppress("UNUSED_PARAMETER")
 fun debugCheck(value: Boolean, message: () -> String = { "" }) = Unit
 
+@Suppress("UNUSED_PARAMETER")
 fun debugRequire(value: Boolean, message: () -> String = { "" }) = Unit

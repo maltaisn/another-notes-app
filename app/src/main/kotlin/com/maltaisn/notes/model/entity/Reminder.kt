@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Nicolas Maltais
+ * Copyright 2023 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,6 +44,7 @@ data class Reminder(
      * Can be `null` to indicate that the reminder isn't recurring.
      */
     @SerialName("recurrence")
+    @Serializable(with = RecurrenceConverter::class)
     val recurrence: Recurrence? = null,
 
     /**
