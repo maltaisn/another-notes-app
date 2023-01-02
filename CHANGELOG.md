@@ -1,3 +1,6 @@
+## v1.5.1
+- Fix data import not importing the hidden field of labels correctly.
+
 ## v1.5.0 (2022-12-28)
 - Changes by @nhoeher
     - Full Material 3 redesign, with support for dynamic colors.

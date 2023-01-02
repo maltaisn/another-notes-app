@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Nicolas Maltais
+ * Copyright 2023 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -120,7 +120,7 @@ class DefaultJsonManager @Inject constructor(
                 }
             } else {
                 val existingLabelByName = existingLabelsNameMap[name]
-                val labelName = if (existingLabelByName != null) {
+                if (existingLabelByName != null) {
                     // Label name already exists, create a new one.
                     var newName: String
                     var num = 2
@@ -128,18 +128,17 @@ class DefaultJsonManager @Inject constructor(
                         newName = "$name ($num)"
                         num++
                     } while (newName in existingLabelsNameMap)
-                    newName
+                    newLabelsMap[id] = labelsDao.insert(Label(id, newName, false))
                 } else {
-                    name
+                    newLabelsMap[id] = labelsDao.insert(Label(id, name, label.hidden))
                 }
-                newLabelsMap[id] = labelsDao.insert(Label(id, labelName))
             }
         }
         return newLabelsMap
     }
 
     private suspend fun importNotes(notesData: NotesData, newLabelsMap: Map<Long, Long>) {
-        val existingNotes = notesDao.getAll().asSequence().associateBy { it.note.id }
+        val existingNotes = notesDao.getAll().associateBy { it.note.id }
         val labelRefs = mutableListOf<LabelRef>()
         for ((id, ns) in notesData.notes) {
             var noteId = id
@@ -182,7 +181,7 @@ class DefaultJsonManager @Inject constructor(
         val reminder = when {
             old.reminder == null && new.reminder != null -> new.reminder
             old.reminder != null && new.reminder == null -> old.reminder
-            old.reminder != null && new.reminder != null && old.reminder != new.reminder -> {
+            old.reminder != null && old.reminder != new.reminder -> {
                 // Old and new notes have different reminders, do not merge to avoid losing one or the other.
                 return null
             }

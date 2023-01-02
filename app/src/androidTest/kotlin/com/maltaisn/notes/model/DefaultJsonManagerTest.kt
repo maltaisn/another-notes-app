@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Nicolas Maltais
+ * Copyright 2023 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -152,7 +152,7 @@ class DefaultJsonManagerTest {
     }
   },
   "labels": {
-    "1": {"name": "label0"},
+    "1": {"name": "label0", "hidden": true},
     "3": {"name": "label1"},
     "10": {"name": "label2"}
   }
@@ -160,7 +160,7 @@ class DefaultJsonManagerTest {
         """.trim().replace("\n", "")
         assertEquals(ImportResult.SUCCESS, jsonManager.importJsonData(jsonData))
 
-        val label1 = Label(1, "label0")
+        val label1 = Label(1, "label0", hidden = true)
         val label3 = Label(3, "label1")
         val label10 = Label(10, "label2")
 
