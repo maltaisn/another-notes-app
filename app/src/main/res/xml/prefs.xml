@@ -46,11 +46,11 @@
 
         <SeekBarPreference
             android:defaultValue="2"
-            app:key="preview_labels"
-            app:title="@string/pref_preview_labels"
-            app:min="0"
             android:max="10"
+            app:key="preview_labels"
+            app:min="0"
             app:showSeekBarValue="true"
+            app:title="@string/pref_preview_labels"
             />
 
         <DropDownPreference
@@ -63,9 +63,9 @@
             />
 
         <Preference
+            android:summary="@string/pref_preview_lines_summary"
             app:key="preview_lines"
             app:title="@string/pref_preview_lines"
-            android:summary="@string/pref_preview_lines_summary"
             />
 
     </PreferenceCategory>
@@ -105,6 +105,13 @@
             app:key="export_data"
             app:summary="@string/pref_data_export_summary"
             app:title="@string/pref_data_export"
+            />
+
+        <SwitchPreferenceCompat
+            android:title="@string/pref_data_encrypted_export"
+            app:defaultValue="false"
+            app:key="encrypted_export"
+            app:summary="@string/pref_data_encrypted_export_summary"
             />
 
         <SwitchPreferenceCompat

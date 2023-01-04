@@ -232,8 +232,8 @@ class MainViewModel @AssistedInject constructor(
     fun autoExport(output: OutputStream?) {
         if (output != null) {
             viewModelScope.launch(Dispatchers.IO) {
-                val jsonData = jsonManager.exportJsonData()
                 prefsManager.autoExportFailed = try {
+                    val jsonData = jsonManager.exportJsonData()
                     output.use {
                         output.write(jsonData.toByteArray())
                     }

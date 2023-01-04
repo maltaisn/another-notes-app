@@ -16,6 +16,8 @@
 
 package com.maltaisn.notes.model
 
+import javax.crypto.SecretKey
+
 interface JsonManager {
 
     /**
@@ -25,7 +27,7 @@ interface JsonManager {
 
     /**
      * Import notes data from JSON, merging with existing data.
-     * Returns true if import was succesfull, false otherwise.
+     * Returns true if import was successful, false otherwise.
      */
-    suspend fun importJsonData(data: String): DefaultJsonManager.ImportResult
+    suspend fun importJsonData(data: String, importKey: SecretKey? = null): DefaultJsonManager.ImportResult
 }

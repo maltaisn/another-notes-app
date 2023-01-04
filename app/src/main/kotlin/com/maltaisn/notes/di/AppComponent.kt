@@ -27,6 +27,8 @@ import com.maltaisn.notes.ui.main.MainActivity
 import com.maltaisn.notes.ui.notification.NotificationActivity
 import com.maltaisn.notes.ui.reminder.ReminderDialog
 import com.maltaisn.notes.ui.search.SearchFragment
+import com.maltaisn.notes.ui.settings.ExportPasswordDialog
+import com.maltaisn.notes.ui.settings.ImportPasswordDialog
 import com.maltaisn.notes.ui.settings.SettingsFragment
 import com.maltaisn.notes.ui.sort.SortDialog
 import dagger.BindsInstance
@@ -50,6 +52,8 @@ interface AppComponent {
     fun inject(dialog: ReminderDialog)
     fun inject(dialog: LabelEditDialog)
     fun inject(dialog: SortDialog)
+    fun inject(dialog: ExportPasswordDialog)
+    fun inject(dialog: ImportPasswordDialog)
     fun inject(receiver: AlarmReceiver)
 
     @Component.Factory

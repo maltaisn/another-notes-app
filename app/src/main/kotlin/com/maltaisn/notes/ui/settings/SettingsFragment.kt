@@ -19,12 +19,14 @@ package com.maltaisn.notes.ui.settings
 import android.app.Activity
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.TextView
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.annotation.StringRes
 import androidx.core.os.bundleOf
 import androidx.core.view.ViewCompat
@@ -54,15 +56,14 @@ import com.maltaisn.notes.ui.viewModel
 import com.mikepenz.aboutlibraries.LibsBuilder
 import java.text.DateFormat
 import javax.inject.Inject
-import javax.inject.Provider
 import com.google.android.material.R as RMaterial
 
-class SettingsFragment : PreferenceFragmentCompat(), ConfirmDialog.Callback {
+class SettingsFragment : PreferenceFragmentCompat(), ConfirmDialog.Callback, ExportPasswordDialog.Callback,
+    ImportPasswordDialog.Callback {
 
     @Inject
-    lateinit var viewModelProvider: Provider<SettingsViewModel>
-
-    private val viewModel by viewModel { viewModelProvider.get() }
+    lateinit var viewModelFactory: SettingsViewModel.Factory
+    val viewModel by viewModel { viewModelFactory.create(it) }
 
     private var exportDataLauncher: ActivityResultLauncher<Intent>? = null
     private var autoExportLauncher: ActivityResultLauncher<Intent>? = null
@@ -170,6 +171,10 @@ class SettingsFragment : PreferenceFragmentCompat(), ConfirmDialog.Callback {
                 Log.i(TAG, "Failed to release persistable URI permission", e)
             }
         }
+        viewModel.showImportPasswordDialogEvent.observeEvent(viewLifecycleOwner) {
+            ImportPasswordDialog.newInstance()
+                .show(childFragmentManager, null)
+        }
     }
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
@@ -207,6 +212,22 @@ class SettingsFragment : PreferenceFragmentCompat(), ConfirmDialog.Callback {
             val intent = Intent(Intent.ACTION_CREATE_DOCUMENT)
                 .setType("application/json").addCategory(Intent.CATEGORY_OPENABLE)
             exportDataLauncher?.launch(intent)
+            true
+        }
+
+        val encryptedExportPref: SwitchPreferenceCompat = requirePreference(PrefsManager.ENCRYPTED_EXPORT)
+        // Older versions don't support PBKDF2withHmacSHA512
+        if (Build.VERSION.SDK_INT < 26) {
+            encryptedExportPref.isVisible = false
+        }
+
+        encryptedExportPref.setOnPreferenceChangeListener { _, newValue ->
+            if (newValue == true) {
+                ExportPasswordDialog.newInstance()
+                    .show(childFragmentManager, null)
+            } else {
+                viewModel.deleteExportKey()
+            }
             true
         }
 
@@ -319,6 +340,27 @@ class SettingsFragment : PreferenceFragmentCompat(), ConfirmDialog.Callback {
             // No file chosen for auto export, disable it.
             autoExportPref.isChecked = false
         }
+    }
+
+    private val exportEncryptionPref: SwitchPreferenceCompat
+        get() = requirePreference(PrefsManager.ENCRYPTED_EXPORT)
+
+    @RequiresApi(Build.VERSION_CODES.M)
+    override fun onExportPasswordDialogPositiveButtonClicked(password: String) {
+        viewModel.generateExportKeyFromPassword(password)
+    }
+
+    override fun onExportPasswordDialogNegativeButtonClicked() {
+        exportEncryptionPref.isChecked = false
+    }
+
+    override fun onExportPasswordDialogCancelled() {
+        exportEncryptionPref.isChecked = false
+    }
+
+    @RequiresApi(Build.VERSION_CODES.M)
+    override fun onImportPasswordDialogPositiveButtonClicked(password: String) {
+        viewModel.importSavedEncryptedJsonData(password)
     }
 
     companion object {

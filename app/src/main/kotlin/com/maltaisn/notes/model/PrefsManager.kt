@@ -55,6 +55,9 @@ class PrefsManager @Inject constructor(
     var sortField: SortField by enumPreference(SORT_FIELD, SortField.MODIFIED_DATE)
     var sortDirection: SortDirection by enumPreference(SORT_DIRECTION, SortDirection.DESCENDING)
 
+    var shouldEncryptExportedData: Boolean by preference(ENCRYPTED_EXPORT, false)
+    var encryptedExportKeyDerivationSalt: String by preference(ENCRYPTED_EXPORT_KEY_DERIVATION_SALT, "")
+    var encryptedImportKeyDerivationSalt: String by preference(ENCRYPTED_IMPORT_KEY_DERIVATION_SALT, "")
     var shouldAutoExport: Boolean by preference(AUTO_EXPORT, false)
     var autoExportUri: String by preference(AUTO_EXPORT_URI, "")
     var autoExportFailed: Boolean by preference(AUTO_EXPORT_FAILED, false)
@@ -178,6 +181,7 @@ class PrefsManager @Inject constructor(
         const val SHOWN_DATE = "shown_date"
         const val SWIPE_ACTION_LEFT = "swipe_action_left"
         const val SWIPE_ACTION_RIGHT = "swipe_action_right"
+        const val ENCRYPTED_EXPORT = "encrypted_export"
         const val EXPORT_DATA = "export_data"
         const val AUTO_EXPORT = "auto_export"
         const val IMPORT_DATA = "import_data"
@@ -194,6 +198,8 @@ class PrefsManager @Inject constructor(
         private const val LAST_RESTRICTED_BATTERY_REMIND_TIME = "last_restricted_battery_remind_time"
         private const val LAST_AUTO_EXPORT_TIME = "last_auto_export_time"
         private const val AUTO_EXPORT_FAILED = "auto_export_failed"
+        private const val ENCRYPTED_EXPORT_KEY_DERIVATION_SALT = "encrypted_export_key_derivation_salt"
+        private const val ENCRYPTED_IMPORT_KEY_DERIVATION_SALT = "encrypted_import_key_derivation_salt"
 
         // Legacy keys
         private const val SWIPE_ACTION = "swipe_action"
