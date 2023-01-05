@@ -10,8 +10,8 @@ import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.DialogFragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.maltaisn.notes.App
-import com.maltaisn.notes.sync.R
-import com.maltaisn.notes.sync.databinding.DialogExportPasswordBinding
+import com.maltaisn.notes.R
+import com.maltaisn.notes.databinding.DialogExportPasswordBinding
 import com.maltaisn.notes.ui.observeEvent
 import com.maltaisn.notes.ui.viewModel
 import javax.inject.Inject
