@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Nicolas Maltais
+ * Copyright 2023 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,6 +63,7 @@ import com.maltaisn.notes.ui.viewModel
 import kotlinx.coroutines.flow.combine
 import javax.inject.Inject
 import javax.inject.Provider
+import com.google.android.material.R as RMaterial
 
 class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener, ConfirmDialog.Callback {
 
@@ -82,13 +83,13 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener, ConfirmDialog.
     override fun onCreate(savedInstanceState: Bundle?) {
         sharedElementEnterTransition = MaterialContainerTransform(requireContext(), true).apply {
             fadeMode = MaterialContainerTransform.FADE_MODE_CROSS
-            duration = resources.getInteger(R.integer.material_motion_duration_long_1).toLong()
+            duration = resources.getInteger(RMaterial.integer.material_motion_duration_long_1).toLong()
         }
 
         sharedElementReturnTransition = MaterialContainerTransform(requireContext(), false).apply {
             scrimColor = Color.TRANSPARENT
             fadeMode = MaterialContainerTransform.FADE_MODE_CROSS
-            duration = resources.getInteger(R.integer.material_motion_duration_long_1).toLong()
+            duration = resources.getInteger(RMaterial.integer.material_motion_duration_long_1).toLong()
         }
 
         // Send an event via the sharedViewModel when the transition has finished playing

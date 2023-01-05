@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Nicolas Maltais
+ * Copyright 2023 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,8 +22,8 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.preference.PreferenceFragmentCompat
 import com.google.android.material.transition.MaterialElevationScale
-import com.maltaisn.notes.sync.R
 import com.maltaisn.notes.sync.databinding.FragmentSettingsBinding
+import com.google.android.material.R as RMaterial
 
 /**
  * Secondary settings fragment for showing nested preference screens.
@@ -40,10 +40,10 @@ class NestedSettingsFragment : PreferenceFragmentCompat() {
         super.onCreate(savedInstanceState)
 
         enterTransition = MaterialElevationScale(false).apply {
-            duration = resources.getInteger(R.integer.material_motion_duration_short_2).toLong()
+            duration = resources.getInteger(RMaterial.integer.material_motion_duration_short_2).toLong()
         }
         exitTransition = MaterialElevationScale(true).apply {
-            duration = resources.getInteger(R.integer.material_motion_duration_short_2).toLong()
+            duration = resources.getInteger(RMaterial.integer.material_motion_duration_short_2).toLong()
         }
     }
 

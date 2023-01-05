@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Nicolas Maltais
+ * Copyright 2023 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,6 +55,7 @@ import com.mikepenz.aboutlibraries.LibsBuilder
 import java.text.DateFormat
 import javax.inject.Inject
 import javax.inject.Provider
+import com.google.android.material.R as RMaterial
 
 class SettingsFragment : PreferenceFragmentCompat(), ConfirmDialog.Callback {
 
@@ -128,10 +129,10 @@ class SettingsFragment : PreferenceFragmentCompat(), ConfirmDialog.Callback {
         }
 
         enterTransition = MaterialElevationScale(false).apply {
-            duration = resources.getInteger(R.integer.material_motion_duration_short_2).toLong()
+            duration = resources.getInteger(RMaterial.integer.material_motion_duration_short_2).toLong()
         }
         exitTransition = MaterialElevationScale(true).apply {
-            duration = resources.getInteger(R.integer.material_motion_duration_short_2).toLong()
+            duration = resources.getInteger(RMaterial.integer.material_motion_duration_short_2).toLong()
         }
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Nicolas Maltais
+ * Copyright 2023 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,6 +46,7 @@ import com.maltaisn.notes.ui.note.adapter.NoteListLayoutMode
 import com.maltaisn.notes.ui.observeEvent
 import com.maltaisn.notes.ui.viewModel
 import javax.inject.Inject
+import com.google.android.material.R as RMaterial
 
 /**
  * Start screen fragment displaying a list of notes for different note status,
@@ -144,7 +145,7 @@ class HomeFragment : NoteFragment(), Toolbar.OnMenuItemClickListener {
 
         viewModel.createNoteEvent.observeEvent(viewLifecycleOwner) { settings ->
             exitTransition = Hold().apply {
-                duration = resources.getInteger(R.integer.material_motion_duration_medium_2).toLong()
+                duration = resources.getInteger(RMaterial.integer.material_motion_duration_medium_2).toLong()
             }
 
             val extras = FragmentNavigatorExtras(

@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Nicolas Maltais
+ * Copyright 2023 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,7 @@ import com.maltaisn.notes.sync.R
 import com.maltaisn.notes.ui.note.NoteFragment
 import com.maltaisn.notes.ui.viewModel
 import javax.inject.Inject
+import com.google.android.material.R as RMaterial
 
 class SearchFragment : NoteFragment() {
 
@@ -43,10 +44,10 @@ class SearchFragment : NoteFragment() {
         (requireContext().applicationContext as App).appComponent.inject(this)
 
         enterTransition = MaterialElevationScale(false).apply {
-            duration = resources.getInteger(R.integer.material_motion_duration_short_2).toLong()
+            duration = resources.getInteger(RMaterial.integer.material_motion_duration_short_2).toLong()
         }
         exitTransition = MaterialElevationScale(true).apply {
-            duration = resources.getInteger(R.integer.material_motion_duration_short_2).toLong()
+            duration = resources.getInteger(RMaterial.integer.material_motion_duration_short_2).toLong()
         }
     }
 
