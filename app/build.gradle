@@ -16,8 +16,6 @@ android {
     compileSdkVersion 33
     buildToolsVersion "33.0.1"
 
-    def schemasLocation = "$projectDir/schemas"
-
     defaultConfig {
         applicationId "com.maltaisn.notes"
         minSdkVersion 21
@@ -27,9 +25,10 @@ android {
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
-        kapt {
-            arguments {
-                arg("room.schemaLocation", schemasLocation)
+        javaCompileOptions {
+            annotationProcessorOptions {
+                // See https://developer.android.com/training/data-storage/room/migrating-db-versions
+                compilerArgumentProviders(new RoomSchemaArgProvider(new File(projectDir, "schemas")))
             }
         }
     }
@@ -49,6 +48,9 @@ android {
         release {
             java.srcDirs += "src/release/kotlin"
         }
+
+        // Adds exported schema location as test app assets.
+        androidTest.assets.srcDirs += files("$projectDir/schemas".toString())
     }
 
     signingConfigs {
@@ -179,4 +181,22 @@ if (file("publishing.gradle").exists()) {
 
 task takeScreenshots(type: Exec) {
     commandLine "./screenshots.sh"
+}
+
+class RoomSchemaArgProvider implements CommandLineArgumentProvider {
+
+    @InputDirectory
+    @PathSensitive(PathSensitivity.RELATIVE)
+    File schemaDir
+
+    RoomSchemaArgProvider(File schemaDir) {
+        this.schemaDir = schemaDir
+    }
+
+    @Override
+    Iterable<String> asArguments() {
+        // Note: If you're using KSP, you should change the line below to return
+        // ["room.schemaLocation=${schemaDir.path}"]
+        return ["-Aroom.schemaLocation=${schemaDir.path}".toString()]
+    }
 }
