@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #
-# Copyright 2022 Nicolas Maltais
+# Copyright 2023 Nicolas Maltais
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -44,7 +44,7 @@ LOCALES=(
 # adb executable
 ADB=adb
 # app package ID
-PACKAGE=com.maltaisn.notes.sync.debug
+PACKAGE=com.maltaisn.notes.debug
 # test class for taking screenshots
 TEST_CLASS=com.maltaisn.notes.screenshot.Screenshots
 # test runner, leave empty for auto-detection

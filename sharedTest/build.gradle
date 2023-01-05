@@ -7,12 +7,12 @@ plugins {
 }
 
 android {
-    namespace "com.maltaisn.notes"
+    namespace "com.maltaisn.notesshared"
     compileSdk 33
 
     defaultConfig {
-        minSdk 21
-        targetSdk 33
+        minSdkVersion 21
+        targetSdkVersion 33
     }
 
     sourceSets {
@@ -47,7 +47,6 @@ dependencies {
 
     api "junit:junit:$junitVersion"
     api "org.jetbrains.kotlin:kotlin-test:$kotlinVersion"
-    api "org.jetbrains.kotlin:kotlin-test-junit5:$kotlinVersion"
     api "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion"
     api "com.nhaarman.mockitokotlin2:mockito-kotlin:$kotlinMockitoVersion"
     api "androidx.arch.core:core-testing:$androidxArchTestingVersion"

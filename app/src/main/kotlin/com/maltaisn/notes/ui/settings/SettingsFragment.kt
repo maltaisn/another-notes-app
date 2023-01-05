@@ -40,12 +40,12 @@ import com.google.android.material.color.DynamicColors
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.transition.MaterialElevationScale
 import com.maltaisn.notes.App
+import com.maltaisn.notes.BuildConfig
+import com.maltaisn.notes.R
 import com.maltaisn.notes.TAG
+import com.maltaisn.notes.databinding.FragmentSettingsBinding
 import com.maltaisn.notes.model.PrefsManager
 import com.maltaisn.notes.navigateSafe
-import com.maltaisn.notes.sync.BuildConfig
-import com.maltaisn.notes.sync.R
-import com.maltaisn.notes.sync.databinding.FragmentSettingsBinding
 import com.maltaisn.notes.ui.AppTheme
 import com.maltaisn.notes.ui.common.ConfirmDialog
 import com.maltaisn.notes.ui.main.MainActivity

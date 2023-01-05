@@ -48,13 +48,13 @@ import com.google.android.material.shape.MaterialShapeDrawable
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.transition.Hold
 import com.google.android.material.transition.MaterialElevationScale
+import com.maltaisn.notes.NavGraphMainDirections
+import com.maltaisn.notes.R
+import com.maltaisn.notes.databinding.FragmentNoteBinding
 import com.maltaisn.notes.model.PrefsManager
 import com.maltaisn.notes.model.entity.NoteStatus
 import com.maltaisn.notes.model.entity.PinnedStatus
 import com.maltaisn.notes.navigateSafe
-import com.maltaisn.notes.sync.NavGraphMainDirections
-import com.maltaisn.notes.sync.R
-import com.maltaisn.notes.sync.databinding.FragmentNoteBinding
 import com.maltaisn.notes.ui.SharedViewModel
 import com.maltaisn.notes.ui.StatusChange
 import com.maltaisn.notes.ui.common.ConfirmDialog

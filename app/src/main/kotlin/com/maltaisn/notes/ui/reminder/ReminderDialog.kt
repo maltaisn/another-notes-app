@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Nicolas Maltais
+ * Copyright 2023 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,10 +39,10 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat
 import com.maltaisn.notes.App
+import com.maltaisn.notes.R
 import com.maltaisn.notes.contains
+import com.maltaisn.notes.databinding.DialogReminderBinding
 import com.maltaisn.notes.setMaxWidth
-import com.maltaisn.notes.sync.R
-import com.maltaisn.notes.sync.databinding.DialogReminderBinding
 import com.maltaisn.notes.ui.SharedViewModel
 import com.maltaisn.notes.ui.common.ConfirmDialog
 import com.maltaisn.notes.ui.navGraphViewModel

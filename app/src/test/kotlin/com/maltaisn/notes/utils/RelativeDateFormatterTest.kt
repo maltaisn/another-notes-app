@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Nicolas Maltais
+ * Copyright 2023 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,8 +17,8 @@
 package com.maltaisn.notes.utils
 
 import android.content.res.Resources
-import com.maltaisn.notes.dateFor
-import com.maltaisn.notes.sync.R
+import com.maltaisn.notes.R
+import com.maltaisn.notesshared.dateFor
 import com.nhaarman.mockitokotlin2.anyVararg
 import com.nhaarman.mockitokotlin2.doAnswer
 import com.nhaarman.mockitokotlin2.mock

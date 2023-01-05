@@ -12,15 +12,14 @@ plugins {
 }
 
 android {
+    namespace "com.maltaisn.notes"
     compileSdkVersion 33
     buildToolsVersion "33.0.1"
 
     def schemasLocation = "$projectDir/schemas"
 
     defaultConfig {
-        // Using legacy package name 'com.maltaisn.notes.sync' which was used at the time where
-        // there was a sync flavor. Package can't be changed on Play Store so it was kept.
-        applicationId "com.maltaisn.notes.sync"
+        applicationId "com.maltaisn.notes"
         minSdkVersion 21
         targetSdkVersion 33
         versionCode 10500
@@ -34,8 +33,6 @@ android {
             }
         }
     }
-
-    namespace "com.maltaisn.notes.sync"
 
     buildFeatures {
         viewBinding = true
@@ -68,6 +65,7 @@ android {
     buildTypes {
         debug {
             applicationIdSuffix ".debug"
+
             // enable debug features only if not taking screenshots
             // androidTest can seemingly only be run in debug mode, hence why it's needed.
             def takingScreenshots = System.getenv("taking_screenshots")
@@ -75,6 +73,10 @@ android {
                     takingScreenshots == null ? "true" : (!takingScreenshots.toBoolean()).toString()
         }
         release {
+            // Using legacy package name 'com.maltaisn.notes.sync' which was used at the time where
+            // there was a sync flavor. Package can't be changed on Play Store so it was kept.
+            applicationIdSuffix ".sync"
+
             minifyEnabled true
             shrinkResources true
             proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
@@ -94,13 +96,6 @@ android {
         freeCompilerArgs += [
                 "-opt-in=kotlinx.serialization.ExperimentalSerializationApi",
         ]
-    }
-
-    testOptions {
-        execution 'ANDROIDX_TEST_ORCHESTRATOR'
-        unitTests.all {
-            useJUnitPlatform()
-        }
     }
 
     packagingOptions {
@@ -164,14 +159,6 @@ dependencies {
     // For screenshots
     androidTestImplementation "androidx.test.espresso:espresso-core:$espressoVersion"
     androidTestImplementation "androidx.test.espresso:espresso-contrib:$espressoVersion"
-}
-
-configurations.all {
-    resolutionStrategy {
-        // Fixes https://github.com/Kotlin/kotlinx.coroutines/issues/2023 bug
-        // preventing android test compilation since kotlin coroutines 1.3.6.
-        exclude group: "org.jetbrains.kotlinx", module: "kotlinx-coroutines-debug"
-    }
 }
 
 tasks.getByName("build") {

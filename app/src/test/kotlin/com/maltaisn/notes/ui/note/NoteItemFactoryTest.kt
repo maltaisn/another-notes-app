@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Nicolas Maltais
+ * Copyright 2023 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,15 +16,15 @@
 
 package com.maltaisn.notes.ui.note
 
-import com.maltaisn.notes.listNote
 import com.maltaisn.notes.model.PrefsManager
 import com.maltaisn.notes.model.entity.Label
 import com.maltaisn.notes.model.entity.ListNoteItem
 import com.maltaisn.notes.model.entity.NoteType
-import com.maltaisn.notes.testNote
 import com.maltaisn.notes.ui.note.adapter.NoteItemList
 import com.maltaisn.notes.ui.note.adapter.NoteItemText
 import com.maltaisn.notes.ui.note.adapter.NoteListLayoutMode
+import com.maltaisn.notesshared.listNote
+import com.maltaisn.notesshared.testNote
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock

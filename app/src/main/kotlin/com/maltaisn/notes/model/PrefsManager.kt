@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Nicolas Maltais
+ * Copyright 2023 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,8 +21,8 @@ import android.content.SharedPreferences
 import androidx.core.content.edit
 import androidx.preference.PreferenceManager
 import com.maltaisn.notes.OpenForTesting
+import com.maltaisn.notes.R
 import com.maltaisn.notes.model.entity.NoteType
-import com.maltaisn.notes.sync.R
 import com.maltaisn.notes.ui.AppTheme
 import com.maltaisn.notes.ui.note.ShownDateField
 import com.maltaisn.notes.ui.note.SwipeAction

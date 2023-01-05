@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Nicolas Maltais
+ * Copyright 2023 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,7 +35,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import androidx.test.platform.app.InstrumentationRegistry
 import com.maltaisn.notes.App
-import com.maltaisn.notes.dateFor
+import com.maltaisn.notes.R
 import com.maltaisn.notes.hideKeyboard
 import com.maltaisn.notes.model.LabelsDao
 import com.maltaisn.notes.model.NotesDao
@@ -44,11 +44,11 @@ import com.maltaisn.notes.model.entity.LabelRef
 import com.maltaisn.notes.model.entity.NoteStatus
 import com.maltaisn.notes.model.entity.PinnedStatus
 import com.maltaisn.notes.model.entity.Reminder
-import com.maltaisn.notes.sync.R
 import com.maltaisn.notes.ui.edit.adapter.EditItemViewHolder
 import com.maltaisn.notes.ui.main.MainActivity
 import com.maltaisn.notes.ui.note.ShownDateField
 import com.maltaisn.notes.ui.note.adapter.NoteViewHolder
+import com.maltaisn.notesshared.dateFor
 import com.maltaisn.recurpicker.Recurrence
 import com.maltaisn.recurpicker.RecurrenceFinder
 import kotlinx.coroutines.CoroutineScope
@@ -65,7 +65,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.util.Calendar
-import com.maltaisn.notes.sync.test.R as RT
+import com.maltaisn.notes.test.R as RT
 
 /**
  * Screenshots should be taken with release build type, or debug features will appear.
@@ -207,8 +207,10 @@ class Screenshots {
         ))
 
         onView(toolbarItem(R.id.item_search)).perform(click())
-        onView(withId(R.id.search_src_text)).perform(typeText(queryText))
-        activityRule.scenario.onActivity { it.findViewById<View>(R.id.search_src_text).hideKeyboard() }
+        onView(withId(androidx.appcompat.R.id.search_src_text)).perform(typeText(queryText))
+        activityRule.scenario.onActivity {
+            it.findViewById<View>(androidx.appcompat.R.id.search_src_text).hideKeyboard()
+        }
         delay(500)
 
         ScreenshotHelper.takeScreenshot("4")

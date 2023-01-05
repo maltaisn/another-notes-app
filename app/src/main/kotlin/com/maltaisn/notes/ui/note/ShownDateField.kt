@@ -16,9 +16,9 @@
 
 package com.maltaisn.notes.ui.note
 
+import com.maltaisn.notes.R
 import com.maltaisn.notes.model.ValueEnum
 import com.maltaisn.notes.model.findValueEnum
-import com.maltaisn.notes.sync.R
 
 /**
  * Enum for different date fields shown for notes.

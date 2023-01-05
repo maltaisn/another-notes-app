@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Nicolas Maltais
+ * Copyright 2023 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,14 +24,14 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.maltaisn.notes.R
+import com.maltaisn.notes.databinding.ItemHeaderBinding
+import com.maltaisn.notes.databinding.ItemMessageBinding
+import com.maltaisn.notes.databinding.ItemNoteLabelBinding
+import com.maltaisn.notes.databinding.ItemNoteListBinding
+import com.maltaisn.notes.databinding.ItemNoteListItemBinding
+import com.maltaisn.notes.databinding.ItemNoteTextBinding
 import com.maltaisn.notes.model.PrefsManager
-import com.maltaisn.notes.sync.R
-import com.maltaisn.notes.sync.databinding.ItemHeaderBinding
-import com.maltaisn.notes.sync.databinding.ItemMessageBinding
-import com.maltaisn.notes.sync.databinding.ItemNoteLabelBinding
-import com.maltaisn.notes.sync.databinding.ItemNoteListBinding
-import com.maltaisn.notes.sync.databinding.ItemNoteListItemBinding
-import com.maltaisn.notes.sync.databinding.ItemNoteTextBinding
 import com.maltaisn.notes.ui.note.SwipeAction
 
 class NoteAdapter(

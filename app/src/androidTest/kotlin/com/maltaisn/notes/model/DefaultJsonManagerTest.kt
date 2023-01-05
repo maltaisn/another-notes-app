@@ -20,7 +20,6 @@ import android.content.Context
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.maltaisn.notes.dateFor
 import com.maltaisn.notes.model.DefaultJsonManager.ImportResult
 import com.maltaisn.notes.model.entity.BlankNoteMetadata
 import com.maltaisn.notes.model.entity.Label
@@ -32,7 +31,8 @@ import com.maltaisn.notes.model.entity.NoteType
 import com.maltaisn.notes.model.entity.NoteWithLabels
 import com.maltaisn.notes.model.entity.PinnedStatus
 import com.maltaisn.notes.model.entity.Reminder
-import com.maltaisn.notes.testNote
+import com.maltaisn.notesshared.dateFor
+import com.maltaisn.notesshared.testNote
 import com.maltaisn.recurpicker.Recurrence
 import com.nhaarman.mockitokotlin2.mock
 import kotlinx.coroutines.runBlocking

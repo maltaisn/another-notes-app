@@ -22,7 +22,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.preference.PreferenceFragmentCompat
 import com.google.android.material.transition.MaterialElevationScale
-import com.maltaisn.notes.sync.databinding.FragmentSettingsBinding
+import com.maltaisn.notes.databinding.FragmentSettingsBinding
 import com.google.android.material.R as RMaterial
 
 /**

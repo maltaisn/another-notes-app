@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Nicolas Maltais
+ * Copyright 2023 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,11 +22,11 @@ import android.view.LayoutInflater
 import androidx.fragment.app.DialogFragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.maltaisn.notes.App
+import com.maltaisn.notes.R
+import com.maltaisn.notes.databinding.DialogSortBinding
 import com.maltaisn.notes.model.SortDirection
 import com.maltaisn.notes.model.SortField
 import com.maltaisn.notes.model.SortSettings
-import com.maltaisn.notes.sync.R
-import com.maltaisn.notes.sync.databinding.DialogSortBinding
 import com.maltaisn.notes.ui.SharedViewModel
 import com.maltaisn.notes.ui.navGraphViewModel
 import com.maltaisn.notes.ui.observeEvent

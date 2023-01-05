@@ -38,9 +38,9 @@ import com.google.android.material.color.MaterialColors
 import com.google.android.material.shape.MaterialShapeDrawable
 import com.google.android.material.transition.MaterialElevationScale
 import com.maltaisn.notes.App
+import com.maltaisn.notes.R
+import com.maltaisn.notes.databinding.FragmentLabelBinding
 import com.maltaisn.notes.navigateSafe
-import com.maltaisn.notes.sync.R
-import com.maltaisn.notes.sync.databinding.FragmentLabelBinding
 import com.maltaisn.notes.ui.SharedViewModel
 import com.maltaisn.notes.ui.common.ConfirmDialog
 import com.maltaisn.notes.ui.labels.adapter.LabelAdapter

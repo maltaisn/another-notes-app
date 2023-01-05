@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Nicolas Maltais
+ * Copyright 2023 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +14,12 @@
  * limitations under the License.
  */
 
-package com.maltaisn.notes.model
+package com.maltaisn.notesshared.model
 
+import com.maltaisn.notes.model.NotesRepository
+import com.maltaisn.notes.model.PrefsManager
+import com.maltaisn.notes.model.SortDirection
+import com.maltaisn.notes.model.SortField
 import com.maltaisn.notes.model.entity.LabelRef
 import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.model.entity.NoteStatus

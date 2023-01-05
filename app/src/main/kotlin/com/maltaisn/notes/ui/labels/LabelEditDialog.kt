@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Nicolas Maltais
+ * Copyright 2023 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,9 +26,9 @@ import androidx.fragment.app.DialogFragment
 import androidx.navigation.fragment.navArgs
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.maltaisn.notes.App
+import com.maltaisn.notes.R
+import com.maltaisn.notes.databinding.DialogLabelEditBinding
 import com.maltaisn.notes.model.entity.Label
-import com.maltaisn.notes.sync.R
-import com.maltaisn.notes.sync.databinding.DialogLabelEditBinding
 import com.maltaisn.notes.ui.SharedViewModel
 import com.maltaisn.notes.ui.navGraphViewModel
 import com.maltaisn.notes.ui.observeEvent

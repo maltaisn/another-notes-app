@@ -42,6 +42,9 @@ import androidx.transition.TransitionListenerAdapter
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.transition.MaterialContainerTransform
 import com.maltaisn.notes.App
+import com.maltaisn.notes.NavGraphMainDirections
+import com.maltaisn.notes.R
+import com.maltaisn.notes.databinding.FragmentEditBinding
 import com.maltaisn.notes.hideKeyboard
 import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.model.entity.NoteStatus
@@ -50,9 +53,6 @@ import com.maltaisn.notes.model.entity.PinnedStatus
 import com.maltaisn.notes.model.entity.Reminder
 import com.maltaisn.notes.navigateSafe
 import com.maltaisn.notes.showKeyboard
-import com.maltaisn.notes.sync.NavGraphMainDirections
-import com.maltaisn.notes.sync.R
-import com.maltaisn.notes.sync.databinding.FragmentEditBinding
 import com.maltaisn.notes.ui.SharedViewModel
 import com.maltaisn.notes.ui.common.ConfirmDialog
 import com.maltaisn.notes.ui.edit.adapter.EditAdapter

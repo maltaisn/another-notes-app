@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Nicolas Maltais
+ * Copyright 2023 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,20 +32,20 @@ import androidx.core.widget.addTextChangedListener
 import androidx.core.widget.doAfterTextChanged
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.chip.Chip
+import com.maltaisn.notes.R
+import com.maltaisn.notes.databinding.ItemEditContentBinding
+import com.maltaisn.notes.databinding.ItemEditDateBinding
+import com.maltaisn.notes.databinding.ItemEditHeaderBinding
+import com.maltaisn.notes.databinding.ItemEditItemAddBinding
+import com.maltaisn.notes.databinding.ItemEditItemBinding
+import com.maltaisn.notes.databinding.ItemEditLabelsBinding
+import com.maltaisn.notes.databinding.ItemEditTitleBinding
 import com.maltaisn.notes.hideKeyboard
 import com.maltaisn.notes.model.PrefsManager
 import com.maltaisn.notes.model.entity.Label
 import com.maltaisn.notes.model.entity.Reminder
 import com.maltaisn.notes.showKeyboard
 import com.maltaisn.notes.strikethroughText
-import com.maltaisn.notes.sync.R
-import com.maltaisn.notes.sync.databinding.ItemEditContentBinding
-import com.maltaisn.notes.sync.databinding.ItemEditDateBinding
-import com.maltaisn.notes.sync.databinding.ItemEditHeaderBinding
-import com.maltaisn.notes.sync.databinding.ItemEditItemAddBinding
-import com.maltaisn.notes.sync.databinding.ItemEditItemBinding
-import com.maltaisn.notes.sync.databinding.ItemEditLabelsBinding
-import com.maltaisn.notes.sync.databinding.ItemEditTitleBinding
 import com.maltaisn.notes.ui.edit.BulletTextWatcher
 import com.maltaisn.notes.ui.edit.LinkArrowKeyMovementMethod
 import com.maltaisn.notes.utils.RelativeDateFormatter

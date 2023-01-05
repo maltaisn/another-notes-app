@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Nicolas Maltais
+ * Copyright 2023 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,9 +18,9 @@ package com.maltaisn.notes.ui.labels.adapter
 
 import androidx.core.view.isInvisible
 import androidx.recyclerview.widget.RecyclerView
-import com.maltaisn.notes.sync.BuildConfig
-import com.maltaisn.notes.sync.R
-import com.maltaisn.notes.sync.databinding.ItemLabelBinding
+import com.maltaisn.notes.BuildConfig
+import com.maltaisn.notes.R
+import com.maltaisn.notes.databinding.ItemLabelBinding
 
 class LabelListViewHolder(val binding: ItemLabelBinding) : RecyclerView.ViewHolder(binding.root) {
 

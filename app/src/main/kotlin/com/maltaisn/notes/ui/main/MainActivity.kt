@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Nicolas Maltais
+ * Copyright 2023 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,7 +35,10 @@ import androidx.navigation.NavDestination
 import androidx.navigation.fragment.NavHostFragment
 import com.google.android.material.color.DynamicColors
 import com.maltaisn.notes.App
+import com.maltaisn.notes.NavGraphMainDirections
+import com.maltaisn.notes.R
 import com.maltaisn.notes.TAG
+import com.maltaisn.notes.databinding.ActivityMainBinding
 import com.maltaisn.notes.model.PrefsManager
 import com.maltaisn.notes.model.converter.NoteTypeConverter
 import com.maltaisn.notes.model.entity.Note
@@ -43,9 +46,6 @@ import com.maltaisn.notes.model.entity.NoteStatus
 import com.maltaisn.notes.model.entity.NoteType
 import com.maltaisn.notes.navigateSafe
 import com.maltaisn.notes.receiver.AlarmReceiver
-import com.maltaisn.notes.sync.NavGraphMainDirections
-import com.maltaisn.notes.sync.R
-import com.maltaisn.notes.sync.databinding.ActivityMainBinding
 import com.maltaisn.notes.ui.SharedViewModel
 import com.maltaisn.notes.ui.navGraphViewModel
 import com.maltaisn.notes.ui.navigation.HomeDestination

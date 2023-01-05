@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Nicolas Maltais
+ * Copyright 2023 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,9 @@
 
 package com.maltaisn.notes.ui.note
 
+import com.maltaisn.notes.R
 import com.maltaisn.notes.model.ValueEnum
 import com.maltaisn.notes.model.findValueEnum
-import com.maltaisn.notes.sync.R
 
 /**
  * Enum for different swipe action.

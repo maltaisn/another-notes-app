@@ -34,11 +34,11 @@ import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.transition.Hold
 import com.maltaisn.notes.App
+import com.maltaisn.notes.BuildConfig
+import com.maltaisn.notes.NavGraphMainDirections
+import com.maltaisn.notes.R
 import com.maltaisn.notes.model.entity.NoteStatus
 import com.maltaisn.notes.navigateSafe
-import com.maltaisn.notes.sync.BuildConfig
-import com.maltaisn.notes.sync.NavGraphMainDirections
-import com.maltaisn.notes.sync.R
 import com.maltaisn.notes.ui.common.ConfirmDialog
 import com.maltaisn.notes.ui.navigation.HomeDestination
 import com.maltaisn.notes.ui.note.NoteFragment
