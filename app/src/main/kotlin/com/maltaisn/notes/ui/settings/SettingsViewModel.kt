@@ -27,8 +27,8 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.maltaisn.notes.R
-import com.maltaisn.notes.model.DefaultJsonManager.ImportResult
 import com.maltaisn.notes.model.JsonManager
+import com.maltaisn.notes.model.JsonManager.ImportResult
 import com.maltaisn.notes.model.LabelsRepository
 import com.maltaisn.notes.model.NotesRepository
 import com.maltaisn.notes.model.PrefsManager
@@ -174,10 +174,11 @@ class SettingsViewModel @AssistedInject constructor(
             ImportResult.BAD_DATA -> R.string.import_bad_data
             ImportResult.FUTURE_VERSION -> R.string.import_future_version
             ImportResult.KEY_MISSING_OR_INCORRECT -> {
-                if (Build.VERSION.SDK_INT >= 26)
+                if (Build.VERSION.SDK_INT >= 26) {
                     R.string.encrypted_import_key_error
-                else
+                } else {
                     R.string.encrypted_import_encryption_unsupported
+                }
             }
             ImportResult.SUCCESS -> R.string.import_success
         })

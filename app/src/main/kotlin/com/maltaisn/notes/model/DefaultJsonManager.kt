@@ -21,6 +21,7 @@ package com.maltaisn.notes.model
 
 import android.util.Base64
 import androidx.room.ColumnInfo
+import com.maltaisn.notes.model.JsonManager.ImportResult
 import com.maltaisn.notes.model.converter.DateTimeConverter
 import com.maltaisn.notes.model.converter.NoteMetadataConverter
 import com.maltaisn.notes.model.converter.NoteStatusConverter
@@ -76,81 +77,46 @@ class DefaultJsonManager @Inject constructor(
             labelsMap[label.id] = label
         }
 
-        val backupData: BackupData
         // Encode to JSON and insert labels afterwards
         val notesData = NotesData(VERSION, notesMap, labelsMap)
 
         // Handle optional encryption
-        if (prefs.shouldEncryptExportedData) {
-            // Load the Android key store
-            val keyStore = KeyStore.getInstance("AndroidKeyStore")
-            withContext(Dispatchers.IO) {
-                keyStore.load(null)
-            }
-            // Retrieve the encryption key
-            val keyStoreKey = keyStore.getKey(EXPORT_ENCRYPTION_KEY_ALIAS, null)
-
-            // Initialize cipher object
-            val cipher = Cipher.getInstance(EXPORT_ENCRYPTION_ALGORITHM)
-            cipher.init(Cipher.ENCRYPT_MODE, keyStoreKey)
-
-            // Encrypt notesData
-            val ciphertext = cipher.doFinal(json.encodeToString(notesData).toByteArray(Charsets.UTF_8))
-
-            // Generate BackupData object
-            val encryptedNotesData = EncryptedNotesData(
-                salt = prefs.encryptedExportKeyDerivationSalt,
-                nonce = Base64.encodeToString(cipher.iv, BASE64_FLAGS),
-                ciphertext = Base64.encodeToString(ciphertext, BASE64_FLAGS)
-            )
-            backupData = BackupData(encryptedNotesData = encryptedNotesData)
+        return if (prefs.shouldEncryptExportedData) {
+            json.encodeToString(encryptNotesData(notesData))
         } else {
-            backupData = BackupData(notesData = notesData)
+            json.encodeToString(notesData)
         }
+    }
 
-        return json.encodeToString(backupData)
+    private suspend fun encryptNotesData(notesData: NotesData): EncryptedNotesData {
+        // Load the Android key store
+        val keyStore = KeyStore.getInstance("AndroidKeyStore")
+        withContext(Dispatchers.IO) {
+            keyStore.load(null)
+        }
+        // Retrieve the encryption key
+        val keyStoreKey = keyStore.getKey(EXPORT_ENCRYPTION_KEY_ALIAS, null)
+
+        // Initialize cipher object
+        val cipher = Cipher.getInstance(EXPORT_ENCRYPTION_ALGORITHM)
+        cipher.init(Cipher.ENCRYPT_MODE, keyStoreKey)
+
+        // Encrypt notesData
+        val ciphertext = cipher.doFinal(json.encodeToString(notesData).toByteArray(Charsets.UTF_8))
+
+        // Generate BackupData object
+        return EncryptedNotesData(
+            salt = prefs.encryptedExportKeyDerivationSalt,
+            nonce = Base64.encodeToString(cipher.iv, BASE64_FLAGS),
+            ciphertext = Base64.encodeToString(ciphertext, BASE64_FLAGS)
+        )
     }
 
     override suspend fun importJsonData(data: String, importKey: SecretKey?): ImportResult {
-        val backupData: BackupData = try {
-            json.decodeFromString(data)
-        } catch (e: BadDataException) {
-            // could happen if user imported data from future version, which has incompatibilities.
-            return ImportResult.BAD_DATA
-        } catch (e: Exception) {
-            // bad json structure, missing required fields, field has bad value, etc.
-            return ImportResult.BAD_FORMAT
-        }
+        // JSON can either describe an EncryptedNotesData object or a NotesData object.
+        val jsonData: String = try {
+            val encryptedNotesData: EncryptedNotesData = json.decodeFromString(data)
 
-        // If both legacy data as well as data of the new format is present, the file is considered malformed
-        if (backupData.version != null && (backupData.notesData != null || backupData.encryptedNotesData != null)) {
-            return ImportResult.BAD_FORMAT
-        }
-
-        var notesData: NotesData? =
-            if (backupData.version != null) {
-                // Parse legacy backup file
-                try {
-                    json.decodeFromString<NotesData>(data)
-                } catch (e: BadDataException) {
-                    // could happen if user imported data from future version, which has incompatibilities.
-                    return ImportResult.BAD_DATA
-                } catch (e: Exception) {
-                    // bad json structure, missing required fields, field has bad value, etc.
-                    return ImportResult.BAD_FORMAT
-                }
-            } else {
-                backupData.notesData
-            }
-        val encryptedNotesData: EncryptedNotesData? = backupData.encryptedNotesData
-
-        // If both encrypted as well as unencrypted data is present, the file is considered malformed
-        if (notesData != null && encryptedNotesData != null) {
-            return ImportResult.BAD_FORMAT
-        }
-
-        // Handle encrypted imports
-        if (encryptedNotesData != null) {
             // Key needs to be derived in order to decrypt the backup file
             if (importKey == null) {
                 prefs.encryptedImportKeyDerivationSalt = encryptedNotesData.salt
@@ -174,20 +140,24 @@ class DefaultJsonManager @Inject constructor(
             } catch (e: Exception) {
                 return ImportResult.BAD_DATA
             }
+            plaintext
 
-            // Parse decrypted notesData object
-            notesData = try {
-                json.decodeFromString(plaintext)
-            } catch (e: BadDataException) {
-                // could happen if user imported data from future version, which has incompatibilities.
-                return ImportResult.BAD_DATA
-            } catch (e: Exception) {
-                // bad json structure, missing required fields, field has bad value, etc.
-                return ImportResult.BAD_FORMAT
-            }
+        } catch (e: Exception) {
+            // Data is probably not encrypted.
+            data
         }
 
-        if (notesData!!.version < FIRST_VERSION) {
+        val notesData: NotesData = try {
+            json.decodeFromString(jsonData)
+        } catch (e: BadDataException) {
+            // could happen if user imported data from future version, which has incompatibilities.
+            return ImportResult.BAD_DATA
+        } catch (e: Exception) {
+            // bad json structure, missing required fields, field has bad value, etc.
+            return ImportResult.BAD_FORMAT
+        }
+
+        if (notesData.version < FIRST_VERSION) {
             // first version is 3, this data is clearly wrong.
             return ImportResult.BAD_DATA
         }
@@ -295,14 +265,6 @@ class DefaultJsonManager @Inject constructor(
         return new.copy(reminder = reminder)
     }
 
-    enum class ImportResult {
-        SUCCESS,
-        BAD_FORMAT,
-        BAD_DATA,
-        FUTURE_VERSION,
-        KEY_MISSING_OR_INCORRECT,
-    }
-
     companion object {
         private const val VERSION = 4
         private const val FIRST_VERSION = 3
@@ -359,18 +321,4 @@ private data class EncryptedNotesData(
     val nonce: String,
     @SerialName("ciphertext")
     val ciphertext: String
-)
-
-@Serializable
-private data class BackupData(
-    @SerialName("notesData")
-    val notesData: NotesData? = null,
-    @SerialName("encryptedNotesData")
-    val encryptedNotesData: EncryptedNotesData? = null,
-    @SerialName("version")
-    val version: Int? = null,
-    @SerialName("notes")
-    val notes: Map<Long, NoteSurrogate>? = null,
-    @SerialName("labels")
-    val labels: Map<Long, Label>? = null,
 )

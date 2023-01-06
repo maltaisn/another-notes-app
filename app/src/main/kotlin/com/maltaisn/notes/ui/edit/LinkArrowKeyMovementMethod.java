@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Nicolas Maltais
+ * Copyright 2023 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -147,10 +147,12 @@ public class LinkArrowKeyMovementMethod extends ArrowKeyMovementMethod {
             }
         }
 
-        if (selStart > last)
+        if (selStart > last) {
             selStart = selEnd = Integer.MAX_VALUE;
-        if (selEnd < first)
+        }
+        if (selEnd < first) {
             selStart = selEnd = -1;
+        }
 
         switch (what) {
             case CLICK:
@@ -283,9 +285,9 @@ public class LinkArrowKeyMovementMethod extends ArrowKeyMovementMethod {
     }
 
     public static MovementMethod getInstance() {
-        if (sInstance == null)
+        if (sInstance == null) {
             sInstance = new LinkArrowKeyMovementMethod();
-
+        }
         return sInstance;
     }
 
