@@ -123,7 +123,7 @@ class DefaultJsonManager @Inject constructor(
         }
 
         // If both legacy data as well as data of the new format is present, the file is considered malformed
-        if (backupData.version != null && backupData.notesData != null) {
+        if (backupData.version != null && (backupData.notesData != null || backupData.encryptedNotesData != null)) {
             return ImportResult.BAD_FORMAT
         }
 

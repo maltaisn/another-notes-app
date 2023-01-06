@@ -982,4 +982,114 @@ class DefaultJsonManagerTest {
 "path":"M10,10h10v10h-10Z"}},"data":"data"}
         """.trim().replace("\n", "")))
     }
+
+    @Test
+    fun testMalformedJsonImport() = runBlocking {
+        val key = encryptionSetup()
+
+        @Language("JSON") val jsonData = """{
+  "notesData": {
+    "version": 3,
+    "notes": {
+      "1": {
+        "type": 0,
+        "title": "note",
+        "content": "content",
+        "metadata": "{\"type\":\"blank\"}",
+        "added": "2020-01-01T00:00:00.000Z",
+        "modified": "2020-02-01T00:00:00.000Z",
+        "status": 0,
+        "pinned": 2,
+        "reminder": {
+          "start": "2020-03-01T00:00:00.000Z",
+          "recurrence": "RRULE:FREQ=DAILY",
+          "next": "2020-03-02T00:00:00.000Z",
+          "count": 1,
+          "done": false
+        },
+        "labels": [1, 10]
+      },
+      "9": {
+        "type": 1,
+        "title": "list",
+        "content": "item 1\nitem 2",
+        "metadata": "{\"type\":\"list\",\"checked\":[false,true]}",
+        "added": "2019-01-01T00:00:00.000Z",
+        "modified": "2019-02-01T00:00:00.000Z",
+        "status": 1,
+        "pinned": 0,
+        "labels": [1, 3]
+      }
+    },
+    "labels": {
+      "1": {"name": "label0", "hidden": true},
+      "3": {"name": "label1"},
+      "10": {"name": "label2"}
+    }
+  },
+  "encryptedNotesData": {
+    "salt": "Wk7ITADlYDBTP/o8GtupJyWemvDClrDNxXKhoMBuTIp8QjlAlPdVAWfAi+B3GWTn/YmqgBP3OCK20Vmcm9hQbzwNfnXsnChnPu462ALv+WKf8y2NirINyWr5jG/tAOaE6bGNL+ZE4ClppTdBt82Gl87q6FX0pFqhJtmrE+8jLmI",
+    "nonce":"B+kFILwu8GLF1noQ",
+    "ciphertext":"DwSQ5XQfkqTjhJf58JbrDZAMLhGQfnYWS4zWcrXwkkvQDAlwmE77vyatw1xem/iKqCk2oq24c1+tlOSXEiczT1JY12W6YiLN9o9v3xkYYhIrNuPTSMgtG2n8BoEpvop6Wa1ZJNlq323WnoDvlBzOUovmyzomCqrlQ8+d6xgpfBi2YPDtg+QRpUg0mCz9CBBDQuDTMdWg0UD+AucChEKwXaG0VRAKPtRFgf/qALeC4r8oPwsS3UnLsLELZGWauG8QUl7lGUzR0Ayqruk7PaEG4tOHuN3jcPBwOZHKwDZUti/Ybzn4ClKuBN2gFpTqsSYM8vhpBDz+iJ7fwLiuLAX6yvJLwiex4TACi/ZvcNTjxk2mhSaqwObbY09CbGvYgPb20N+PGdOxSxoz1LnFT6lH0XqUEgjDcIR9av8yNWx41sWNBn9Q3i43zrRe19ygzGCAgU/defKtF7pA27f905UOKY2182qqxtUIBd82Bicgd2wt3j6t7/3o9neZTawGg03pyGQt+u1S6OEt3rcmpjwEr+9PG8alCkqHQEBjqPlpSCU0aBDCV0J01Ck6MTE+qAXYEYjHdCgVpvoQ96MNGEJl3ngkhweZcF+j+Y30LG4SnGHeym18m9yzuYtOm3D6nJ0AMiM/0cB1Qkaes8Naxl/Uesusc41000Y17qNBqhbMy16KEERw3xwnzdKlfE4rSo6L/o8XLolPpHvECmQR3VPZX835O+dAilHtThqYpBMU4AktJBf1ywvH2wNoiDWYGsuTpgZ5C97kJfvk0TF7bAPQtG/KiJxDy9G/OMGsHk3D9m8x5yhvdyw5r2+N5nD/DqY0bVsyqg7+FFzD+mPk60v29PuoBautxkqyoHhkQlEIM+Z6/D6eNO6hz50+SkplJVT8f0bURMmRPcKdVaaX/1yH5ztiO3WZsyIuRpx9cCTjgX51bGuvs1gveEjkw4f/squCem/XD0GBxFoOQjIfeVs5PXsgqiSCCSMjwF1sHY71dfBbTNAiR2PsK47LlrPMsrTJBkKqZptHZy+R+u1sZ9TL/I1kvqP0yoncAPUvzcTANzPyWY1zZL3Qrv5kB/5GtNwDJ33oblHfz/MU6vE/lR5sdo1y/tU5WVLz1OC3VL15h37w0dbgcsFvSZD/pGcyCW4OVYHpIXivnO+VXZmDzjBPnap35PAa5ggRjNkgGtaU8g9NGy4xjq9bLKPvKPK+U8moIbCOQYxENEsUJBjWf/X/r+aXLFoddEVOc/DYLoBTb24O95pi5SxLLCbEcKTmfnYL4iKCsMIMaNXMPM16DBOif4BhyUH1oZZz/E4swyhe3J8vxhUPqwI2njQ"
+  }
+}
+        """.trim().replace("\n", "")
+        assertEquals(ImportResult.BAD_FORMAT, jsonManager.importJsonData(jsonData, importKey = key))
+
+        @Language("JSON") val jsonData2 = """{
+  "notesData": {
+    "version": 3,
+    "notes": {
+      "1": {
+        "type": 0,
+        "title": "note",
+        "content": "content",
+        "metadata": "{\"type\":\"blank\"}",
+        "added": "2020-01-01T00:00:00.000Z",
+        "modified": "2020-02-01T00:00:00.000Z",
+        "status": 0,
+        "pinned": 2,
+        "reminder": {
+          "start": "2020-03-01T00:00:00.000Z",
+          "recurrence": "RRULE:FREQ=DAILY",
+          "next": "2020-03-02T00:00:00.000Z",
+          "count": 1,
+          "done": false
+        },
+        "labels": [1, 10]
+      },
+      "9": {
+        "type": 1,
+        "title": "list",
+        "content": "item 1\nitem 2",
+        "metadata": "{\"type\":\"list\",\"checked\":[false,true]}",
+        "added": "2019-01-01T00:00:00.000Z",
+        "modified": "2019-02-01T00:00:00.000Z",
+        "status": 1,
+        "pinned": 0,
+        "labels": [1, 3]
+      }
+    },
+    "labels": {
+      "1": {"name": "label0", "hidden": true},
+      "3": {"name": "label1"},
+      "10": {"name": "label2"}
+    }
+  },
+  "version": 3
+}
+        """.trim().replace("\n", "")
+        assertEquals(ImportResult.BAD_FORMAT, jsonManager.importJsonData(jsonData2))
+
+        @Language("JSON") val jsonData3 = """{
+  "encryptedNotesData": {
+    "salt": "Wk7ITADlYDBTP/o8GtupJyWemvDClrDNxXKhoMBuTIp8QjlAlPdVAWfAi+B3GWTn/YmqgBP3OCK20Vmcm9hQbzwNfnXsnChnPu462ALv+WKf8y2NirINyWr5jG/tAOaE6bGNL+ZE4ClppTdBt82Gl87q6FX0pFqhJtmrE+8jLmI",
+    "nonce":"B+kFILwu8GLF1noQ",
+    "ciphertext":"DwSQ5XQfkqTjhJf58JbrDZAMLhGQfnYWS4zWcrXwkkvQDAlwmE77vyatw1xem/iKqCk2oq24c1+tlOSXEiczT1JY12W6YiLN9o9v3xkYYhIrNuPTSMgtG2n8BoEpvop6Wa1ZJNlq323WnoDvlBzOUovmyzomCqrlQ8+d6xgpfBi2YPDtg+QRpUg0mCz9CBBDQuDTMdWg0UD+AucChEKwXaG0VRAKPtRFgf/qALeC4r8oPwsS3UnLsLELZGWauG8QUl7lGUzR0Ayqruk7PaEG4tOHuN3jcPBwOZHKwDZUti/Ybzn4ClKuBN2gFpTqsSYM8vhpBDz+iJ7fwLiuLAX6yvJLwiex4TACi/ZvcNTjxk2mhSaqwObbY09CbGvYgPb20N+PGdOxSxoz1LnFT6lH0XqUEgjDcIR9av8yNWx41sWNBn9Q3i43zrRe19ygzGCAgU/defKtF7pA27f905UOKY2182qqxtUIBd82Bicgd2wt3j6t7/3o9neZTawGg03pyGQt+u1S6OEt3rcmpjwEr+9PG8alCkqHQEBjqPlpSCU0aBDCV0J01Ck6MTE+qAXYEYjHdCgVpvoQ96MNGEJl3ngkhweZcF+j+Y30LG4SnGHeym18m9yzuYtOm3D6nJ0AMiM/0cB1Qkaes8Naxl/Uesusc41000Y17qNBqhbMy16KEERw3xwnzdKlfE4rSo6L/o8XLolPpHvECmQR3VPZX835O+dAilHtThqYpBMU4AktJBf1ywvH2wNoiDWYGsuTpgZ5C97kJfvk0TF7bAPQtG/KiJxDy9G/OMGsHk3D9m8x5yhvdyw5r2+N5nD/DqY0bVsyqg7+FFzD+mPk60v29PuoBautxkqyoHhkQlEIM+Z6/D6eNO6hz50+SkplJVT8f0bURMmRPcKdVaaX/1yH5ztiO3WZsyIuRpx9cCTjgX51bGuvs1gveEjkw4f/squCem/XD0GBxFoOQjIfeVs5PXsgqiSCCSMjwF1sHY71dfBbTNAiR2PsK47LlrPMsrTJBkKqZptHZy+R+u1sZ9TL/I1kvqP0yoncAPUvzcTANzPyWY1zZL3Qrv5kB/5GtNwDJ33oblHfz/MU6vE/lR5sdo1y/tU5WVLz1OC3VL15h37w0dbgcsFvSZD/pGcyCW4OVYHpIXivnO+VXZmDzjBPnap35PAa5ggRjNkgGtaU8g9NGy4xjq9bLKPvKPK+U8moIbCOQYxENEsUJBjWf/X/r+aXLFoddEVOc/DYLoBTb24O95pi5SxLLCbEcKTmfnYL4iKCsMIMaNXMPM16DBOif4BhyUH1oZZz/E4swyhe3J8vxhUPqwI2njQ"
+  },
+  "version": 3
+}
+        """.trim().replace("\n", "")
+        assertEquals(ImportResult.BAD_FORMAT, jsonManager.importJsonData(jsonData3, importKey = key))
+    }
 }
