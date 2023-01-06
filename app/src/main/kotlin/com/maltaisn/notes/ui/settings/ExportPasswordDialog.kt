@@ -19,10 +19,13 @@ package com.maltaisn.notes.ui.settings
 import android.app.Dialog
 import android.content.DialogInterface
 import android.os.Bundle
+import android.text.method.PasswordTransformationMethod
+import android.view.View.OnClickListener
 import android.view.WindowManager
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.DialogFragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.textfield.TextInputLayout
 import com.maltaisn.notes.App
 import com.maltaisn.notes.R
 import com.maltaisn.notes.databinding.DialogExportPasswordBinding
@@ -48,6 +51,7 @@ class ExportPasswordDialog : DialogFragment() {
         val binding = DialogExportPasswordBinding.inflate(layoutInflater, null, false)
 
         val passwordInput = binding.passwordInput
+        val passwordLayout = binding.passwordInputLayout
         val passwordRepeatInput = binding.passwordRepeat
         val passwordRepeatLayout = binding.passwordRepeatLayout
 
@@ -87,6 +91,15 @@ class ExportPasswordDialog : DialogFragment() {
             viewModel.onPasswordChanged(passwordInput.text.toString(), it?.toString() ?: "")
         }
         passwordInput.requestFocus()
+
+        val passwordToggleListener = OnClickListener {
+            passwordLayout.togglePasswordVisibile()
+            passwordRepeatLayout.togglePasswordVisibile()
+        }
+        passwordLayout.setEndIconOnClickListener(passwordToggleListener)
+        passwordRepeatLayout.setEndIconOnClickListener(passwordToggleListener)
+        passwordRepeatLayout.setErrorIconOnClickListener(passwordToggleListener)
+
         viewModel.setDialogDataEvent.observeEvent(this) { (password, passwordRepeat) ->
             passwordInput.setText(password)
             passwordRepeatInput.setText(passwordRepeat)
@@ -95,6 +108,23 @@ class ExportPasswordDialog : DialogFragment() {
         viewModel.start()
 
         return dialog
+    }
+
+    private fun TextInputLayout.togglePasswordVisibile() {
+        val editText = editText ?: return
+        // Store the current cursor position
+        val selection = editText.selectionEnd
+
+        // Check for existing password transformation
+        val hasPasswordTransformation = editText.transformationMethod is PasswordTransformationMethod;
+        if (hasPasswordTransformation) {
+            editText.transformationMethod = null
+        } else {
+            editText.transformationMethod = PasswordTransformationMethod.getInstance()
+        }
+
+        // Restore the cursor position
+        editText.setSelection(selection)
     }
 
     override fun onDismiss(dialog: DialogInterface) {
