@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Nicolas Maltais
+ * Copyright 2023 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,33 +16,9 @@
 
 package com.maltaisn.notes
 
-import android.app.Dialog
-import android.graphics.Rect
-import android.view.View
-import android.widget.FrameLayout
 import androidx.fragment.app.FragmentManager
 
 /**
  * Returns whether this fragment manager contains a fragment with a [tag].
  */
 operator fun FragmentManager.contains(tag: String) = this.findFragmentByTag(tag) != null
-
-/**
- * Set [this] dialog maximum width to [maxWidth].
- * @param view The dialog's content view.
- */
-fun Dialog.setMaxWidth(maxWidth: Int, view: View) {
-    // Get current dialog's width and padding
-    val fgPadding = Rect()
-    val window = this.window!!
-    window.decorView.background.getPadding(fgPadding)
-    val padding = fgPadding.left + fgPadding.right
-    var width = this.context.resources.displayMetrics.widthPixels - padding
-
-    // Set dialog's dimensions, with maximum width.
-    if (width > maxWidth) {
-        width = maxWidth
-    }
-    window.setLayout(width + padding, FrameLayout.LayoutParams.WRAP_CONTENT)
-    view.layoutParams = FrameLayout.LayoutParams(width, FrameLayout.LayoutParams.WRAP_CONTENT)
-}

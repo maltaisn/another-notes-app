@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?><!--
-  Copyright 2021 Nicolas Maltais
+  Copyright 2023 Nicolas Maltais
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@
 
     <dimen name="reminder_dialog_max_width">500dp</dimen>
 
-    <!-- Minimum screen height to show title for LabelEditDialog. -->
-    <dimen name="label_edit_dialog_title_min_height">420dp</dimen>
+    <!-- Minimum screen height to show title for dialogs with a text input. -->
+    <dimen name="input_dialog_title_min_height">420dp</dimen>
 
 </resources>

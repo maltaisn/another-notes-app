@@ -18,7 +18,6 @@ package com.maltaisn.notes.ui.sort
 
 import android.app.Dialog
 import android.os.Bundle
-import android.view.LayoutInflater
 import androidx.fragment.app.DialogFragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.maltaisn.notes.App
@@ -52,7 +51,7 @@ class SortDialog : DialogFragment() {
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val context = requireContext()
-        val binding = DialogSortBinding.inflate(LayoutInflater.from(context), null, false)
+        val binding = DialogSortBinding.inflate(layoutInflater, null, false)
 
         // Create dialog
         val dialog = MaterialAlertDialogBuilder(context)

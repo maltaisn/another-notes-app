@@ -1,10 +1,24 @@
+/*
+ * Copyright 2023 Nicolas Maltais
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.maltaisn.notes.ui.settings
 
 import android.app.Dialog
 import android.content.DialogInterface
 import android.os.Bundle
-import android.text.method.PasswordTransformationMethod
-import android.view.LayoutInflater
 import android.view.WindowManager
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.DialogFragment
@@ -12,6 +26,8 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.maltaisn.notes.App
 import com.maltaisn.notes.R
 import com.maltaisn.notes.databinding.DialogExportPasswordBinding
+import com.maltaisn.notes.hideCursorInAllViews
+import com.maltaisn.notes.setTitleIfEnoughSpace
 import com.maltaisn.notes.ui.observeEvent
 import com.maltaisn.notes.ui.viewModel
 import javax.inject.Inject
@@ -29,12 +45,11 @@ class ExportPasswordDialog : DialogFragment() {
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val context = requireContext()
-        val binding = DialogExportPasswordBinding.inflate(LayoutInflater.from(context), null, false)
+        val binding = DialogExportPasswordBinding.inflate(layoutInflater, null, false)
 
         val passwordInput = binding.passwordInput
         val passwordRepeatInput = binding.passwordRepeat
         val passwordRepeatLayout = binding.passwordRepeatLayout
-        val showPasswordCheckbox = binding.showPasswordChk
 
         val builder = MaterialAlertDialogBuilder(context)
             .setView(binding.root)
@@ -45,14 +60,7 @@ class ExportPasswordDialog : DialogFragment() {
             .setNegativeButton(R.string.action_cancel) { _, _ ->
                 callback.onExportPasswordDialogNegativeButtonClicked()
             }
-
-        // Only show dialog title if screen size is under a certain dimension.
-        // Otherwise it becomes much harder to type text, see #53.
-        val dimen = context.resources.getDimension(R.dimen.label_edit_dialog_title_min_height) /
-                context.resources.displayMetrics.density
-        if (context.resources.configuration.screenHeightDp >= dimen) {
-            builder.setTitle(R.string.encrypted_export_dialog_title)
-        }
+            .setTitleIfEnoughSpace(R.string.encrypted_export_dialog_title)
 
         val dialog = builder.create()
         dialog.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE)
@@ -72,19 +80,6 @@ class ExportPasswordDialog : DialogFragment() {
             }
         }
 
-        showPasswordCheckbox.setOnCheckedChangeListener { _, isChecked ->
-            val transformationMethod = if (isChecked) null else PasswordTransformationMethod()
-            passwordInput.transformationMethod = transformationMethod
-            passwordRepeatInput.transformationMethod = transformationMethod
-        }
-
-        // Cursor must be hidden when dialog is dismissed to prevent memory leak
-        // See [https://stackoverflow.com/questions/36842805/dialogfragment-leaking-memory]
-        dialog.setOnDismissListener {
-            passwordInput.isCursorVisible = false
-            passwordRepeatInput.isCursorVisible = false
-        }
-
         passwordInput.doAfterTextChanged {
             viewModel.onPasswordChanged(it?.toString() ?: "", passwordRepeatInput.text.toString())
         }
@@ -100,6 +95,11 @@ class ExportPasswordDialog : DialogFragment() {
         viewModel.start()
 
         return dialog
+    }
+
+    override fun onDismiss(dialog: DialogInterface) {
+        super.onDismiss(dialog)
+        hideCursorInAllViews()
     }
 
     override fun onCancel(dialog: DialogInterface) {

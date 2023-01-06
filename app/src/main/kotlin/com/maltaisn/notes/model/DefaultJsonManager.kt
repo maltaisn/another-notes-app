@@ -104,7 +104,6 @@ class DefaultJsonManager @Inject constructor(
         // Encrypt notesData
         val ciphertext = cipher.doFinal(json.encodeToString(notesData).toByteArray(Charsets.UTF_8))
 
-        // Generate BackupData object
         return EncryptedNotesData(
             salt = prefs.encryptedExportKeyDerivationSalt,
             nonce = Base64.encodeToString(cipher.iv, BASE64_FLAGS),
