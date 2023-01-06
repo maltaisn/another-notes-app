@@ -122,7 +122,26 @@ class DefaultJsonManager @Inject constructor(
             return ImportResult.BAD_FORMAT
         }
 
-        var notesData: NotesData? = backupData.notesData
+        // If both legacy data as well as data of the new format is present, the file is considered malformed
+        if (backupData.version != null && backupData.notesData != null) {
+            return ImportResult.BAD_FORMAT
+        }
+
+        var notesData: NotesData? =
+            if (backupData.version != null) {
+                // Parse legacy backup file
+                try {
+                    json.decodeFromString<NotesData>(data)
+                } catch (e: BadDataException) {
+                    // could happen if user imported data from future version, which has incompatibilities.
+                    return ImportResult.BAD_DATA
+                } catch (e: Exception) {
+                    // bad json structure, missing required fields, field has bad value, etc.
+                    return ImportResult.BAD_FORMAT
+                }
+            } else {
+                backupData.notesData
+            }
         val encryptedNotesData: EncryptedNotesData? = backupData.encryptedNotesData
 
         // If both encrypted as well as unencrypted data is present, the file is considered malformed
@@ -168,11 +187,7 @@ class DefaultJsonManager @Inject constructor(
             }
         }
 
-        if (notesData == null) {
-            return ImportResult.BAD_DATA
-        }
-
-        if (notesData.version < FIRST_VERSION) {
+        if (notesData!!.version < FIRST_VERSION) {
             // first version is 3, this data is clearly wrong.
             return ImportResult.BAD_DATA
         }
@@ -351,5 +366,11 @@ private data class BackupData(
     @SerialName("notesData")
     val notesData: NotesData? = null,
     @SerialName("encryptedNotesData")
-    val encryptedNotesData: EncryptedNotesData? = null
+    val encryptedNotesData: EncryptedNotesData? = null,
+    @SerialName("version")
+    val version: Int? = null,
+    @SerialName("notes")
+    val notes: Map<Long, NoteSurrogate>? = null,
+    @SerialName("labels")
+    val labels: Map<Long, Label>? = null,
 )
