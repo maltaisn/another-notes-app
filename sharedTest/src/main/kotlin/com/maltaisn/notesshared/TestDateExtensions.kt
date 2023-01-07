@@ -27,7 +27,7 @@ var datePatterns = listOf(
     DatePattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", TimeZone.getTimeZone("GMT"), 24),
     DatePattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX", null, null),
     DatePattern("yyyy-MM-dd'T'HH:mm:ss.SSS", TimeZone.getDefault(), 23),
-    DatePattern("yyyy-MM-dd", TimeZone.getTimeZone("GMT"), 10)
+    DatePattern("yyyy-MM-dd", TimeZone.getDefault(), 10)
 )
 
 data class DatePattern(val pattern: String, val timeZone: TimeZone?, val length: Int?)
