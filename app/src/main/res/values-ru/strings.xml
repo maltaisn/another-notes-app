@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  Copyright 2022 Nicolas Maltais
+  Copyright 2023 Nicolas Maltais
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -104,6 +104,30 @@
     <string name="edit_hint_note_content">Текст</string>
     <string name="edit_hint_note_item">Пункт списка</string>
     <string name="edit_message_blank_note_discarded">Пустая заметка удалена.</string>
+    <plurals name="edit_move_archive_message">
+        <item quantity="one">Заметка перемещена в архив.</item>
+        <item quantity="few">Заметки перемещены в архив.</item>
+        <item quantity="many">Заметок перемещено в архив.</item>
+        <item quantity="other">Заметки перемещены в архив.</item>
+    </plurals>
+    <plurals name="edit_message_move_delete">
+        <item quantity="one">Заметка перемещена в корзину.</item>
+        <item quantity="few">Заметки перемещены в корзину.</item>
+        <item quantity="many">Заметок перемещено в корзину.</item>
+        <item quantity="other">Заметки перемещены в корзину.</item>
+    </plurals>
+    <plurals name="edit_message_move_restore">
+        <item quantity="one">Заметка восстановлена.</item>
+        <item quantity="few">Заметки восстановлено.</item>
+        <item quantity="many">Заметок восстановлено.</item>
+        <item quantity="other">Заметки восстановлены.</item>
+    </plurals>
+    <plurals name="edit_message_move_unarchive">
+        <item quantity="one">Запись разархивирована.</item>
+        <item quantity="few">Записи разархивированы.</item>
+        <item quantity="many">Записей разархивированы.</item>
+        <item quantity="other">Заметки разархивированы.</item>
+    </plurals>
     <string name="edit_in_trash_message">Невозможно редактировать заметку в корзине.</string>
     <string name="edit_copy_suffix">Копия</string>
     <string name="edit_copy_untitled_name">Без названия</string>
@@ -127,6 +151,10 @@
     <string name="reminder_empty_placeholder">Напоминаний нет</string>
     <string name="reminder_restricted_battery">Напоминание может работать неправильно, потому что приложение
     не потребляет заряд аккумулятора. Это может быть изменено в настройках приложения.</string>
+    <string name="reminder_notif_permission">Чтобы иметь возможность отправлять уведомления, приложению требуется разрешение.
+    Нажмите ОК, чтобы отобразить запрос на разрешение. Вы сможете установить напоминание.</string>
+    <string name="reminder_notif_permission_denied">Разрешение на уведомление было отклонено.
+    Будильники напоминания не будут работать, пока не включено.</string>
     <!-- Labels -->
     <string name="label_create">Создать новую метку</string>
     <string name="label_edit">Изменить имя метки</string>
@@ -144,6 +172,7 @@
     <string name="pref_theme_light">Светлая</string>
     <string name="pref_theme_dark">Тёмная</string>
     <string name="pref_theme_system">Следовать системе</string>
+    <string name="pref_dynamic_colors">Использовать динамический цвета</string>
     <string name="pref_strikethrough_checked">Зачеркнуть отмеченные элементы списка</string>
     <string name="pref_preview_labels">Максимальное количество меток</string>
     <string name="pref_shown_date">Дата отображения заметок</string>
@@ -158,10 +187,15 @@
     <string name="pref_preview_lines_text">Количество строк текстовых заметок</string>
     <string name="pref_preview_lines_list">Количество пунктов в заметках в виде списка</string>
     <string name="pref_group_behavior">Поведение</string>
+    <string name="pref_behavior_swipe_action_left">Действие при смахивании влево</string>
+    <string name="pref_behavior_swipe_action_right">Действие при смахивании вправо</string>
     <string name="pref_behavior_move_checked">Перемещать отмеченные пункты в конец</string>
     <string name="pref_group_data">Данные</string>
     <string name="pref_data_export">Экспорт данных</string>
     <string name="pref_data_export_summary">Экспортировать заметки в JSON</string>
+    <string name="pref_data_encrypted_export">Зашифрованный экспорт</string>
+    <string name="pref_data_encrypted_export_summary">Шифрует экспортированные заметки. Доступ невозможен без
+        верного пароля.</string>
     <string name="pref_data_auto_export">Автоматический экспорт данных</string>
     <string name="pref_data_auto_export_summary">Автоматически экспортировать данные приложения в файл один раз в день.</string>
     <string name="pref_data_auto_export_date">(Последнее экспортирование %s)</string>
@@ -175,9 +209,20 @@
     <string name="pref_about_view_source">Посмотреть на GitHub</string>
     <string name="pref_about_view_licenses">Лицензии открытого ПО</string>
     <string name="pref_about_version">Версия</string>
+    <string name="pref_restart_dialog_title">Необходим перезапуск!</string>
+    <string name="pref_restart_dialog_description">Чтобы изменения вступили в силу, необходим перезапуск.
+        Хотите перезапустить приложение сейчас?</string>
     <!-- Import/export data messages -->
     <string name="export_success">Данные успешно выгружены!</string>
     <string name="export_fail">Произошла ошибка в процессе экспорта.</string>
+    <string name="export_serialization_fail">Произошла ошибка при экспорте данных.
+        Попробуйте отключить шифрование и повторите попытку.</string>
+    <string name="encrypted_export_dialog_title">Установить пароль</string>
+    <string name="encrypted_export_password">Пароль</string>
+    <string name="encrypted_export_repeat_password">Подтверждение пароля</string>
+    <string name="encrypted_export_password_matching_error">Пароли не совпадают</string>
+    <string name="encrypted_export_key_generation_successful">Шифрование успешно включено!</string>
+    <string name="encrypted_export_key_deletion_successful">Шифрование успешно выключено!</string>
     <string name="import_success">Импорт данных выполнен успешно!</string>
     <string name="import_future_version">Данные успешно импортированы! Имейте в виду, что некоторая информация
         может быть потеряна, так как данные происходят из более поздней версии.</string>
@@ -185,6 +230,11 @@
     <string name="import_bad_format">Не удалось импортировать данные, данные JSON недействительны.</string>
     <string name="import_bad_data">Не удалось импортировать данные, некоторые поля имеют недопустимые значения.
         Это может произойти, если импортировать данные из более поздней версии, попробуйте обновить приложение.</string>
+    <string name="encrypted_import_dialog_title">Введите пароль</string>
+    <string name="encrypted_import_key_error">Произошла ошибка при попытке расшифровать этот файл.
+        Проверьте правильность пароля.</string>
+    <string name="encrypted_import_encryption_unsupported">Не удалось импортировать данные, шифрование не поддерживается
+        в этой версии Android.</string>
     <string name="auto_export_message">Для автоматического экспорта необходимо выбрать файл
         для сохранения данных. Данные будут экспортированы один раз в день, пока открыто приложение.
         Нажмите кнопку ОК, чтобы продолжить.</string>

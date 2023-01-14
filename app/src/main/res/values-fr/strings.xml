@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  Copyright 2022 Nicolas Maltais
+  Copyright 2023 Nicolas Maltais
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -177,6 +177,8 @@
     <string name="pref_group_data">Données</string>
     <string name="pref_data_export">Exporter les données</string>
     <string name="pref_data_export_summary">Exporter les données en format JSON</string>
+    <string name="pref_data_encrypted_export">Exportation chiffrée</string>
+    <string name="pref_data_encrypted_export_summary">Chiffre les notes exportées. L\'accès n\'est pas possible sans le bon mot de passe.</string>
     <string name="pref_data_auto_export">Exportation automatique</string>
     <string name="pref_data_auto_export_summary">Exporter automatiquement les données vers un fichier, une fois par jour.</string>
     <string name="pref_data_auto_export_date">(Dernière exportation le %s)</string>
@@ -196,6 +198,13 @@
     <!-- Import/export data messages -->
     <string name="export_success">Les données ont été exportées avec succès !</string>
     <string name="export_fail">Une erreur est survenue lors de l\'exportation des données.</string>
+    <string name="export_serialization_fail">Une erreur s\'est produite lors de l\'exportation des données. Essayez de désactiver le chiffrement et réessayer.</string>
+    <string name="encrypted_export_dialog_title">Définir le mot de passe</string>
+    <string name="encrypted_export_password">Mot de passe</string>
+    <string name="encrypted_export_repeat_password">Confirmer le mot de passe</string>
+    <string name="encrypted_export_password_matching_error">Les mots de passe ne correspondent pas</string>
+    <string name="encrypted_export_key_generation_successful">Chiffrement activé avec succès!</string>
+    <string name="encrypted_export_key_deletion_successful">Chiffrement désactivé avec succès!</string>
     <string name="import_success">Les données ont été importées avec succès !</string>
     <string name="import_future_version">Les données ont été importées avec succès !
         Veuillez noter que certaines informations ont pu être perdues puisque les données proviennent
@@ -204,6 +213,9 @@
     <string name="import_bad_format">Impossible d\'importer les données, la structure JSON est invalide.</string>
     <string name="import_bad_data">Impossible d\'importer les données, certains champs ont des valeurs invalides.
         Cela peut arriver lors de l\'importation de données provenant d\'une version ultérieure.</string>
+    <string name="encrypted_import_dialog_title">Entrer le mot de passe</string>
+    <string name="encrypted_import_key_error">Une erreur s\'est produite lors de la tentative de déchiffrement de ce fichier. Vérifiez si le mot de passe est correct.</string>
+    <string name="encrypted_import_encryption_unsupported">Impossible d\'importer les données, le chiffrement n\'est pas pris en charge sur cette version d\'Android.</string>
     <string name="auto_export_message">Pour activer l\'exportation automatique, un fichier doit être choisi pour
         sauvegarder les données. Les données seront ensuite exportées une fois par jour pendant que
         l\'application est ouverte. Cliquez sur OK pour continuer.</string>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  Copyright 2022 Nicolas Maltais
+  Copyright 2023 Nicolas Maltais
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -137,6 +137,8 @@
     <string name="reminder_empty_placeholder">Hatırlatıcı ayarlanmadı</string>
     <string name="reminder_restricted_battery">Hatırlatıcı alarmları doğru şekilde çalışmayabilir, çünkü
   uygulama kısıtlanmış pil kullanımında çalışıyor. Bu durum uygulama ayarlarından değiştirilebilir.</string>
+    <string name="reminder_notif_permission">Hatırlatıcı bildirimleri gönderebilmek için uygulamanın izne ihtiyacı var. İzin isteğini göstermek icin Tamam\'a tıklayın. Sonrasında hatırlatıcı kurabileceksiniz.</string>
+    <string name="reminder_notif_permission_denied">Bildirim izni reddedildi. Hatırlatıcı alarmlar izin verilene kadar calışmayacak.</string>
     <!-- Labels -->
     <string name="label_create">Yeni etiket oluştur</string>
     <string name="label_edit">Etiket adını düzenle</string>
@@ -154,6 +156,7 @@
     <string name="pref_theme_light">Açık</string>
     <string name="pref_theme_dark">Koyu</string>
     <string name="pref_theme_system">Sistem ile aynı</string>
+    <string name="pref_dynamic_colors">Dinamik renkleri kullan</string>
     <string name="pref_strikethrough_checked">Üstü çizili işaretli liste ögeleri</string>
     <string name="pref_preview_labels">Ön izlemede en fazla etiket sayısı</string>
     <string name="pref_shown_date">Notlar için gösterilen tarih</string>
@@ -168,6 +171,8 @@
     <string name="pref_preview_lines_text">Metin notu ön izlemesindeki satır sayısı</string>
     <string name="pref_preview_lines_list">Liste notu ön izlemesindeki öge sayısı</string>
     <string name="pref_group_behavior">Davranış</string>
+    <string name="pref_behavior_swipe_action_left">Sola kaydırma eylemi</string>
+    <string name="pref_behavior_swipe_action_right">Sağa kaydırma eylemi</string>
     <string name="pref_behavior_move_checked">İşaretli ögeleri en alta taşı</string>
     <string name="pref_group_data">Veriler</string>
     <string name="pref_data_export">Verileri dışa aktar</string>
@@ -185,6 +190,8 @@
     <string name="pref_about_view_source">GitHub\'da görüntüle</string>
     <string name="pref_about_view_licenses">Açık kaynak lisansları</string>
     <string name="pref_about_version">Sürüm</string>
+    <string name="pref_restart_dialog_title">Yeniden başlatma gerekli!</string>
+    <string name="pref_restart_dialog_description">Değişikliklerin uygulanması için yeniden başlatma gerekli. Uygulamayı şimdi yeniden başlatmak ister misiniz?</string>
     <!-- Import/export data messages -->
     <string name="export_success">Verileri dışa aktarma işlemi başarılı!</string>
     <string name="export_fail">Verileri dışa aktarma işlemi esnasında bir hata oluştu.</string>

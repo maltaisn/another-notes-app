@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  Copyright 2022 Nicolas Maltais
+  Copyright 2023 Nicolas Maltais
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -174,6 +174,8 @@
     <string name="pref_group_data">Daten</string>
     <string name="pref_data_export">Daten exportieren</string>
     <string name="pref_data_export_summary">Notizdaten als JSON exportieren</string>
+    <string name="pref_data_encrypted_export">Verschlüsselter Export</string>
+    <string name="pref_data_encrypted_export_summary">Verschlüsselt die exportierten Notizen. Ohne das korrekte Passwort ist kein Zugriff möglich.</string>
     <string name="pref_data_auto_export">Automatischer Daten Export</string>
     <string name="pref_data_auto_export_summary">Exportieren Sie die Daten der App automatisch in eine Datei, einmal pro Tag.</string>
     <string name="pref_data_auto_export_date">(Zuletzt exportiert am %s)</string>
@@ -191,11 +193,21 @@
     <!-- Import/export data messages -->
     <string name="export_success">Daten erfolgreich exportiert!</string>
     <string name="export_fail">Beim Datenexport ist ein Fehler aufgetreten.</string>
+    <string name="export_serialization_fail">Beim Datenexport ist ein Fehler aufgetreten. Versuchen Sie die Verschlüsselung zu deaktivieren und probieren Sie es erneut.</string>
+    <string name="encrypted_export_dialog_title">Passwort setzen</string>
+    <string name="encrypted_export_password">Passwort</string>
+    <string name="encrypted_export_repeat_password">Passwort bestätigen</string>
+    <string name="encrypted_export_password_matching_error">Passwörter stimmen nicht überein</string>
+    <string name="encrypted_export_key_generation_successful">Verschlüsselung erfolgreich aktiviert!</string>
+    <string name="encrypted_export_key_deletion_successful">Verschlüsselung erfolgreich deaktiviert!</string>
     <string name="import_success">Daten erfolgreich importiert!</string>
     <string name="import_future_version">Daten erfolgreich importiert! Beachten Sie, dass einige Informationen möglicherweise verloren gegangen sein können, weil die Daten aus einer späteren Version stammen.</string>
     <string name="import_bad_input">Beim Versuch, diese Datei zu lesen, ist ein Fehler aufgetreten.</string>
     <string name="import_bad_format">Daten konnten nicht importiert werden, JSON-Daten sind ungültig.</string>
     <string name="import_bad_data">Daten konnten nicht importiert werden, einige Felder haben ungültige Werte. Dies kann passieren, wenn Sie Daten aus einer späteren Version importieren. Versuchen Sie, die App zu aktualisieren.</string>
+    <string name="encrypted_import_dialog_title">Passwort eingeben</string>
+    <string name="encrypted_import_key_error">Beim Entschlüsseln dieser Datei ist ein Fehler aufgetreten. Überprüfen Sie, ob das Passwort korrekt war.</string>
+    <string name="encrypted_import_encryption_unsupported">Daten konnten nicht importiert werden, da Verschlüsselung auf dieser Android-Version nicht unterstützt wird.</string>
     <string name="auto_export_message">Um den automatischen Export zu aktivieren, muss eine Datei ausgewählt werden, um die Daten zu speichern. Die Daten der App werden einmal pro Tag exportiert, während die App geöffnet ist. Klicken Sie auf OK, um fortzufahren.</string>
     <string name="auto_export_fail">Der automatische Export der Daten ist fehlgeschlagen. Stellen Sie sicher, dass der Exportort noch existiert und zugänglich ist, und konfigurieren Sie dann den automatischen Export neu.</string>
     <!-- Content description -->
