@@ -29,6 +29,7 @@ import androidx.core.view.GravityCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.children
 import androidx.core.view.contains
 import androidx.core.view.forEach
 import androidx.core.view.updatePadding
@@ -102,9 +103,11 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
         // Apply padding to navigation drawer
+        val initialPadding = (resources.displayMetrics.density * 16 + 0.5).toInt()
         ViewCompat.setOnApplyWindowInsetsListener(binding.navView) { _, insets ->
             val sysWindow = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            binding.navView.updatePadding(top = sysWindow.top, bottom = sysWindow.bottom)
+            binding.navView.getHeaderView(0).updatePadding(top = sysWindow.top)
+            binding.navView.children.last().updatePadding(bottom = initialPadding + sysWindow.bottom)
             // Don't draw under system bars, if it conflicts with the navigation drawer.
             // This is mainly the case if the app is used in landscape mode with traditional 3 button navigation.
             if (sysWindow.left > 0) {
