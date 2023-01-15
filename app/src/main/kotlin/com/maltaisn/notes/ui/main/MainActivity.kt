@@ -26,9 +26,12 @@ import android.view.View
 import androidx.activity.addCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
+import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.contains
 import androidx.core.view.forEach
+import androidx.core.view.updatePadding
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
@@ -97,6 +100,18 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
 
         // Allow for transparent status and navigation bars
         WindowCompat.setDecorFitsSystemWindows(window, false)
+
+        // Apply padding to navigation drawer
+        ViewCompat.setOnApplyWindowInsetsListener(binding.navView) { _, insets ->
+            val sysWindow = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            binding.navView.updatePadding(top = sysWindow.top, bottom = sysWindow.bottom)
+            // Don't draw under system bars, if it conflicts with the navigation drawer.
+            // This is mainly the case if the app is used in landscape mode with traditional 3 button navigation.
+            if (sysWindow.left > 0) {
+                WindowCompat.setDecorFitsSystemWindows(window, true)
+            }
+            insets
+        }
 
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         navController = navHostFragment.navController

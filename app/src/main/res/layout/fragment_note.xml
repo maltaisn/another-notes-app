@@ -33,7 +33,7 @@
         android:layout_height="wrap_content"
         android:layout_weight="0"
         android:fitsSystemWindows="true"
-        app:layout_behavior="com.google.android.material.appbar.AppBarLayout$Behavior"
+        app:layout_behavior="com.maltaisn.notes.ui.common.AppBarLayoutWithPaddingBehavior"
         app:liftOnScroll="true"
         app:liftOnScrollTargetViewId="@id/recycler_view"
         android:transitionName="toolbar"
