@@ -144,7 +144,7 @@ abstract class NoteFragment : Fragment(), ActionMode.Callback, ConfirmDialog.Cal
         rcv.layoutManager = layoutManager
 
         // Apply padding to the bottom of the recyclerview, so that the last notes aren't covered by the FAB
-        val initialPadding = (resources.displayMetrics.density * 88 + 0.5).toInt()
+        val initialPadding = resources.getDimensionPixelSize(R.dimen.notes_recyclerview_bottom_padding)
         ViewCompat.setOnApplyWindowInsetsListener(rcv) { _, insets ->
             val sysWindow = insets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.ime())
             rcv.updatePadding(bottom = sysWindow.bottom + initialPadding)

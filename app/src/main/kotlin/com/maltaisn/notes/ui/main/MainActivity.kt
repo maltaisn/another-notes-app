@@ -103,7 +103,7 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
         // Apply padding to navigation drawer
-        val initialPadding = (resources.displayMetrics.density * 16 + 0.5).toInt()
+        val initialPadding = resources.getDimensionPixelSize(R.dimen.navigation_drawer_bottom_padding)
         ViewCompat.setOnApplyWindowInsetsListener(binding.navView) { _, insets ->
             val sysWindow = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             binding.navView.getHeaderView(0).updatePadding(top = sysWindow.top)

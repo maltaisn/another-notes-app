@@ -194,7 +194,7 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener, ConfirmDialog.
         // Dynamically adjust the padding on the bottom of the RecyclerView.
         // This enables edge-to-edge functionality and also handles resizing
         // when the keyboard is opened / closed.
-        val initialPadding = (resources.displayMetrics.density * 16 + 0.5).toInt()
+        val initialPadding = resources.getDimensionPixelSize(R.dimen.edit_recyclerview_bottom_padding)
         ViewCompat.setOnApplyWindowInsetsListener(rcv) { _, insets ->
             val sysWindow = insets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.ime())
             rcv.updatePadding(bottom = sysWindow.bottom + initialPadding)
