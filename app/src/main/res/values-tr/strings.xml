@@ -177,6 +177,8 @@
     <string name="pref_group_data">Veriler</string>
     <string name="pref_data_export">Verileri dışa aktar</string>
     <string name="pref_data_export_summary">Not verilerini JSON olarak dışa aktar</string>
+    <string name="pref_data_encrypted_export">Şifreli dışa aktarım</string>
+    <string name="pref_data_encrypted_export_summary">Dışa aktarılan notları şifreler. Doğru parola olmadan erişim mümkün değildir.</string>
     <string name="pref_data_auto_export">Verileri otomatik dışa aktarma</string>
     <string name="pref_data_auto_export_summary">Günde bir kez, uygulama verilerini otomatik olarak dışa aktar.</string>
     <string name="pref_data_auto_export_date">(En son dışa aktarma %s)</string>
@@ -195,6 +197,13 @@
     <!-- Import/export data messages -->
     <string name="export_success">Verileri dışa aktarma işlemi başarılı!</string>
     <string name="export_fail">Verileri dışa aktarma işlemi esnasında bir hata oluştu.</string>
+    <string name="export_serialization_fail">Verileri dışa aktarma işlemi esnasında bir hata oluştu. Şifrelemeyi kapatıp tekrar deneyin.</string>
+    <string name="encrypted_export_dialog_title">Parola belirleyin</string>
+    <string name="encrypted_export_password">Parola</string>
+    <string name="encrypted_export_repeat_password">Parolayı onaylayın</string>
+    <string name="encrypted_export_password_matching_error">Parolalar uyuşmuyor</string>
+    <string name="encrypted_export_key_generation_successful">Şifreleme başarıyla etkinleştirildi!</string>
+    <string name="encrypted_export_key_deletion_successful">Şifreleme başarıyla devre dışı bırakıldı!</string>
     <string name="import_success">Veri başarıyla içe aktarıldı!</string>
     <string name="import_future_version">Veri başarıyla içe aktarıldı! Veriler daha yeni bir sürümden oluşturulduğu için 
  bazı bilgiler kaybolmuş olabilir.</string>
@@ -202,6 +211,9 @@
     <string name="import_bad_format">Veriler içe aktarılamadı, JSON dosyası geçersiz.</string>
     <string name="import_bad_data">Bazı alanlar geçersiz değerlere sahip olduğundan veriler içe aktarılamadı. 
  Daha yeni bir sürümden içe aktarım yapılıyorsa bu olabilir, uygulamayı güncellemeyi deneyiniz.</string>
+    <string name="encrypted_import_dialog_title">Parolayı girin</string>
+    <string name="encrypted_import_key_error">Bu dosyanın şifresi çözülmeye çalışılırken bir hata oluştu. Parolanın doğru olup olmadığını kontrol edin.</string>
+    <string name="encrypted_import_encryption_unsupported">Veriler içe aktarılamadı, Android\'in bu sürümünde şifreleme desteklenmiyor.</string>
     <string name="auto_export_message">Otomatik dışa aktarımı aktifleştirmek için, verinin aktarılacağı 
  bir dosya seçilmelidir. Uygulamadaki veriler, uygulama açıldığında günde bir kez dışa aktarılacaktır. 
  Devam etmek için TAMAM\'a basın.</string>
