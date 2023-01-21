@@ -1,4 +1,2 @@
-- Redesign complet Material 3, avec couleurs dynamiques.
-- Transitions fluides entre les fenêtres de l'application.
-- Correction des raccourcis non fonctionnels.
-- Quelques changements et corrections de bugs mineurs.
+- Ajout d'une option pour l'exportation chiffrée
+- Mise à jour des traductions.
