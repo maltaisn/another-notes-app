@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Nicolas Maltais
+ * Copyright 2023 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,9 +27,12 @@ class BulletTextWatcher : TextWatcher {
 
     private var bulletChange: ((text: Editable) -> Unit)? = null
 
-    override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
+    override fun beforeTextChanged(text: CharSequence?, start: Int, count: Int, after: Int) {
+//        Log.d(TAG, "beforeTextChanged(\"${text?.replace("\n".toRegex(), "\\\\n")}\", $start, $count, $after)")
+    }
 
     override fun onTextChanged(text: CharSequence?, start: Int, before: Int, count: Int) {
+//        Log.d(TAG, "onTextChanged(\"${text?.replace("\n".toRegex(), "\\\\n")}\", $start, $before, $count)")
         val end = start + count - 1
         if (text != null && count - before == 1 && text[end] == '\n') {
             // User inserted a single char, a line break.
@@ -62,12 +65,13 @@ class BulletTextWatcher : TextWatcher {
     override fun afterTextChanged(text: Editable?) {
         // Apply bullet change, but set the change to null first, since applying it
         // will also result in call to afterTextChanged.
+//        Log.d(TAG, "afterTextChanged(\"${text?.replace("\n".toRegex(), "\\\\n")}\")")
         val change = bulletChange
         bulletChange = null
         change?.invoke(text ?: return)
     }
 
     companion object {
-        val BULLET_REGEX = """\s*[${Note.BULLET_CHARS}]\s*""".toRegex()
+        val BULLET_REGEX = """^\s*[${Note.BULLET_CHARS}]\s*""".toRegex()
     }
 }
