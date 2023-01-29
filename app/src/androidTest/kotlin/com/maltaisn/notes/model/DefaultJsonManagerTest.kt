@@ -113,20 +113,20 @@ class DefaultJsonManagerTest {
             title = "note",
             content = "content",
             metadata = BlankNoteMetadata,
-            addedDate = dateFor("2020-01-01"),
-            lastModifiedDate = dateFor("2020-02-01"),
+            addedDate = dateFor("2020-01-01Z"),
+            lastModifiedDate = dateFor("2020-02-01Z"),
             status = NoteStatus.ACTIVE,
             pinned = PinnedStatus.PINNED,
-            reminder = Reminder(dateFor("2020-03-01"), Recurrence(Recurrence.Period.DAILY),
-                dateFor("2020-03-02"), 1, false)
+            reminder = Reminder(dateFor("2020-03-01Z"), Recurrence(Recurrence.Period.DAILY),
+                dateFor("2020-03-02Z"), 1, false)
         ))
         notesDao.insert(Note(id = 9,
             type = NoteType.LIST,
             title = "list",
             content = "item 1\nitem 2",
             metadata = ListNoteMetadata(listOf(false, true)),
-            addedDate = dateFor("2019-01-01"),
-            lastModifiedDate = dateFor("2019-02-01"),
+            addedDate = dateFor("2019-01-01Z"),
+            lastModifiedDate = dateFor("2019-02-01Z"),
             status = NoteStatus.ARCHIVED,
             pinned = PinnedStatus.CANT_PIN,
             reminder = null
@@ -208,20 +208,20 @@ class DefaultJsonManagerTest {
                 title = "note",
                 content = "content",
                 metadata = BlankNoteMetadata,
-                addedDate = dateFor("2020-01-01"),
-                lastModifiedDate = dateFor("2020-02-01"),
+                addedDate = dateFor("2020-01-01Z"),
+                lastModifiedDate = dateFor("2020-02-01Z"),
                 status = NoteStatus.ACTIVE,
                 pinned = PinnedStatus.PINNED,
-                reminder = Reminder(dateFor("2020-03-01"), Recurrence(Recurrence.Period.DAILY),
-                    dateFor("2020-03-02"), 1, false)
+                reminder = Reminder(dateFor("2020-03-01Z"), Recurrence(Recurrence.Period.DAILY),
+                    dateFor("2020-03-02Z"), 1, false)
             ), listOf(label1, label10)),
             NoteWithLabels(Note(id = 9,
                 type = NoteType.LIST,
                 title = "list",
                 content = "item 1\nitem 2",
                 metadata = ListNoteMetadata(listOf(false, true)),
-                addedDate = dateFor("2019-01-01"),
-                lastModifiedDate = dateFor("2019-02-01"),
+                addedDate = dateFor("2019-01-01Z"),
+                lastModifiedDate = dateFor("2019-02-01Z"),
                 status = NoteStatus.ARCHIVED,
                 pinned = PinnedStatus.CANT_PIN,
                 reminder = null
@@ -237,12 +237,12 @@ class DefaultJsonManagerTest {
         val label10 = Label(10, "label10")
         notesDao.insertAll(listOf(
             // merge case: same ID, no reminder on old, labels merge.
-            testNote(id = 1, added = dateFor("2020-01-01")),
+            testNote(id = 1, added = dateFor("2020-01-01Z")),
             // merge case: different dates, ID clash.
-            testNote(id = 9, added = dateFor("2021-01-01")),
+            testNote(id = 9, added = dateFor("2021-01-01Z")),
             // merge case: different reminders
-            testNote(id = 12, added = dateFor("2021-01-01"),
-                reminder = Reminder(dateFor("2021-01-02"), null, dateFor("2021-01-03"), 1, true)),
+            testNote(id = 12, added = dateFor("2021-01-01Z"),
+                reminder = Reminder(dateFor("2021-01-02Z"), null, dateFor("2021-01-03Z"), 1, true)),
         ))
         labelsDao.insert(label1)
         labelsDao.insert(label3)
@@ -295,8 +295,8 @@ class DefaultJsonManagerTest {
         "status": 0,
         "pinned": 1,
         "reminder": {
-          "start": "2021-01-02T00:00:00.000Z",
-          "next": "2022-01-02T00:00:00.000Z",
+          "start": "2021-01-03T00:00:00.000Z",
+          "next": "2022-01-03T00:00:00.000Z",
           "count": 1,
           "done": false
         }
@@ -322,20 +322,20 @@ class DefaultJsonManagerTest {
                 title = "note",
                 content = "content",
                 metadata = BlankNoteMetadata,
-                addedDate = dateFor("2020-01-01"),
-                lastModifiedDate = dateFor("2020-01-01"),
+                addedDate = dateFor("2020-01-01Z"),
+                lastModifiedDate = dateFor("2020-01-01Z"),
                 status = NoteStatus.ACTIVE,
                 pinned = PinnedStatus.PINNED,
-                reminder = Reminder(dateFor("2020-03-01"), Recurrence(Recurrence.Period.DAILY),
-                    dateFor("2020-03-02"), 1, false)
+                reminder = Reminder(dateFor("2020-03-01Z"), Recurrence(Recurrence.Period.DAILY),
+                    dateFor("2020-03-02Z"), 1, false)
             ), listOf(label1, label3, label9, label11)),
             NoteWithLabels(
-                testNote(id = 9, added = dateFor("2021-01-01")),
+                testNote(id = 9, added = dateFor("2021-01-01Z")),
                 emptyList()
             ),
             NoteWithLabels(
-                testNote(id = 12, added = dateFor("2021-01-01"),
-                    reminder = Reminder(dateFor("2021-01-02"), null, dateFor("2021-01-03"), 1, true)),
+                testNote(id = 12, added = dateFor("2021-01-01Z"),
+                    reminder = Reminder(dateFor("2021-01-02Z"), null, dateFor("2021-01-03Z"), 1, true)),
                 emptyList()
             ),
             NoteWithLabels(Note(id = 13,
@@ -343,15 +343,15 @@ class DefaultJsonManagerTest {
                 title = "list",
                 content = "item 1\nitem 2",
                 metadata = ListNoteMetadata(listOf(false, true)),
-                addedDate = dateFor("2019-01-01"),
-                lastModifiedDate = dateFor("2019-02-01"),
+                addedDate = dateFor("2019-01-01Z"),
+                lastModifiedDate = dateFor("2019-02-01Z"),
                 status = NoteStatus.ARCHIVED,
                 pinned = PinnedStatus.CANT_PIN,
                 reminder = null
             ), listOf(label1, label9)),
             NoteWithLabels(
-                testNote(id = 14, added = dateFor("2021-01-01"),
-                    reminder = Reminder(dateFor("2021-01-02"), null, dateFor("2022-01-02"), 1, false)),
+                testNote(id = 14, added = dateFor("2021-01-01Z"),
+                    reminder = Reminder(dateFor("2021-01-03Z"), null, dateFor("2022-01-03Z"), 1, false)),
                 emptyList()
             ),
         ), notesDao.getAll().toSet())
@@ -404,20 +404,20 @@ class DefaultJsonManagerTest {
             title = "note",
             content = "content",
             metadata = BlankNoteMetadata,
-            addedDate = dateFor("2020-01-01"),
-            lastModifiedDate = dateFor("2020-02-01"),
+            addedDate = dateFor("2020-01-01Z"),
+            lastModifiedDate = dateFor("2020-02-01Z"),
             status = NoteStatus.ACTIVE,
             pinned = PinnedStatus.PINNED,
-            reminder = Reminder(dateFor("2020-03-01"), Recurrence(Recurrence.Period.DAILY),
-                dateFor("2020-03-02"), 1, false)
+            reminder = Reminder(dateFor("2020-03-01Z"), Recurrence(Recurrence.Period.DAILY),
+                dateFor("2020-03-02Z"), 1, false)
         ))
         notesDao.insert(Note(id = 9,
             type = NoteType.LIST,
             title = "list",
             content = "item 1\nitem 2",
             metadata = ListNoteMetadata(listOf(false, true)),
-            addedDate = dateFor("2019-01-01"),
-            lastModifiedDate = dateFor("2019-02-01"),
+            addedDate = dateFor("2019-01-01Z"),
+            lastModifiedDate = dateFor("2019-02-01Z"),
             status = NoteStatus.ARCHIVED,
             pinned = PinnedStatus.CANT_PIN,
             reminder = null
@@ -447,20 +447,20 @@ class DefaultJsonManagerTest {
                 title = "note",
                 content = "content",
                 metadata = BlankNoteMetadata,
-                addedDate = dateFor("2020-01-01"),
-                lastModifiedDate = dateFor("2020-02-01"),
+                addedDate = dateFor("2020-01-01Z"),
+                lastModifiedDate = dateFor("2020-02-01Z"),
                 status = NoteStatus.ACTIVE,
                 pinned = PinnedStatus.PINNED,
-                reminder = Reminder(dateFor("2020-03-01"), Recurrence(Recurrence.Period.DAILY),
-                    dateFor("2020-03-02"), 1, false)
+                reminder = Reminder(dateFor("2020-03-01Z"), Recurrence(Recurrence.Period.DAILY),
+                    dateFor("2020-03-02Z"), 1, false)
             ), listOf(label1, label10)),
             NoteWithLabels(Note(id = 9,
                 type = NoteType.LIST,
                 title = "list",
                 content = "item 1\nitem 2",
                 metadata = ListNoteMetadata(listOf(false, true)),
-                addedDate = dateFor("2019-01-01"),
-                lastModifiedDate = dateFor("2019-02-01"),
+                addedDate = dateFor("2019-01-01Z"),
+                lastModifiedDate = dateFor("2019-02-01Z"),
                 status = NoteStatus.ARCHIVED,
                 pinned = PinnedStatus.CANT_PIN,
                 reminder = null
@@ -496,139 +496,25 @@ class DefaultJsonManagerTest {
                 title = "note",
                 content = "content",
                 metadata = BlankNoteMetadata,
-                addedDate = dateFor("2020-01-01"),
-                lastModifiedDate = dateFor("2020-02-01"),
+                addedDate = dateFor("2020-01-01Z"),
+                lastModifiedDate = dateFor("2020-02-01Z"),
                 status = NoteStatus.ACTIVE,
                 pinned = PinnedStatus.PINNED,
-                reminder = Reminder(dateFor("2020-03-01"), Recurrence(Recurrence.Period.DAILY),
-                    dateFor("2020-03-02"), 1, false)
+                reminder = Reminder(dateFor("2020-03-01Z"), Recurrence(Recurrence.Period.DAILY),
+                    dateFor("2020-03-02Z"), 1, false)
             ), listOf(label1, label10)),
             NoteWithLabels(Note(id = 9,
                 type = NoteType.LIST,
                 title = "list",
                 content = "item 1\nitem 2",
                 metadata = ListNoteMetadata(listOf(false, true)),
-                addedDate = dateFor("2019-01-01"),
-                lastModifiedDate = dateFor("2019-02-01"),
+                addedDate = dateFor("2019-01-01Z"),
+                lastModifiedDate = dateFor("2019-02-01Z"),
                 status = NoteStatus.ARCHIVED,
                 pinned = PinnedStatus.CANT_PIN,
                 reminder = null
             ), listOf(label1, label3)),
         ), notesDao.getAll().toSet())
-    }
-
-    @Test
-    fun testEncryptedJsonImportMerge() = runBlocking {
-        if (shouldIgnoreEncryptionTest()) {
-            return@runBlocking
-        }
-
-        val key = encryptionSetup()
-
-        // insert existing data
-        val label1 = Label(1, "label0")
-        val label3 = Label(3, "label3")
-        val label10 = Label(10, "label10")
-        notesDao.insertAll(listOf(
-            // merge case: same ID, no reminder on old, labels merge.
-            testNote(id = 1, added = dateFor("2020-01-01")),
-            // merge case: different dates, ID clash.
-            testNote(id = 9, added = dateFor("2021-01-01")),
-            // merge case: different reminders
-            testNote(id = 12, added = dateFor("2021-01-01"),
-                reminder = Reminder(dateFor("2021-01-02"), null, dateFor("2021-01-03"), 1, true)),
-        ))
-        labelsDao.insert(label1)
-        labelsDao.insert(label3)
-        labelsDao.insert(label10)
-        labelsDao.insertRefs(listOf(LabelRef(1, 1), LabelRef(1, 3)))
-
-        // The test data is identical to the one used in testUnencryptedJsonImportMerge
-        @Language("JSON") val jsonData = """{
-    "salt": "Wk7ITADlYDBTP/o8GtupJyWemvDClrDNxXKhoMBuTIp8QjlAlPdVAWfAi+B3GWTn/YmqgBP3OCK20Vmcm9hQbzwNfnXsnChnPu462ALv+WKf8y2NirINyWr5jG/tAOaE6bGNL+ZE4ClppTdBt82Gl87q6FX0pFqhJtmrE+8jLmI",
-    "nonce":"QyUp/nMOTWaJqrRv",
-    "ciphertext": "/hRHbo7THTXaKaus+yF+tskMDXxOTwVWJP3eZx0hrEZllK/tYEWkd0IUctAb3kiv6GW2SLRxX7T1Y7+OAaa7HbyJmass+0tVwmh61drLobeEylEQGwLSNfvm3TBz7Von9R8S8s5B5rg4IHXC8kqVSH9PAdg9LlUqrLTLtoN8bRk4SrnOsK+Kj1RLgUhJ9SYNeKpqJaUYHHBQpy88SviMAWSksNBrWMVdMXqvT7M2JT6+0scHwboHlHn74c66YiVGM6SuCJNlQWSCFG6znXXL7xBJ8Jhc/j5JbM934ubN0Y6tU5Hu04UP0E8l65WdQGqHwIMGMtyzkSFEJuaLy011+lwssPUmgfeDDPHmRRMgoQsruhx4kTOSZ97XuHHMb7ILpYUT6CtlR443nIbrXZnTNXna6B+KlmQpmHNenKlSo9pEh0LAndOqzgn8f1nqlVPqryNt5g8hBzmZCwL89tYcZyJeJKQ6cuJNRigcJISThlNIqYdzygmENWi/bBzY8uM3ofH1zdQnm4TOfFU9oSXNbumPZYojw6kkHOOk6UAYqXIpmtOSscB94vtOhB6QSdGDiUa+9DXsMajBNy/hhvob10yG1si+ejysBjMBTgP3UTaDwarCSzDI8fkjH9pwljtSgT54AkLGVRTn4ryeFF1c0cGpjHHKqIpm2AV3qvkRLbP/TkHGkLYAnpgZXQZ14fo/jFrZTgD+YfCji0PqLi0LYirILqLIXYY3tEF4/NCVeDK1IpyQe9lryt0Hr7FWZRwiprBNL1LdL948JrjhOlJP+KLtZ0q9HABseO7Oqd8l3lNmqe2PrLyJQHkbovVqE+SJU4w7BRU9OuZ6sMfKjMJpp0PmuKE1Hspq98qlKdsTg2Pc7o89ZRX/f9hz2MyY9RJT357SmxFePGeUiDIlvhVlx4aglY451lD+gs4ubFR21eH9uA8RszXEfd52UWxFE1sHKBRJkG/BwMvPqcYgG4FMYwT+IbaM+37k9sdF7w4kYMabMeSOBK4w8fW6iZRNAdqjEToVhxRF0id17w1vB/IyaS8xcf59BVhP6hsSnpF0jebc8GeggN2XqLYrTHTbEaPraMQ2UwWk2+WBYO7QZ/it12Bv9HZ/IWCUFdjpKMZGt7EVSseVu3Fij2QZ+fhE3gMxI8EOJx4uY9FIs1bWYAQxi6/dXNm+lDHLmU7atRzN2AHQZxFN2mCd9JedLlRWX29bzG5Z8lISFShqp1eHN3BwjK41r/4BbLqAWDOMuwqiD9N+TeQGldpWd2HFTp26DlcBduXPtkzUP3dn8r+OWz77ytFNydX0LIbAVyAc4qrtJURc/yUU9uXBAsR+jOtBjzCyAVR5oz+yNLWWbhGZPaQMd3T6q0TWQAR6jAbqT1pvM9ye1iy73atSx8pJOjjyENS90k8J2y0hQGEi46I3gaXASb+8JJdQ+zS0ToRF1gbfTKfu3M4FuHa06JNC0jhg+O6qDPIl6y9Zun4WMTos6oh1PaqG951A8jdKTQ60lUSY1ygDWn074Eg3GKya2Ui+8oj6SEoRkI9ELYU77eqBOOirH/idXrnknjqAnPHpWgYir2K5gpxbkP2tzQatwB0vo/Arwjvy+MlPdVgCTVIxu+NRpQBYD10TOp00ggIfHj9lwSU6oSX5JANqIqLQ6F2Lqm8/szf8KPAm4NSz/392vnFT5cyViJxozprer8rAZnUCuv9a//dlEzozRGDFfqg+BFXNdSB5XKSNgaEnD9nVMRqHUJ4QuVcN8iuYA0Fek6SSg9eOGDVA+6fXj+2xMrhMnX7I3o8Q2w3zT0nuZtDxjdl3HdxBigsgTnRfYNyKyvJiv1XLB8IqtJCa69DXf2tTEp0938XsCjGnnXcl/w9wtShM1uwB1EiCfmNRKi7pGNTj089a/O1LIxQYQ54kMgSd2iAcMiJTtJ6b0M99JHmZ960ZTBdt0tDI0LYm+b/TT7H3OA"
-}
-        """.trim().replace("\n", "")
-        assertEquals(ImportResult.SUCCESS, jsonManager.importJsonData(jsonData, importKey = key))
-
-        val label9 = Label(9, "label10 (2)")
-        val label11 = Label(11, "label11")
-
-        assertEquals(setOf(label1, label3, label9, label10, label11), labelsDao.getAll().toSet())
-
-        assertEquals(setOf(
-            NoteWithLabels(Note(id = 1,
-                type = NoteType.TEXT,
-                title = "note",
-                content = "content",
-                metadata = BlankNoteMetadata,
-                addedDate = dateFor("2020-01-01"),
-                lastModifiedDate = dateFor("2020-01-01"),
-                status = NoteStatus.ACTIVE,
-                pinned = PinnedStatus.PINNED,
-                reminder = Reminder(dateFor("2020-03-01"), Recurrence(Recurrence.Period.DAILY),
-                    dateFor("2020-03-02"), 1, false)
-            ), listOf(label1, label3, label9, label11)),
-            NoteWithLabels(
-                testNote(id = 9, added = dateFor("2021-01-01")),
-                emptyList()
-            ),
-            NoteWithLabels(
-                testNote(id = 12, added = dateFor("2021-01-01"),
-                    reminder = Reminder(dateFor("2021-01-02"), null, dateFor("2021-01-03"), 1, true)),
-                emptyList()
-            ),
-            NoteWithLabels(Note(id = 13,
-                type = NoteType.LIST,
-                title = "list",
-                content = "item 1\nitem 2",
-                metadata = ListNoteMetadata(listOf(false, true)),
-                addedDate = dateFor("2019-01-01"),
-                lastModifiedDate = dateFor("2019-02-01"),
-                status = NoteStatus.ARCHIVED,
-                pinned = PinnedStatus.CANT_PIN,
-                reminder = null
-            ), listOf(label1, label9)),
-            NoteWithLabels(
-                testNote(id = 14, added = dateFor("2021-01-01"),
-                    reminder = Reminder(dateFor("2021-01-02"), null, dateFor("2022-01-02"), 1, false)),
-                emptyList()
-            ),
-        ), notesDao.getAll().toSet())
-    }
-
-    @Test
-    fun testEncryptedJsonImportBadData() = runBlocking {
-        if (shouldIgnoreEncryptionTest()) {
-            return@runBlocking
-        }
-
-        val key = encryptionSetup()
-        // invalid data (bad rrule)
-        @Language("JSON") val jsonDataBadRrule = """{
-    "salt": "Wk7ITADlYDBTP/o8GtupJyWemvDClrDNxXKhoMBuTIp8QjlAlPdVAWfAi+B3GWTn/YmqgBP3OCK20Vmcm9hQbzwNfnXsnChnPu462ALv+WKf8y2NirINyWr5jG/tAOaE6bGNL+ZE4ClppTdBt82Gl87q6FX0pFqhJtmrE+8jLmI",
-    "nonce":"zk18Yk2BLLfTxMps",
-    "ciphertext":"Up3FFXcXnKgpng1+nrxarmfSfEck5HxYDAGMg15LtYEtNPqCRMIFZAZ1juylZJ5YlPWoeL4wyUJl5Jypwu8IkmUljm8M1gsY16N5fyYq51OwH5LZ871+H/uXbFb58XpIEf1z075rXdTzCAzAtcrPymDNnXBGtNe42hgjStGn9qQWrRwm0IMyMjpcIfvrI3cxbuZkISiva5ec2i1/XeunW/NuKKxivHLiuTrS70WUsKm5+4zetajI9Mu+Pu2bjzkVYvU8eJD3zqqVluHpiY73a03UJFZQcf9lgZhCPCJG5pDVyLy9ieCVppTwSCRGYRmaOrf57Q+JEC24nbAKe6ULQmz1NWFuG37E6u5yTg1QZlxyK0D392oXRK9tbuW8BPYk2mLuD0sct3KKzWmIhJYaSXPPviaNRZZHROrsQayms1gJBW/NXekyreH0md5DGOD1+gdqv4WNF8hy4+HvAYyOB8EEUw"
-}
-        """.trim().replace("\n", "")
-        assertEquals(ImportResult.BAD_FORMAT, jsonManager.importJsonData(jsonDataBadRrule, importKey = key))
-        // invalid data (missing field)
-        @Language("JSON") val jsonDataMissingField = """{
-    "salt": "Wk7ITADlYDBTP/o8GtupJyWemvDClrDNxXKhoMBuTIp8QjlAlPdVAWfAi+B3GWTn/YmqgBP3OCK20Vmcm9hQbzwNfnXsnChnPu462ALv+WKf8y2NirINyWr5jG/tAOaE6bGNL+ZE4ClppTdBt82Gl87q6FX0pFqhJtmrE+8jLmI",
-    "nonce":"+2+q/POnSHNbar6L",
-    "ciphertext":"hd0nyl8JKmzQq0cMxHWVumGUTTlCPAGFWODfB4iCx1xlIfdYLbgLIV+4NOjVLObxK3pJYr7eYw67NwvPYecTPbOC92S3"
-}
-        """.trim().replace("\n", "")
-        assertEquals(ImportResult.BAD_FORMAT, jsonManager.importJsonData(jsonDataMissingField, importKey = key))
-        // invalid version number
-        @Language("JSON") val jsonDataInvalidVersion = """{
-    "salt": "Wk7ITADlYDBTP/o8GtupJyWemvDClrDNxXKhoMBuTIp8QjlAlPdVAWfAi+B3GWTn/YmqgBP3OCK20Vmcm9hQbzwNfnXsnChnPu462ALv+WKf8y2NirINyWr5jG/tAOaE6bGNL+ZE4ClppTdBt82Gl87q6FX0pFqhJtmrE+8jLmI",
-    "nonce":"QsdNJ32Nao1FmUp3",
-    "ciphertext":"sz4c0uiToCZ8RHSvBXI8AcVs2mFcD+oOjf5i7+Y"
-}
-        """.trim().replace("\n", "")
-        assertEquals(ImportResult.BAD_DATA, jsonManager.importJsonData(jsonDataInvalidVersion, importKey = key))
     }
 
     @Test

@@ -1,7 +1,10 @@
+## v1.5.2 (TBD)
+- Fixed automatic bullet insertion adding bullets when bullet char was preceded by non whitespace.
+- Avoid duplicating same note with different reminder when importing data (#106).
+
 ## v1.5.1 (2023-01-14)
 - Added encrypted notes export (@nhoeher, #100).
 - Fixed data import not importing the hidden field of labels correctly.
-- Fixed automatic bullet insertion adding bullets when bullet char was preceded by non whitespace.
 
 ## v1.5.0 (2022-12-28)
 - Changes by @nhoeher

@@ -140,7 +140,6 @@ class DefaultJsonManager @Inject constructor(
                 return ImportResult.BAD_DATA
             }
             plaintext
-
         } catch (e: Exception) {
             // Data is probably not encrypted.
             data
@@ -254,7 +253,8 @@ class DefaultJsonManager @Inject constructor(
         val reminder = when {
             old.reminder == null && new.reminder != null -> new.reminder
             old.reminder != null && new.reminder == null -> old.reminder
-            old.reminder != null && old.reminder != new.reminder -> {
+            old.reminder != null && new.reminder != null &&
+                    !compareReminders(old.reminder, new.reminder) -> {
                 // Old and new notes have different reminders, do not merge to avoid losing one or the other.
                 return null
             }
@@ -263,6 +263,9 @@ class DefaultJsonManager @Inject constructor(
 
         return new.copy(reminder = reminder)
     }
+
+    private fun compareReminders(old: Reminder, new: Reminder) =
+        old.start == new.start && old.recurrence == new.recurrence
 
     companion object {
         private const val VERSION = 4

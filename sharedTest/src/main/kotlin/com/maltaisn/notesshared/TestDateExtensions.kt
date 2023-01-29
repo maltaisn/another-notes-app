@@ -27,6 +27,7 @@ var datePatterns = listOf(
     DatePattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", TimeZone.getTimeZone("GMT"), 24),
     DatePattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX", null, null),
     DatePattern("yyyy-MM-dd'T'HH:mm:ss.SSS", TimeZone.getDefault(), 23),
+    DatePattern("yyyy-MM-dd'Z'", TimeZone.getTimeZone("GMT"), 11),
     DatePattern("yyyy-MM-dd", TimeZone.getDefault(), 10)
 )
 
