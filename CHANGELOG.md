@@ -1,4 +1,6 @@
 ## v1.5.2 (TBD)
+- Allow creating note from shared file.
+- Fixed share action not working if used more than once during execution.
 - Fixed automatic bullet insertion adding bullets when bullet char was preceded by non whitespace.
 - Avoid duplicating same note with different reminder when importing data (#106).
 
