@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?><!--
-  Copyright 2021 Nicolas Maltais
+  Copyright 2023 Nicolas Maltais
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -31,6 +31,5 @@
     android:inputType="textMultiLine|textLongMessage|textCapSentences|textAutoCorrect"
     android:textAppearance="?textAppearanceBody1"
     android:textSize="15sp"
-    android:autoLink="web|email"
     android:linksClickable="true"
     />

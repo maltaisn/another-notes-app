@@ -17,6 +17,7 @@
 package com.maltaisn.notes.ui.edit.adapter
 
 import android.text.Editable
+import android.text.Spannable
 import android.text.TextWatcher
 import android.text.format.DateUtils
 import android.text.style.CharacterStyle
@@ -50,6 +51,8 @@ import com.maltaisn.notes.ui.edit.BulletTextWatcher
 import com.maltaisn.notes.ui.edit.LinkArrowKeyMovementMethod
 import com.maltaisn.notes.utils.RelativeDateFormatter
 import java.text.DateFormat
+
+private val URL_REGEX = """[a-z]+://[^ \n]+""".toRegex().toPattern()
 
 /**
  * Interface implemented by any item that can have its focus position changed.
@@ -121,8 +124,7 @@ class EditContentViewHolder(binding: ItemEditContentBinding, callback: EditAdapt
         contentEdt.movementMethod = LinkArrowKeyMovementMethod.getInstance()  // Clickable links
         contentEdt.doAfterTextChanged { editable ->
             // Add new links
-            LinkifyCompat.addLinks(editable ?: return@doAfterTextChanged,
-                Linkify.WEB_URLS or Linkify.EMAIL_ADDRESSES)
+            addLinks(editable ?: return@doAfterTextChanged)
 
             if (editable != item?.content?.text) {
                 item?.content = AndroidEditableText(editable)
@@ -199,8 +201,7 @@ class EditItemViewHolder(binding: ItemEditItemBinding, callback: EditAdapter.Cal
             },
             afterTextChanged = { editable ->
                 // Add new links
-                LinkifyCompat.addLinks(editable ?: return@addTextChangedListener,
-                    Linkify.WEB_URLS or Linkify.EMAIL_ADDRESSES)
+                addLinks(editable ?: return@addTextChangedListener)
             })
         itemEdt.movementMethod = LinkArrowKeyMovementMethod.getInstance()  // Clickable links
         itemEdt.setOnFocusChangeListener { _, hasFocus ->
@@ -366,4 +367,9 @@ private class PrepareCursorControllersListener : View.OnAttachStateChangeListene
     }
 
     override fun onViewDetachedFromWindow(v: View) = Unit
+}
+
+private fun addLinks(spannable: Spannable) {
+    LinkifyCompat.addLinks(spannable, Linkify.EMAIL_ADDRESSES or Linkify.WEB_URLS or Linkify.PHONE_NUMBERS)
+    LinkifyCompat.addLinks(spannable, URL_REGEX, null)
 }
