@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Copyright 2023 Nicolas Maltais
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  -->
+<resources>
+    <!-- Do not translate the app name -->
+    <!-- Can be translated to provided a sensible localized name for a "Notes" app -->
+    <string name="app_name_short">Notities</string>
+    <string name="action_archive">Archiveren</string>
+    <string name="action_cancel">Annuleren</string>
+    <string name="action_clear">Wissen</string>
+    <string name="action_convert_to_list">Zet om naar lijst</string>
+    <string name="action_convert_to_text">Zet om naar tekst</string>
+    <string name="action_copy">Kopiëren</string>
+    <string name="action_delete">Verwijderen</string>
+    <string name="action_delete_checked">Verwijder aangevinkte items</string>
+    <string name="action_delete_forever">Definitief verwijderen</string>
+    <string name="action_delete_selection">Verwijder selectie</string>
+    <string name="action_delete_selection_forever">Verwijder selectie definitief</string>
+    <string name="action_empty_trash">Prullenbak leegmaken</string>
+    <string name="action_empty_trash_short">Legen</string>
+    <string name="action_keep">Behouden</string>
+    <string name="action_labels">Wijzig labels</string>
+    <string name="action_layout_grid">Als raster weergeven</string>
+    <string name="action_layout_list">Als lijst weergeven</string>
+    <string name="action_manage">Beheren</string>
+    <string name="action_mark_as_done">Markeer als voltooid</string>
+    <string name="action_none">Geen</string>
+    <string name="action_ok">OK</string>
+    <string name="action_pin">Vastzetten</string>
+    <string name="action_postpone">Uitstellen</string>
+    <string name="action_reminder_add">Herinnering toevoegen</string>
+    <string name="action_reminder_edit">Herinnering bewerken</string>
+    <string name="action_rename">Naam wijzigen</string>
+    <string name="action_restore">Herstellen</string>
+    <string name="action_search">Zoeken</string>
+    <string name="action_select_all">Alles selecteren</string>
+    <string name="action_settings">Instellingen</string>
+    <string name="action_share">Delen</string>
+    <string name="action_unarchive">Uit archief halen</string>
+    <string name="action_uncheck_all">Vink alle items uit</string>
+    <string name="action_undo">Ongedaan maken</string>
+    <string name="action_unpin">Losmaken</string>
+    <!-- Shortcuts -->
+    <!-- Note: normal length is ideally 25 chars or less, short is 10 chars or less. -->
+    <string name="shortcut_text_note">Nieuwe tekstnotitie</string>
+    <string name="shortcut_text_note_short">Nieuwe tekst</string>
+    <string name="shortcut_list_note">Nieuwe lijstnotitie</string>
+    <string name="shortcut_list_note_short">Nieuwe lijst</string>
+    <string name="shortcut_reminders">Herinneringen</string>
+    <string name="shortcut_reminders_short">Herinneringen</string>
+    <!-- Home -->
+    <string name="note_location_active">Notities</string>
+    <string name="note_location_archived">Gearchiveerd</string>
+    <string name="note_location_deleted">Verwijderd</string>
+    <string name="note_location_labels">Labels</string>
+    <string name="note_pinned">Vastgezet</string>
+    <string name="note_not_pinned">Overige</string>
+    <string name="note_placeholder_active">Je hebt nog geen notities.\nKlik op + om er een toe te voegen.</string>
+    <string name="note_placeholder_archived">Geen gearchiveerde notities</string>
+    <string name="note_placeholder_deleted">De prullenbak is leeg</string>
+    <plurals name="note_list_item_info">
+        <item quantity="one">+ %d ander lijst-item</item>
+        <item quantity="other">+ %d andere lijst-items</item>
+    </plurals>
+    <plurals name="note_list_item_info_checked">
+        <item quantity="one">+ %d aangevinkt item</item>
+        <item quantity="other">+ %d aangevinkte items</item>
+    </plurals>
+    <string name="trash_reminder_message">Notities in de prullenbak worden na %d dagen automatisch verwijderd.</string>
+    <string name="trash_delete_message">Deze notitie wordt definitief verwijderd.</string>
+    <string name="trash_delete_selected_message">Geselecteerde notities worden defrinitief verwijderd.</string>
+    <string name="trash_empty_message">Alle notities in de prullenbak worden definitief verwijderd.</string>
+    <string name="search_hint">Doorzoek notities</string>
+    <string name="search_empty_placeholder">Geen zoekresultaat gevonden.</string>
+    <string name="sort_title">Sorteeropties</string>
+    <string name="sort_direction">Sorteer richting</string>
+    <string name="sort_direction_ascending">Oplopend</string>
+    <string name="sort_direction_descending">Aflopend</string>
+    <string name="sort_field">Sorteren op</string>
+    <string name="sort_field_created">Aanmaakdatum</string>
+    <string name="sort_field_modified">Datum laatste wijziging</string>
+    <string name="sort_field_title">Titel</string>
+    <!-- Edit -->
+    <string name="edit_add_title">Notitie aanmaken</string>
+    <string name="edit_change_title">Notitie bewerken</string>
+    <string name="edit_hint_note_title">Titel</string>
+    <string name="edit_hint_note_content">Notitie</string>
+    <string name="edit_hint_note_item">Lijst-item</string>
+    <string name="edit_message_blank_note_discarded">Lege notitie verwijderd.</string>
+    <plurals name="edit_move_archive_message">
+        <item quantity="one">Notitie gearchiveerd.</item>
+        <item quantity="other">Notities gearchiveerd.</item>
+    </plurals>
+    <plurals name="edit_message_move_delete">
+        <item quantity="one">Notitie verplaatst naar de prullenbak.</item>
+        <item quantity="other">Notities verplaatst naar de prullenbak.</item>
+    </plurals>
+    <plurals name="edit_message_move_restore">
+        <item quantity="one">Notitie hersteld.</item>
+        <item quantity="other">Notities hersteld.</item>
+    </plurals>
+    <plurals name="edit_message_move_unarchive">
+        <item quantity="one">Notitie uit archief gehaald.</item>
+        <item quantity="other">Notities uit archief gehaald.</item>
+    </plurals>
+    <string name="edit_in_trash_message">Notitie kan niet bewerkt worden in de prullenbak.</string>
+    <string name="edit_copy_suffix">Kopiëren</string>
+    <string name="edit_copy_untitled_name">Naamloos</string>
+    <string name="edit_convert_keep_checked">Verwijder aangevinkte items?</string>
+    <plurals name="edit_checked_items">
+        <item quantity="one">%d aangevinkt item</item>
+        <item quantity="other">%d aangevinkte items</item>
+    </plurals>
+    <!-- Reminder -->
+    <string name="note_reminders">Herinneringen</string>
+    <string name="reminder_upcoming">Toekomstig</string>
+    <string name="reminder_today">Vandaag</string>
+    <string name="reminder_overdue">Verlopen</string>
+    <string name="reminder_date">Datum</string>
+    <string name="reminder_time">Tijd</string>
+    <string name="reminder_invalid_time">Deze tijd is al voorbij.</string>
+    <string name="reminder_notif_channel_title">Herinneringen</string>
+    <string name="reminder_notif_channel_descr">Herinneringen ingesteld op notities</string>
+    <string name="reminder_empty_placeholder">Geen herinneringen ingesteld</string>
+    <string name="reminder_restricted_battery">Herinneringsmeldingen werken mogelijk niet correct omdat de
+    app het batterijgebruik heeft beperkt. Dit kan worden gewijzigd in de instellingen van de app.</string>
+    <string name="reminder_notif_permission">Om herinneringsmeldingen te kunnen verzenden, heeft de app toestemming nodig.
+    Klik op OK om het toestemmingsverzoek weer te geven. U kunt daarna een herinnering instellen.</string>
+    <string name="reminder_notif_permission_denied">De notificatie permissie is geweigerd.
+    Herinnering alarmen zullen niet werken totdat deze is ingeschakeld.</string>
+    <!-- Labels -->
+    <string name="label_create">Nieuw label aanmaken</string>
+    <string name="label_edit">Labelnaam bewerken</string>
+    <string name="label_manage">Labels beheren</string>
+    <string name="label_select">Selecteer labels</string>
+    <string name="label_already_exists">Er bestaat al een label met deze naam.</string>
+    <string name="label_hidden_option">Verberg notities met dit label uit de actieve en gearchiveerde notitiesecties</string>
+    <string name="label_empty_placeholder">Geen labels aangemaakt</string>
+    <string name="label_delete_message">Geselecteerde labels worden verwijderd, maar de bijbehorende notities
+    worden bewaard.</string>
+    <string name="label_notes_empty_placeholder">Geen notities bevatten dit label</string>
+    <!-- Settings -->
+    <string name="pref_group_appearance">Uiterlijk</string>
+    <string name="pref_theme">App thema</string>
+    <string name="pref_theme_light">Licht</string>
+    <string name="pref_theme_dark">Donker</string>
+    <string name="pref_theme_system">Volg systeem</string>
+    <string name="pref_dynamic_colors">Gebruik dynamische kleuren</string>
+    <string name="pref_strikethrough_checked">Doorstreep aangevinkte lijst-items</string>
+    <string name="pref_preview_labels">Maximum aantal labels in preview</string>
+    <string name="pref_shown_date">Datumweergave voor notities</string>
+    <string name="pref_shown_date_added">Aanmaakdatum</string>
+    <string name="pref_shown_date_modified">Datum laatste wijziging</string>
+    <string name="pref_shown_date_none">Geen datum tonen</string>
+    <string name="pref_preview_lines">Maximum aantal regels in previews</string>
+    <string name="pref_preview_lines_summary">Configureer hoeveel regels en items worden weergegeven op notities,
+        voor elke lay-out en notitie type</string>
+    <string name="pref_preview_lines_grid_layout">Rasterweergave</string>
+    <string name="pref_preview_lines_list_layout">Lijstweergave</string>
+    <string name="pref_preview_lines_text">Regels in tekstnotitie preview</string>
+    <string name="pref_preview_lines_list">Items in lijstnotitie preview</string>
+    <string name="pref_group_behavior">Gedrag</string>
+    <string name="pref_behavior_swipe_action_left">Veegactie links</string>
+    <string name="pref_behavior_swipe_action_right">Veegactie rechts</string>
+    <string name="pref_behavior_move_checked">Verplaats aangevinkte items naar onderen</string>
+    <string name="pref_group_data">Gegevens</string>
+    <string name="pref_data_export">Gegevens exporteren</string>
+    <string name="pref_data_export_summary">Notitiegegevens exporteren als JSON</string>
+    <string name="pref_data_encrypted_export">Versleutelde export</string>
+    <string name="pref_data_encrypted_export_summary">Versleutel de geëxporteerde notities. Toegang is niet mogelijk zonder
+        het juiste wachtwoord.</string>
+    <string name="pref_data_auto_export">Automatische gegevensexport</string>
+    <string name="pref_data_auto_export_summary">Exporteer de data van de app dagelijks automatisch naar een bestand.</string>
+    <string name="pref_data_auto_export_date">(Laatst geëxporteerd op %s)</string>
+    <string name="pref_data_import">Importeer gegevens</string>
+    <string name="pref_data_import_summary">Importeer eerder geëxporteerde JSON-gegevens, en voeg samen met bestaande gegevens.</string>
+    <string name="pref_data_clear">Alle gegevens wissen</string>
+    <string name="pref_data_clear_confirm_message">Alle notitiegegevens worden permanent verwijderd!
+        Dit kan niet ongedaan worden gemaakt.</string>
+    <string name="pref_data_clear_success_message">Verwijderen van alle gegevens geslaagd.</string>
+    <string name="pref_group_about">Over</string>
+    <string name="pref_about_view_source">Bekijken op GitHub</string>
+    <string name="pref_about_view_licenses">Open-source licenties</string>
+    <string name="pref_about_version">Versie</string>
+    <string name="pref_restart_dialog_title">Herstarten vereist!</string>
+    <string name="pref_restart_dialog_description">De app moet worden herstart om deze wijzigingen door te voeren.
+        Wil je de app nu opnieuw opstarten?</string>
+    <!-- Import/export data messages -->
+    <string name="export_success">Gegevens-export geslaagd!</string>
+    <string name="export_fail">Fout opgetreden tijdens het exporteren van de gegevens.</string>
+    <string name="export_serialization_fail">Fout opgetreden tijdens het exporteren van gegevens.
+        Probeer versleuteling uit te schakelen en probeer het dan opnieuw.</string>
+    <string name="encrypted_export_dialog_title">Wachtwoord instellen</string>
+    <string name="encrypted_export_password">Wachtwoord</string>
+    <string name="encrypted_export_repeat_password">Wachtwoord bevestigen</string>
+    <string name="encrypted_export_password_matching_error">Wachtwoorden komen niet overeen</string>
+    <string name="encrypted_export_key_generation_successful">Versleuteling inschakelen geslaagd!</string>
+    <string name="encrypted_export_key_deletion_successful">Versleuteling uitschakelen geslaagd!</string>
+    <string name="import_success">Gegevens-import geslaagd!</string>
+    <string name="import_future_version">Gegevens zijn succesvol geïmporteerd! Let op dat sommige informatie
+        verloren kan zijn gegaan omdat de gegevens afkomstig zijn van een latere versie.</string>
+    <string name="import_bad_input">Fout opgetreden tijdens het lezen van dit bestand.</string>
+    <string name="import_bad_format">Kan gegevens niet importeren, JSON-data is ongeldig.</string>
+    <string name="import_bad_data">Kan gegevens niet importeren, sommige velden hebben ongeldige waarden.
+        Dit kan gebeuren als je gegevens uit een latere versie importeert, probeer de app bij te werken.</string>
+    <string name="encrypted_import_dialog_title">Wachtwoord invoeren</string>
+    <string name="encrypted_import_key_error">Er is een fout opgetreden tijdens het ontsleutelen van dit bestand.
+        Controleer of het wachtwoord juist is.</string>
+    <string name="encrypted_import_encryption_unsupported">Kan gegevens niet importeren, versleuteling wordt niet ondersteund
+        op deze versie van Android.</string>
+    <string name="auto_export_message">Om automatische export mogelijk te maken, moet een bestand gekozen worden
+        om de gegevens op te slaan. De gegevens van de app worden één keer per dag geëxporteerd wanneer de app is geopend.
+        Klik op OK om verder te gaan.</string>
+    <string name="auto_export_fail">Gegevens automatisch exporteren mislukt. Zorg ervoor dat de exportlocatie
+        nog steeds bestaat en toegankelijk is. Stel dan automatisch exporteren opnieuw in.</string>
+    <!-- Content description -->
+    <string name="content_descrp_open_drawer">Open menu</string>
+    <string name="content_descrp_back">Ga terug</string>
+    <string name="content_descrp_label_hidden">Notities met dit label zijn verborgen</string>
+    <!-- Relative date time format -->
+    <string name="date_rel_today">Vandaag, %s</string>
+    <string name="date_rel_yesterday">Gisteren, %s</string>
+    <string name="date_rel_tomorrow">Morgen %s</string>
+    <plurals name="date_rel_days_past">
+        <item quantity="one">%d dagen geleden, %s</item>
+        <!-- used with quantity >= 2, format values: number of days, time -->
+        <item quantity="other">%d dagen geleden, %s</item>
+    </plurals>
+    <plurals name="date_rel_days_future">
+        <item quantity="one">Over %d dag, %s</item>
+        <!-- used with quantity >= 2, format values: number of days, time -->
+        <item quantity="other">Over %d dagen, %s</item>
+    </plurals>
+    <!-- format values: date, time -->
+    <string name="date_rel_absolute">%1$s, %2$s</string>
+</resources>
