@@ -50,7 +50,7 @@
         android:minWidth="0dp"
         />
 
-    <EditText
+    <com.maltaisn.notes.ui.edit.adapter.EditEditText
         android:id="@+id/content_edt"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -67,6 +67,7 @@
         android:textSize="15sp"
         android:linksClickable="true"
         app:emojiCompatEnabled="false"
+        app:autoLink="true"
         tools:ignore="LabelFor"
         tools:text="Mauris rutrum massa placerat felis pharetra tristique. Nulla sed urna a dui vehicula euismod."
         />

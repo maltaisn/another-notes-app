@@ -243,22 +243,28 @@ public class LinkArrowKeyMovementMethod extends ArrowKeyMovementMethod {
 
             if (links.length != 0) {
                 ClickableSpan link = links[0];
-                if (action == MotionEvent.ACTION_UP) {
-                    linkOnClick(widget, link, 0);
-                } else {
-                    if (widget.getContext().getApplicationInfo().targetSdkVersion >= Build.VERSION_CODES.P) {
-                        // Selection change will reposition the toolbar. Hide it for a few ms for a
-                        // smoother transition.
-                        try {
-                            Method method = View.class.getMethod("hideFloatingToolbar", int.class);
-                            method.invoke(widget, HIDE_FLOATING_TOOLBAR_DELAY_MS);
-                        } catch (Exception e) {
-                            // reflection failed
+                // Don't open the link if clicked on the first or last character.
+                // This is very annoying as clicking near a link to add text next to it will open it,
+                // including when clicking in the end margin very far off the link!
+                if (buffer.getSpanStart(link) != off && buffer.getSpanEnd(link) != off) {
+                    if (action == MotionEvent.ACTION_UP) {
+                        System.out.println("Touch event up");
+                        linkOnClick(widget, link, 0);
+                    } else {
+                        if (widget.getContext().getApplicationInfo().targetSdkVersion >= Build.VERSION_CODES.P) {
+                            // Selection change will reposition the toolbar. Hide it for a few ms for a
+                            // smoother transition.
+                            try {
+                                Method method = View.class.getMethod("hideFloatingToolbar", int.class);
+                                method.invoke(widget, HIDE_FLOATING_TOOLBAR_DELAY_MS);
+                            } catch (Exception e) {
+                                // reflection failed
+                            }
                         }
+                        Selection.setSelection(buffer,
+                                buffer.getSpanStart(link),
+                                buffer.getSpanEnd(link));
                     }
-                    Selection.setSelection(buffer,
-                            buffer.getSpanStart(link),
-                            buffer.getSpanEnd(link));
                 }
                 return true;
             }

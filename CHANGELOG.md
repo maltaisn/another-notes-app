@@ -3,6 +3,8 @@
 - Fixed share action not working if used more than once during execution.
 - Fixed automatic bullet insertion adding bullets when bullet char was preceded by non whitespace.
 - Avoid duplicating same note with different reminder when importing data (#106).
+- Added support for more link types when auto-linking text (#107).
+- Avoid opening links when clicked on first or last character (#108).
 
 ## v1.5.1 (2023-01-14)
 - Added encrypted notes export (@nhoeher, #100).
