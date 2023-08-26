@@ -25,16 +25,20 @@ import android.text.method.ArrowKeyMovementMethod;
 import android.text.method.LinkMovementMethod;
 import android.text.method.MovementMethod;
 import android.text.style.ClickableSpan;
+import android.text.style.URLSpan;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.textclassifier.TextLinks;
 import android.widget.TextView;
 
+import com.maltaisn.notes.ui.edit.adapter.EditEditText;
+
 import java.lang.reflect.Method;
 
 /**
  * Class that combines {@link LinkMovementMethod} and {@link ArrowKeyMovementMethod}.
+ * This class only works when used with a {@link EditEditText}.
  */
 public class LinkArrowKeyMovementMethod extends ArrowKeyMovementMethod {
     private static final int CLICK = 1;
@@ -101,21 +105,13 @@ public class LinkArrowKeyMovementMethod extends ArrowKeyMovementMethod {
         return super.right(widget, buffer);
     }
 
-    private static void linkOnClick(View widget, ClickableSpan link, int invocationMethod) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            if (link instanceof TextLinks.TextLinkSpan) {
-                TextLinks.TextLinkSpan linkSpan = (TextLinks.TextLinkSpan) link;
-                try {
-                    Method method = TextLinks.TextLinkSpan.class.getMethod("onClick", View.class, int.class);
-                    method.invoke(linkSpan, widget, invocationMethod);
-                } catch (Exception e) {
-                    // reflection failed
-                }
-            } else {
-                link.onClick(widget);
-            }
-        } else {
-            link.onClick(widget);
+    private static void linkOnClick(TextView widget, Spannable buffer, ClickableSpan link) {
+        if (link instanceof URLSpan) {
+            int start = buffer.getSpanStart(link);
+            int end = buffer.getSpanEnd(link);
+            String url = ((URLSpan) link).getURL();
+            String text = buffer.subSequence(start, end).toString();
+            ((EditEditText) widget).onLinkClicked(text, url);
         }
     }
 
@@ -155,7 +151,7 @@ public class LinkArrowKeyMovementMethod extends ArrowKeyMovementMethod {
         }
 
         switch (what) {
-            case CLICK:
+            case CLICK: {
                 if (selStart == selEnd) {
                     return false;
                 }
@@ -167,14 +163,14 @@ public class LinkArrowKeyMovementMethod extends ArrowKeyMovementMethod {
                 }
 
                 ClickableSpan link = links[0];
-                linkOnClick(widget, link, 1);
+                final int start = buffer.getSpanStart(link);
+                final int end = buffer.getSpanEnd(link);
+                linkOnClick(widget, buffer, link);
                 break;
-
-            case UP:
-                int bestStart, bestEnd;
-
-                bestStart = -1;
-                bestEnd = -1;
+            }
+            case UP: {
+                int bestStart = -1;
+                int bestEnd = -1;
 
                 for (ClickableSpan clickableSpan : candidates) {
                     int end = buffer.getSpanEnd(clickableSpan);
@@ -193,10 +189,10 @@ public class LinkArrowKeyMovementMethod extends ArrowKeyMovementMethod {
                 }
 
                 break;
-
-            case DOWN:
-                bestStart = Integer.MAX_VALUE;
-                bestEnd = Integer.MAX_VALUE;
+            }
+            case DOWN: {
+                int bestStart = Integer.MAX_VALUE;
+                int bestEnd = Integer.MAX_VALUE;
 
                 for (ClickableSpan candidate : candidates) {
                     int start = buffer.getSpanStart(candidate);
@@ -215,6 +211,7 @@ public class LinkArrowKeyMovementMethod extends ArrowKeyMovementMethod {
                 }
 
                 break;
+            }
         }
 
         return false;
@@ -246,10 +243,11 @@ public class LinkArrowKeyMovementMethod extends ArrowKeyMovementMethod {
                 // Don't open the link if clicked on the first or last character.
                 // This is very annoying as clicking near a link to add text next to it will open it,
                 // including when clicking in the end margin very far off the link!
-                if (buffer.getSpanStart(link) != off && buffer.getSpanEnd(link) != off) {
+                final int start = buffer.getSpanStart(link);
+                final int end = buffer.getSpanEnd(link);
+                if (start != off && end != off) {
                     if (action == MotionEvent.ACTION_UP) {
-                        System.out.println("Touch event up");
-                        linkOnClick(widget, link, 0);
+                        linkOnClick(widget, buffer, link);
                     } else {
                         if (widget.getContext().getApplicationInfo().targetSdkVersion >= Build.VERSION_CODES.P) {
                             // Selection change will reposition the toolbar. Hide it for a few ms for a

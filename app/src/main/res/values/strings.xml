@@ -43,6 +43,7 @@
     <string name="action_mark_as_done">Mark as done</string>
     <string name="action_none">None</string>
     <string name="action_ok">OK</string>
+    <string name="action_open">Open</string>
     <string name="action_pin">Pin</string>
     <string name="action_postpone">Postpone</string>
     <string name="action_reminder_add">Add reminder</string>

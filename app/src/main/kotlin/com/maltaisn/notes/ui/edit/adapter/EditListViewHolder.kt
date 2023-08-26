@@ -117,6 +117,7 @@ class EditContentViewHolder(binding: ItemEditContentBinding, callback: EditAdapt
         contentEdt.setOnClickListener {
             callback.onNoteClickedToEdit()
         }
+        contentEdt.onLinkClickListener = callback::onLinkClickedInNote
     }
 
     fun bind(item: EditContentItem) {
@@ -194,6 +195,7 @@ class EditItemViewHolder(binding: ItemEditItemBinding, callback: EditAdapter.Cal
         itemEdt.setOnClickListener {
             callback.onNoteClickedToEdit()
         }
+        itemEdt.onLinkClickListener = callback::onLinkClickedInNote
 
         deleteImv.setOnClickListener {
             val pos = bindingAdapterPosition

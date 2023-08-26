@@ -17,8 +17,12 @@
 package com.maltaisn.notes.ui.edit
 
 import android.annotation.SuppressLint
+import android.content.ActivityNotFoundException
+import android.content.Intent
 import android.graphics.Color
+import android.net.Uri
 import android.os.Bundle
+import android.provider.Browser
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
@@ -245,6 +249,7 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener, ConfirmDialog.
                     R.plurals.edit_message_move_restore, 1), Snackbar.LENGTH_SHORT)
                     .setGestureInsetBottomIgnored(true)
                     .show()
+
                 EditMessage.CANT_EDIT_IN_TRASH -> restoreNoteSnackbar.show()
             }
         }
@@ -278,6 +283,26 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener, ConfirmDialog.
             navController.navigateSafe(NavGraphMainDirections.actionLabel(longArrayOf(noteId)))
         }
 
+        viewModel.showLinkDialogEvent.observeEvent(viewLifecycleOwner) { linkText ->
+            ConfirmDialog.newInstance(
+                btnPositive = R.string.action_open,
+                btnNegative = R.string.action_cancel,
+                messageStr = linkText,
+            ).show(childFragmentManager, OPEN_LINK_DIALOG_TAG)
+        }
+
+        viewModel.openLinkEvent.observeEvent(viewLifecycleOwner) { url ->
+            val uri = Uri.parse(url)
+            val context = requireContext()
+            val intent = Intent(Intent.ACTION_VIEW, uri)
+            intent.putExtra(Browser.EXTRA_APPLICATION_ID, context.packageName)
+            try {
+                context.startActivity(intent)
+            } catch (e: ActivityNotFoundException) {
+                // do nothing
+            }
+        }
+
         sharedViewModel.reminderChangeEvent.observeEvent(viewLifecycleOwner) { reminder ->
             viewModel.onReminderChange(reminder)
         }
@@ -296,10 +321,12 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener, ConfirmDialog.
                 moveItem.setIcon(R.drawable.ic_archive)
                 moveItem.setTitle(R.string.action_archive)
             }
+
             NoteStatus.ARCHIVED -> {
                 moveItem.setIcon(R.drawable.ic_unarchive)
                 moveItem.setTitle(R.string.action_unarchive)
             }
+
             NoteStatus.DELETED -> {
                 moveItem.setIcon(R.drawable.ic_restore)
                 moveItem.setTitle(R.string.action_restore)
@@ -325,11 +352,13 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener, ConfirmDialog.
                 item.setTitle(R.string.action_unpin)
                 item.setIcon(R.drawable.ic_pin_outline)
             }
+
             PinnedStatus.UNPINNED -> {
                 item.isVisible = true
                 item.setTitle(R.string.action_pin)
                 item.setIcon(R.drawable.ic_pin)
             }
+
             PinnedStatus.CANT_PIN -> {
                 item.isVisible = false
             }
@@ -353,6 +382,7 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener, ConfirmDialog.
                 typeItem.setIcon(R.drawable.ic_checkbox)
                 typeItem.setTitle(R.string.action_convert_to_list)
             }
+
             NoteType.LIST -> {
                 typeItem.setIcon(R.drawable.ic_text)
                 typeItem.setTitle(R.string.action_convert_to_text)
@@ -388,9 +418,11 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener, ConfirmDialog.
             R.id.item_uncheck_all -> {
                 viewModel.uncheckAllItems()
             }
+
             R.id.item_delete_checked -> viewModel.deleteCheckedItems()
             R.id.item_copy -> viewModel.copyNote(getString(R.string.edit_copy_untitled_name),
                 getString(R.string.edit_copy_suffix))
+
             R.id.item_delete -> viewModel.deleteNote()
             else -> return false
         }
@@ -401,6 +433,7 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener, ConfirmDialog.
         when (tag) {
             DELETE_CONFIRM_DIALOG_TAG -> viewModel.deleteNoteForeverAndExit()
             REMOVE_CHECKED_CONFIRM_DIALOG_TAG -> viewModel.convertToText(false)
+            OPEN_LINK_DIALOG_TAG -> viewModel.openClickedLink()
         }
     }
 
@@ -413,6 +446,7 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener, ConfirmDialog.
     companion object {
         private const val DELETE_CONFIRM_DIALOG_TAG = "delete_confirm_dialog"
         private const val REMOVE_CHECKED_CONFIRM_DIALOG_TAG = "remove_checked_confirm_dialog"
+        private const val OPEN_LINK_DIALOG_TAG = "open_link_confirm_dialog"
 
         private const val CANT_EDIT_SNACKBAR_DURATION = 5000
     }

@@ -107,6 +107,11 @@ class EditViewModel @AssistedInject constructor(
     private var reminder: Reminder? = null
 
     /**
+     * URL of last clicked span, if any.
+     */
+    private var linkUrl: String? = null
+
+    /**
      * The currently displayed list items created in [recreateListItems].
      *
      * While this list is mutable, any in place changes should be reported to the adapter! This is used in the case
@@ -179,6 +184,14 @@ class EditViewModel @AssistedInject constructor(
     private val _showLabelsFragmentEvent = MutableLiveData<Event<Long>>()
     val showLabelsFragmentEvent: LiveData<Event<Long>>
         get() = _showLabelsFragmentEvent
+
+    private val _showLinkDialogEvent = MutableLiveData<Event<String>>()
+    val showLinkDialogEvent: LiveData<Event<String>>
+        get() = _showLinkDialogEvent
+
+    private val _openLinkEvent = MutableLiveData<Event<String>>()
+    val openLinkEvent: LiveData<Event<String>>
+        get() = _openLinkEvent
 
     private val _exitEvent = MutableLiveData<Event<Unit>>()
     val exitEvent: LiveData<Event<Unit>>
@@ -529,6 +542,11 @@ class EditViewModel @AssistedInject constructor(
         }
     }
 
+    fun openClickedLink() {
+        _openLinkEvent.send(linkUrl ?: return)
+        linkUrl = null
+    }
+
     private fun changeNoteStatusAndExit(newStatus: NoteStatus) {
         updateNote()
 
@@ -776,6 +794,11 @@ class EditViewModel @AssistedInject constructor(
             // which would mess up the auto-delete interval in trash.
             _messageEvent.send(EditMessage.CANT_EDIT_IN_TRASH)
         }
+    }
+
+    override fun onLinkClickedInNote(linkText: String, linkUrl: String) {
+        this.linkUrl = linkUrl
+        _showLinkDialogEvent.send(linkText)
     }
 
     override val isNoteDragEnabled: Boolean

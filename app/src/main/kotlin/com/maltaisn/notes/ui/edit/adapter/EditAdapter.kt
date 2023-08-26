@@ -18,6 +18,7 @@ package com.maltaisn.notes.ui.edit.adapter
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.text.style.ClickableSpan
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.ViewGroup
@@ -172,6 +173,9 @@ class EditAdapter(val context: Context, val callback: Callback) :
 
         /** Called when any item is clicked on to start editing.*/
         fun onNoteClickedToEdit()
+
+        /** Called when a link with an [url] is clicked in the note text.*/
+        fun onLinkClickedInNote(linkText: String, linkUrl: String)
 
         /** Whether to enabled the dragging of [EditItemItem].*/
         val isNoteDragEnabled: Boolean

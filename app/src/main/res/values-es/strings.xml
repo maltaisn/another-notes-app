@@ -39,6 +39,7 @@
     <string name="action_mark_as_done">Marcar como terminado</string>
     <string name="action_none">Ninguno</string>
     <string name="action_ok">Aceptar</string>
+    <string name="action_open">Abrir</string>
     <string name="action_pin">Fijar</string>
     <string name="action_postpone">Posponer</string>
     <string name="action_reminder_add">Añadir recordatorio</string>

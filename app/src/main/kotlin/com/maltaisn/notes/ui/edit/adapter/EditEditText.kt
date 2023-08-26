@@ -16,14 +16,14 @@
 
 package com.maltaisn.notes.ui.edit.adapter
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.text.style.CharacterStyle
 import android.text.style.ClickableSpan
+import android.text.style.URLSpan
 import android.text.util.Linkify
 import android.util.AttributeSet
-import android.view.MotionEvent
 import android.view.View
+import android.view.textclassifier.TextLinks.TextLinkSpan
 import android.widget.EditText
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.core.content.res.use
@@ -31,8 +31,8 @@ import androidx.core.text.getSpans
 import androidx.core.text.util.LinkifyCompat
 import androidx.core.widget.doAfterTextChanged
 import com.maltaisn.notes.R
-import com.maltaisn.notes.ui.edit.LinkArrowKeyMovementMethod
 import com.maltaisn.notes.ui.edit.EditFragment
+import com.maltaisn.notes.ui.edit.LinkArrowKeyMovementMethod
 
 /**
  * Custom [EditText] class used for all fields of the [EditFragment].
@@ -45,7 +45,7 @@ class EditEditText @JvmOverloads constructor(
 
     val autoLink: Boolean
 
-    private var clickedLink: ClickableSpan? = null
+    var onLinkClickListener: ((text: String, url: String) -> Unit)? = null
 
     init {
         autoLink = context.obtainStyledAttributes(attrs, R.styleable.EditEditText, defStyleAddr, 0).use {
@@ -76,8 +76,8 @@ class EditEditText @JvmOverloads constructor(
         }
     }
 
-    fun onLinkClicked(span: ClickableSpan) {
-        println("Link clicked")
+    fun onLinkClicked(text: String, url: String) {
+        onLinkClickListener?.invoke(text, url)
     }
 
     companion object {
