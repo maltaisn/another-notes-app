@@ -1,2 +1,3 @@
-- Added an option to encrypt exported data.
+- Ask to confirm before opening links.
+- Small bug fixes.
 - Translations update.

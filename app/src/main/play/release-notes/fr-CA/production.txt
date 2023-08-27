@@ -1,2 +1,3 @@
-- Ajout d'une option pour l'exportation chiffrée
+- Demande de confirmation avant d'ouvrir un lien.
+- Correction de bugs mineurs.
 - Mise à jour des traductions.
