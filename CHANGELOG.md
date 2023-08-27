@@ -2,8 +2,10 @@
 - Allow creating note from shared file.
 - Fixed share action not working if used more than once during execution.
 - Fixed automatic bullet insertion adding bullets when bullet char was preceded by non whitespace.
+- Fixed crash on search with zero lines preview setting (#47).
 - Avoid duplicating same note with different reminder when importing data (#106).
 - Added support for more link types when auto-linking text (#107).
+- Ask to confirm before opening links on click (#108).
 - Avoid opening links when clicked on first or last character (#108).
 
 ## v1.5.1 (2023-01-14)

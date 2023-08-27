@@ -614,6 +614,20 @@ class NoteItemFactoryTest {
             onlyCheckedInOverflow = false, showMarkAsDone = false), item)
     }
 
+    @Test
+    fun `should create note and highlight with zero lines preview`() {
+        prefs = mock {
+            on { listLayoutMode } doReturn NoteListLayoutMode.LIST
+            on { getMaximumPreviewLines(any()) } doReturn 0
+            on { moveCheckedToBottom } doReturn false
+        }
+        val note = testNote(id = 2, title = "title", content = "needle")
+        factory.query = "need"
+        val item = factory.createItem(note, emptyList(), false)
+        assertEquals(NoteItemText(2, note, emptyList(), false, "title".hl,
+            Highlighted("needle", listOf(0..4)), showMarkAsDone = false), item)
+    }
+
     private val String.hl: Highlighted
         get() = Highlighted(this, emptyList())
 }

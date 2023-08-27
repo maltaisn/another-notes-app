@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Nicolas Maltais
+ * Copyright 2023 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -68,7 +68,7 @@ class NoteItemFactory @Inject constructor(
             Highlighted(contentTrim)
         } else {
             val ellipsisThreshold = getStartEllipsisThreshold(START_ELLIPSIS_THRESHOLD_CONTENT) *
-                    (prefs.getMaximumPreviewLines(NoteType.TEXT) - 1) + START_ELLIPSIS_THRESHOLD_CONTENT_FIRST
+                    maxOf(0, prefs.getMaximumPreviewLines(NoteType.TEXT) - 1) + START_ELLIPSIS_THRESHOLD_CONTENT_FIRST
             val highlights = HighlightHelper.findHighlightsInString(contentTrim, query!!, MAX_HIGHLIGHTS_IN_TEXT)
             HighlightHelper.getStartEllipsizedText(contentTrim, highlights,
                 ellipsisThreshold, START_ELLIPSIS_DISTANCE_CONTENT)
