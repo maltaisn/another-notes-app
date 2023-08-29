@@ -47,15 +47,18 @@ Contributions are welcome, especially translations (see [`TRANSLATING.md`][trans
 - Icons were mostly found at [Material Design Icons][mdi-icons], license can be found
 [here][mdi-icons-license].
 - Thanks to the following contributors for translations:
-    - Arabic: [@afmbsr](https://github.com/afmbsr)
-    - German: [@memyselfandi](https://troet.cafe/@memyselfandi)
-    - Italian: carallo ([Crowdin](https://crowdin.com/profile/carallo))
-    - Norwegian: [@FTno](https://github.com/FTno)
-    - Polish: Sebastian Jasiński ([Crowdin](https://crowdin.com/profile/princenorris))
-    - Russian: Zakhar Timoshenko ([Crowdin](https://crowdin.com/profile/ztimms73))
-    - Spanish: [@urizev](https://github.com/urizev)
-    - Turkish: language_is_alive ([Crowdin](https://crowdin.com/profile/language_is_alive))
-    - Ukrainian: axmed99 ([Crowdin](https://crowdin.com/profile/axmed99))
+    - Arabic: @afmbsr
+    - Chinese: @Nriver
+    - Dutch: Jeroen de Jong
+    - German: @memyselfandi
+    - Italian: carallo
+    - Norwegian: @FTno
+    - Polish: Sebastian Jasiński
+    - Portuguese: Fabricio Duarte
+    - Russian: Zakhar Timoshenko, PedroTashima
+    - Spanish: Juan Carlos Vallejo, CyanWolf
+    - Turkish: language_is_alive
+    - Ukrainian: Andrij Mizyk
 
 [changelog]: CHANGELOG.md
 [translating]: TRANSLATING.md

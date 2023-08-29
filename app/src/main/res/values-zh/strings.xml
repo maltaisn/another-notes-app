@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Copyright 2023 Nicolas Maltais
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  -->
+<resources>
+    <!-- Do not translate the app name -->
+    <!-- Can be translated to provided a sensible localized name for a "Notes" app -->
+    <string name="app_name_short">笔记</string>
+    <string name="action_archive">归档</string>
+    <string name="action_cancel">取消</string>
+    <string name="action_clear">清除</string>
+    <string name="action_convert_to_list">转换为列表</string>
+    <string name="action_convert_to_text">转换为文字</string>
+    <string name="action_copy">创建副本</string>
+    <string name="action_delete">删除</string>
+    <string name="action_delete_checked">删除选中的项目</string>
+    <string name="action_delete_forever">彻底删除</string>
+    <string name="action_delete_selection">删除选中</string>
+    <string name="action_delete_selection_forever">永久删除选中</string>
+    <string name="action_empty_trash">清空回收站</string>
+    <string name="action_empty_trash_short">清空</string>
+    <string name="action_keep">保留</string>
+    <string name="action_labels">修改标签</string>
+    <string name="action_layout_grid">网格显示</string>
+    <string name="action_layout_list">列表显示</string>
+    <string name="action_manage">管理</string>
+    <string name="action_mark_as_done">标记为完成</string>
+    <string name="action_none">无</string>
+    <string name="action_ok">确定</string>
+    <string name="action_open">打开</string>
+    <string name="action_pin">固定</string>
+    <string name="action_postpone">推迟</string>
+    <string name="action_reminder_add">添加提醒</string>
+    <string name="action_reminder_edit">编辑提醒</string>
+    <string name="action_rename">重命名</string>
+    <string name="action_restore">恢复</string>
+    <string name="action_search">搜索</string>
+    <string name="action_select_all">全选</string>
+    <string name="action_settings">设置</string>
+    <string name="action_share">分享</string>
+    <string name="action_unarchive">取消归档</string>
+    <string name="action_uncheck_all">取消选中所有项目</string>
+    <string name="action_undo">撤销</string>
+    <string name="action_unpin">取消固定</string>
+    <!-- Shortcuts -->
+    <!-- Note: normal length is ideally 25 chars or less, short is 10 chars or less. -->
+    <string name="shortcut_text_note">新建文本笔记</string>
+    <string name="shortcut_text_note_short">新文本</string>
+    <string name="shortcut_list_note">新建列表笔记</string>
+    <string name="shortcut_list_note_short">新建列表</string>
+    <string name="shortcut_reminders">提醒</string>
+    <string name="shortcut_reminders_short">提醒</string>
+    <!-- Home -->
+    <string name="note_location_active">笔记</string>
+    <string name="note_location_archived">已归档</string>
+    <string name="note_location_deleted">已删除</string>
+    <string name="note_location_labels">标签</string>
+    <string name="note_pinned">已固定</string>
+    <string name="note_not_pinned">其它</string>
+    <string name="note_placeholder_active">你还没有任何笔记。\n点击 + 来添加一个笔记。</string>
+    <string name="note_placeholder_archived">没有已归档笔记</string>
+    <string name="note_placeholder_deleted">回收站是空的。</string>
+    <plurals name="note_list_item_info">
+        <item quantity="other">+ %d 个其他列表项目</item>
+    </plurals>
+    <plurals name="note_list_item_info_checked">
+        <item quantity="other">+ %d 个已选中的项目</item>
+    </plurals>
+    <string name="trash_reminder_message">回收站内的笔记在 %d 天后自动删除。</string>
+    <string name="trash_delete_message">此笔记将被永久删除。</string>
+    <string name="trash_delete_selected_message">所选笔记将被永久删除。</string>
+    <string name="trash_empty_message">回收站中的所有笔记将被永久删除。</string>
+    <string name="search_hint">搜索笔记</string>
+    <string name="search_empty_placeholder">没有找到您查询的笔记。</string>
+    <string name="sort_title">排序选项</string>
+    <string name="sort_direction">排序方向</string>
+    <string name="sort_direction_ascending">升序</string>
+    <string name="sort_direction_descending">降序</string>
+    <string name="sort_field">排序</string>
+    <string name="sort_field_created">创建日期</string>
+    <string name="sort_field_modified">修改日期</string>
+    <string name="sort_field_title">标题</string>
+    <!-- Edit -->
+    <string name="edit_add_title">创建笔记</string>
+    <string name="edit_change_title">编辑笔记</string>
+    <string name="edit_hint_note_title">标题</string>
+    <string name="edit_hint_note_content">笔记</string>
+    <string name="edit_hint_note_item">列表项目</string>
+    <string name="edit_message_blank_note_discarded">空白笔记已丢弃。</string>
+    <plurals name="edit_move_archive_message">
+        <item quantity="other">笔记已归档。</item>
+    </plurals>
+    <plurals name="edit_message_move_delete">
+        <item quantity="other">笔记已移动到回收站。</item>
+    </plurals>
+    <plurals name="edit_message_move_restore">
+        <item quantity="other">笔记已恢复。</item>
+    </plurals>
+    <plurals name="edit_message_move_unarchive">
+        <item quantity="other">笔记已取消归档。</item>
+    </plurals>
+    <string name="edit_in_trash_message">无法编辑回收站内的笔记。</string>
+    <string name="edit_copy_suffix">复制</string>
+    <string name="edit_copy_untitled_name">未命名</string>
+    <string name="edit_convert_keep_checked">删除选中的项目?</string>
+    <plurals name="edit_checked_items">
+        <item quantity="other">%d 个已选中的项目</item>
+    </plurals>
+    <!-- Reminder -->
+    <string name="note_reminders">提醒</string>
+    <string name="reminder_upcoming">即将到来</string>
+    <string name="reminder_today">今天</string>
+    <string name="reminder_overdue">逾期</string>
+    <string name="reminder_date">日期</string>
+    <string name="reminder_time">时间</string>
+    <string name="reminder_invalid_time">时间已过。</string>
+    <string name="reminder_notif_channel_title">提醒</string>
+    <string name="reminder_notif_channel_descr">记事设置提醒</string>
+    <string name="reminder_empty_placeholder">未设置提醒</string>
+    <string name="reminder_restricted_battery">提醒可能无法正常工作，因为应用被限制了电池使用。这可以在应用设置中更改。</string>
+    <string name="reminder_notif_permission">要能够发送提醒通知，应用程序需要一个权限。点击确定以显示权限请求。您将能够在此后设置提醒。</string>
+    <string name="reminder_notif_permission_denied">通知权限已被拒绝。在启用之前，提醒无法正常使用。</string>
+    <!-- Labels -->
+    <string name="label_create">新建标签</string>
+    <string name="label_edit">编辑标签名</string>
+    <string name="label_manage">管理标签</string>
+    <string name="label_select">选择标签</string>
+    <string name="label_already_exists">此标签名称已存在。</string>
+    <string name="label_hidden_option">从活动和归档的笔记部分隐藏带有此标签的笔记</string>
+    <string name="label_empty_placeholder">未创建标签</string>
+    <string name="label_delete_message">所选标签将被删除，但将保留与此相关的笔记。</string>
+    <string name="label_notes_empty_placeholder">没有带有此标签的笔记</string>
+    <!-- Settings -->
+    <string name="pref_group_appearance">外观</string>
+    <string name="pref_theme">应用主题</string>
+    <string name="pref_theme_light">明亮</string>
+    <string name="pref_theme_dark">黑暗</string>
+    <string name="pref_theme_system">跟随系统</string>
+    <string name="pref_dynamic_colors">使用动态颜色</string>
+    <string name="pref_strikethrough_checked">已勾选项目使用删除线</string>
+    <string name="pref_preview_labels">预览标签的最大数量</string>
+    <string name="pref_shown_date">笔记显示的日期</string>
+    <string name="pref_shown_date_added">创建日期</string>
+    <string name="pref_shown_date_modified">最后修改日期</string>
+    <string name="pref_shown_date_none">不显示日期</string>
+    <string name="pref_preview_lines">预览中最大行数</string>
+    <string name="pref_preview_lines_summary">配置每种布局模式和笔记类型显示多少行和项目。</string>
+    <string name="pref_preview_lines_grid_layout">网格布局</string>
+    <string name="pref_preview_lines_list_layout">列表布局</string>
+    <string name="pref_preview_lines_text">文本笔记预览中的行</string>
+    <string name="pref_preview_lines_list">列表笔记中预览的项目</string>
+    <string name="pref_group_behavior">行为</string>
+    <string name="pref_behavior_swipe_action_left">左滑动作</string>
+    <string name="pref_behavior_swipe_action_right">右滑动作</string>
+    <string name="pref_behavior_move_checked">将所选项移动到底部</string>
+    <string name="pref_group_data">数据</string>
+    <string name="pref_data_export">导出数据</string>
+    <string name="pref_data_export_summary">将笔记数据导出为 JSON</string>
+    <string name="pref_data_encrypted_export">加密导出</string>
+    <string name="pref_data_encrypted_export_summary">加密导出的笔记。如果没有正确的密码就无法访问。</string>
+    <string name="pref_data_auto_export">自动数据导出</string>
+    <string name="pref_data_auto_export_summary">自动导出应用的数据到文件中，每天一次。</string>
+    <string name="pref_data_auto_export_date">(上次导出于 %s)</string>
+    <string name="pref_data_import">导入数据</string>
+    <string name="pref_data_import_summary">导入以前导出的 JSON 数据，与现有数据合并。</string>
+    <string name="pref_data_clear">清除全部数据</string>
+    <string name="pref_data_clear_confirm_message">所有笔记数据将被永久清理！这个操作无法撤消。</string>
+    <string name="pref_data_clear_success_message">已成功清除所有数据。</string>
+    <string name="pref_group_about">关于</string>
+    <string name="pref_about_view_source">在 GitHub 上查看</string>
+    <string name="pref_about_view_licenses">开放源代码许可</string>
+    <string name="pref_about_version">版本</string>
+    <string name="pref_restart_dialog_title">需要重启！</string>
+    <string name="pref_restart_dialog_description">需要重新启动才能使这些更改生效。您现在想重新启动应用程序吗？</string>
+    <!-- Import/export data messages -->
+    <string name="export_success">数据库导出成功 ！</string>
+    <string name="export_fail">导出数据时出错。</string>
+    <string name="export_serialization_fail">数据导出过程中发生错误。尝试禁用加密并重试。</string>
+    <string name="encrypted_export_dialog_title">设置密码</string>
+    <string name="encrypted_export_password">密码</string>
+    <string name="encrypted_export_repeat_password">确认密码</string>
+    <string name="encrypted_export_password_matching_error">密码不一致</string>
+    <string name="encrypted_export_key_generation_successful">已成功启用加密！</string>
+    <string name="encrypted_export_key_deletion_successful">已成功禁用加密！</string>
+    <string name="import_success">数据导入成功！</string>
+    <string name="import_future_version">数据成功导入！请注意，由于数据来自较新的版本，可能会丢失一些信息。</string>
+    <string name="import_bad_input">尝试读取此文件时发生错误。</string>
+    <string name="import_bad_format">无法导入数据，JSON数据无效。</string>
+    <string name="import_bad_data">无法导入数据，某些字段具有无效值。如果从较新的版本导入数据，可能会发生这种情况，请尝试更新应用程序。</string>
+    <string name="encrypted_import_dialog_title">输入密码</string>
+    <string name="encrypted_import_key_error">尝试解密此文件时发生错误。请检查密码是否正确。</string>
+    <string name="encrypted_import_encryption_unsupported">无法导入数据，此版本的Android不支持加密。</string>
+    <string name="auto_export_message">要启用自动导出，必须选择一个文件来保存数据。应用程序的数据将在每天打开应用程序时导出一次。点击“确定”以继续。</string>
+    <string name="auto_export_fail">自动导出数据失败。请确保导出位置仍然存在并且可访问，然后重新配置自动导出。</string>
+    <!-- Content description -->
+    <string name="content_descrp_open_drawer">打开侧栏</string>
+    <string name="content_descrp_back">返回</string>
+    <string name="content_descrp_label_hidden">带有此标签的笔记已隐藏</string>
+    <!-- Relative date time format -->
+    <string name="date_rel_today">今天， %s</string>
+    <string name="date_rel_yesterday">昨天， %s</string>
+    <string name="date_rel_tomorrow">明天， %s</string>
+    <plurals name="date_rel_days_past">
+        <!-- used with quantity >= 2, format values: number of days, time -->
+        <item quantity="other">%d 天前， %s</item>
+    </plurals>
+    <plurals name="date_rel_days_future">
+        <!-- used with quantity >= 2, format values: number of days, time -->
+        <item quantity="other">%d 天内， %s</item>
+    </plurals>
+    <!-- format values: date, time -->
+    <string name="date_rel_absolute">%1$s, %2$s</string>
+</resources>
