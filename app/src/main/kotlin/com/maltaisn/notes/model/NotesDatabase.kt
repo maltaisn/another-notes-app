@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Nicolas Maltais
+ * Copyright 2023 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,12 +59,12 @@ abstract class NotesDatabase : RoomDatabase() {
         const val VERSION = 4
 
         val MIGRATION_1_2 = object : Migration(1, 2) {
-            override fun migrate(database: SupportSQLiteDatabase) {
+            override fun migrate(db: SupportSQLiteDatabase) {
                 // By removing the sync feature, some data is now useless.
                 // - Deleted notes table
                 // - Synced flag on notes
                 // - UUID flag on notes (unique ID across devices)
-                database.apply {
+                db.apply {
                     execSQL("DROP TABLE deleted_notes")
                     execSQL("""CREATE TABLE notes_temp (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, 
                         type INTEGER NOT NULL, title TEXT NOT NULL, content TEXT NOT NULL, metadata TEXT NOT NULL, 
@@ -79,8 +79,8 @@ abstract class NotesDatabase : RoomDatabase() {
         }
 
         val MIGRATION_2_3 = object : Migration(2, 3) {
-            override fun migrate(database: SupportSQLiteDatabase) {
-                database.apply {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.apply {
                     // Add pinned column to notes table. 'unpinned' for active notes, 'can't pin' for others.
                     execSQL("ALTER TABLE notes ADD COLUMN pinned INTEGER NOT NULL DEFAULT 0")
                     execSQL("UPDATE notes SET pinned = 1 WHERE status == 0")
@@ -106,8 +106,8 @@ abstract class NotesDatabase : RoomDatabase() {
         }
 
         val MIGRATION_3_4 = object : Migration(3, 4) {
-            override fun migrate(database: SupportSQLiteDatabase) {
-                database.apply {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.apply {
                     // Add hidden attribute for labels
                     execSQL("ALTER TABLE labels ADD COLUMN hidden INTEGER NOT NULL DEFAULT 0")
                 }

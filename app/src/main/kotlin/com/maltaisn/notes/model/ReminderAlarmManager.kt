@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Nicolas Maltais
+ * Copyright 2023 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package com.maltaisn.notes.model
 
-import com.maltaisn.notes.OpenForTesting
+import androidx.annotation.OpenForTesting
 import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.recurpicker.RecurrenceFinder
 import kotlinx.coroutines.flow.first

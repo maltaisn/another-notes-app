@@ -2,7 +2,7 @@ plugins {
     id "com.android.application"
     id "kotlin-android"
     id "org.jetbrains.kotlin.plugin.serialization"
-    id "kotlin-allopen"
+    id "org.jetbrains.kotlin.plugin.allopen"
     id "androidx.navigation.safeargs.kotlin"
     id "com.github.triplet.play"
     id "com.github.breadmoirai.github-release"
@@ -13,15 +13,15 @@ plugins {
 
 android {
     namespace "com.maltaisn.notes"
-    compileSdkVersion 33
-    buildToolsVersion "33.0.1"
 
     defaultConfig {
         applicationId "com.maltaisn.notes"
         minSdkVersion 21
-        targetSdkVersion 33
-        versionCode 10502
-        versionName "1.5.2"
+        compileSdk 34
+        buildToolsVersion = "34.0.0"
+        targetSdkVersion 34
+        versionCode 10503
+        versionName "1.5.3"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
@@ -35,6 +35,7 @@ android {
 
     buildFeatures {
         viewBinding = true
+        buildConfig = true
     }
 
     sourceSets {
@@ -163,7 +164,7 @@ dependencies {
     androidTestImplementation "androidx.test.espresso:espresso-contrib:$espressoVersion"
 }
 
-tasks.getByName("build") {
+tasks.named("build") {
     // don't test, don't lint, don't run detekt for build task.
     setDependsOn(getDependsOn().findAll { it != "check" })
 }
@@ -179,7 +180,7 @@ if (file("publishing.gradle").exists()) {
     apply from: "publishing.gradle"
 }
 
-task takeScreenshots(type: Exec) {
+tasks.register("takeScreenshots", Exec) {
     commandLine "./screenshots.sh"
 }
 

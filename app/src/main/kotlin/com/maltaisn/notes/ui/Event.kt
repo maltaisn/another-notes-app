@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Nicolas Maltais
+ * Copyright 2023 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,9 +48,9 @@ class Event<out T>(private val content: T) {
  * [onEventUnhandledContent] is *only* called if the [Event]'s contents has not been handled.
  */
 class EventObserver<T>(private val onEventUnhandledContent: (T) -> Unit) : Observer<Event<T>> {
-    override fun onChanged(event: Event<T>?) {
-        if (event?.hasBeenHandled == false) {
-            onEventUnhandledContent(event.requireUnhandledContent())
+    override fun onChanged(value: Event<T>) {
+        if (!value.hasBeenHandled) {
+            onEventUnhandledContent(value.requireUnhandledContent())
         }
     }
 }

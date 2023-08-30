@@ -8,11 +8,11 @@ plugins {
 
 android {
     namespace "com.maltaisn.notesshared"
-    compileSdk 33
+    compileSdk 34
 
     defaultConfig {
         minSdkVersion 21
-        targetSdkVersion 33
+        targetSdkVersion 34
     }
 
     sourceSets {
@@ -37,7 +37,7 @@ android {
     }
 }
 
-tasks.getByName("build") {
+tasks.named("build") {
     // don't test, don't lint, don't run detekt for build task.
     setDependsOn(getDependsOn().findAll { it != "check" })
 }
@@ -48,7 +48,7 @@ dependencies {
     api "junit:junit:$junitVersion"
     api "org.jetbrains.kotlin:kotlin-test:$kotlinVersion"
     api "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion"
-    api "com.nhaarman.mockitokotlin2:mockito-kotlin:$kotlinMockitoVersion"
+    api "org.mockito.kotlin:mockito-kotlin:$kotlinMockitoVersion"
     api "androidx.arch.core:core-testing:$androidxArchTestingVersion"
     api "androidx.test:core:$androidxTestCoreVersion"
     api "androidx.test:core-ktx:$androidxTestCoreKtxVersion"

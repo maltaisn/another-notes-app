@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Nicolas Maltais
+ * Copyright 2023 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package com.maltaisn.notes
 
-@Target(AnnotationTarget.ANNOTATION_CLASS)
+@Target(AnnotationTarget.ANNOTATION_CLASS, AnnotationTarget.CLASS)
 annotation class OpenClass
 
 @OpenClass

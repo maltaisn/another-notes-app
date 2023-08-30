@@ -39,12 +39,12 @@ import com.maltaisn.notesshared.model.MockLabelsRepository
 import com.maltaisn.notesshared.model.MockNotesRepository
 import com.maltaisn.notesshared.testNote
 import com.maltaisn.recurpicker.Recurrence
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.mock
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
 import java.util.Date
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue

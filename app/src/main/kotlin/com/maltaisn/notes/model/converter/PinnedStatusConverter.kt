@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Nicolas Maltais
+ * Copyright 2023 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,13 +19,11 @@ package com.maltaisn.notes.model.converter
 import androidx.room.TypeConverter
 import com.maltaisn.notes.model.entity.PinnedStatus
 import kotlinx.serialization.KSerializer
-import kotlinx.serialization.Serializer
 import kotlinx.serialization.descriptors.PrimitiveKind
 import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 
-@Serializer(forClass = PinnedStatus::class)
 object PinnedStatusConverter : KSerializer<PinnedStatus> {
 
     @TypeConverter

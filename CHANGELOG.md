@@ -1,4 +1,7 @@
-## v1.5.2 (TBD)
+## v1.5.3 (TBD)
+- Nothing.
+
+## v1.5.2 (2023-08-27)
 - Allow creating note from shared file.
 - Fixed share action not working if used more than once during execution.
 - Fixed automatic bullet insertion adding bullets when bullet char was preceded by non whitespace.

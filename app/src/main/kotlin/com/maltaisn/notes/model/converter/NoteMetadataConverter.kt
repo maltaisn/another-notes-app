@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Nicolas Maltais
+ * Copyright 2023 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,6 @@ import com.maltaisn.notes.model.BadDataException
 import com.maltaisn.notes.model.entity.NoteMetadata
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerializationException
-import kotlinx.serialization.Serializer
 import kotlinx.serialization.descriptors.PrimitiveKind
 import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
 import kotlinx.serialization.encoding.Decoder
@@ -33,7 +32,6 @@ import kotlinx.serialization.json.Json
  * When serialized, metadata JSON in itself encoded into a JSON string. This wouldn't be
  * necessary but it simplifies the server's job. Also metadata *could* eventually not be JSON.
  */
-@Serializer(forClass = NoteMetadata::class)
 object NoteMetadataConverter : KSerializer<NoteMetadata> {
 
     private val json = Json

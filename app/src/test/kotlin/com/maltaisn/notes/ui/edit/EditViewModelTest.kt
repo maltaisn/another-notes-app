@@ -49,13 +49,13 @@ import com.maltaisn.notesshared.listNote
 import com.maltaisn.notesshared.model.MockLabelsRepository
 import com.maltaisn.notesshared.model.MockNotesRepository
 import com.maltaisn.notesshared.testNote
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.whenever
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 import java.util.Date
 import kotlin.random.Random
 import kotlin.test.assertEquals

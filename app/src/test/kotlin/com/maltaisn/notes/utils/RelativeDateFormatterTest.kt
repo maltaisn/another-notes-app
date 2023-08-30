@@ -19,12 +19,12 @@ package com.maltaisn.notes.utils
 import android.content.res.Resources
 import com.maltaisn.notes.R
 import com.maltaisn.notesshared.dateFor
-import com.nhaarman.mockitokotlin2.anyVararg
-import com.nhaarman.mockitokotlin2.doAnswer
-import com.nhaarman.mockitokotlin2.mock
 import org.junit.Before
 import org.junit.Test
 import org.mockito.ArgumentMatchers.anyInt
+import org.mockito.kotlin.anyVararg
+import org.mockito.kotlin.doAnswer
+import org.mockito.kotlin.mock
 import java.text.DateFormat
 import java.util.Locale
 import kotlin.test.assertEquals

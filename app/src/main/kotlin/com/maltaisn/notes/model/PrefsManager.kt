@@ -18,9 +18,9 @@ package com.maltaisn.notes.model
 
 import android.content.Context
 import android.content.SharedPreferences
+import androidx.annotation.OpenForTesting
 import androidx.core.content.edit
 import androidx.preference.PreferenceManager
-import com.maltaisn.notes.OpenForTesting
 import com.maltaisn.notes.R
 import com.maltaisn.notes.model.entity.NoteType
 import com.maltaisn.notes.ui.AppTheme

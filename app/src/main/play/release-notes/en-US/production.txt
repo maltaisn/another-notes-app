@@ -1,3 +1,1 @@
-- Ask to confirm before opening links.
-- Small bug fixes.
-- Translations update.
+- Added Chinese translation.

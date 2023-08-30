@@ -89,7 +89,7 @@ object ScreenshotHelper {
         contentValues.put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_PICTURES + File.separator + "screenshot_")
         val imageUri = resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)!!
         val fos = resolver.openOutputStream(imageUri)
-        fos.use {
+        fos?.use {
             capture.compress(Bitmap.CompressFormat.PNG, 100, it)
         }
     }

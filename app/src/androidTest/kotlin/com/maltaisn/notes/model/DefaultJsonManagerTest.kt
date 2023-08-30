@@ -37,8 +37,6 @@ import com.maltaisn.notes.model.entity.Reminder
 import com.maltaisn.notesshared.dateFor
 import com.maltaisn.notesshared.testNote
 import com.maltaisn.recurpicker.Recurrence
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.mock
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
 import org.intellij.lang.annotations.Language
@@ -46,6 +44,8 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
 import java.security.KeyStore
 import javax.crypto.spec.SecretKeySpec
 import kotlin.test.assertEquals

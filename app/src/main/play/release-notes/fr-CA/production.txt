@@ -1,3 +1,1 @@
-- Demande de confirmation avant d'ouvrir un lien.
-- Correction de bugs mineurs.
-- Mise à jour des traductions.
+- Ajout d'une traduction en chinois.

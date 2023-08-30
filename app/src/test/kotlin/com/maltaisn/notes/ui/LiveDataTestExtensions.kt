@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Nicolas Maltais
+ * Copyright 2023 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,8 +33,8 @@ fun <T> LiveData<T>.getOrAwaitValue(time: Duration = 1.seconds): T {
     var data: T? = null
     val latch = CountDownLatch(1)
     val observer = object : Observer<T> {
-        override fun onChanged(o: T?) {
-            data = o
+        override fun onChanged(value: T) {
+            data = value
             latch.countDown()
             this@getOrAwaitValue.removeObserver(this)
         }
