@@ -1,5 +1,5 @@
-## v1.5.3 (TBD)
-- Nothing.
+## v1.5.3 (2023-08-29)
+- Add Chinese translation.
 
 ## v1.5.2 (2023-08-27)
 - Allow creating note from shared file.
