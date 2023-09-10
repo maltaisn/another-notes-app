@@ -1,5 +1,6 @@
 ## v1.5.4 (TBD)
 - Ask for notification permission on Android 13 when importing data with reminders.
+- Fix link URL not saved across process death in EditFragment.
 
 ## v1.5.3 (2023-08-29)
 - Add Chinese translation.

@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Nicolas Maltais
+ * Copyright 2023 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -109,7 +109,11 @@ class EditViewModel @AssistedInject constructor(
     /**
      * URL of last clicked span, if any.
      */
-    private var linkUrl: String? = null
+    private var linkUrl: String?
+        get() = savedStateHandle[KEY_LINK_URL]
+        set(value) {
+            savedStateHandle[KEY_LINK_URL] = value
+        }
 
     /**
      * The currently displayed list items created in [recreateListItems].
@@ -927,6 +931,7 @@ class EditViewModel @AssistedInject constructor(
 
         private const val KEY_NOTE_ID = "noteId"
         private const val KEY_IS_NEW_NOTE = "isNewNote"
+        private const val KEY_LINK_URL = "linkUrl"
 
         private val TEMP_ITEM = EditItemItem(DefaultEditableText(), checked = false, editable = false, actualPos = 0)
     }
