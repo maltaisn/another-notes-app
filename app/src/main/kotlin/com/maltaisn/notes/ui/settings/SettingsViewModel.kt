@@ -40,6 +40,7 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import java.io.InputStream
 import java.io.OutputStream
@@ -74,6 +75,10 @@ class SettingsViewModel @AssistedInject constructor(
     private val _showImportPasswordDialogEvent = MutableLiveData<Event<Unit>>()
     val showImportPasswordDialogEvent: LiveData<Event<Unit>>
         get() = _showImportPasswordDialogEvent
+
+    private val _askNotificationPermission = MutableLiveData<Event<Unit>>()
+    val askNotificationPermission: LiveData<Event<Unit>>
+        get() = _askNotificationPermission
 
     private var importJsonData = savedStateHandle[KEY_IMPORTED_JSON_DATA] ?: ""
         set(value) {
@@ -180,8 +185,17 @@ class SettingsViewModel @AssistedInject constructor(
                     R.string.encrypted_import_encryption_unsupported
                 }
             }
+
             ImportResult.SUCCESS -> R.string.import_success
         })
+
+        viewModelScope.launch {
+            if ((result == ImportResult.SUCCESS || result == ImportResult.FUTURE_VERSION) &&
+                notesRepository.getNotesWithReminder().firstOrNull() != null
+            ) {
+                _askNotificationPermission.send()
+            }
+        }
     }
 
     @RequiresApi(Build.VERSION_CODES.M)

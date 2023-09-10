@@ -51,6 +51,7 @@ import com.maltaisn.notes.navigateSafe
 import com.maltaisn.notes.ui.AppTheme
 import com.maltaisn.notes.ui.common.ConfirmDialog
 import com.maltaisn.notes.ui.main.MainActivity
+import com.maltaisn.notes.ui.notification.NotificationPermission
 import com.maltaisn.notes.ui.observeEvent
 import com.maltaisn.notes.ui.viewModel
 import com.mikepenz.aboutlibraries.LibsBuilder
@@ -68,6 +69,8 @@ class SettingsFragment : PreferenceFragmentCompat(), ConfirmDialog.Callback, Exp
     private var exportDataLauncher: ActivityResultLauncher<Intent>? = null
     private var autoExportLauncher: ActivityResultLauncher<Intent>? = null
     private var importDataLauncher: ActivityResultLauncher<Intent>? = null
+
+    private var notificationPermission: NotificationPermission? = null
 
     override fun onCreate(state: Bundle?) {
         super.onCreate(state)
@@ -129,6 +132,8 @@ class SettingsFragment : PreferenceFragmentCompat(), ConfirmDialog.Callback, Exp
             }
         }
 
+        notificationPermission = NotificationPermission(this)
+
         enterTransition = MaterialElevationScale(false).apply {
             duration = resources.getInteger(RMaterial.integer.material_motion_duration_short_2).toLong()
         }
@@ -174,6 +179,9 @@ class SettingsFragment : PreferenceFragmentCompat(), ConfirmDialog.Callback, Exp
         viewModel.showImportPasswordDialogEvent.observeEvent(viewLifecycleOwner) {
             ImportPasswordDialog.newInstance()
                 .show(childFragmentManager, null)
+        }
+        viewModel.askNotificationPermission.observeEvent(viewLifecycleOwner) {
+            notificationPermission?.request()
         }
     }
 
@@ -281,7 +289,9 @@ class SettingsFragment : PreferenceFragmentCompat(), ConfirmDialog.Callback, Exp
     override fun onDestroy() {
         super.onDestroy()
         exportDataLauncher = null
+        importDataLauncher = null
         autoExportLauncher = null
+        notificationPermission = null
     }
 
     private fun showMessage(@StringRes messageId: Int) {
@@ -325,20 +335,27 @@ class SettingsFragment : PreferenceFragmentCompat(), ConfirmDialog.Callback, Exp
                     .addCategory(Intent.CATEGORY_OPENABLE)
                 autoExportLauncher?.launch(intent)
             }
+            else -> notificationPermission?.onDialogPositiveButtonClicked(tag)
         }
     }
 
     override fun onDialogNegativeButtonClicked(tag: String?) {
-        if (tag == AUTOMATIC_EXPORT_DIALOG_TAG) {
-            // No file chosen for auto export, disable it.
-            autoExportPref.isChecked = false
+        when (tag) {
+            AUTOMATIC_EXPORT_DIALOG_TAG -> {
+                // No file chosen for auto export, disable it.
+                autoExportPref.isChecked = false
+            }
+            else -> notificationPermission?.onDialogNegativeButtonClicked(tag)
         }
     }
 
     override fun onDialogCancelled(tag: String?) {
-        if (tag == AUTOMATIC_EXPORT_DIALOG_TAG) {
-            // No file chosen for auto export, disable it.
-            autoExportPref.isChecked = false
+        when (tag) {
+            AUTOMATIC_EXPORT_DIALOG_TAG -> {
+                // No file chosen for auto export, disable it.
+                autoExportPref.isChecked = false
+            }
+            else -> notificationPermission?.onDialogCancelled(tag)
         }
     }
 

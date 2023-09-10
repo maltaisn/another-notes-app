@@ -16,19 +16,10 @@
 
 package com.maltaisn.notes.ui.reminder
 
-import android.Manifest
 import android.app.Dialog
 import android.content.DialogInterface
-import android.content.Intent
-import android.content.pm.PackageManager
-import android.os.Build
 import android.os.Bundle
-import android.provider.Settings
-import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
-import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.DialogFragment
 import androidx.navigation.fragment.navArgs
@@ -46,6 +37,7 @@ import com.maltaisn.notes.setMaxWidth
 import com.maltaisn.notes.ui.SharedViewModel
 import com.maltaisn.notes.ui.common.ConfirmDialog
 import com.maltaisn.notes.ui.navGraphViewModel
+import com.maltaisn.notes.ui.notification.NotificationPermission
 import com.maltaisn.notes.ui.observeEvent
 import com.maltaisn.recurpicker.Recurrence
 import com.maltaisn.recurpicker.RecurrencePickerSettings
@@ -77,8 +69,7 @@ class ReminderDialog : DialogFragment(), RecurrenceListCallback, RecurrencePicke
     private val timeFormat = DateFormat.getTimeInstance(DateFormat.SHORT)
     private val recurrenceFormat = RecurrenceFormatter(dateFormat)
 
-    private var requestPermissionLauncher: ActivityResultLauncher<String>? = null
-    private var permissionRequested = false
+    private var notificationPermission: NotificationPermission? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -131,8 +122,11 @@ class ReminderDialog : DialogFragment(), RecurrenceListCallback, RecurrencePicke
             }
         }
 
-        if (savedInstanceState == null && Build.VERSION.SDK_INT >= 33) {
-            requestNotificationPermission()
+        if (savedInstanceState == null) {
+            notificationPermission = NotificationPermission(this).apply {
+                deniedListener = { dismiss() }
+                request()
+            }
         }
 
         viewModel.start(args.noteIds.toList())
@@ -142,7 +136,7 @@ class ReminderDialog : DialogFragment(), RecurrenceListCallback, RecurrencePicke
 
     override fun onDestroy() {
         super.onDestroy()
-        requestPermissionLauncher = null
+        notificationPermission = null
     }
 
     private fun setupViewModelObservers(binding: DialogReminderBinding) {
@@ -219,43 +213,6 @@ class ReminderDialog : DialogFragment(), RecurrenceListCallback, RecurrencePicke
         }
     }
 
-    @RequiresApi(33)
-    private fun requestNotificationPermission() {
-        // Request notification permission: https://developer.android.com/develop/ui/views/notifications/notification-permission
-        // See also: https://developer.android.com/training/permissions/requesting
-        requestPermissionLauncher = registerForActivityResult(RequestPermission()) { isGranted ->
-            if (!isGranted) {
-                if (permissionRequested) {
-                    // Explanation was just shown, user denied permission.
-                    dismiss()
-                } else {
-                    // Ask user to go to the app's notification settings to grant the permission.
-                    // Only do this if the permission wasn't requested just before.
-                    ConfirmDialog.newInstance(
-                        message = R.string.reminder_notif_permission,
-                        btnPositive = R.string.action_ok,
-                    ).show(childFragmentManager, NOTIF_PERMISSION_DENIED_DIALOG)
-                }
-            }
-        }
-        when {
-            ContextCompat.checkSelfPermission(requireContext(),
-                Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED -> {
-                // OK, permission already granted.
-            }
-            shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS) -> {
-                // Show dialog explaning permission request.
-                ConfirmDialog.newInstance(
-                    message = R.string.reminder_notif_permission,
-                    btnPositive = R.string.action_ok,
-                ).show(childFragmentManager, NOTIF_PERMISSION_DIALOG)
-                permissionRequested = true
-            }
-            else -> {
-                requestPermissionLauncher?.launch(Manifest.permission.POST_NOTIFICATIONS)
-            }
-        }
-    }
 
     private fun registerDatePickerListener(picker: MaterialDatePicker<Long>) {
         picker.addOnPositiveButtonClickListener { selection ->
@@ -306,36 +263,18 @@ class ReminderDialog : DialogFragment(), RecurrenceListCallback, RecurrencePicke
     }
 
     override fun onDialogPositiveButtonClicked(tag: String?) {
-        if (Build.VERSION.SDK_INT >= 33) {
-            when (tag) {
-                NOTIF_PERMISSION_DIALOG -> {
-                    // First time asking, can request normally.
-                    requestPermissionLauncher?.launch(Manifest.permission.POST_NOTIFICATIONS)
-                }
-                NOTIF_PERMISSION_DENIED_DIALOG -> {
-                    // Not first time asking, open notification settings window to let user do it.
-                    val settingsIntent = Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS)
-                        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                        .putExtra(Settings.EXTRA_APP_PACKAGE, requireContext().packageName)
-                    startActivity(settingsIntent)
-                    // Dismiss immediately since at this point we can't know if user did enable notifications or not.
-                    dismiss()
-                }
-            }
-        }
+        notificationPermission?.onDialogPositiveButtonClicked(tag)
     }
 
     override fun onDialogNegativeButtonClicked(tag: String?) {
-        if (tag == NOTIF_PERMISSION_DIALOG || tag == NOTIF_PERMISSION_DENIED_DIALOG) {
-            // Notification permission was denied, no point in setting reminder.
-            dismiss()
-        }
+        notificationPermission?.onDialogNegativeButtonClicked(tag)
+    }
+
+    override fun onDialogCancelled(tag: String?) {
+        notificationPermission?.onDialogCancelled(tag)
     }
 
     companion object {
-        private const val NOTIF_PERMISSION_DIALOG = "notif-permission-dialog"
-        private const val NOTIF_PERMISSION_DENIED_DIALOG = "notif-permission-denied-dialog"
-
         private const val DATE_DIALOG_TAG = "date-picker-dialog"
         private const val TIME_DIALOG_TAG = "time-picker-dialog"
 

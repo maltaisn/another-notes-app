@@ -1,3 +1,6 @@
+## v1.5.4 (TBD)
+- Ask for notification permission on Android 13 when importing data with reminders.
+
 ## v1.5.3 (2023-08-29)
 - Add Chinese translation.
 
