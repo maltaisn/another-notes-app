@@ -1,0 +1,279 @@
+<!--
+  Copyright 2023 Nicolas Maltais
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  -->
+
+<resources>
+
+    <!-- Do not translate the app name -->
+    <string name="app_name" translatable="false">Another Notes</string>
+
+    <!-- Can be translated to provided a sensible localized name for a "Notes" app -->
+    <string name="app_name_short">メモ</string>
+
+    <string name="action_archive">アーカイブ</string>
+    <string name="action_cancel">キャンセル</string>
+    <string name="action_clear">クリア</string>
+    <string name="action_convert_to_list">リストに変換</string>
+    <string name="action_convert_to_text">テキストに変換</string>
+    <string name="action_copy">コピーを作成</string>
+    <string name="action_delete">削除</string>
+    <string name="action_delete_checked">チェックした項目を削除する</string>
+    <string name="action_delete_forever">永久に削除</string>
+    <string name="action_delete_selection">選択した範囲を削除</string>
+    <string name="action_delete_selection_forever">選択した範囲を永久に削除</string>
+    <string name="action_empty_trash">ごみ箱を空にする</string>
+    <string name="action_empty_trash_short">空です</string>
+    <string name="action_keep">キープ</string>
+    <string name="action_labels">ラベルを変更する</string>
+    <string name="action_layout_grid">グリッド形式で表示</string>
+    <string name="action_layout_list">リスト形式で表示</string>
+    <string name="action_manage">管理</string>
+    <string name="action_mark_as_done">完了としてマークする</string>
+    <string name="action_none">無し</string>
+    <string name="action_ok">OK</string>
+    <string name="action_open">開く</string>
+    <string name="action_pin">ピン留め</string>
+    <string name="action_postpone">延期</string>
+    <string name="action_reminder_add">リマインダーを追加</string>
+    <string name="action_reminder_edit">リマインダーを編集</string>
+    <string name="action_rename">名前を変更</string>
+    <string name="action_restore">復元する</string>
+    <string name="action_search">検索</string>
+    <string name="action_select_all">全て選択</string>
+    <string name="action_settings">設定</string>
+    <string name="action_share">共有する</string>
+    <string name="action_unarchive">アーカイブを解除</string>
+    <string name="action_uncheck_all">全ての項目のチェックを外す</string>
+    <string name="action_undo">元に戻す</string>
+    <string name="action_unpin">ピン留めを解除</string>
+
+    <!-- Shortcuts -->
+    <!-- Note: normal length is ideally 25 chars or less, short is 10 chars or less. -->
+    <string name="shortcut_text_note">新しいテキストメモ</string>
+    <string name="shortcut_text_note_short">新しいテキスト</string>
+    <string name="shortcut_list_note">新しいリストメモ</string>
+    <string name="shortcut_list_note_short">新しいリスト</string>
+    <string name="shortcut_reminders">リマインダー</string>
+    <string name="shortcut_reminders_short">リマインダー</string>
+
+    <!-- Home -->
+    <string name="note_location_active">メモ</string>
+    <string name="note_location_archived">アーカイブ済み</string>
+    <string name="note_location_deleted">削除済み</string>
+    <string name="note_location_labels">ラベル</string>
+
+    <string name="note_pinned">ピン留め済み</string>
+    <string name="note_not_pinned">その他</string>
+
+    <string name="note_placeholder_active">メモがありません。\nメモを追加するには、+をクリックします。</string>
+    <string name="note_placeholder_archived">アーカイブされたメモはありません</string>
+    <string name="note_placeholder_deleted">ごみ箱が空です</string>
+
+    <plurals name="note_list_item_info">
+        <item quantity="one">+ %d個の他のリスト項目</item>
+        <item quantity="other">+ %d個の他のリスト項目</item>
+    </plurals>
+
+    <plurals name="note_list_item_info_checked">
+        <item quantity="one">+ %d個のチェック済みの項目</item>
+        <item quantity="other">+ %d個のチェック済みの項目</item>
+    </plurals>
+
+    <string name="trash_reminder_message">ごみ箱内のメモは、%d 日後に自動的に削除されます。</string>
+    <string name="trash_delete_message">このメモは完全に削除されます。</string>
+    <string name="trash_delete_selected_message">選択したメモは完全に削除されます。</string>
+    <string name="trash_empty_message">ごみ箱内の全てのメモは完全に削除されます。</string>
+
+    <string name="search_hint">メモを検索する</string>
+    <string name="search_empty_placeholder">お探しのメモは見つかりませんでした。</string>
+
+    <string name="sort_title">並べ替え</string>
+    <string name="sort_direction">並べ替え方向</string>
+    <string name="sort_direction_ascending">昇順</string>
+    <string name="sort_direction_descending">降順 </string>
+    <string name="sort_field">並べ替え</string>
+    <string name="sort_field_created">作成日</string>
+    <string name="sort_field_modified">更新日</string>
+    <string name="sort_field_title">タイトル</string>
+
+    <!-- Edit -->
+    <string name="edit_add_title">メモを作成</string>
+    <string name="edit_change_title">メモを編集</string>
+    <string name="edit_hint_note_title">タイトル</string>
+    <string name="edit_hint_note_content">メモをする</string>
+    <string name="edit_hint_note_item">リスト項目</string>
+
+    <string name="edit_message_blank_note_discarded">白紙のメモは破棄されました。</string>
+    <plurals name="edit_move_archive_message">
+        <item quantity="one">メモがアーカイブされました。</item>
+        <item quantity="other">メモがアーカイブされました。</item>
+    </plurals>
+    <plurals name="edit_message_move_delete">
+        <item quantity="one">メモはごみ箱に移動されました。</item>
+        <item quantity="other">メモはごみ箱に移動されました。</item>
+    </plurals>
+    <plurals name="edit_message_move_restore">
+        <item quantity="one">メモが復元されました。</item>
+        <item quantity="other">メモが復元されました。</item>
+    </plurals>
+    <plurals name="edit_message_move_unarchive">
+        <item quantity="one">メモはアーカイブされていません。</item>
+        <item quantity="other">メモはアーカイブされていません。</item>
+    </plurals>
+    <string name="edit_in_trash_message">ごみ箱内のメモは編集できません。</string>
+
+    <string name="edit_copy_suffix">コピー</string>
+    <string name="edit_copy_untitled_name">無題</string>
+
+    <string name="edit_convert_keep_checked">チェックした項目を削除しますか？</string>
+
+    <plurals name="edit_checked_items">
+        <item quantity="one">%d個のチェック済みアイテム</item>
+        <item quantity="other">%d個のチェック済みアイテム</item>
+    </plurals>
+
+    <!-- Reminder -->
+    <string name="note_reminders">リマインダー</string>
+    <string name="reminder_upcoming">今後の予定</string>
+    <string name="reminder_today">今日</string>
+    <string name="reminder_overdue">期限切れ</string>
+    <string name="reminder_date">日付</string>
+    <string name="reminder_time">時間</string>
+    <string name="reminder_invalid_time">この時間は既に過ぎています。</string>
+    <string name="reminder_notif_channel_title">リマインダー</string>
+    <string name="reminder_notif_channel_descr">メモに設定されたリマインダー</string>
+    <string name="reminder_empty_placeholder">リマインダーが設定されていません</string>
+    <string name="reminder_restricted_battery">リマインダーアラームが正しく動作しない場合があります。
+     アプリでのバッテリーの使用が制限されています。 これはアプリの設定で変更できます。</string>
+    <string name="reminder_notif_permission">リマインダーの通知を送信するには、通知の許可が必要です。
+     OKをクリックして許可してください。 後でリマインダーを設定できるようになります。</string>
+    <string name="reminder_notif_permission_denied">通知の許可が拒否されました。
+     リマインダーアラームは有効になるまで機能しません。</string>
+
+    <!-- Labels -->
+    <string name="label_create">新しいラベルを作成する</string>
+    <string name="label_edit">ラベル名を編集</string>
+    <string name="label_manage">ラベルの管理s</string>
+    <string name="label_select">ラベルの選択</string>
+    <string name="label_already_exists">この名前のラベルはすでに存在します。</string>
+    <string name="label_hidden_option">このラベルが付いたノートをアクティブなノートとアーカイブされたノートから非表示にします</string>
+    <string name="label_empty_placeholder">ラベルは作成されていません</string>
+    <string name="label_delete_message">選択したラベルは削除されますが、関連付けられているメモは削除されます。
+     彼らに保管されます。</string>
+    <string name="label_notes_empty_placeholder">このラベルでタグ付けされたノートはありません</string>
+
+    <!-- Settings -->
+    <string name="pref_group_appearance">外観</string>
+    <string name="pref_theme">アプリのテーマ</string>
+    <string name="pref_theme_light">ライト</string>
+    <string name="pref_theme_dark">ダーク</string>
+    <string name="pref_theme_system">システム</string>
+    <string name="pref_dynamic_colors">ダイナミックカラーを使用</string>
+    <string name="pref_strikethrough_checked">取り消し線が付いているリスト項目</string>
+    <string name="pref_preview_labels">プレビュー内のラベルの最大数</string>
+
+    <string name="pref_shown_date">メモに表示される日付</string>
+    <string name="pref_shown_date_added">作成日</string>
+    <string name="pref_shown_date_modified">最終更新日</string>
+    <string name="pref_shown_date_none">日付を表示しない</string>
+
+    <string name="pref_preview_lines">プレビューの最大行数</string>
+    <string name="pref_preview_lines_summary">ノートに表示する行数と項目数を設定します。
+         レイアウトモードとノートタイプごとに</string>
+    <string name="pref_preview_lines_grid_layout">グリッドレイアウト</string>
+    <string name="pref_preview_lines_list_layout">リストレイアウト</string>
+    <string name="pref_preview_lines_text">テキストノートのプレビュー内の行</string>
+    <string name="pref_preview_lines_list">リストノートのプレビュー内の項目</string>
+
+    <string name="pref_group_behavior">行動</string>
+    <string name="pref_behavior_swipe_action_left">左スワイプ</string>
+    <string name="pref_behavior_swipe_action_right">右スワイプ</string>
+    <string name="pref_behavior_move_checked">チェックした項目を一番下に移動</string>
+
+    <string name="pref_group_data">データ</string>
+    <string name="pref_data_export">データをエクスポート</string>
+    <string name="pref_data_export_summary">メモデータをJSONとしてエクスポート</string>
+    <string name="pref_data_encrypted_export">暗号化されたエクスポート</string>
+    <string name="pref_data_encrypted_export_summary">エクスポートされたメモを暗号化します。 なしではアクセスできません
+         正しいパスワードです。</string>
+    <string name="pref_data_auto_export">データの自動エクスポート</string>
+    <string name="pref_data_auto_export_summary">アプリのデータを1日1回、自動的にファイルにエクスポートします。</string>
+    <string name="pref_data_auto_export_date">（最終エクスポート日時 %s）</string>
+    <string name="pref_data_import">データをインポート</string>
+    <string name="pref_data_import_summary">以前にエクスポートしたJSONデータをインポートし、既存のデータと結合します。</string>
+    <string name="pref_data_clear">全てのデータを消去する</string>
+    <string name="pref_data_clear_confirm_message">すべてのメモ データは完全に削除されます！
+         元に戻すことはできません。</string>
+    <string name="pref_data_clear_success_message">全てのデータが削除されました。</string>
+
+    <string name="pref_group_about">詳細</string>
+    <string name="pref_about_view_source">Githubで表示</string>
+    <string name="pref_about_view_licenses">オープンソースライセンス</string>
+    <string name="pref_about_version">バージョン</string>
+
+    <string name="pref_restart_dialog_title">再起動が必要です！</string>
+    <string name="pref_restart_dialog_description">これらの変更を有効にするには再起動が必要です。
+         今すぐアプリを再起動しますか？</string>
+
+    <!-- Import/export data messages -->
+    <string name="export_success">データは正常にエクスポートされました！</string>
+    <string name="export_fail">データのエクスポート中にエラーが発生しました。</string>
+    <string name="export_serialization_fail">データのエクスポート中にエラーが発生しました。
+         暗号化を無効にして、もう一度やり直してください。</string>
+    <string name="encrypted_export_dialog_title">パスワードを設定</string>
+    <string name="encrypted_export_password">パスワード</string>
+    <string name="encrypted_export_repeat_password">パスワードを確認</string>
+    <string name="encrypted_export_password_matching_error">パスワードが一致しません</string>
+    <string name="encrypted_export_key_generation_successful">暗号化が有効になりました！</string>
+    <string name="encrypted_export_key_deletion_successful">暗号化が無効になりました！</string>
+    <string name="import_success">データが正常にインポートされました！</string>
+    <string name="import_future_version">データが正常にインポートされました。 一部の情報は、
+         新しいバージョンからのものであるため、失われています。</string>
+    <string name="import_bad_input">このファイルを読み込もうとしたときにエラーが発生しました。</string>
+    <string name="import_bad_format">データをインポートできませんでした。JSONデータが無効です。</string>
+    <string name="import_bad_data">データをインポートできませんでした。一部のフィールドに無効な値が含まれています。
+         これは、新しいバージョンからデータをインポートする場合に発生する可能性があるため、アプリを更新してみてください。</string>
+    <string name="encrypted_import_dialog_title">パスワードを入力してください</string>
+    <string name="encrypted_import_key_error">このファイルを復号化しようとした時にエラーが発生しました。
+        パスワードが正しいかどうかを確認してください。</string>
+    <string name="encrypted_import_encryption_unsupported">データをインポートできませんでした。
+        このバージョンのAndroidでは暗号化はサポートされていません。</string>
+    <string name="auto_export_message">データの自動エクスポートを有効にするには、エクスポートするファイルを選択する必要があります。
+         データを保存します。 アプリのデータは、アプリを開いている間、1日に1回エクスポートされます。
+         OKをクリックして続行します。</string>
+    <string name="auto_export_fail">データの自動エクスポートに失敗しました。 エクスポート先を確認してください
+         まだ存在し、アクセスできる場合は、自動エクスポートを再度設定してください。</string>
+
+    <!-- Content description -->
+    <string name="content_descrp_open_drawer">ドロワーを開く</string>
+    <string name="content_descrp_back">戻る</string>
+    <string name="content_descrp_label_hidden">このラベルが付いたメモは非表示になります。</string>
+
+    <!-- Relative date time format -->
+    <string name="date_rel_today">今日、%s</string>
+    <string name="date_rel_yesterday">昨日、%s</string>
+    <string name="date_rel_tomorrow">明日、%s</string>
+    <plurals name="date_rel_days_past">
+        <!-- used with quantity >= 2, format values: number of days, time -->
+        <item quantity="other">%d日前、%s</item>
+    </plurals>
+    <plurals name="date_rel_days_future">
+        <!-- used with quantity >= 2, format values: number of days, time -->
+        <item quantity="other">%d日後、%s</item>
+    </plurals>
+    <!-- format values: date, time -->
+    <string name="date_rel_absolute">%1$s, %2$s</string>
+
+</resources>
