@@ -28,36 +28,36 @@
     <string name="action_convert_to_list">リストに変換</string>
     <string name="action_convert_to_text">テキストに変換</string>
     <string name="action_copy">コピーを作成</string>
-    <string name="action_delete">Delete</string>
-    <string name="action_delete_checked">Delete checked items</string>
-    <string name="action_delete_forever">Delete forever</string>
-    <string name="action_delete_selection">Delete selection</string>
-    <string name="action_delete_selection_forever">Delete selection forever</string>
-    <string name="action_empty_trash">Empty recycle bin</string>
-    <string name="action_empty_trash_short">Empty</string>
-    <string name="action_keep">Keep</string>
-    <string name="action_labels">Change labels</string>
-    <string name="action_layout_grid">View as grid</string>
-    <string name="action_layout_list">View as list</string>
-    <string name="action_manage">Manage</string>
-    <string name="action_mark_as_done">Mark as done</string>
-    <string name="action_none">None</string>
+    <string name="action_delete">削除</string>
+    <string name="action_delete_checked">チェックした項目を削除する</string>
+    <string name="action_delete_forever">永久に削除</string>
+    <string name="action_delete_selection">選択した範囲を削除</string>
+    <string name="action_delete_selection_forever">選択した範囲を永久に削除</string>
+    <string name="action_empty_trash">ごみ箱を空にする</string>
+    <string name="action_empty_trash_short">空です</string>
+    <string name="action_keep">キープ</string>
+    <string name="action_labels">ラベルを変更する</string>
+    <string name="action_layout_grid">グリッド形式で表示</string>
+    <string name="action_layout_list">リスト形式で表示</string>
+    <string name="action_manage">管理</string>
+    <string name="action_mark_as_done">完了としてマークする</string>
+    <string name="action_none">無し</string>
     <string name="action_ok">OK</string>
     <string name="action_open">開く</string>
-    <string name="action_pin">Pin</string>
-    <string name="action_postpone">Postpone</string>
-    <string name="action_reminder_add">Add reminder</string>
-    <string name="action_reminder_edit">Edit reminder</string>
-    <string name="action_rename">Rename</string>
-    <string name="action_restore">Restore</string>
-    <string name="action_search">Search</string>
-    <string name="action_select_all">Select all</string>
-    <string name="action_settings">Settings</string>
-    <string name="action_share">Share</string>
-    <string name="action_unarchive">Unarchive</string>
-    <string name="action_uncheck_all">Uncheck all items</string>
-    <string name="action_undo">Undo</string>
-    <string name="action_unpin">Unpin</string>
+    <string name="action_pin">ピン留め</string>
+    <string name="action_postpone">延期</string>
+    <string name="action_reminder_add">リマインダーを追加</string>
+    <string name="action_reminder_edit">リマインダーを編集</string>
+    <string name="action_rename">名前を変更</string>
+    <string name="action_restore">復元する</string>
+    <string name="action_search">検索</string>
+    <string name="action_select_all">全て選択</string>
+    <string name="action_settings">設定</string>
+    <string name="action_share">共有する</string>
+    <string name="action_unarchive">アーカイブを解除</string>
+    <string name="action_uncheck_all">全ての項目のチェックを外す</string>
+    <string name="action_undo">元に戻す</string>
+    <string name="action_unpin">ピン留めを解除</string>
 
     <!-- Shortcuts -->
     <!-- Note: normal length is ideally 25 chars or less, short is 10 chars or less. -->
@@ -74,30 +74,30 @@
     <string name="note_location_deleted">削除済み</string>
     <string name="note_location_labels">ラベル</string>
 
-    <string name="note_pinned">Pinned</string>
-    <string name="note_not_pinned">Others</string>
+    <string name="note_pinned">ピン留め済み</string>
+    <string name="note_not_pinned">その他</string>
 
-    <string name="note_placeholder_active">You don\'t have any notes.\nClick on the + to add one.</string>
-    <string name="note_placeholder_archived">No archived notes</string>
-    <string name="note_placeholder_deleted">Recycle bin is empty</string>
+    <string name="note_placeholder_active">メモがありません。\nメモを追加するには、+をクリックします。</string>
+    <string name="note_placeholder_archived">アーカイブされたメモはありません</string>
+    <string name="note_placeholder_deleted">ごみ箱が空です</string>
 
     <plurals name="note_list_item_info">
-        <item quantity="one">+ %d other list item</item>
-        <item quantity="other">+ %d other list items</item>
+        <item quantity="one">+ %d 個の他のリスト項目</item>
+        <item quantity="other">+ %d 個の他のリスト項目</item>
     </plurals>
 
     <plurals name="note_list_item_info_checked">
-        <item quantity="one">+ %d checked item</item>
-        <item quantity="other">+ %d checked items</item>
+        <item quantity="one">+ %d 個のチェック済みの項目</item>
+        <item quantity="other">+ %d 個のチェック済みの項目</item>
     </plurals>
 
-    <string name="trash_reminder_message">Notes in recycle bin are automatically deleted after %d days.</string>
-    <string name="trash_delete_message">This note will be permanently deleted.</string>
-    <string name="trash_delete_selected_message">Selected notes will be permanently deleted.</string>
-    <string name="trash_empty_message">All notes in recycle bin will be permanently deleted.</string>
+    <string name="trash_reminder_message">ごみ箱内のメモは、%d 日後に自動的に削除されます。</string>
+    <string name="trash_delete_message">このメモは完全に削除されます。</string>
+    <string name="trash_delete_selected_message">選択したメモは完全に削除されます。</string>
+    <string name="trash_empty_message">ごみ箱内の全てのメモは完全に削除されます。</string>
 
-    <string name="search_hint">Search notes</string>
-    <string name="search_empty_placeholder">No notes found for your query.</string>
+    <string name="search_hint">メモを検索する</string>
+    <string name="search_empty_placeholder">お探しのメモは見つかりませんでした。</string>
 
     <string name="sort_title">並べ替え</string>
     <string name="sort_direction">並べ替え方向</string>
