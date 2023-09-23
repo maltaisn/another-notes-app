@@ -109,16 +109,16 @@
     <string name="sort_field_title">タイトル</string>
 
     <!-- Edit -->
-    <string name="edit_add_title">Create note</string>
-    <string name="edit_change_title">Edit note</string>
-    <string name="edit_hint_note_title">Title</string>
-    <string name="edit_hint_note_content">Note</string>
-    <string name="edit_hint_note_item">List item</string>
+    <string name="edit_add_title">メモを作成</string>
+    <string name="edit_change_title">メモを編集</string>
+    <string name="edit_hint_note_title">タイトル</string>
+    <string name="edit_hint_note_content">メモをする</string>
+    <string name="edit_hint_note_item">リスト項目</string>
 
-    <string name="edit_message_blank_note_discarded">Blank note discarded.</string>
+    <string name="edit_message_blank_note_discarded">白紙のメモは破棄されました。</string>
     <plurals name="edit_move_archive_message">
-        <item quantity="one">Note archived.</item>
-        <item quantity="other">Notes archived.</item>
+        <item quantity="one">メモがアーカイブされました。</item>
+        <item quantity="other">メモがアーカイブされました。</item>
     </plurals>
     <plurals name="edit_message_move_delete">
         <item quantity="one">Note moved to recycle bin.</item>
