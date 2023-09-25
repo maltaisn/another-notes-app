@@ -82,13 +82,13 @@
     <string name="note_placeholder_deleted">ごみ箱が空です</string>
 
     <plurals name="note_list_item_info">
-        <item quantity="one">+ %d 個の他のリスト項目</item>
-        <item quantity="other">+ %d 個の他のリスト項目</item>
+        <item quantity="one">+ %d個の他のリスト項目</item>
+        <item quantity="other">+ %d個の他のリスト項目</item>
     </plurals>
 
     <plurals name="note_list_item_info_checked">
-        <item quantity="one">+ %d 個のチェック済みの項目</item>
-        <item quantity="other">+ %d 個のチェック済みの項目</item>
+        <item quantity="one">+ %d個のチェック済みの項目</item>
+        <item quantity="other">+ %d個のチェック済みの項目</item>
     </plurals>
 
     <string name="trash_reminder_message">ごみ箱内のメモは、%d 日後に自動的に削除されます。</string>
@@ -121,46 +121,46 @@
         <item quantity="other">メモがアーカイブされました。</item>
     </plurals>
     <plurals name="edit_message_move_delete">
-        <item quantity="one">Note moved to recycle bin.</item>
-        <item quantity="other">Notes moved to recycle bin.</item>
+        <item quantity="one">メモはごみ箱に移動されました。</item>
+        <item quantity="other">メモはごみ箱に移動されました。</item>
     </plurals>
     <plurals name="edit_message_move_restore">
-        <item quantity="one">Note restored.</item>
-        <item quantity="other">Notes restored.</item>
+        <item quantity="one">メモが復元されました。</item>
+        <item quantity="other">メモが復元されました。</item>
     </plurals>
     <plurals name="edit_message_move_unarchive">
-        <item quantity="one">Note unarchived.</item>
-        <item quantity="other">Notes unarchived.</item>
+        <item quantity="one">メモはアーカイブされていません。</item>
+        <item quantity="other">メモはアーカイブされていません。</item>
     </plurals>
-    <string name="edit_in_trash_message">Cannot edit note in recycle bin.</string>
+    <string name="edit_in_trash_message">ごみ箱内のメモは編集できません。</string>
 
-    <string name="edit_copy_suffix">Copy</string>
-    <string name="edit_copy_untitled_name">Untitled</string>
+    <string name="edit_copy_suffix">コピー</string>
+    <string name="edit_copy_untitled_name">無題</string>
 
-    <string name="edit_convert_keep_checked">Remove checked items?</string>
+    <string name="edit_convert_keep_checked">チェックした項目を削除しますか？</string>
 
     <plurals name="edit_checked_items">
-        <item quantity="one">%d checked item</item>
-        <item quantity="other">%d checked items</item>
+        <item quantity="one">%d個のチェック済みアイテム</item>
+        <item quantity="other">%d個のチェック済みアイテム</item>
     </plurals>
 
     <!-- Reminder -->
-    <string name="note_reminders">Reminders</string>
-    <string name="reminder_upcoming">Upcoming</string>
-    <string name="reminder_today">Today</string>
-    <string name="reminder_overdue">Overdue</string>
-    <string name="reminder_date">Date</string>
-    <string name="reminder_time">Time</string>
-    <string name="reminder_invalid_time">This time has already passed.</string>
-    <string name="reminder_notif_channel_title">Reminders</string>
-    <string name="reminder_notif_channel_descr">Reminders set on notes</string>
-    <string name="reminder_empty_placeholder">No reminders set</string>
-    <string name="reminder_restricted_battery">Reminder alarms may not work correctly because the
-    app has restricted battery usage. This can be changed in the app settings.</string>
-    <string name="reminder_notif_permission">To be able to send reminder notifications, the app needs a permission.
-    Click OK to show the permission request. You will be able to set a reminder afterwards.</string>
-    <string name="reminder_notif_permission_denied">The notification permission has been denied.
-    Reminder alarms will not work until enabled.</string>
+    <string name="note_reminders">リマインダー</string>
+    <string name="reminder_upcoming">今後の予定</string>
+    <string name="reminder_today">今日</string>
+    <string name="reminder_overdue">期限切れ</string>
+    <string name="reminder_date">日付</string>
+    <string name="reminder_time">時間</string>
+    <string name="reminder_invalid_time">この時間は既に過ぎています。</string>
+    <string name="reminder_notif_channel_title">リマインダー</string>
+    <string name="reminder_notif_channel_descr">メモに設定されたリマインダー</string>
+    <string name="reminder_empty_placeholder">リマインダーが設定されていません</string>
+    <string name="reminder_restricted_battery">リマインダーアラームが正しく動作しない場合があります。
+     アプリでのバッテリーの使用が制限されています。 これはアプリの設定で変更できます。</string>
+    <string name="reminder_notif_permission">リマインダーの通知を送信するには、通知の許可が必要です。
+     OKをクリックして許可してください。 後でリマインダーを設定できるようになります。</string>
+    <string name="reminder_notif_permission_denied">通知の許可が拒否されました。
+     リマインダーアラームは有効になるまで機能しません。</string>
 
     <!-- Labels -->
     <string name="label_create">Create new label</string>
