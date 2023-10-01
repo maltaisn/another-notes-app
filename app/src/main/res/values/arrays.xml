@@ -52,4 +52,17 @@
         <item>none</item>
     </string-array>
 
+    <string-array name="pref_deleted_notes_timeout_entries">
+        <item>@string/pref_deleted_notes_timeout_day</item>
+        <item>@string/pref_deleted_notes_timeout_7_days</item>
+        <item>@string/pref_deleted_notes_timeout_1_month</item>
+        <item>@string/pref_deleted_notes_timeout_1_year</item>
+    </string-array>
+    <string-array name="pref_deleted_notes_timeout_values">
+        <item>24h</item>
+        <item>7d</item>
+        <item>30d</item>
+        <item>1y</item>
+    </string-array>
+
 </resources>

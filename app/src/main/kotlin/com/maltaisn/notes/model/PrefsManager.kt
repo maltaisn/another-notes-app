@@ -24,6 +24,7 @@ import androidx.preference.PreferenceManager
 import com.maltaisn.notes.R
 import com.maltaisn.notes.model.entity.NoteType
 import com.maltaisn.notes.ui.AppTheme
+import com.maltaisn.notes.ui.note.DeletedNotesTimeoutField
 import com.maltaisn.notes.ui.note.ShownDateField
 import com.maltaisn.notes.ui.note.SwipeAction
 import com.maltaisn.notes.ui.note.adapter.NoteListLayoutMode
@@ -51,6 +52,7 @@ class PrefsManager @Inject constructor(
     val swipeActionRight: SwipeAction by enumPreference(SWIPE_ACTION_RIGHT, SwipeAction.ARCHIVE)
     val shownDateField: ShownDateField by enumPreference(SHOWN_DATE, ShownDateField.NONE)
     val maximumPreviewLabels: Int by preference(PREVIEW_LABELS, 0)
+    val deletedNotesTimeoutField: DeletedNotesTimeoutField by enumPreference(DELETED_TIMEOUT, DeletedNotesTimeoutField.DAYS_7)
 
     var sortField: SortField by enumPreference(SORT_FIELD, SortField.MODIFIED_DATE)
     var sortDirection: SortDirection by enumPreference(SORT_DIRECTION, SortDirection.DESCENDING)
@@ -188,6 +190,7 @@ class PrefsManager @Inject constructor(
         const val CLEAR_DATA = "clear_data"
         const val VIEW_LICENSES = "view_licenses"
         const val VERSION = "version"
+        const val DELETED_TIMEOUT = "deleted_timeout"
 
         // Other keys
         private const val AUTO_EXPORT_URI = "auto_export_uri"
@@ -208,11 +211,6 @@ class PrefsManager @Inject constructor(
             R.xml.prefs,
             R.xml.prefs_preview_lines,
         )
-
-        /**
-         * Delay after which notes in trash are automatically deleted forever.
-         */
-        val TRASH_AUTO_DELETE_DELAY = 7.days
 
         /**
          * Required delay before showing the trash reminder delay after user dismisses it.
