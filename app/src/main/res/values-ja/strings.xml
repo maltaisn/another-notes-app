@@ -163,15 +163,15 @@
      リマインダーアラームは有効になるまで機能しません。</string>
 
     <!-- Labels -->
-    <string name="label_create">Create new label</string>
-    <string name="label_edit">Edit label name</string>
-    <string name="label_manage">Manage labels</string>
-    <string name="label_select">Select labels</string>
-    <string name="label_already_exists">A label with this name already exists.</string>
-    <string name="label_hidden_option">Hide notes with this label from the active and archived note sections</string>
-    <string name="label_empty_placeholder">No labels created</string>
-    <string name="label_delete_message">Selected labels will be deleted, but the notes associated
-    to them will be kept.</string>
+    <string name="label_create">新しいラベルを作成する</string>
+    <string name="label_edit">ラベル名を編集</string>
+    <string name="label_manage">ラベルの管理s</string>
+    <string name="label_select">ラベルの選択</string>
+    <string name="label_already_exists">この名前のラベルはすでに存在します。</string>
+    <string name="label_hidden_option">このラベルが付いたノートをアクティブなノートとアーカイブされたノートから非表示にします</string>
+    <string name="label_empty_placeholder">ラベルは作成されていません</string>
+    <string name="label_delete_message">選択したラベルは削除されますが、関連付けられているメモは削除されます。
+     彼らに保管されます。</string>
     <string name="label_notes_empty_placeholder">No notes tagged with this label</string>
 
     <!-- Settings -->
