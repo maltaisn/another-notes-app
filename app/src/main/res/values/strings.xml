@@ -198,6 +198,12 @@
     <string name="pref_shown_date_modified">Last modified date</string>
     <string name="pref_shown_date_none">No date shown</string>
 
+    <string name="pref_deleted_notes_timeout_title">Deleted notes timeout</string>
+    <string name="pref_deleted_notes_timeout_day">24 Hours</string>
+    <string name="pref_deleted_notes_timeout_7_days">7 Days</string>
+    <string name="pref_deleted_notes_timeout_1_month">30 Days</string>
+    <string name="pref_deleted_notes_timeout_1_year">1 Year</string>
+
     <string name="pref_preview_lines">Maximum lines in previews</string>
     <string name="pref_preview_lines_summary">Configure how many lines and items are shown on notes,
         for each layout mode and note type</string>
@@ -210,6 +216,7 @@
     <string name="pref_behavior_swipe_action_left">Swipe left action</string>
     <string name="pref_behavior_swipe_action_right">Swipe right action</string>
     <string name="pref_behavior_move_checked">Move checked items to the bottom</string>
+    <string name="pref_deleted_notes_timeout">Deleted notes timeout</string>
 
     <string name="pref_group_data">Data</string>
     <string name="pref_data_export">Export data</string>

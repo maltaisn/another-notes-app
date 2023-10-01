@@ -90,6 +90,14 @@
             app:useSimpleSummaryProvider="true"
             />
 
+        <DropDownPreference
+            app:entries="@array/pref_deleted_notes_timeout_entries"
+            app:entryValues="@array/pref_deleted_notes_timeout_values"
+            app:key="deleted_timeout"
+            app:title="@string/pref_deleted_notes_timeout_title"
+            app:useSimpleSummaryProvider="true"
+            />
+
         <SwitchPreferenceCompat
             app:defaultValue="false"
             app:key="move_checked_to_bottom"

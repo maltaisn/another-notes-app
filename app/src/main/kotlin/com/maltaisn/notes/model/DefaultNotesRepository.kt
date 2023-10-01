@@ -19,8 +19,10 @@ package com.maltaisn.notes.model
 import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.model.entity.NoteStatus
 import kotlinx.coroutines.NonCancellable
+import com.maltaisn.notes.ui.note.DeletedNotesTimeoutField
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
+import kotlin.time.Duration.Companion.days
 
 class DefaultNotesRepository @Inject constructor(
     private val notesDao: NotesDao,
@@ -72,7 +74,12 @@ class DefaultNotesRepository @Inject constructor(
     }
 
     override suspend fun deleteOldNotesInTrash() {
-        val delay = PrefsManager.TRASH_AUTO_DELETE_DELAY.inWholeMilliseconds
+        val delay = when (prefs.deletedNotesTimeoutField) {
+            DeletedNotesTimeoutField.DAY -> 1.days
+            DeletedNotesTimeoutField.DAYS_7 -> 7.days
+            DeletedNotesTimeoutField.MONTH -> 30.days
+            DeletedNotesTimeoutField.YEAR -> 365.days
+        }.inWholeMilliseconds
         val minDate = System.currentTimeMillis() - delay
         notesDao.deleteNotesByStatusAndDate(NoteStatus.DELETED, minDate)
     }
