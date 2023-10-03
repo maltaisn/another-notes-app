@@ -172,40 +172,40 @@
     <string name="label_empty_placeholder">ラベルは作成されていません</string>
     <string name="label_delete_message">選択したラベルは削除されますが、関連付けられているメモは削除されます。
      彼らに保管されます。</string>
-    <string name="label_notes_empty_placeholder">No notes tagged with this label</string>
+    <string name="label_notes_empty_placeholder">このラベルでタグ付けされたノートはありません</string>
 
     <!-- Settings -->
-    <string name="pref_group_appearance">Appearance</string>
-    <string name="pref_theme">App theme</string>
-    <string name="pref_theme_light">Light</string>
-    <string name="pref_theme_dark">Dark</string>
-    <string name="pref_theme_system">Follow system</string>
-    <string name="pref_dynamic_colors">Use dynamic colors</string>
-    <string name="pref_strikethrough_checked">Strikethrough checked list items</string>
-    <string name="pref_preview_labels">Maximum number of labels in preview</string>
+    <string name="pref_group_appearance">外観</string>
+    <string name="pref_theme">アプリのテーマ</string>
+    <string name="pref_theme_light">ライト</string>
+    <string name="pref_theme_dark">ダーク</string>
+    <string name="pref_theme_system">システム</string>
+    <string name="pref_dynamic_colors">ダイナミックカラーを使用</string>
+    <string name="pref_strikethrough_checked">取り消し線が付いているリスト項目</string>
+    <string name="pref_preview_labels">プレビュー内のラベルの最大数</string>
 
-    <string name="pref_shown_date">Date shown for notes</string>
-    <string name="pref_shown_date_added">Creation date</string>
-    <string name="pref_shown_date_modified">Last modified date</string>
-    <string name="pref_shown_date_none">No date shown</string>
+    <string name="pref_shown_date">メモに表示される日付</string>
+    <string name="pref_shown_date_added">作成日</string>
+    <string name="pref_shown_date_modified">最終更新日</string>
+    <string name="pref_shown_date_none">日付を表示しない</string>
 
-    <string name="pref_preview_lines">Maximum lines in previews</string>
-    <string name="pref_preview_lines_summary">Configure how many lines and items are shown on notes,
-        for each layout mode and note type</string>
-    <string name="pref_preview_lines_grid_layout">Grid layout</string>
-    <string name="pref_preview_lines_list_layout">List layout</string>
-    <string name="pref_preview_lines_text">Lines in text note preview</string>
-    <string name="pref_preview_lines_list">Items in list note preview</string>
+    <string name="pref_preview_lines">プレビューの最大行数</string>
+    <string name="pref_preview_lines_summary">ノートに表示する行数と項目数を設定します。
+         レイアウトモードとノートタイプごとに</string>
+    <string name="pref_preview_lines_grid_layout">グリッドレイアウト</string>
+    <string name="pref_preview_lines_list_layout">リストレイアウト</string>
+    <string name="pref_preview_lines_text">テキストノートのプレビュー内の行</string>
+    <string name="pref_preview_lines_list">リストノートのプレビュー内の項目</string>
 
-    <string name="pref_group_behavior">Behavior</string>
-    <string name="pref_behavior_swipe_action_left">Swipe left action</string>
-    <string name="pref_behavior_swipe_action_right">Swipe right action</string>
-    <string name="pref_behavior_move_checked">Move checked items to the bottom</string>
+    <string name="pref_group_behavior">行動</string>
+    <string name="pref_behavior_swipe_action_left">左スワイプ</string>
+    <string name="pref_behavior_swipe_action_right">右スワイプ</string>
+    <string name="pref_behavior_move_checked">チェックした項目を一番下に移動</string>
 
-    <string name="pref_group_data">Data</string>
-    <string name="pref_data_export">Export data</string>
-    <string name="pref_data_export_summary">Export notes data as JSON</string>
-    <string name="pref_data_encrypted_export">Encrypted export</string>
+    <string name="pref_group_data">データ</string>
+    <string name="pref_data_export">データをエクスポート</string>
+    <string name="pref_data_export_summary">メモデータをJSONとしてエクスポート</string>
+    <string name="pref_data_encrypted_export">暗号化されたエクスポート</string>
     <string name="pref_data_encrypted_export_summary">Encrypts the exported notes. Access is not possible without
         the correct password.</string>
     <string name="pref_data_auto_export">Automatic data export</string>
