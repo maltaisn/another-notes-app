@@ -223,55 +223,55 @@
     <string name="pref_about_view_licenses">オープンソースライセンス</string>
     <string name="pref_about_version">バージョン</string>
 
-    <string name="pref_restart_dialog_title">Restart required!</string>
-    <string name="pref_restart_dialog_description">A restart is required for these changes to take effect.
-        Do you want to restart the app now?</string>
+    <string name="pref_restart_dialog_title">再起動が必要です！</string>
+    <string name="pref_restart_dialog_description">これらの変更を有効にするには再起動が必要です。
+         今すぐアプリを再起動しますか？</string>
 
     <!-- Import/export data messages -->
-    <string name="export_success">Data exported successfully!</string>
-    <string name="export_fail">An error occurred during data export.</string>
-    <string name="export_serialization_fail">An error occurred during data export.
-        Try disabling encryption and try again.</string>
-    <string name="encrypted_export_dialog_title">Set password</string>
-    <string name="encrypted_export_password">Password</string>
-    <string name="encrypted_export_repeat_password">Confirm password</string>
-    <string name="encrypted_export_password_matching_error">Passwords do not match</string>
-    <string name="encrypted_export_key_generation_successful">Encryption enabled successfully!</string>
-    <string name="encrypted_export_key_deletion_successful">Encryption disabled successfully!</string>
-    <string name="import_success">Data imported successfully!</string>
-    <string name="import_future_version">Data imported successfully! Note that some information may
-        have been lost because the data originates from a later version.</string>
-    <string name="import_bad_input">An error occurred while attempting to read this file.</string>
-    <string name="import_bad_format">Could not import data, JSON data is invalid.</string>
-    <string name="import_bad_data">Could not import data, some fields have invalid values.
-        This can happen if importing data from a later version, try updating the app.</string>
-    <string name="encrypted_import_dialog_title">Enter password</string>
-    <string name="encrypted_import_key_error">An error occurred while attempting to decrypt this file.
-        Check if the password was correct.</string>
-    <string name="encrypted_import_encryption_unsupported">Could not import data, encryption is not supported
-        on this version of Android.</string>
-    <string name="auto_export_message">To enable automatic export, a file must be chosen to
-        save the data. The app\'s data will be exported once a day while the app is opened.
-        Click OK to proceed.</string>
-    <string name="auto_export_fail">Failed to export data automatically. Make sure the export location
-        still exists and is accessible, then reconfigure automatic export.</string>
+    <string name="export_success">データは正常にエクスポートされました！</string>
+    <string name="export_fail">データのエクスポート中にエラーが発生しました。</string>
+    <string name="export_serialization_fail">データのエクスポート中にエラーが発生しました。
+         暗号化を無効にして、もう一度やり直してください。</string>
+    <string name="encrypted_export_dialog_title">パスワードを設定</string>
+    <string name="encrypted_export_password">パスワード</string>
+    <string name="encrypted_export_repeat_password">パスワードを確認</string>
+    <string name="encrypted_export_password_matching_error">パスワードが一致しません</string>
+    <string name="encrypted_export_key_generation_successful">暗号化が有効になりました！</string>
+    <string name="encrypted_export_key_deletion_successful">暗号化が無効になりました！</string>
+    <string name="import_success">データが正常にインポートされました！</string>
+    <string name="import_future_version">データが正常にインポートされました。 一部の情報は、
+         新しいバージョンからのものであるため、失われています。</string>
+    <string name="import_bad_input">このファイルを読み込もうとしたときにエラーが発生しました。</string>
+    <string name="import_bad_format">データをインポートできませんでした。JSONデータが無効です。</string>
+    <string name="import_bad_data">データをインポートできませんでした。一部のフィールドに無効な値が含まれています。
+         これは、新しいバージョンからデータをインポートする場合に発生する可能性があるため、アプリを更新してみてください。</string>
+    <string name="encrypted_import_dialog_title">パスワードを入力してください</string>
+    <string name="encrypted_import_key_error">このファイルを復号化しようとした時にエラーが発生しました。
+        パスワードが正しいかどうかを確認してください。</string>
+    <string name="encrypted_import_encryption_unsupported">データをインポートできませんでした。
+        このバージョンのAndroidでは暗号化はサポートされていません。</string>
+    <string name="auto_export_message">データの自動エクスポートを有効にするには、エクスポートするファイルを選択する必要があります。
+         データを保存します。 アプリのデータは、アプリを開いている間、1日に1回エクスポートされます。
+         OKをクリックして続行します。</string>
+    <string name="auto_export_fail">データの自動エクスポートに失敗しました。 エクスポート先を確認してください
+         まだ存在し、アクセスできる場合は、自動エクスポートを再度設定してください。</string>
 
     <!-- Content description -->
-    <string name="content_descrp_open_drawer">Open drawer</string>
-    <string name="content_descrp_back">Go back</string>
-    <string name="content_descrp_label_hidden">Notes with this label are hidden</string>
+    <string name="content_descrp_open_drawer">ドロワーを開く</string>
+    <string name="content_descrp_back">戻る</string>
+    <string name="content_descrp_label_hidden">このラベルが付いたメモは非表示になります。</string>
 
     <!-- Relative date time format -->
-    <string name="date_rel_today">Today, %s</string>
-    <string name="date_rel_yesterday">Yesterday, %s</string>
-    <string name="date_rel_tomorrow">Tomorrow, %s</string>
+    <string name="date_rel_today">今日、%s</string>
+    <string name="date_rel_yesterday">昨日、%s</string>
+    <string name="date_rel_tomorrow">明日、%s</string>
     <plurals name="date_rel_days_past">
         <!-- used with quantity >= 2, format values: number of days, time -->
-        <item quantity="other">%d days ago, %s</item>
+        <item quantity="other">%d日前、%s</item>
     </plurals>
     <plurals name="date_rel_days_future">
         <!-- used with quantity >= 2, format values: number of days, time -->
-        <item quantity="other">In %d days, %s</item>
+        <item quantity="other">%d日後、%s</item>
     </plurals>
     <!-- format values: date, time -->
     <string name="date_rel_absolute">%1$s, %2$s</string>
