@@ -206,22 +206,22 @@
     <string name="pref_data_export">データをエクスポート</string>
     <string name="pref_data_export_summary">メモデータをJSONとしてエクスポート</string>
     <string name="pref_data_encrypted_export">暗号化されたエクスポート</string>
-    <string name="pref_data_encrypted_export_summary">Encrypts the exported notes. Access is not possible without
-        the correct password.</string>
-    <string name="pref_data_auto_export">Automatic data export</string>
-    <string name="pref_data_auto_export_summary">Automatically export the app\'s data to a file, once a day.</string>
-    <string name="pref_data_auto_export_date">(Last exported on %s)</string>
-    <string name="pref_data_import">Import data</string>
-    <string name="pref_data_import_summary">Import previously exported JSON data, merging with existing data.</string>
-    <string name="pref_data_clear">Clear all data</string>
-    <string name="pref_data_clear_confirm_message">All notes data will be cleared permanently!
-        This cannot be undone.</string>
-    <string name="pref_data_clear_success_message">All data was cleared successfully.</string>
+    <string name="pref_data_encrypted_export_summary">エクスポートされたメモを暗号化します。 なしではアクセスできません
+         正しいパスワードです。</string>
+    <string name="pref_data_auto_export">データの自動エクスポート</string>
+    <string name="pref_data_auto_export_summary">アプリのデータを1日1回、自動的にファイルにエクスポートします。</string>
+    <string name="pref_data_auto_export_date">（最終エクスポート日時 %s）</string>
+    <string name="pref_data_import">データをインポート</string>
+    <string name="pref_data_import_summary">以前にエクスポートしたJSONデータをインポートし、既存のデータと結合します。</string>
+    <string name="pref_data_clear">全てのデータを消去する</string>
+    <string name="pref_data_clear_confirm_message">すべてのメモ データは完全に削除されます！
+         元に戻すことはできません。</string>
+    <string name="pref_data_clear_success_message">全てのデータが削除されました。</string>
 
-    <string name="pref_group_about">About</string>
-    <string name="pref_about_view_source">View on Github</string>
-    <string name="pref_about_view_licenses">Open source licenses</string>
-    <string name="pref_about_version">Version</string>
+    <string name="pref_group_about">詳細</string>
+    <string name="pref_about_view_source">Githubで表示</string>
+    <string name="pref_about_view_licenses">オープンソースライセンス</string>
+    <string name="pref_about_version">バージョン</string>
 
     <string name="pref_restart_dialog_title">Restart required!</string>
     <string name="pref_restart_dialog_description">A restart is required for these changes to take effect.
