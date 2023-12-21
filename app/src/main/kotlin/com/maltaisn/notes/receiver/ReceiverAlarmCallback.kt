@@ -21,6 +21,10 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import android.provider.Settings
+import android.util.Log
+import androidx.activity.result.ActivityResultLauncher
+import androidx.annotation.RequiresApi
 import com.maltaisn.notes.model.ReminderAlarmCallback
 import com.maltaisn.notes.model.ReminderAlarmManager
 import javax.inject.Inject
@@ -34,14 +38,24 @@ class ReceiverAlarmCallback @Inject constructor(
 ) : ReminderAlarmCallback {
 
     private val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+    private var requestPermissionLauncher: ActivityResultLauncher<String>? = null
+    private var TAG = "CrashAlarmPermission"
 
+    @RequiresApi(Build.VERSION_CODES.S)
     override fun addAlarm(noteId: Long, time: Long) {
         val alarmIntent = getAlarmPendingIndent(noteId)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            alarmManager.setExactAndAllowWhileIdle(
-                AlarmManager.RTC_WAKEUP, time, alarmIntent)
-        } else {
-            alarmManager.setExact(AlarmManager.RTC_WAKEUP, time, alarmIntent)
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                alarmManager.setExactAndAllowWhileIdle(
+                    AlarmManager.RTC_WAKEUP, time, alarmIntent)
+            } else {
+                alarmManager.setExact(AlarmManager.RTC_WAKEUP, time, alarmIntent)
+            }
+        }catch (se: SecurityException){
+            Log.d(TAG,"Crash: the user removed the permission SCHEDULE_EXACT_ALARM at runtime " +
+                    "or the android setting 'Pause app activity if unused' has been triggered")
+            //asking again
+            requestPermissionLauncher?.launch(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM)
         }
     }
 

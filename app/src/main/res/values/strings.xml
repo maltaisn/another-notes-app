@@ -159,7 +159,12 @@
     app has restricted battery usage. This can be changed in the app settings.</string>
     <string name="reminder_notif_permission">To be able to send reminder notifications, the app needs a permission.
     Click OK to show the permission request. You will be able to set a reminder afterwards.</string>
+    <string name="reminder_alarm_permission">To be able to send reminder notifications starting from
+        Android 14, the app needs another permission. Click OK to show the permission request.
+        You will be able to set reminder afterwards.</string>
     <string name="reminder_notif_permission_denied">The notification permission has been denied.
+    Reminder alarms will not work until enabled.</string>
+    <string name="reminder_alarm_permission_denied">The reminder permission has been denied.
     Reminder alarms will not work until enabled.</string>
 
     <!-- Labels -->
