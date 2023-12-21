@@ -32,7 +32,7 @@ class ReminderPermission(
                     // Explanation was just shown, user denied permission.
                     deniedListener?.invoke()
                 } else {
-                    // Ask user to go to the app's notification settings to grant the permission.
+                    // Ask user to go to the app's alarm&reminders settings to grant the permission.
                     // Only do this if the permission wasn't requested just before.
                     ConfirmDialog.newInstance(
                         message = R.string.reminder_alarm_permission,
@@ -61,7 +61,7 @@ class ReminderPermission(
                     message = R.string.reminder_alarm_permission,
                     btnPositive = R.string.action_ok,
                 ).show(fragment.childFragmentManager,
-                    ReminderPermission.REMINDER_PERMISSION_DIALOG
+                    REMINDER_PERMISSION_DIALOG
                 )
                 permissionRequested = true
             }
@@ -78,18 +78,18 @@ class ReminderPermission(
         }
 
         when (tag) {
-            ReminderPermission.REMINDER_PERMISSION_DIALOG -> {
+            REMINDER_PERMISSION_DIALOG -> {
                 // First time asking, can request normally.
                 requestPermissionLauncher?.launch(Manifest.permission.SCHEDULE_EXACT_ALARM)
             }
 
-            ReminderPermission.REMINDER_PERMISSION_DENIED_DIALOG -> {
-                // Not first time asking, open notification settings window to let user do it.
+            REMINDER_PERMISSION_DENIED_DIALOG -> {
+                // Not first time asking, open alarm&reminders settings window to let user do it.
                 val settingsIntent = Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM)
                     .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                     .putExtra(Settings.EXTRA_APP_PACKAGE, fragment.requireContext().packageName)
                 fragment.startActivity(settingsIntent)
-                // Dismiss immediately since at this point we can't know if user did enable notifications or not.
+                // Dismiss immediately since at this point we can't know if user did enable reminders or not.
                 deniedListener?.invoke()
             }
         }
