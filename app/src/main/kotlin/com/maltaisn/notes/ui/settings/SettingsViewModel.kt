@@ -80,6 +80,10 @@ class SettingsViewModel @AssistedInject constructor(
     val askNotificationPermission: LiveData<Event<Unit>>
         get() = _askNotificationPermission
 
+    private val _askReminderPermission = MutableLiveData<Event<Unit>>()
+    val askReminderPermission: LiveData<Event<Unit>>
+        get() = _askReminderPermission
+
     private var importJsonData = savedStateHandle[KEY_IMPORTED_JSON_DATA] ?: ""
         set(value) {
             field = value
@@ -194,6 +198,7 @@ class SettingsViewModel @AssistedInject constructor(
                 notesRepository.getNotesWithReminder().firstOrNull() != null
             ) {
                 _askNotificationPermission.send()
+                _askReminderPermission.send()
             }
         }
     }

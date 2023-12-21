@@ -70,6 +70,7 @@ class ReminderDialog : DialogFragment(), RecurrenceListCallback, RecurrencePicke
     private val recurrenceFormat = RecurrenceFormatter(dateFormat)
 
     private var notificationPermission: NotificationPermission? = null
+    private var reminderPermission: ReminderPermission? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -127,6 +128,12 @@ class ReminderDialog : DialogFragment(), RecurrenceListCallback, RecurrencePicke
                 deniedListener = { dismiss() }
                 request()
             }
+            reminderPermission = getContext()?.let {
+                ReminderPermission(this, it).apply {
+                    deniedListener = { dismiss() }
+                    request()
+                }
+            }
         }
 
         viewModel.start(args.noteIds.toList())
@@ -137,6 +144,7 @@ class ReminderDialog : DialogFragment(), RecurrenceListCallback, RecurrencePicke
     override fun onDestroy() {
         super.onDestroy()
         notificationPermission = null
+        reminderPermission = null
     }
 
     private fun setupViewModelObservers(binding: DialogReminderBinding) {
@@ -264,14 +272,17 @@ class ReminderDialog : DialogFragment(), RecurrenceListCallback, RecurrencePicke
 
     override fun onDialogPositiveButtonClicked(tag: String?) {
         notificationPermission?.onDialogPositiveButtonClicked(tag)
+        reminderPermission?.onDialogPositiveButtonClicked(tag)
     }
 
     override fun onDialogNegativeButtonClicked(tag: String?) {
         notificationPermission?.onDialogNegativeButtonClicked(tag)
+        reminderPermission?.onDialogNegativeButtonClicked(tag)
     }
 
     override fun onDialogCancelled(tag: String?) {
         notificationPermission?.onDialogCancelled(tag)
+        reminderPermission?.onDialogCancelled(tag)
     }
 
     companion object {

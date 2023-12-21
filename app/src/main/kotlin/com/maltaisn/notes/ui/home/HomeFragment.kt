@@ -18,10 +18,12 @@ package com.maltaisn.notes.ui.home
 
 import android.Manifest
 import android.app.ActivityManager
+import android.app.AlarmManager
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.ActionMode
 import android.view.MenuItem
 import android.view.View
@@ -88,7 +90,16 @@ class HomeFragment : NoteFragment(), Toolbar.OnMenuItemClickListener {
             }
         }
 
-        viewModel.updateRestrictions(batteryRestricted, notificationRestricted)
+        var reminderRestricted = false
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE){
+            val alarmManager: AlarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+            if (!alarmManager.canScheduleExactAlarms()){
+                Log.d("TAG","Crash" +alarmManager.canScheduleExactAlarms())
+                reminderRestricted = true
+            }
+        }
+
+        viewModel.updateRestrictions(batteryRestricted, notificationRestricted, reminderRestricted)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

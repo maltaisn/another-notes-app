@@ -67,6 +67,7 @@ class HomeViewModel @AssistedInject constructor(
 
     private var batteryRestricted = false
     private var notificationsRestricted = false
+    private var remindersRestricted = false
 
     private val _fabShown = MutableLiveData<Boolean>()
     val fabShown: LiveData<Boolean>
@@ -161,10 +162,11 @@ class HomeViewModel @AssistedInject constructor(
     }
 
     /** Update restrictions status so that appropriate warnings may be shown to user. */
-    fun updateRestrictions(battery: Boolean, notifications: Boolean) {
-        val updateList = battery != batteryRestricted || notifications != notificationsRestricted
+    fun updateRestrictions(battery: Boolean, notifications: Boolean, reminders: Boolean) {
+        val updateList = battery != batteryRestricted || notifications != notificationsRestricted || reminders != remindersRestricted
         batteryRestricted = battery
         notificationsRestricted = notifications
+        remindersRestricted = reminders
         if (updateList) {
             updateNoteList()
         }
@@ -343,6 +345,9 @@ class HomeViewModel @AssistedInject constructor(
         if (notes.isNotEmpty() && notificationsRestricted) {
             this += MessageItem(NOTIFICATION_DENIED_ITEM_ID, R.string.reminder_notif_permission_denied)
         }
+        if (notes.isNotEmpty() && remindersRestricted) {
+            this += MessageItem(REMINDER_DENIED_ITEM_ID, R.string.reminder_alarm_permission_denied)
+        }
 
         var addedOverdueHeader = false
         var addedTodayHeader = false
@@ -414,6 +419,7 @@ class HomeViewModel @AssistedInject constructor(
         private const val BATTERY_RESTRICTED_ITEM_ID = -8L
         private const val AUTO_EXPORT_FAIL_ITEM_ID = -9L
         private const val NOTIFICATION_DENIED_ITEM_ID = -10L
+        private const val REMINDER_DENIED_ITEM_ID = -11L
 
         val PINNED_HEADER_ITEM = HeaderItem(-2, R.string.note_pinned)
         val NOT_PINNED_HEADER_ITEM = HeaderItem(-3, R.string.note_not_pinned)
