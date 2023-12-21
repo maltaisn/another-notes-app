@@ -164,4 +164,9 @@
         <item name="animationMode">slide</item>
     </style>
 
+    <style name="Preference.SwitchPreferenceCompat" parent="@style/Preference.SwitchPreferenceCompat.Material"
+        tools:ignore="ResourceCycle">
+        <item name="widgetLayout">@layout/item_material3_switch</item>
+    </style>
+
 </resources>
