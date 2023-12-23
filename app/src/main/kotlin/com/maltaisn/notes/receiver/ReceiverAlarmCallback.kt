@@ -16,15 +16,19 @@
 
 package com.maltaisn.notes.receiver
 
+import android.Manifest
 import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Build
-import android.provider.Settings
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.annotation.RequiresApi
+import androidx.core.content.ContextCompat
+import com.maltaisn.notes.R
 import com.maltaisn.notes.model.ReminderAlarmCallback
 import com.maltaisn.notes.model.ReminderAlarmManager
 import javax.inject.Inject
@@ -54,8 +58,12 @@ class ReceiverAlarmCallback @Inject constructor(
         }catch (se: SecurityException){
             Log.d(TAG,"Crash: the user removed the permission SCHEDULE_EXACT_ALARM at runtime " +
                     "or the android setting 'Pause app activity if unused' has been triggered")
-            //asking again
-            requestPermissionLauncher?.launch(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM)
+            Toast.makeText(context, R.string.toast_alarm_permission_denied, Toast.LENGTH_LONG).show();
+        }
+        if (ContextCompat.checkSelfPermission(context,
+                Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_DENIED
+        ) {
+            Toast.makeText(context, R.string.toast_notification_permission_denied, Toast.LENGTH_LONG).show();
         }
     }
 
