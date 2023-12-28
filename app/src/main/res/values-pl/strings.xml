@@ -83,7 +83,6 @@
         <item quantity="many">+ %d zaznaczonych elementów</item>
         <item quantity="other">+ %d zaznaczonych elementów</item>
     </plurals>
-    <string name="trash_reminder_message">Notatki w koszu są automatycznie usuwane po upływie %d dni.</string>
     <string name="trash_delete_message">Ta notatka zostanie usunięta na zawsze.</string>
     <string name="trash_delete_selected_message">Wybrane notatki zostaną usunięte na zawsze.</string>
     <string name="trash_empty_message">Wszystkie notatki w koszu zostaną usunięte na zawsze.</string>

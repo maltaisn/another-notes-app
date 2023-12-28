@@ -79,7 +79,6 @@
         <item quantity="one">+ %d diğer işaretli öge</item>
         <item quantity="other">+ %d diğer işaretli ögeler</item>
     </plurals>
-    <string name="trash_reminder_message">Geri dönüşüm kutusundaki notlar %d gün sonra otomatik olarak silinecek.</string>
     <string name="trash_delete_message">Bu not kalıcı olarak silinecek.</string>
     <string name="trash_delete_selected_message">Seçilen notlar kalıcı olarak silinecek.</string>
     <string name="trash_empty_message">Geri dönüşüm kutusundaki bütün notlar kalıcı olarak silinecek.</string>

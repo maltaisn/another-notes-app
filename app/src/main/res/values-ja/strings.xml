@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <!--
   Copyright 2023 Nicolas Maltais
 
@@ -13,15 +14,10 @@
   See the License for the specific language governing permissions and
   limitations under the License.
   -->
-
 <resources>
-
     <!-- Do not translate the app name -->
-    <string name="app_name" translatable="false">Another Notes</string>
-
     <!-- Can be translated to provided a sensible localized name for a "Notes" app -->
     <string name="app_name_short">メモ</string>
-
     <string name="action_archive">アーカイブ</string>
     <string name="action_cancel">キャンセル</string>
     <string name="action_clear">クリア</string>
@@ -58,7 +54,6 @@
     <string name="action_uncheck_all">全ての項目のチェックを外す</string>
     <string name="action_undo">元に戻す</string>
     <string name="action_unpin">ピン留めを解除</string>
-
     <!-- Shortcuts -->
     <!-- Note: normal length is ideally 25 chars or less, short is 10 chars or less. -->
     <string name="shortcut_text_note">新しいテキストメモ</string>
@@ -67,38 +62,27 @@
     <string name="shortcut_list_note_short">新しいリスト</string>
     <string name="shortcut_reminders">リマインダー</string>
     <string name="shortcut_reminders_short">リマインダー</string>
-
     <!-- Home -->
     <string name="note_location_active">メモ</string>
     <string name="note_location_archived">アーカイブ済み</string>
     <string name="note_location_deleted">削除済み</string>
     <string name="note_location_labels">ラベル</string>
-
     <string name="note_pinned">ピン留め済み</string>
     <string name="note_not_pinned">その他</string>
-
     <string name="note_placeholder_active">メモがありません。\nメモを追加するには、+をクリックします。</string>
     <string name="note_placeholder_archived">アーカイブされたメモはありません</string>
     <string name="note_placeholder_deleted">ごみ箱が空です</string>
-
     <plurals name="note_list_item_info">
-        <item quantity="one">+ %d個の他のリスト項目</item>
         <item quantity="other">+ %d個の他のリスト項目</item>
     </plurals>
-
     <plurals name="note_list_item_info_checked">
-        <item quantity="one">+ %d個のチェック済みの項目</item>
         <item quantity="other">+ %d個のチェック済みの項目</item>
     </plurals>
-
-    <string name="trash_reminder_message">ごみ箱内のメモは、%d 日後に自動的に削除されます。</string>
     <string name="trash_delete_message">このメモは完全に削除されます。</string>
     <string name="trash_delete_selected_message">選択したメモは完全に削除されます。</string>
     <string name="trash_empty_message">ごみ箱内の全てのメモは完全に削除されます。</string>
-
     <string name="search_hint">メモを検索する</string>
     <string name="search_empty_placeholder">お探しのメモは見つかりませんでした。</string>
-
     <string name="sort_title">並べ替え</string>
     <string name="sort_direction">並べ替え方向</string>
     <string name="sort_direction_ascending">昇順</string>
@@ -107,43 +91,32 @@
     <string name="sort_field_created">作成日</string>
     <string name="sort_field_modified">更新日</string>
     <string name="sort_field_title">タイトル</string>
-
     <!-- Edit -->
     <string name="edit_add_title">メモを作成</string>
     <string name="edit_change_title">メモを編集</string>
     <string name="edit_hint_note_title">タイトル</string>
     <string name="edit_hint_note_content">メモをする</string>
     <string name="edit_hint_note_item">リスト項目</string>
-
     <string name="edit_message_blank_note_discarded">白紙のメモは破棄されました。</string>
     <plurals name="edit_move_archive_message">
-        <item quantity="one">メモがアーカイブされました。</item>
         <item quantity="other">メモがアーカイブされました。</item>
     </plurals>
     <plurals name="edit_message_move_delete">
-        <item quantity="one">メモはごみ箱に移動されました。</item>
         <item quantity="other">メモはごみ箱に移動されました。</item>
     </plurals>
     <plurals name="edit_message_move_restore">
-        <item quantity="one">メモが復元されました。</item>
         <item quantity="other">メモが復元されました。</item>
     </plurals>
     <plurals name="edit_message_move_unarchive">
-        <item quantity="one">メモはアーカイブされていません。</item>
         <item quantity="other">メモはアーカイブされていません。</item>
     </plurals>
     <string name="edit_in_trash_message">ごみ箱内のメモは編集できません。</string>
-
     <string name="edit_copy_suffix">コピー</string>
     <string name="edit_copy_untitled_name">無題</string>
-
     <string name="edit_convert_keep_checked">チェックした項目を削除しますか？</string>
-
     <plurals name="edit_checked_items">
-        <item quantity="one">%d個のチェック済みアイテム</item>
         <item quantity="other">%d個のチェック済みアイテム</item>
     </plurals>
-
     <!-- Reminder -->
     <string name="note_reminders">リマインダー</string>
     <string name="reminder_upcoming">今後の予定</string>
@@ -161,7 +134,6 @@
      OKをクリックして許可してください。 後でリマインダーを設定できるようになります。</string>
     <string name="reminder_notif_permission_denied">通知の許可が拒否されました。
      リマインダーアラームは有効になるまで機能しません。</string>
-
     <!-- Labels -->
     <string name="label_create">新しいラベルを作成する</string>
     <string name="label_edit">ラベル名を編集</string>
@@ -173,7 +145,6 @@
     <string name="label_delete_message">選択したラベルは削除されますが、関連付けられているメモは削除されます。
      彼らに保管されます。</string>
     <string name="label_notes_empty_placeholder">このラベルでタグ付けされたノートはありません</string>
-
     <!-- Settings -->
     <string name="pref_group_appearance">外観</string>
     <string name="pref_theme">アプリのテーマ</string>
@@ -183,12 +154,14 @@
     <string name="pref_dynamic_colors">ダイナミックカラーを使用</string>
     <string name="pref_strikethrough_checked">取り消し線が付いているリスト項目</string>
     <string name="pref_preview_labels">プレビュー内のラベルの最大数</string>
-
     <string name="pref_shown_date">メモに表示される日付</string>
     <string name="pref_shown_date_added">作成日</string>
     <string name="pref_shown_date_modified">最終更新日</string>
     <string name="pref_shown_date_none">日付を表示しない</string>
-
+    <string name="pref_deleted_notes_timeout_day">24時間</string>
+    <string name="pref_deleted_notes_timeout_week">7日</string>
+    <string name="pref_deleted_notes_timeout_month">30日</string>
+    <string name="pref_deleted_notes_timeout_year">1 年間</string>
     <string name="pref_preview_lines">プレビューの最大行数</string>
     <string name="pref_preview_lines_summary">ノートに表示する行数と項目数を設定します。
          レイアウトモードとノートタイプごとに</string>
@@ -196,12 +169,10 @@
     <string name="pref_preview_lines_list_layout">リストレイアウト</string>
     <string name="pref_preview_lines_text">テキストノートのプレビュー内の行</string>
     <string name="pref_preview_lines_list">リストノートのプレビュー内の項目</string>
-
     <string name="pref_group_behavior">行動</string>
     <string name="pref_behavior_swipe_action_left">左スワイプ</string>
     <string name="pref_behavior_swipe_action_right">右スワイプ</string>
     <string name="pref_behavior_move_checked">チェックした項目を一番下に移動</string>
-
     <string name="pref_group_data">データ</string>
     <string name="pref_data_export">データをエクスポート</string>
     <string name="pref_data_export_summary">メモデータをJSONとしてエクスポート</string>
@@ -217,16 +188,13 @@
     <string name="pref_data_clear_confirm_message">すべてのメモ データは完全に削除されます！
          元に戻すことはできません。</string>
     <string name="pref_data_clear_success_message">全てのデータが削除されました。</string>
-
     <string name="pref_group_about">詳細</string>
     <string name="pref_about_view_source">Githubで表示</string>
     <string name="pref_about_view_licenses">オープンソースライセンス</string>
     <string name="pref_about_version">バージョン</string>
-
     <string name="pref_restart_dialog_title">再起動が必要です！</string>
     <string name="pref_restart_dialog_description">これらの変更を有効にするには再起動が必要です。
          今すぐアプリを再起動しますか？</string>
-
     <!-- Import/export data messages -->
     <string name="export_success">データは正常にエクスポートされました！</string>
     <string name="export_fail">データのエクスポート中にエラーが発生しました。</string>
@@ -255,12 +223,10 @@
          OKをクリックして続行します。</string>
     <string name="auto_export_fail">データの自動エクスポートに失敗しました。 エクスポート先を確認してください
          まだ存在し、アクセスできる場合は、自動エクスポートを再度設定してください。</string>
-
     <!-- Content description -->
     <string name="content_descrp_open_drawer">ドロワーを開く</string>
     <string name="content_descrp_back">戻る</string>
     <string name="content_descrp_label_hidden">このラベルが付いたメモは非表示になります。</string>
-
     <!-- Relative date time format -->
     <string name="date_rel_today">今日、%s</string>
     <string name="date_rel_yesterday">昨日、%s</string>
@@ -275,5 +241,4 @@
     </plurals>
     <!-- format values: date, time -->
     <string name="date_rel_absolute">%1$s, %2$s</string>
-
 </resources>

@@ -79,7 +79,6 @@
         <item quantity="one">+ %d aangevinkt item</item>
         <item quantity="other">+ %d aangevinkte items</item>
     </plurals>
-    <string name="trash_reminder_message">Notities in de prullenbak worden na %d dagen automatisch verwijderd.</string>
     <string name="trash_delete_message">Deze notitie wordt definitief verwijderd.</string>
     <string name="trash_delete_selected_message">Geselecteerde notities worden defrinitief verwijderd.</string>
     <string name="trash_empty_message">Alle notities in de prullenbak worden definitief verwijderd.</string>

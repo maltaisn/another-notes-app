@@ -87,7 +87,6 @@
         <item quantity="many">+ %d عنصر مؤشَر</item>
         <item quantity="other">+ %d عنصر مؤشَر</item>
     </plurals>
-    <string name="trash_reminder_message">تُحذف الملاحظات من المهملات تلقائيًا بعد %d أيام.</string>
     <string name="trash_delete_message">سيتم حذف الملاحظة نهائيًا.</string>
     <string name="trash_delete_selected_message">سيتم حذف الملاحظات المحددة نهائيًا.</string>
     <string name="trash_empty_message">سيتم حذف كل الملاحظات الموجودة هنا نهائيًا.</string>

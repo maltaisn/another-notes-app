@@ -79,7 +79,6 @@
         <item quantity="one">+ %d elemento selezionato</item>
         <item quantity="other">+ %d elementi selezionati</item>
     </plurals>
-    <string name="trash_reminder_message">Le note nel cestino vengono eliminate automaticamente dopo %d giorni.</string>
     <string name="trash_delete_message">Questa nota verrà eliminata permanentemente.</string>
     <string name="trash_delete_selected_message">Le note selezionate saranno eliminate permanentemente.</string>
     <string name="trash_empty_message">Tutte le note nel Cestino saranno eliminate permanentemente.</string>

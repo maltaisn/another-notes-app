@@ -83,7 +83,6 @@
         <item quantity="many">+ ще %d відмічених пунктів</item>
         <item quantity="other">+ ще %d відмічених пунктів</item>
     </plurals>
-    <string name="trash_reminder_message">Нотатки в смітнику самостійно видаляться через %d днів.</string>
     <string name="trash_delete_message">Ця нотатка видалиться назавжди.</string>
     <string name="trash_delete_selected_message">Вибрані нотатки видаляться назавжди.</string>
     <string name="trash_empty_message">Усі нотатки в смітнику видаляться назавжди.</string>

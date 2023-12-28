@@ -80,7 +80,10 @@
         <item quantity="one">+ %d élément coché</item>
         <item quantity="other">+ %d éléments cochés</item>
     </plurals>
-    <string name="trash_reminder_message">Les notes dans la corbeille sont supprimées automatiquement après %d jours.</string>
+    <plurals name="trash_reminder_message">
+        <item quantity="one">Les notes dans la corbeille sont automatiquement supprimées après %d jour.</item>
+        <item quantity="other">Les notes dans la corbeille sont automatiquement supprimées après %d jours.</item>
+    </plurals>
     <string name="trash_delete_message">Cette note sera supprimée définitivement.</string>
     <string name="trash_delete_selected_message">Les notes sélectionnées seront supprimées définitivement.</string>
     <string name="trash_empty_message">Toutes les notes dans la corbeille sont supprimées définitivement.</string>
@@ -140,7 +143,11 @@
     correctement puisque l\'application a une restriction au niveau de l\'utilisation de la pile.
     Cela peut être changé dans les paramètres.</string>
     <string name="reminder_notif_permission">Pour envoyer les notifications des rappels, l\'application nécessite une autorisation. Cliquer sur OK pour demander l\'autorisation. Vous pourrez définir un rappel par la suite.</string>
+    <string name="reminder_alarm_permission">Pour pouvoir envoyer des notifications à partir d\'Android 14, l\'application nécessite une autre permission. Cliquez sur OK pour afficher la demande d\'autorisation. Vous pourrez ajouter des rappels par la suite.</string>
     <string name="reminder_notif_permission_denied">L\'autorisation d\'envoi de notifications a été refusée. Les alarmes des rappels ne fonctionneront pas.</string>
+    <string name="reminder_alarm_permission_denied">L\'autorisation pour les rappels a été refusée. Les rappels ne fonctionneront pas jusqu\'à ce qu\'elle soit activée.</string>
+    <string name="toast_notification_permission_denied">L\'autorisation pour les notifications a été refusée. Les rappels ne fonctionneront pas jusqu\'à ce qu\'elle soit activée.</string>
+    <string name="toast_alarm_permission_denied">L\'autorisation pour les alarmes a été refusée, les rappels ne fonctionneront pas! Créez un nouvel rappel pour le régler</string>
     <!-- Labels -->
     <string name="label_create">Créer une étiquette</string>
     <string name="label_edit">Changer le nom de l\'étiquette</string>
@@ -165,6 +172,11 @@
     <string name="pref_shown_date_added">Date de création</string>
     <string name="pref_shown_date_modified">Date de modification</string>
     <string name="pref_shown_date_none">Aucune date</string>
+    <string name="pref_deleted_notes_timeout">Délai de suppression de la corbeille</string>
+    <string name="pref_deleted_notes_timeout_day">24 heures</string>
+    <string name="pref_deleted_notes_timeout_week">7 jours</string>
+    <string name="pref_deleted_notes_timeout_month">30 jours</string>
+    <string name="pref_deleted_notes_timeout_year">1 an</string>
     <string name="pref_preview_lines">Maximum de lignes dans l\'aperçu</string>
     <string name="pref_preview_lines_summary">Configure le nombre de lignes ou d\'éléments affichés, pour chaque disposition et chaque type de note</string>
     <string name="pref_preview_lines_grid_layout">Disposition grille</string>

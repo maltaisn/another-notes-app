@@ -83,7 +83,6 @@
         <item quantity="many">+ %d отмеченных элементов</item>
         <item quantity="other">+ %d отмеченных элементов</item>
     </plurals>
-    <string name="trash_reminder_message">Заметки в корзине автоматически удаляются после %d дней.</string>
     <string name="trash_delete_message">Эта заметка будет удалена навсегда.</string>
     <string name="trash_delete_selected_message">Выбранные заметки будут удалены навсегда.</string>
     <string name="trash_empty_message">Все заметки в корзине будут удалены навсегда.</string>

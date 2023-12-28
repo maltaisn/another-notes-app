@@ -79,7 +79,6 @@
         <item quantity="one">+ %d item marcado</item>
         <item quantity="other">+ %d itens marcados</item>
     </plurals>
-    <string name="trash_reminder_message">As notas na lixeira são excluídas automaticamente após %d dias.</string>
     <string name="trash_delete_message">Esta nota será excluída permanentemente.</string>
     <string name="trash_delete_selected_message">As notas selecionadas serão excluídas permanentemente.</string>
     <string name="trash_empty_message">Todas as notas na lixeira serão excluídas permanentemente.</string>

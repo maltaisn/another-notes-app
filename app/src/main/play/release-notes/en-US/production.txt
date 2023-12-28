@@ -1,1 +1,4 @@
-- Added Chinese translation.
+- Configurable trash auto-delete delay.
+- Fix reminders crash on Android 14.
+- Add Japenese translation.
+- Other small fixes.

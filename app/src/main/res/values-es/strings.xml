@@ -81,7 +81,6 @@
         <item quantity="one">+ %d elemento seleccionado</item>
         <item quantity="other">+ %d elementos seleccionados</item>
     </plurals>
-    <string name="trash_reminder_message">Las notas de la papelera de eliminarán automáticamente tras %d días.</string>
     <string name="trash_delete_message">Está nota se eliminará permanentemente.</string>
     <string name="trash_delete_selected_message">Las notas seleccionadas se eliminarán permanentemente.</string>
     <string name="trash_empty_message">Todas las notas de la papelera de eliminarán permanentemente.</string>
@@ -140,6 +139,7 @@
     <string name="reminder_restricted_battery">Las alarmas de los recordatorios podrían no funcionar correctamente porque la aplicación tiene restringido el uso de batería. Esto se puede cambiar en los ajustes de la aplicación.</string>
     <string name="reminder_notif_permission">Para poder enviar notificaciones de recordatorio, la aplicación necesita un permiso.
     Haga clic en Aceptar para mostrar la solicitud de permiso. Podrá establecer un recordatorio después.</string>
+    <string name="reminder_alarm_permission">Notas en la papelera se eliminan automáticamente después de %d días.</string>
     <string name="reminder_notif_permission_denied">El permiso de notificación ha sido denegado.
     Las alarmas de recordatorio no funcionarán hasta que estén habilitadas.</string>
     <!-- Labels -->
@@ -165,6 +165,11 @@
     <string name="pref_shown_date_added">Fecha de creación</string>
     <string name="pref_shown_date_modified">Fecha de última modificación</string>
     <string name="pref_shown_date_none">No mostrar fecha</string>
+    <string name="pref_deleted_notes_timeout">Retraso de eliminación de la papelera</string>
+    <string name="pref_deleted_notes_timeout_day">24 horas</string>
+    <string name="pref_deleted_notes_timeout_week">7 días</string>
+    <string name="pref_deleted_notes_timeout_month">30 días</string>
+    <string name="pref_deleted_notes_timeout_year">1 año</string>
     <string name="pref_preview_lines">Máximo número de líneas en la miniatura</string>
     <string name="pref_preview_lines_summary">Configura cuántas líneas y elementos se muestran en las notas para cada vista y cada tipo de nota</string>
     <string name="pref_preview_lines_grid_layout">Vista de cuadrícula</string>

@@ -79,7 +79,6 @@
         <item quantity="one">+ %d markierte Elemente</item>
         <item quantity="other">+ %d markierte Elelemente</item>
     </plurals>
-    <string name="trash_reminder_message">Notizen im Papierkorb werden automatisch nach %d Tagen gelöscht.</string>
     <string name="trash_delete_message">Diese Notiz wird endgültig gelöscht.</string>
     <string name="trash_delete_selected_message">Ausgewählte Notizen werden dauerhaft gelöscht.</string>
     <string name="trash_empty_message">Alle Notizen im Papierkorb werden endgültig gelöscht.</string>
