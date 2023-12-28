@@ -128,11 +128,9 @@ class ReminderDialog : DialogFragment(), RecurrenceListCallback, RecurrencePicke
                 deniedListener = { dismiss() }
                 request()
             }
-            reminderPermission = getContext()?.let {
-                ReminderPermission(this, it).apply {
-                    deniedListener = { dismiss() }
-                    request()
-                }
+            reminderPermission = ReminderPermission(this, requireContext()).apply {
+                deniedListener = { dismiss() }
+                request()
             }
         }
 
