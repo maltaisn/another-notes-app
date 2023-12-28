@@ -78,7 +78,6 @@
     <plurals name="note_list_item_info_checked">
         <item quantity="other">+ %d 个已选中的项目</item>
     </plurals>
-    <string name="trash_reminder_message">回收站内的笔记在 %d 天后自动删除。</string>
     <string name="trash_delete_message">此笔记将被永久删除。</string>
     <string name="trash_delete_selected_message">所选笔记将被永久删除。</string>
     <string name="trash_empty_message">回收站中的所有笔记将被永久删除。</string>

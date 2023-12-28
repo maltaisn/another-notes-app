@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  Copyright 2022 Nicolas Maltais
+  Copyright 2023 Nicolas Maltais
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -79,7 +79,6 @@
         <item quantity="one">+ %d avmerket element</item>
         <item quantity="other">+ %d avmerkede elementer</item>
     </plurals>
-    <string name="trash_reminder_message">Notater i papirkurv blir automatisk slettet etter %d dager.</string>
     <string name="trash_delete_message">Dette notatet blir slettet permanent.</string>
     <string name="trash_delete_selected_message">Valgte notater blir slettet permanent.</string>
     <string name="trash_empty_message">Alle notater i papirkurven blir slettet permanent.</string>
