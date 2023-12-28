@@ -52,7 +52,7 @@ class PrefsManager @Inject constructor(
     val swipeActionRight: SwipeAction by enumPreference(SWIPE_ACTION_RIGHT, SwipeAction.ARCHIVE)
     val shownDateField: ShownDateField by enumPreference(SHOWN_DATE, ShownDateField.NONE)
     val maximumPreviewLabels: Int by preference(PREVIEW_LABELS, 0)
-    val deletedNotesTimeoutField: DeletedNotesTimeoutField by enumPreference(DELETED_TIMEOUT, DeletedNotesTimeoutField.DAYS_7)
+    val deletedNotesTimeout: DeletedNotesTimeoutField by enumPreference(DELETED_TIMEOUT, DeletedNotesTimeoutField.WEEK)
 
     var sortField: SortField by enumPreference(SORT_FIELD, SortField.MODIFIED_DATE)
     var sortDirection: SortDirection by enumPreference(SORT_DIRECTION, SortDirection.DESCENDING)

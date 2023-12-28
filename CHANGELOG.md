@@ -1,5 +1,6 @@
 ## v1.5.4 (2023-12-28)
 - Ask for notification permission on Android 13 when importing data with reminders.
+- Added option to change trash auto-delete delay (#118, @dd-dreams).
 - Fixed link URL not saved across process death in EditFragment.
 - Fixed alarm permission causing crash on Android 14 (#125, @GitGitro)
 

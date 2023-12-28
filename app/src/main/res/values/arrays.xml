@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?><!--
-  Copyright 2021 Nicolas Maltais
+  Copyright 2023 Nicolas Maltais
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -54,15 +54,15 @@
 
     <string-array name="pref_deleted_notes_timeout_entries">
         <item>@string/pref_deleted_notes_timeout_day</item>
-        <item>@string/pref_deleted_notes_timeout_7_days</item>
-        <item>@string/pref_deleted_notes_timeout_1_month</item>
-        <item>@string/pref_deleted_notes_timeout_1_year</item>
+        <item>@string/pref_deleted_notes_timeout_week</item>
+        <item>@string/pref_deleted_notes_timeout_month</item>
+        <item>@string/pref_deleted_notes_timeout_year</item>
     </string-array>
     <string-array name="pref_deleted_notes_timeout_values">
-        <item>24h</item>
-        <item>7d</item>
-        <item>30d</item>
-        <item>1y</item>
+        <item>1</item>
+        <item>7</item>
+        <item>30</item>
+        <item>365</item>
     </string-array>
 
 </resources>

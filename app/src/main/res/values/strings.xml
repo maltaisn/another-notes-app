@@ -91,7 +91,10 @@
         <item quantity="other">+ %d checked items</item>
     </plurals>
 
-    <string name="trash_reminder_message">Notes in recycle bin are automatically deleted after %d days.</string>
+    <plurals name="trash_reminder_message">
+        <item quantity="one">Notes in recycle bin are automatically deleted after %d day.</item>
+        <item quantity="other">Notes in recycle bin are automatically deleted after %d days.</item>
+    </plurals>
     <string name="trash_delete_message">This note will be permanently deleted.</string>
     <string name="trash_delete_selected_message">Selected notes will be permanently deleted.</string>
     <string name="trash_empty_message">All notes in recycle bin will be permanently deleted.</string>
@@ -198,11 +201,11 @@
     <string name="pref_shown_date_modified">Last modified date</string>
     <string name="pref_shown_date_none">No date shown</string>
 
-    <string name="pref_deleted_notes_timeout_title">Deleted notes timeout</string>
-    <string name="pref_deleted_notes_timeout_day">24 Hours</string>
-    <string name="pref_deleted_notes_timeout_7_days">7 Days</string>
-    <string name="pref_deleted_notes_timeout_1_month">30 Days</string>
-    <string name="pref_deleted_notes_timeout_1_year">1 Year</string>
+    <string name="pref_deleted_notes_timeout_title">Trash auto-delete delay</string>
+    <string name="pref_deleted_notes_timeout_day">24 hours</string>
+    <string name="pref_deleted_notes_timeout_week">7 days</string>
+    <string name="pref_deleted_notes_timeout_month">30 days</string>
+    <string name="pref_deleted_notes_timeout_year">1 year</string>
 
     <string name="pref_preview_lines">Maximum lines in previews</string>
     <string name="pref_preview_lines_summary">Configure how many lines and items are shown on notes,

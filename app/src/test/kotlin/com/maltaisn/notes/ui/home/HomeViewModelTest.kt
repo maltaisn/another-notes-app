@@ -161,8 +161,7 @@ class HomeViewModelTest {
         assertFalse(viewModel.fabShown.getOrAwaitValue())
 
         assertEquals(listOf(
-            MessageItem(-1, R.string.trash_reminder_message,
-                listOf(PrefsManager.TRASH_AUTO_DELETE_DELAY.inWholeDays)),
+            MessageItem(-1, R.plurals.trash_reminder_message, listOf(7)),
             noteItem(note)
         ), viewModel.noteItems.getOrAwaitValue())
     }

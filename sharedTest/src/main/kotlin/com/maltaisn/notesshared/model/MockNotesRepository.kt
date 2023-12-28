@@ -17,7 +17,6 @@
 package com.maltaisn.notesshared.model
 
 import com.maltaisn.notes.model.NotesRepository
-import com.maltaisn.notes.model.PrefsManager
 import com.maltaisn.notes.model.SortDirection
 import com.maltaisn.notes.model.SortField
 import com.maltaisn.notes.model.entity.LabelRef
@@ -218,8 +217,7 @@ class MockNotesRepository(private val labelsRepository: MockLabelsRepository) : 
     override suspend fun deleteOldNotesInTrash() {
         notes.entries.removeIf { (_, note) ->
             note.status == NoteStatus.DELETED &&
-                    (System.currentTimeMillis() - note.lastModifiedDate.time) >
-                    PrefsManager.TRASH_AUTO_DELETE_DELAY.inWholeMilliseconds
+                    (System.currentTimeMillis() - note.lastModifiedDate.time) > 7  // Actually this is now a setting...
         }
         changeFlow.emit(Unit)
     }

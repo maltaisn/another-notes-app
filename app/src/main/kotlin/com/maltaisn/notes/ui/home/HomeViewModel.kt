@@ -43,7 +43,6 @@ import com.maltaisn.notes.ui.note.adapter.MessageItem
 import com.maltaisn.notes.ui.note.adapter.NoteAdapter
 import com.maltaisn.notes.ui.note.adapter.NoteItem
 import com.maltaisn.notes.ui.note.adapter.NoteListItem
-import com.maltaisn.notes.ui.note.DeletedNotesTimeoutField
 import com.maltaisn.notes.ui.send
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -51,7 +50,6 @@ import dagger.assisted.AssistedInject
 import debugCheck
 import kotlinx.coroutines.launch
 import java.util.Calendar
-import kotlin.time.Duration.Companion.days
 
 class HomeViewModel @AssistedInject constructor(
     @Assisted savedStateHandle: SavedStateHandle,
@@ -288,14 +286,8 @@ class HomeViewModel @AssistedInject constructor(
             System.currentTimeMillis() - prefs.lastTrashReminderTime >
             PrefsManager.TRASH_REMINDER_DELAY.inWholeMilliseconds
         ) {
-            this += MessageItem(TRASH_REMINDER_ITEM_ID,
-                R.string.trash_reminder_message,
-                listOf(when (prefs.deletedNotesTimeoutField) {
-                    DeletedNotesTimeoutField.DAY -> 1.days
-                    DeletedNotesTimeoutField.DAYS_7 -> 7.days
-                    DeletedNotesTimeoutField.MONTH -> 30.days
-                    DeletedNotesTimeoutField.YEAR -> 365.days
-                }.inWholeDays))
+            this += MessageItem(TRASH_REMINDER_ITEM_ID, R.plurals.trash_reminder_message,
+                listOf(prefs.deletedNotesTimeout.value.toInt()))
         }
 
         for (note in notes) {
