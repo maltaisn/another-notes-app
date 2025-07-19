@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  Copyright 2023 Nicolas Maltais
+  Copyright 2025 Nicolas Maltais
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -39,6 +39,7 @@
     <string name="action_mark_as_done">اعتباره مكتمل</string>
     <string name="action_none">لا شيء</string>
     <string name="action_ok">حسنًا</string>
+    <string name="action_open">افتح</string>
     <string name="action_pin">تثبيت</string>
     <string name="action_postpone">تأجيل</string>
     <string name="action_reminder_add">إضافة تذكير</string>
@@ -86,6 +87,14 @@
         <item quantity="few">+ %d عناصر مؤشَرة</item>
         <item quantity="many">+ %d عنصر مؤشَر</item>
         <item quantity="other">+ %d عنصر مؤشَر</item>
+    </plurals>
+    <plurals name="trash_reminder_message">
+        <item quantity="zero">يتم حذف الملاحظات الموجودة في سلة المحذوفات تلقائياً بعد %d يوم.</item>
+        <item quantity="one">يتم حذف الملاحظات الموجودة في سلة المحذوفات تلقائياً بعد %d يوم.</item>
+        <item quantity="two">يتم حذف الملاحظات الموجودة في سلة المحذوفات تلقائياً بعد %d يومين.</item>
+        <item quantity="few">يتم حذف الملاحظات الموجودة في سلة المحذوفات تلقائياً بعد %d أيام.</item>
+        <item quantity="many">يتم حذف الملاحظات الموجودة في سلة المحذوفات تلقائياً بعد %d يوم.</item>
+        <item quantity="other">تُحذف الملاحظات من المهملات تلقائيًا بعد %d أيام.</item>
     </plurals>
     <string name="trash_delete_message">سيتم حذف الملاحظة نهائيًا.</string>
     <string name="trash_delete_selected_message">سيتم حذف الملاحظات المحددة نهائيًا.</string>
@@ -164,6 +173,19 @@
     <string name="reminder_empty_placeholder">لم يتم تعيين تذكيرات</string>
     <string name="reminder_restricted_battery">تنبيهات التذكير قد لا تعمل بشكل صحيح؛ لأن التطبيق
     لديه استخدام محدود للبطارية. يمكن تغيير ذلك من إعدادات النظام.</string>
+    <string name="reminder_notif_permission">لكي تتمكن من إرسال إشعارات التذكير، يحتاج التطبيق إلى إذن.
+    انقر على موافق لإظهار طلب الإذن. ستتمكن من تعيين تذكير بعد ذلك.</string>
+    <string name="reminder_alarm_permission">لتتمكن من إرسال إشعارات التذكير بدءًا من
+        أندرويد 14، يحتاج التطبيق إلى إذن آخر. اختر موافق لعرض طلب الإذن.
+        ستتمكن من تعيين التذكير بعد ذلك.</string>
+    <string name="reminder_notif_permission_denied">تم رفض إذن الإشعار.
+    لن تعمل تنبيهات التذكير حتى يتم تمكينها.</string>
+    <string name="reminder_alarm_permission_denied">تم رفض إذن التذكير.
+    لن تعمل تنبيهات التذكير حتى يتم تمكينها.</string>
+    <string name="toast_notification_permission_denied">تم رفض إذن الإشعار، التنبيهات
+        لن تعمل! اضغط على أي تذكير للإعداد</string>
+    <string name="toast_alarm_permission_denied">تم رفض إذن المنبه، لن تعمل التنبيهات!
+        اضغط على أي تذكير للإعداد</string>
     <!-- Labels -->
     <string name="label_create">إنشاء تصنيف جديد</string>
     <string name="label_edit">تعديل اسم التصنيف</string>
@@ -181,12 +203,18 @@
     <string name="pref_theme_light">فاتح</string>
     <string name="pref_theme_dark">داكن</string>
     <string name="pref_theme_system">تبعًا للنظام</string>
+    <string name="pref_dynamic_colors">استخدام الألوان الديناميكية</string>
     <string name="pref_strikethrough_checked">عنصر القائمة المؤشَر يتوسطه خط</string>
     <string name="pref_preview_labels">عدد التصنيفات أسفل المعاينات</string>
     <string name="pref_shown_date">تاريخ الملاحظة</string>
     <string name="pref_shown_date_added">تاريخ الإنشاء</string>
     <string name="pref_shown_date_modified">تاريخ آخر تعديل</string>
     <string name="pref_shown_date_none">بدون عرض</string>
+    <string name="pref_deleted_notes_timeout">تأخير الحذف التلقائي من سلة المهملات</string>
+    <string name="pref_deleted_notes_timeout_day">24 ساعة</string>
+    <string name="pref_deleted_notes_timeout_week">7 أيام</string>
+    <string name="pref_deleted_notes_timeout_month">30 يوماً</string>
+    <string name="pref_deleted_notes_timeout_year">سنة واحدة</string>
     <string name="pref_preview_lines">عدد الأسطر في المعاينات</string>
     <string name="pref_preview_lines_summary">ضبط عدد الأسطر، 
         لكل نمط ونوع ملاحظة</string>
@@ -201,6 +229,9 @@
     <string name="pref_group_data">البيانات</string>
     <string name="pref_data_export">تصدير البيانات</string>
     <string name="pref_data_export_summary">تصدير بيانات الملاحظات بتنسيق JSON</string>
+    <string name="pref_data_encrypted_export">التصدير المشفر</string>
+    <string name="pref_data_encrypted_export_summary">تشفير الملاحظات المصدرة. الوصول غير ممكن دون
+        كلمة المرور الصحيحة.</string>
     <string name="pref_data_auto_export">التصدير التلقائي للبيانات</string>
     <string name="pref_data_auto_export_summary">تصدير بيانات التطبيق تلقائيًا الى ملف، مرة واحدة في اليوم.</string>
     <string name="pref_data_auto_export_date">(تم التصدير في %s)</string>
@@ -214,9 +245,20 @@
     <string name="pref_about_view_source">عرض على Github</string>
     <string name="pref_about_view_licenses">تراخيص مفتوحة المصدر</string>
     <string name="pref_about_version">الإصدار</string>
+    <string name="pref_restart_dialog_title">إعادة التشغيل مطلوبة!</string>
+    <string name="pref_restart_dialog_description">يلزم إعادة التشغيل حتى تصبح هذه التغييرات سارية المفعول.
+        هل تريد إعادة تشغيل التطبيق الآن ؟</string>
     <!-- Import/export data messages -->
     <string name="export_success">تم تصدير البيانات بنجاح!</string>
     <string name="export_fail">حدث خطأ أثناء تصدير البيانات.</string>
+    <string name="export_serialization_fail">حدث خطأ خلال تصدير البيانات.
+        حاول تعطيل التشفير وحاول مرة أخرى.</string>
+    <string name="encrypted_export_dialog_title">إنشاء كلمة مرور</string>
+    <string name="encrypted_export_password">كلمة المرور</string>
+    <string name="encrypted_export_repeat_password">تأكيد كلمة المرور</string>
+    <string name="encrypted_export_password_matching_error">كلمات المرور غير متطابقة</string>
+    <string name="encrypted_export_key_generation_successful">تم التشفير بنجاح!</string>
+    <string name="encrypted_export_key_deletion_successful">تعطل التشفير بنجاح!</string>
     <string name="import_success">تم استيراد البيانات بنجاح!</string>
     <string name="import_future_version">تم استيراد البيانات بنجاح! ويلاحظ أن بعض المعلومات ربما
         قد فقدت؛ ذلك لأن البيانات تُنشأ من إصدار لاحق.</string>
@@ -224,6 +266,11 @@
     <string name="import_bad_format">تعذرت عملية الاستيراد؛ بيانات الـ JSON غير صالحة.</string>
     <string name="import_bad_data">تعذر استيراد البيانات، بعض الحقول لديها قيم غير صالحة.
         يمكن أن يحدث هذا في حالة استيراد البيانات من إصدار لاحق، حاول تحديث التطبيق.</string>
+    <string name="encrypted_import_dialog_title">أدخل كلمة المرور</string>
+    <string name="encrypted_import_key_error">حدث خطأ أثناء محاولة فك تشفير الملف.
+        تحقق من صحة كلمة المرور.</string>
+    <string name="encrypted_import_encryption_unsupported">تعذر استيراد البيانات، التشفير غير مدعوم
+        على هذا الإصدار من الأندرويد.</string>
     <string name="auto_export_message">لتمكين التصدير التلقائي، يجب اختيار ملف
         لحفظ البيانات. سيتم تصدير بيانات التطبيق مرة واحدة يوميًا أثناء فتح التطبيق.
         انقر \"حسنًا\" للمتابعة.</string>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  Copyright 2023 Nicolas Maltais
+  Copyright 2025 Nicolas Maltais
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -39,6 +39,7 @@
     <string name="action_mark_as_done">Markeer als voltooid</string>
     <string name="action_none">Geen</string>
     <string name="action_ok">OK</string>
+    <string name="action_open">Openen</string>
     <string name="action_pin">Vastzetten</string>
     <string name="action_postpone">Uitstellen</string>
     <string name="action_reminder_add">Herinnering toevoegen</string>
@@ -78,6 +79,10 @@
     <plurals name="note_list_item_info_checked">
         <item quantity="one">+ %d aangevinkt item</item>
         <item quantity="other">+ %d aangevinkte items</item>
+    </plurals>
+    <plurals name="trash_reminder_message">
+        <item quantity="one">Notities in de prullenbak worden automatisch verwijderd na %d dag.</item>
+        <item quantity="other">Notities in de prullenbak worden na %d dagen automatisch verwijderd.</item>
     </plurals>
     <string name="trash_delete_message">Deze notitie wordt definitief verwijderd.</string>
     <string name="trash_delete_selected_message">Geselecteerde notities worden defrinitief verwijderd.</string>
@@ -138,8 +143,17 @@
     app het batterijgebruik heeft beperkt. Dit kan worden gewijzigd in de instellingen van de app.</string>
     <string name="reminder_notif_permission">Om herinneringsmeldingen te kunnen verzenden, heeft de app toestemming nodig.
     Klik op OK om het toestemmingsverzoek weer te geven. U kunt daarna een herinnering instellen.</string>
+    <string name="reminder_alarm_permission">Om herinneringsmeldingen te kunnen verzenden vanaf
+        Android 14, heeft de app een andere toestemming nodig. Klik op OK om het toestemmingsverzoek weer te geven.
+        Je kunt daarna een herinnering instellen.</string>
     <string name="reminder_notif_permission_denied">De notificatie permissie is geweigerd.
     Herinnering alarmen zullen niet werken totdat deze is ingeschakeld.</string>
+    <string name="reminder_alarm_permission_denied">De notificatie toestemming is geweigerd.
+    Herinneringsalarmen zullen niet werken totdat ze zijn ingeschakeld.</string>
+    <string name="toast_notification_permission_denied">Meldingsmachtiging geweigerd, herinneringen
+        zullen niet werken! Tik op een herinnering om in te stellen</string>
+    <string name="toast_alarm_permission_denied">Alarm toestemming geweigerd, herinneringen zullen niet werken!
+        Tik op een herinnering om in te stellen</string>
     <!-- Labels -->
     <string name="label_create">Nieuw label aanmaken</string>
     <string name="label_edit">Labelnaam bewerken</string>
@@ -164,6 +178,11 @@
     <string name="pref_shown_date_added">Aanmaakdatum</string>
     <string name="pref_shown_date_modified">Datum laatste wijziging</string>
     <string name="pref_shown_date_none">Geen datum tonen</string>
+    <string name="pref_deleted_notes_timeout">Prullenbak automatisch verwijderen vertraging</string>
+    <string name="pref_deleted_notes_timeout_day">24 uur</string>
+    <string name="pref_deleted_notes_timeout_week">7 dagen</string>
+    <string name="pref_deleted_notes_timeout_month">30 dagen</string>
+    <string name="pref_deleted_notes_timeout_year">1 jaar</string>
     <string name="pref_preview_lines">Maximum aantal regels in previews</string>
     <string name="pref_preview_lines_summary">Configureer hoeveel regels en items worden weergegeven op notities,
         voor elke lay-out en notitie type</string>

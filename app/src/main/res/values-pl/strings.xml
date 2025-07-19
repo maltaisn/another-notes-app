@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  Copyright 2023 Nicolas Maltais
+  Copyright 2025 Nicolas Maltais
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -39,6 +39,7 @@
     <string name="action_mark_as_done">Oznacz jako wykonane</string>
     <string name="action_none">Nic</string>
     <string name="action_ok">OK</string>
+    <string name="action_open">Otwórz</string>
     <string name="action_pin">Przypnij</string>
     <string name="action_postpone">Odłóż</string>
     <string name="action_reminder_add">Dodaj przypomnienie</string>
@@ -150,6 +151,18 @@
     <string name="reminder_empty_placeholder">Brak ustawionych przypomnień</string>
     <string name="reminder_restricted_battery">Alarmy przypominające mogą nie działać, jeśli
     aplikacja ma ograniczone użycie baterii. Może to zostać zmienione w ustawieniach aplikacji.</string>
+    <string name="reminder_notif_permission">Aby móc wysyłać powiadomienia o przypomnieniach, aplikacja potrzebuje uprawnień.
+    Kliknij OK, aby wyświetlić żądanie uprawnień. Następnie będzie można ustawić przypomnienie.</string>
+    <string name="reminder_alarm_permission">Aby móc wysyłać powiadomienia o przypomnieniach począwszy od
+        Androida 14, aplikacja potrzebuje innego uprawnienia. Kliknij OK, aby wyświetlić prośbę o uprawnienia.
+        Następnie będzie można ustawić przypomnienie.</string>
+    <string name="reminder_notif_permission_denied">Odmówiono uprawnienia do powiadomień.
+    Przypomnienia nie będą działały, do momentu uzyskania uprawnień.</string>
+    <string name="reminder_alarm_permission_denied">Odmówiono uprawnienia do powiadomień o przypomnieniach.
+    Przypomnienia nie będą działały, do momentu uzyskania uprawnień.</string>
+    <string name="toast_notification_permission_denied">Odmówiono uprawnienia do powiadomień, przypomnienia
+        nie będą działały. Dotknij dowolne przypomnienie, aby ustawić.</string>
+    <string name="toast_alarm_permission_denied">Pozwolenie do alarmów zostało odmówione, przypomnienia nie będą działały! Dotknij dowolne przypomnienie, aby ustawić</string>
     <!-- Labels -->
     <string name="label_create">Utwórz nową etykietę</string>
     <string name="label_edit">Edytuj nazwę etykiety</string>
@@ -167,12 +180,18 @@
     <string name="pref_theme_light">Jasny</string>
     <string name="pref_theme_dark">Ciemny</string>
     <string name="pref_theme_system">Zgodnie z systemem</string>
+    <string name="pref_dynamic_colors">Użyj dynamicznych kolorów</string>
     <string name="pref_strikethrough_checked">Przekreślenie wykonanych elementów z listy</string>
     <string name="pref_preview_labels">Maksymalna ilość etykiet w podglądzie</string>
     <string name="pref_shown_date">Wyświetlanie daty notatek</string>
     <string name="pref_shown_date_added">Data utworzenia</string>
     <string name="pref_shown_date_modified">Data ostatniej modyfikacji</string>
     <string name="pref_shown_date_none">Nie pokazuj</string>
+    <string name="pref_deleted_notes_timeout">Opóźnienie automatycznego usuwania kosza</string>
+    <string name="pref_deleted_notes_timeout_day">24 godziny</string>
+    <string name="pref_deleted_notes_timeout_week">Siedem dni</string>
+    <string name="pref_deleted_notes_timeout_month">30 dni</string>
+    <string name="pref_deleted_notes_timeout_year">Jeden rok.</string>
     <string name="pref_preview_lines">Maksymalna ilość wierszy w podglądach</string>
     <string name="pref_preview_lines_summary">Wskaż, jak wiele wierszy oraz elementów ma być wyświetlane w notatkach
         dla każdego typu układu i rodzaju notatki</string>
@@ -187,6 +206,8 @@
     <string name="pref_group_data">Dane</string>
     <string name="pref_data_export">Eksportuj dane</string>
     <string name="pref_data_export_summary">Eksportuj dane notatek jak plik JSON</string>
+    <string name="pref_data_encrypted_export">Zaszyfrowany eksport</string>
+    <string name="pref_data_encrypted_export_summary">Szyfruje eksportowane notatki. Dostęp nie jest możliwy bez poprawnego hasła.</string>
     <string name="pref_data_auto_export">Automatyczny eksport danych</string>
     <string name="pref_data_auto_export_summary">Automatyczne eksportuj dane aplikacji do pliku każdego dnia.</string>
     <string name="pref_data_auto_export_date">(Najnowszy eksport %s)</string>
@@ -200,9 +221,19 @@
     <string name="pref_about_view_source">Wyświetl na GitHub</string>
     <string name="pref_about_view_licenses">Licencje Open Source</string>
     <string name="pref_about_version">Wersja</string>
+    <string name="pref_restart_dialog_title">Restart wymagany!</string>
+    <string name="pref_restart_dialog_description">Restart jest wymagany, aby zmiany odniosły skutek. Czy chcesz zrestartować aplikacje teraz?</string>
     <!-- Import/export data messages -->
     <string name="export_success">Dane wyeksportowane pomyślnie!</string>
     <string name="export_fail">Wystąpił błąd podczas eksportowania danych.</string>
+    <string name="export_serialization_fail">Wystąpił błąd podczas eksportu danych.
+        Spróbuj wyłączyć szyfrowanie i spróbuj ponownie.</string>
+    <string name="encrypted_export_dialog_title">Ustaw hasło</string>
+    <string name="encrypted_export_password">Hasło</string>
+    <string name="encrypted_export_repeat_password">Potwierdź hasło</string>
+    <string name="encrypted_export_password_matching_error">Hasła się nie zgadzają</string>
+    <string name="encrypted_export_key_generation_successful">Szyfrowanie włączone!</string>
+    <string name="encrypted_export_key_deletion_successful">Szyfrowanie wyłączone!</string>
     <string name="import_success">Dane zaimportowane pomyślnie!</string>
     <string name="import_future_version">Dane zaimportowane pomyślnie! Pamiętaj, że niektóre informacje mogły
         zostać utracone, ponieważ dane pochodzą z nowszej wersji.</string>
@@ -210,6 +241,11 @@
     <string name="import_bad_format">Błąd importowania danych. Dane JSON są nieprawidłowe.</string>
     <string name="import_bad_data">Błąd importowania danych. Niektóre pola zawierają nieprawidłowe wartości.
         Może się tak zdarzyć podczas importowania danych z nowszej wersji. Spróbuj zaktualizować aplikację.</string>
+    <string name="encrypted_import_dialog_title">Podaj hasło</string>
+    <string name="encrypted_import_key_error">Wystąpił błąd podczas próby odszyfrowania tego pliku.
+        Sprawdź, czy hasło jest poprawne.</string>
+    <string name="encrypted_import_encryption_unsupported">Nie można importować danych, szyfrowanie nie jest
+obsługiwane w tej wersji Androida.</string>
     <string name="auto_export_message">Aby włączyć automatyczne eksportowanie, należy wybrać plik do
         zapisania danych. Dane aplikacji będą eksportowane raz dziennie, podczas używania aplikacji.
         Naciśnij OK, aby kontynuować.</string>

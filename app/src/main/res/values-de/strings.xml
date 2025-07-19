@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  Copyright 2023 Nicolas Maltais
+  Copyright 2025 Nicolas Maltais
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -39,6 +39,7 @@
     <string name="action_mark_as_done">Als erledigt markieren</string>
     <string name="action_none">Keine</string>
     <string name="action_ok">OK</string>
+    <string name="action_open">Öffnen</string>
     <string name="action_pin">Anheften</string>
     <string name="action_postpone">Aufschieben</string>
     <string name="action_reminder_add">Erinnerung hinzufügen</string>
@@ -78,6 +79,10 @@
     <plurals name="note_list_item_info_checked">
         <item quantity="one">+ %d markierte Elemente</item>
         <item quantity="other">+ %d markierte Elelemente</item>
+    </plurals>
+    <plurals name="trash_reminder_message">
+        <item quantity="one">Notizen im Papierkorb werden automatisch nach %d Tag gelöscht.</item>
+        <item quantity="other">Notizen im Papierkorb werden automatisch nach %d Tagen gelöscht.</item>
     </plurals>
     <string name="trash_delete_message">Diese Notiz wird endgültig gelöscht.</string>
     <string name="trash_delete_selected_message">Ausgewählte Notizen werden dauerhaft gelöscht.</string>
@@ -136,7 +141,16 @@
     <string name="reminder_empty_placeholder">Keine Erinnerungen eingestellt</string>
     <string name="reminder_restricted_battery">Erinnerungsalarme funktionieren möglicherweise nicht richtig, weil die App die Batterienutzung eingeschränkt hat. Dies kann in den Einstellungen der App geändert werden.</string>
     <string name="reminder_notif_permission">Um Erinnerungsbenachrichtigungen senden zu können, benötigt die App eine Berechtigung. Klicken Sie auf OK, um die Berechtigungsanfrage anzuzeigen. Danach können Sie eine Erinnerung hinzufügen.</string>
+    <string name="reminder_alarm_permission">Um ab Android 14 Erinnerungsbenachrichtigungen senden zu können, benötigt die App eine weitere Berechtigung. Klicken Sie auf OK, um die Berechtigungsanfrage anzuzeigen.
+
+Danach können Sie eine Erinnerung einstellen.</string>
     <string name="reminder_notif_permission_denied">Die Berechtigung zum Senden von Benachrichtigungen wurde verweigert. Erinnerungen werden erst funktionieren, wenn diese gewährt wurde.</string>
+    <string name="reminder_alarm_permission_denied">Die Erinnerungserlaubnis wurde verweigert.
+     Erinnerungsalarme funktionieren erst, wenn sie aktiviert sind.</string>
+    <string name="toast_notification_permission_denied">Erlaubnis für Benachrichtigungen verweigert, Erinnerungen werden
+        nicht funktionieren! Tippen Sie zum Einrichten auf eine beliebige Erinnerung</string>
+    <string name="toast_alarm_permission_denied">Alarmberechtigung verweigert, Erinnerungen funktionieren nicht!
+        Tippen Sie zum Einrichten auf eine beliebige Erinnerung</string>
     <!-- Labels -->
     <string name="label_create">Neues Etikett erstellen</string>
     <string name="label_edit">Etikettenname bearbeiten</string>
@@ -160,6 +174,11 @@
     <string name="pref_shown_date_added">Datum der Erstellung</string>
     <string name="pref_shown_date_modified">Datum letzter Änderung</string>
     <string name="pref_shown_date_none">Kein Datum anzeigen</string>
+    <string name="pref_deleted_notes_timeout">Verzögerung beim automatischen Löschen des Papierkorbs</string>
+    <string name="pref_deleted_notes_timeout_day">24 Stunden</string>
+    <string name="pref_deleted_notes_timeout_week">7 Tage</string>
+    <string name="pref_deleted_notes_timeout_month">30 Tage</string>
+    <string name="pref_deleted_notes_timeout_year">1 Jahr</string>
     <string name="pref_preview_lines">Maximale Zeilenanzahl in Vorschauen</string>
     <string name="pref_preview_lines_summary">Legen Sie fest, wie viele Zeilen und Elemente auf Notizen angezeigt werden, für jeden Layoutmodus und jeden Notizentyp</string>
     <string name="pref_preview_lines_grid_layout">Gitter-Layout</string>

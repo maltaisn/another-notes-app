@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  Copyright 2023 Nicolas Maltais
+  Copyright 2025 Nicolas Maltais
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -39,6 +39,7 @@
     <string name="action_mark_as_done">Выполнено</string>
     <string name="action_none">Нет</string>
     <string name="action_ok">ОК</string>
+    <string name="action_open">Открыть</string>
     <string name="action_pin">Закрепить</string>
     <string name="action_postpone">Отложить</string>
     <string name="action_reminder_add">Добавить напоминание</string>
@@ -178,6 +179,10 @@
     <string name="pref_shown_date_added">По дате создания</string>
     <string name="pref_shown_date_modified">По дате редактирования</string>
     <string name="pref_shown_date_none">Не указывать</string>
+    <string name="pref_deleted_notes_timeout_day">24 часа</string>
+    <string name="pref_deleted_notes_timeout_week">7 дней</string>
+    <string name="pref_deleted_notes_timeout_month">30 дней</string>
+    <string name="pref_deleted_notes_timeout_year">1 год</string>
     <string name="pref_preview_lines">Максимальное количество строк</string>
     <string name="pref_preview_lines_summary">Настройка количества строк и элементов в заметках,
         для каждого режима макета и типа заметок</string>
