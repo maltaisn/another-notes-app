@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Nicolas Maltais
+ * Copyright 2025 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,23 +42,22 @@ class ReminderPermission(
     var deniedListener: (() -> Unit)? = null
 
     init {
-        requestPermissionLauncher = fragment.registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
-            if (!isGranted) {
-                if (permissionRequested) {
-                    // Explanation was just shown, user denied permission.
-                    deniedListener?.invoke()
-                } else {
-                    // Ask user to go to the app's alarm&reminders settings to grant the permission.
-                    // Only do this if the permission wasn't requested just before.
-                    ConfirmDialog.newInstance(
-                        message = R.string.reminder_alarm_permission,
-                        btnPositive = R.string.action_ok,
-                    ).show(fragment.childFragmentManager,
-                        ReminderPermission.REMINDER_PERMISSION_DENIED_DIALOG
-                    )
+        requestPermissionLauncher =
+            fragment.registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+                if (!isGranted) {
+                    if (permissionRequested) {
+                        // Explanation was just shown, user denied permission.
+                        deniedListener?.invoke()
+                    } else {
+                        // Ask user to go to the app's alarm&reminders settings to grant the permission.
+                        // Only do this if the permission wasn't requested just before.
+                        ConfirmDialog.newInstance(
+                            message = R.string.reminder_alarm_permission,
+                            btnPositive = R.string.action_ok,
+                        ).show(fragment.childFragmentManager, REMINDER_PERMISSION_DENIED_DIALOG)
+                    }
                 }
             }
-        }
     }
 
     fun request() {

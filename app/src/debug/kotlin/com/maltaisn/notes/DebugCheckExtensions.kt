@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Nicolas Maltais
+ * Copyright 2025 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,14 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+package com.maltaisn.notes
 
 /**
  * For checks only performed in debug mode.
  * A failing check should be handled correctly in release mode.
  */
-@Suppress("UNUSED_PARAMETER")
-fun debugCheck(value: Boolean, message: () -> String = { "" }) = Unit
+inline fun debugCheck(value: Boolean, message: () -> String = { "Check failed" }) {
+    check(value, message)
+}
 
-@Suppress("UNUSED_PARAMETER")
-fun debugRequire(value: Boolean, message: () -> String = { "" }) = Unit
+inline fun debugRequire(value: Boolean, message: () -> String = { "Failed requirement" }) {
+    require(value, message)
+}

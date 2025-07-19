@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?><!--
-  Copyright 2021 Nicolas Maltais
+  Copyright 2025 Nicolas Maltais
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -24,35 +24,6 @@
     <fragment
         android:id="@+id/fragment_notification"
         android:name="com.maltaisn.notes.ui.notification.NotificationFragment"
-        >
-        <action
-            android:id="@+id/action_reminder_postpone_date"
-            app:destination="@id/dialog_reminder_postpone_date"
-            />
-        <action
-            android:id="@+id/action_reminder_postpone_time"
-            app:destination="@id/dialog_reminder_postpone_time"
-            />
-    </fragment>
-
-    <dialog
-        android:id="@+id/dialog_reminder_postpone_date"
-        android:name="com.maltaisn.notes.ui.notification.ReminderPostponeDateDialog"
-        >
-        <argument
-            android:name="date"
-            app:argType="long"
-            />
-    </dialog>
-
-    <dialog
-        android:id="@+id/dialog_reminder_postpone_time"
-        android:name="com.maltaisn.notes.ui.notification.ReminderPostponeTimeDialog"
-        >
-        <argument
-            android:name="date"
-            app:argType="long"
-            />
-    </dialog>
+        />
 
 </navigation>

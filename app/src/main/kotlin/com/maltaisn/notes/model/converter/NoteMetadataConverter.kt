@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Nicolas Maltais
+ * Copyright 2025 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,7 +38,7 @@ object NoteMetadataConverter : KSerializer<NoteMetadata> {
 
     @TypeConverter
     @JvmStatic
-    fun toMetadata(str: String) = try {
+    fun toMetadata(str: String): NoteMetadata = try {
         json.decodeFromString(NoteMetadata.serializer(), str)
     } catch (e: SerializationException) {
         throw BadDataException(cause = e)

@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Nicolas Maltais
+ * Copyright 2025 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,6 @@ import androidx.annotation.StringRes
  * Icon and message shown in the placeholder view when note list is empty.
  */
 data class PlaceholderData(
-    @DrawableRes val iconId: Int,
-    @StringRes val messageId: Int
+    @param:DrawableRes val iconId: Int,
+    @param:StringRes val messageId: Int
 )

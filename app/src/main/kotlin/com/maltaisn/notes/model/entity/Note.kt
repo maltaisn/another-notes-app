@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Nicolas Maltais
+ * Copyright 2025 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,8 +23,8 @@ import androidx.room.Junction
 import androidx.room.PrimaryKey
 import androidx.room.Relation
 import com.maltaisn.notes.model.converter.NoteMetadataConverter
-import debugCheck
-import debugRequire
+import com.maltaisn.notes.debugCheck
+import com.maltaisn.notes.debugRequire
 import kotlinx.serialization.Transient
 import java.util.Date
 
@@ -176,7 +176,7 @@ data class Note(
                             appendLine(item.content)
                         }
                     }
-                    if (length > 0) {
+                    if (isNotEmpty()) {
                         deleteCharAt(lastIndex)
                     }
                 }

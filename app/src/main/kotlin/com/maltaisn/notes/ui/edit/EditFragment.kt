@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Nicolas Maltais
+ * Copyright 2025 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -68,6 +68,7 @@ import kotlinx.coroutines.flow.combine
 import javax.inject.Inject
 import javax.inject.Provider
 import com.google.android.material.R as RMaterial
+import androidx.core.net.toUri
 
 class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener, ConfirmDialog.Callback {
 
@@ -292,7 +293,7 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener, ConfirmDialog.
         }
 
         viewModel.openLinkEvent.observeEvent(viewLifecycleOwner) { url ->
-            val uri = Uri.parse(url)
+            val uri = url.toUri()
             val context = requireContext()
             val intent = Intent(Intent.ACTION_VIEW, uri)
             intent.putExtra(Browser.EXTRA_APPLICATION_ID, context.packageName)

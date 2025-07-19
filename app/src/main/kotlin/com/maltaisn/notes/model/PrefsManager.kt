@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Nicolas Maltais
+ * Copyright 2025 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@ import androidx.preference.PreferenceManager
 import com.maltaisn.notes.R
 import com.maltaisn.notes.model.entity.NoteType
 import com.maltaisn.notes.ui.AppTheme
-import com.maltaisn.notes.ui.note.DeletedNotesTimeoutField
+import com.maltaisn.notes.ui.note.TrashCleanDelay
 import com.maltaisn.notes.ui.note.ShownDateField
 import com.maltaisn.notes.ui.note.SwipeAction
 import com.maltaisn.notes.ui.note.adapter.NoteListLayoutMode
@@ -52,7 +52,7 @@ class PrefsManager @Inject constructor(
     val swipeActionRight: SwipeAction by enumPreference(SWIPE_ACTION_RIGHT, SwipeAction.ARCHIVE)
     val shownDateField: ShownDateField by enumPreference(SHOWN_DATE, ShownDateField.NONE)
     val maximumPreviewLabels: Int by preference(PREVIEW_LABELS, 0)
-    val deletedNotesTimeout: DeletedNotesTimeoutField by enumPreference(DELETED_TIMEOUT, DeletedNotesTimeoutField.WEEK)
+    val trashCleanDelay: TrashCleanDelay by enumPreference(DELETED_TIMEOUT, TrashCleanDelay.WEEK)
 
     var sortField: SortField by enumPreference(SORT_FIELD, SortField.MODIFIED_DATE)
     var sortDirection: SortDirection by enumPreference(SORT_DIRECTION, SortDirection.DESCENDING)
@@ -103,9 +103,7 @@ class PrefsManager @Inject constructor(
 
     @TestOnly
     fun clear(context: Context) {
-        for (prefsRes in PREFS_XML) {
-            PreferenceManager.getDefaultSharedPreferences(context).edit().clear().apply()
-        }
+        PreferenceManager.getDefaultSharedPreferences(context).edit { clear() }
         setDefaults(context)
     }
 

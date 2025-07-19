@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Nicolas Maltais
+ * Copyright 2025 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,7 +47,7 @@ import com.maltaisn.notes.ui.send
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
-import debugCheck
+import com.maltaisn.notes.debugCheck
 import kotlinx.coroutines.launch
 import java.util.Calendar
 
@@ -287,7 +287,7 @@ class HomeViewModel @AssistedInject constructor(
             PrefsManager.TRASH_REMINDER_DELAY.inWholeMilliseconds
         ) {
             this += MessageItem(TRASH_REMINDER_ITEM_ID, R.plurals.trash_reminder_message,
-                listOf(prefs.deletedNotesTimeout.value.toInt()))
+                listOf(prefs.trashCleanDelay.value.toInt()))
         }
 
         for (note in notes) {

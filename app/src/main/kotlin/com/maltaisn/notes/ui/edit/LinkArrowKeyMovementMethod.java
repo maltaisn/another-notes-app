@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Nicolas Maltais
+ * Copyright 2025 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,6 @@ import android.text.style.URLSpan;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.textclassifier.TextLinks;
 import android.widget.TextView;
 
 import com.maltaisn.notes.ui.edit.adapter.EditEditText;
@@ -46,11 +45,6 @@ public class LinkArrowKeyMovementMethod extends ArrowKeyMovementMethod {
     private static final int DOWN = 3;
 
     private static final int HIDE_FLOATING_TOOLBAR_DELAY_MS = 200;
-
-    @Override
-    public boolean canSelectArbitrarily() {
-        return true;
-    }
 
     @Override
     protected boolean handleMovementKey(TextView widget, Spannable buffer, int keyCode,

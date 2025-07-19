@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Nicolas Maltais
+ * Copyright 2025 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,6 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.util.Log
 import android.widget.Toast
-import androidx.activity.result.ActivityResultLauncher
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import com.maltaisn.notes.R
@@ -42,8 +41,6 @@ class ReceiverAlarmCallback @Inject constructor(
 ) : ReminderAlarmCallback {
 
     private val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-    private var requestPermissionLauncher: ActivityResultLauncher<String>? = null
-    private var TAG = "CrashAlarmPermission"
 
     @RequiresApi(Build.VERSION_CODES.S)
     override fun addAlarm(noteId: Long, time: Long) {
@@ -55,15 +52,13 @@ class ReceiverAlarmCallback @Inject constructor(
             } else {
                 alarmManager.setExact(AlarmManager.RTC_WAKEUP, time, alarmIntent)
             }
-        }catch (se: SecurityException){
-            Log.d(TAG,"Crash: the user removed the permission SCHEDULE_EXACT_ALARM at runtime " +
-                    "or the android setting 'Pause app activity if unused' has been triggered")
-            Toast.makeText(context, R.string.toast_alarm_permission_denied, Toast.LENGTH_LONG).show();
+        } catch (se: SecurityException) {
+            Toast.makeText(context, R.string.toast_alarm_permission_denied, Toast.LENGTH_LONG).show()
         }
         if (ContextCompat.checkSelfPermission(context,
                 Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_DENIED
         ) {
-            Toast.makeText(context, R.string.toast_notification_permission_denied, Toast.LENGTH_LONG).show();
+            Toast.makeText(context, R.string.toast_notification_permission_denied, Toast.LENGTH_LONG).show()
         }
     }
 

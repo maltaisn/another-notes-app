@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Nicolas Maltais
+ * Copyright 2025 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,8 +40,6 @@ import kotlinx.coroutines.withContext
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.UseSerializers
-import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.security.KeyStore
 import java.util.Date
@@ -253,8 +251,7 @@ class DefaultJsonManager @Inject constructor(
         val reminder = when {
             old.reminder == null && new.reminder != null -> new.reminder
             old.reminder != null && new.reminder == null -> old.reminder
-            old.reminder != null && new.reminder != null &&
-                    !compareReminders(old.reminder, new.reminder) -> {
+            old.reminder != null && !compareReminders(old.reminder, new.reminder!!) -> {
                 // Old and new notes have different reminders, do not merge to avoid losing one or the other.
                 return null
             }

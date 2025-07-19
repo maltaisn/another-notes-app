@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Nicolas Maltais
+ * Copyright 2025 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -73,7 +73,7 @@ class DefaultNotesRepository @Inject constructor(
     }
 
     override suspend fun deleteOldNotesInTrash() {
-        val delay = prefs.deletedNotesTimeout.value.toInt() * DateUtils.DAY_IN_MILLIS
+        val delay = prefs.trashCleanDelay.value.toInt() * DateUtils.DAY_IN_MILLIS
         val minDate = System.currentTimeMillis() - delay
         notesDao.deleteNotesByStatusAndDate(NoteStatus.DELETED, minDate)
     }

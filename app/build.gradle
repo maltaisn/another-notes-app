@@ -9,19 +9,24 @@ plugins {
     id "com.mikepenz.aboutlibraries.plugin"
     id "kotlin-parcelize"
     id "kotlin-kapt"
+    id "com.google.devtools.ksp"
+}
+
+kotlin {
+    jvmToolchain 17
 }
 
 android {
-    namespace "com.maltaisn.notes"
+    namespace = "com.maltaisn.notes"
 
     defaultConfig {
         applicationId "com.maltaisn.notes"
         minSdkVersion 21
-        compileSdk 34
-        buildToolsVersion = "34.0.0"
-        targetSdkVersion 34
-        versionCode 10504
-        versionName "1.5.4"
+        compileSdk = 36
+        buildToolsVersion = "35.0.0"
+        targetSdkVersion 36
+        versionCode 10505
+        versionName "1.5.5"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
@@ -81,24 +86,11 @@ android {
             applicationIdSuffix ".sync"
 
             minifyEnabled true
-            shrinkResources true
+            shrinkResources = true
             proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
-            signingConfig signingConfigs.release
+            signingConfig = signingConfigs.release
             buildConfigField "boolean", "ENABLE_DEBUG_FEATURES", "false"
         }
-    }
-
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
-    }
-
-    kotlinOptions {
-        jvmTarget = "1.8"
-        freeCompilerArgs += project.kotlinFlags
-        freeCompilerArgs += [
-                "-opt-in=kotlinx.serialization.ExperimentalSerializationApi",
-        ]
     }
 
     packagingOptions {
@@ -131,7 +123,7 @@ dependencies {
     kapt "com.google.dagger:dagger-compiler:$daggerVersion"
 
     // Architecture components
-    kapt "androidx.room:room-compiler:$roomVersion"
+    ksp "androidx.room:room-compiler:$roomVersion"
     implementation "androidx.room:room-runtime:$roomVersion"
     implementation "androidx.room:room-ktx:$roomVersion"
     implementation "androidx.lifecycle:lifecycle-common-java8:$lifecycleVersion"
@@ -196,8 +188,10 @@ class RoomSchemaArgProvider implements CommandLineArgumentProvider {
 
     @Override
     Iterable<String> asArguments() {
-        // Note: If you're using KSP, you should change the line below to return
-        // ["room.schemaLocation=${schemaDir.path}"]
-        return ["-Aroom.schemaLocation=${schemaDir.path}".toString()]
+        return ["room.schemaLocation=${schemaDir.path}".toString()]
     }
+}
+
+ksp {
+  arg(new RoomSchemaArgProvider(new File(projectDir, "schemas")))
 }

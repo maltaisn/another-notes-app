@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Nicolas Maltais
+ * Copyright 2025 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@ package com.maltaisn.notes.ui.edit.adapter
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.text.style.ClickableSpan
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.ViewGroup

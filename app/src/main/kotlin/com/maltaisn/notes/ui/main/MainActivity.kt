@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Nicolas Maltais
+ * Copyright 2025 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,6 +60,7 @@ import java.io.IOException
 import java.io.InputStreamReader
 import javax.inject.Inject
 import javax.inject.Provider
+import androidx.core.net.toUri
 
 class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedListener {
 
@@ -208,7 +209,7 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
         viewModel.autoExportEvent.observeEvent(this) { uri ->
             viewModel.autoExport(try {
                 // write and *truncate*. Otherwise the file is not overwritten!
-                contentResolver.openOutputStream(Uri.parse(uri), "wt")
+                contentResolver.openOutputStream(uri.toUri(), "wt")
             } catch (e: Exception) {
                 Log.i(TAG, "Auto data export failed", e)
                 null

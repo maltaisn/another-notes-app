@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Nicolas Maltais
+ * Copyright 2025 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -126,7 +126,7 @@ class NotesDaoTest {
 
         var id = 2L
         repeat(5) {
-            for (status in NoteStatus.values()) {
+            for (status in NoteStatus.entries) {
                 val date = Date(baseDate.time - it * 1000)
                 val note = testNote(id = id, status = status, added = date, modified = date)
                 notesDao.insert(note)

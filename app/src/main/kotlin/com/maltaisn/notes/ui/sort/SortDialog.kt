@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Nicolas Maltais
+ * Copyright 2025 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@ import com.maltaisn.notes.ui.SharedViewModel
 import com.maltaisn.notes.ui.navGraphViewModel
 import com.maltaisn.notes.ui.observeEvent
 import com.maltaisn.notes.ui.viewModel
-import debugCheck
+import com.maltaisn.notes.debugCheck
 import javax.inject.Inject
 import javax.inject.Provider
 

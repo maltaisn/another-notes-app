@@ -6,13 +6,17 @@ plugins {
     id "org.jetbrains.kotlin.android"
 }
 
+kotlin {
+    jvmToolchain 17
+}
+
 android {
-    namespace "com.maltaisn.notesshared"
-    compileSdk 34
+    namespace = "com.maltaisn.notesshared"
+    compileSdk = 36
 
     defaultConfig {
         minSdkVersion 21
-        targetSdkVersion 34
+        targetSdkVersion 36
     }
 
     sourceSets {
@@ -20,15 +24,6 @@ android {
         main {
             java.srcDirs += "src/main/kotlin"
         }
-    }
-
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
-    }
-    kotlinOptions {
-        jvmTarget = "1.8"
-        freeCompilerArgs += project.kotlinFlags
     }
 
     packagingOptions {

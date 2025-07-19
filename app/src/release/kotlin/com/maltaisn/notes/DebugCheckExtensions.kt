@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Nicolas Maltais
+ * Copyright 2025 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,24 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-package com.maltaisn.notes.ui.note
-
-import com.maltaisn.notes.R
-import com.maltaisn.notes.model.ValueEnum
-import com.maltaisn.notes.model.findValueEnum
+package com.maltaisn.notes
 
 /**
- * Enum for deleted notes timeout.
- * [value] is from [R.array.pref_deleted_notes_timeout_values].
+ * For checks only performed in debug mode.
+ * A failing check should be handled correctly in release mode.
  */
-enum class DeletedNotesTimeoutField(override val value: String) : ValueEnum<String> {
-    DAY("1"),
-    WEEK("7"),
-    MONTH("30"),
-    YEAR("365");
+@Suppress("UNUSED_PARAMETER")
+fun debugCheck(value: Boolean, message: () -> String = { "" }) = Unit
 
-    companion object {
-        fun fromValue(value: String): DeletedNotesTimeoutField = findValueEnum(value)
-    }
-}
+@Suppress("UNUSED_PARAMETER")
+fun debugRequire(value: Boolean, message: () -> String = { "" }) = Unit

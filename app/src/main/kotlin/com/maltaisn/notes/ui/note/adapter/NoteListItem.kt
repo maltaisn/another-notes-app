@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Nicolas Maltais
+ * Copyright 2025 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -75,7 +75,7 @@ data class NoteItemList(
 
 data class HeaderItem(
     override val id: Long,
-    @StringRes val title: Int
+    @param:StringRes val title: Int
 ) : NoteListItem {
 
     override val type get() = ViewType.HEADER
@@ -83,7 +83,7 @@ data class HeaderItem(
 
 data class MessageItem(
     override val id: Long,
-    @StringRes @PluralsRes val message: Int,
+    @param:StringRes @param:PluralsRes val message: Int,
     val args: List<Any> = emptyList(),
 ) : NoteListItem {
 

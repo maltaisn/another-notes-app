@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Nicolas Maltais
+ * Copyright 2025 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@ package com.maltaisn.notes.ui.settings
 
 import android.app.Activity
 import android.content.Intent
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -28,6 +27,7 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.annotation.StringRes
+import androidx.core.net.toUri
 import androidx.core.os.bundleOf
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -172,7 +172,7 @@ class SettingsFragment : PreferenceFragmentCompat(), ConfirmDialog.Callback, Exp
         }
         viewModel.releasePersistableUriEvent.observeEvent(viewLifecycleOwner) { uri ->
             try {
-                requireContext().contentResolver.releasePersistableUriPermission(Uri.parse(uri),
+                requireContext().contentResolver.releasePersistableUriPermission(uri.toUri(),
                     Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
             } catch (e: Exception) {
                 // Permission was revoked? will probably happen sometimes
@@ -304,6 +304,7 @@ class SettingsFragment : PreferenceFragmentCompat(), ConfirmDialog.Callback, Exp
     private fun showMessage(@StringRes messageId: Int) {
         val snackbar = Snackbar.make(requireView(), messageId, Snackbar.LENGTH_SHORT)
             .setGestureInsetBottomIgnored(true)
+        @Suppress("RemoveRedundantQualifierName")
         snackbar.view.findViewById<TextView>(com.google.android.material.R.id.snackbar_text).maxLines = 5
         snackbar.show()
     }
@@ -333,15 +334,18 @@ class SettingsFragment : PreferenceFragmentCompat(), ConfirmDialog.Callback, Exp
                 requireActivity().finish()
                 startActivity(Intent(requireContext(), MainActivity::class.java))
             }
+
             CLEAR_DATA_DIALOG_TAG -> {
                 viewModel.clearData()
             }
+
             AUTOMATIC_EXPORT_DIALOG_TAG -> {
                 val intent = Intent(Intent.ACTION_CREATE_DOCUMENT)
                     .setType("application/json")
                     .addCategory(Intent.CATEGORY_OPENABLE)
                 autoExportLauncher?.launch(intent)
             }
+
             NOTIF_PERMISSION_DIALOG -> notificationPermission?.onDialogPositiveButtonClicked(tag)
             else -> reminderPermission?.onDialogPositiveButtonClicked(tag)
         }
@@ -353,6 +357,7 @@ class SettingsFragment : PreferenceFragmentCompat(), ConfirmDialog.Callback, Exp
                 // No file chosen for auto export, disable it.
                 autoExportPref.isChecked = false
             }
+
             NOTIF_PERMISSION_DIALOG -> notificationPermission?.onDialogNegativeButtonClicked(tag)
             else -> reminderPermission?.onDialogPositiveButtonClicked(tag)
         }
@@ -364,6 +369,7 @@ class SettingsFragment : PreferenceFragmentCompat(), ConfirmDialog.Callback, Exp
                 // No file chosen for auto export, disable it.
                 autoExportPref.isChecked = false
             }
+
             NOTIF_PERMISSION_DIALOG -> notificationPermission?.onDialogCancelled(tag)
             else -> reminderPermission?.onDialogPositiveButtonClicked(tag)
         }

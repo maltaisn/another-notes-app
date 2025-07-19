@@ -13,12 +13,13 @@ buildscript {
         classpath "com.github.triplet.gradle:play-publisher:$gppVersion"
         classpath "com.github.breadmoirai:github-release:$githubReleasePluginVersion"
         classpath "com.mikepenz.aboutlibraries.plugin:aboutlibraries-plugin:$aboutLibrariesVersion"
+        classpath "com.google.devtools.ksp:com.google.devtools.ksp.gradle.plugin:2.2.0-2.0.2"
     }
 }
 
 plugins {
     id "base"
-    id "io.gitlab.arturbosch.detekt" version "1.18.1"
+    id "io.gitlab.arturbosch.detekt" version "1.23.8"
 }
 
 
@@ -28,7 +29,7 @@ allprojects {
     repositories {
         google()
         mavenCentral()
-        maven { url "https://jitpack.io" }
+        maven { url = "https://jitpack.io" }
     }
 }
 
@@ -42,11 +43,10 @@ project.ext {
 }
 
 clean {
-    delete rootProject.buildDir
+    delete rootProject.layout.getBuildDirectory()
 }
 
 detekt {
-    failFast = true
     buildUponDefaultConfig = true
     parallel = true
     autoCorrect = true

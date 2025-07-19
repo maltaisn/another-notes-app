@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Nicolas Maltais
+ * Copyright 2025 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +34,7 @@ object DebugUtils {
 
     fun getRandomNote(status: NoteStatus): Note {
         val title = getRandomString(10..32)
-        val type = NoteType.values().random()
+        val type = NoteType.entries.toTypedArray().random()
 
         val content: String
         val metadata: NoteMetadata

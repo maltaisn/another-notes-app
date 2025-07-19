@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Nicolas Maltais
+ * Copyright 2025 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,15 +14,23 @@
  * limitations under the License.
  */
 
+package com.maltaisn.notes.ui.note
+
+import com.maltaisn.notes.R
+import com.maltaisn.notes.model.ValueEnum
+import com.maltaisn.notes.model.findValueEnum
 
 /**
- * For checks only performed in debug mode.
- * A failing check should be handled correctly in release mode.
+ * Enum for deleted notes timeout.
+ * [value] is from [R.array.pref_deleted_notes_timeout_values].
  */
-inline fun debugCheck(value: Boolean, message: () -> String = { "Check failed" }) {
-    check(value, message)
-}
+enum class TrashCleanDelay(override val value: String) : ValueEnum<String> {
+    DAY("1"),
+    WEEK("7"),
+    MONTH("30"),
+    YEAR("365");
 
-inline fun debugRequire(value: Boolean, message: () -> String = { "Failed requirement" }) {
-    require(value, message)
+    companion object {
+        fun fromValue(value: String): TrashCleanDelay = findValueEnum(value)
+    }
 }

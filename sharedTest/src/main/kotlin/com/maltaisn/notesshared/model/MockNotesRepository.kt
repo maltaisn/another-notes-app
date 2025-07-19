@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Nicolas Maltais
+ * Copyright 2025 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package com.maltaisn.notesshared.model
 
+import com.maltaisn.notes.model.DefaultNotesRepository
 import com.maltaisn.notes.model.NotesRepository
 import com.maltaisn.notes.model.SortDirection
 import com.maltaisn.notes.model.SortField
@@ -193,7 +194,7 @@ class MockNotesRepository(private val labelsRepository: MockLabelsRepository) : 
     override fun searchNotes(query: String): Flow<List<NoteWithLabels>> {
         val queryNoFtsSyntax = query.replace("[*\"-]".toRegex(), "")
         return if (queryNoFtsSyntax.isEmpty()) {
-            flow { emit(emptyList<NoteWithLabels>()) }
+            flow { emit(emptyList()) }
         } else {
             noteWithLabelsChangeFlow.map {
                 notes.values.asSequence()

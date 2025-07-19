@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?><!--
-  Copyright 2022 Nicolas Maltais
+  Copyright 2025 Nicolas Maltais
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@
         <intent
             android:action="com.maltaisn.notes.CREATE"
             android:targetClass="com.maltaisn.notes.ui.main.MainActivity"
-            android:targetPackage="com.maltaisn.notes.sync"
+            android:targetPackage="com.maltaisn.notes"
             >
             <extra
                 android:name="com.maltaisn.notes.NOTE_TYPE"
@@ -49,7 +49,7 @@
         <intent
             android:action="com.maltaisn.notes.CREATE"
             android:targetClass="com.maltaisn.notes.ui.main.MainActivity"
-            android:targetPackage="com.maltaisn.notes.sync"
+            android:targetPackage="com.maltaisn.notes"
             >
             <extra
                 android:name="com.maltaisn.notes.NOTE_TYPE"
@@ -68,7 +68,7 @@
         <intent
             android:action="com.maltaisn.notes.SHOW_REMINDERS"
             android:targetClass="com.maltaisn.notes.ui.main.MainActivity"
-            android:targetPackage="com.maltaisn.notes.sync"
+            android:targetPackage="com.maltaisn.notes"
             />
     </shortcut>
 

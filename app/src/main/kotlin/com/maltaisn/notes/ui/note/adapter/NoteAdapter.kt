@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Nicolas Maltais
+ * Copyright 2025 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -173,7 +173,7 @@ class NoteAdapter(
         fun getNoteSwipeAction(direction: SwipeDirection): SwipeAction
 
         /** Called when a [NoteItem] at [pos] is swiped. */
-        fun onNoteSwiped(pos: Int, direction: NoteAdapter.SwipeDirection)
+        fun onNoteSwiped(pos: Int, direction: SwipeDirection)
 
         /** Whether strikethrough should be added to checked items or not. */
         val strikethroughCheckedItems: Boolean

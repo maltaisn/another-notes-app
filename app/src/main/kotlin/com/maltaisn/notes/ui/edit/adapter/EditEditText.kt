@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Nicolas Maltais
+ * Copyright 2025 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,12 +18,9 @@ package com.maltaisn.notes.ui.edit.adapter
 
 import android.content.Context
 import android.text.style.CharacterStyle
-import android.text.style.ClickableSpan
-import android.text.style.URLSpan
 import android.text.util.Linkify
 import android.util.AttributeSet
 import android.view.View
-import android.view.textclassifier.TextLinks.TextLinkSpan
 import android.widget.EditText
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.core.content.res.use
@@ -43,14 +40,13 @@ class EditEditText @JvmOverloads constructor(
     defStyleAddr: Int = android.R.attr.editTextStyle,
 ) : AppCompatEditText(context, attrs, defStyleAddr) {
 
-    val autoLink: Boolean
+    val autoLink = context.obtainStyledAttributes(attrs, R.styleable.EditEditText, defStyleAddr, 0).use {
+        it.getBoolean(R.styleable.EditEditText_autoLink, false)
+    }
 
     var onLinkClickListener: ((text: String, url: String) -> Unit)? = null
 
     init {
-        autoLink = context.obtainStyledAttributes(attrs, R.styleable.EditEditText, defStyleAddr, 0).use {
-            it.getBoolean(R.styleable.EditEditText_autoLink, false)
-        }
 
         doAfterTextChanged { editable ->
             if (editable == null) return@doAfterTextChanged
