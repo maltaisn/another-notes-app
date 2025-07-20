@@ -4,7 +4,6 @@ coroutines = "1.10.2"
 serialization = "1.9.0"
 
 ksp = "2.2.0-2.0.2"
-detekt = "1.23.8"
 
 androidGradlePlugin = "8.11.1"
 
@@ -107,4 +106,3 @@ googlePlayPublisher = { id = "com.github.triplet.play", version.ref = "gpp" }
 githubRelease = { id = "com.github.breadmoirai.github-release", version.ref = "githubReleasePlugin" }
 kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
-detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }

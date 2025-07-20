@@ -1,18 +1,33 @@
+/*
+ * Copyright 2025 Nicolas Maltais
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 plugins {
-    alias libs.plugins.android.application
-    alias libs.plugins.kotlin.android
-    alias libs.plugins.kotlin.serialization
-    alias libs.plugins.kotlin.parcelize
-    alias libs.plugins.navigation.safeargs
-    alias libs.plugins.googlePlayPublisher
-    alias libs.plugins.githubRelease
-    alias libs.plugins.kapt
-    alias libs.plugins.ksp
-    alias libs.plugins.detekt
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.kotlin.parcelize)
+    alias(libs.plugins.navigation.safeargs)
+    alias(libs.plugins.googlePlayPublisher)
+    alias(libs.plugins.githubRelease)
+    alias(libs.plugins.kapt)
+    alias(libs.plugins.ksp)
 }
 
 kotlin {
-    jvmToolchain 17
+    jvmToolchain(17)
     compilerOptions {
         optIn.add("kotlinx.coroutines.ExperimentalCoroutinesApi")
     }
@@ -22,20 +37,20 @@ android {
     namespace = "com.maltaisn.notes"
 
     defaultConfig {
-        applicationId "com.maltaisn.notes"
+        applicationId = "com.maltaisn.notes"
         minSdk = 21
         compileSdk = 36
         buildToolsVersion = "35.0.0"
         targetSdk = 36
-        versionCode 10505
-        versionName "1.5.5"
+        versionCode = 10505
+        versionName = "1.5.5"
 
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         javaCompileOptions {
             annotationProcessorOptions {
                 // See https://developer.android.com/training/data-storage/room/migrating-db-versions
-                compilerArgumentProviders(new RoomSchemaArgProvider(new File(projectDir, "schemas")))
+                compilerArgumentProviders(RoomSchemaArgProvider(File(projectDir, "schemas")))
             }
         }
     }
@@ -45,64 +60,50 @@ android {
         buildConfig = true
     }
 
+    @Suppress("UnstableApiUsage")
     testFixtures {
         enable = true
     }
 
     sourceSets {
-        // This just add "kotlin" folder to source sets since the default is "java".
-        main {
-            java.srcDirs += "src/main/kotlin"
-        }
-        debug {
-            java.srcDirs += "src/debug/kotlin"
-        }
-        release {
-            java.srcDirs += "src/release/kotlin"
-        }
-        testFixtures {
-            java.srcDirs += "src/testFixtures/kotlin"
-        }
-
         // Adds exported schema location as test app assets.
-        androidTest.assets.srcDirs += files("$projectDir/schemas".toString())
+        getByName("androidTest").assets.srcDirs(file("$projectDir/schemas"))
     }
 
     signingConfigs {
-        release {
+        create("release") {
             if (project.hasProperty("releaseKeyStoreFile")) {
-                storeFile file(releaseKeyStoreFile)
-                storePassword releaseKeyStorePassword
-                keyAlias releaseKeyStoreKey
-                keyPassword releaseKeyStoreKeyPassword
+                storeFile = file(providers.gradleProperty("releaseKeyStoreFile"))
+                storePassword = providers.gradleProperty("releaseKeyStorePassword").get()
+                keyAlias = providers.gradleProperty("releaseKeyStoreKey").get()
+                keyPassword = providers.gradleProperty("releaseKeyStoreKeyPassword").get()
             }
         }
     }
 
     buildTypes {
-        debug {
-            applicationIdSuffix ".debug"
+        getByName("debug") {
+            applicationIdSuffix = ".debug"
 
             // enable debug features only if not taking screenshots
             // androidTest can seemingly only be run in debug mode, hence why it's needed.
-            def takingScreenshots = System.getenv("taking_screenshots")
-            buildConfigField "boolean", "ENABLE_DEBUG_FEATURES",
-                    takingScreenshots == null ? "true" : (!takingScreenshots.toBoolean()).toString()
+            buildConfigField("boolean", "ENABLE_DEBUG_FEATURES",
+                (System.getenv("taking_screenshots")?.toBoolean() ?: true).toString())
         }
-        release {
+        getByName("release") {
             // Using legacy package name 'com.maltaisn.notes.sync' which was used at the time where
             // there was a sync flavor. Package can't be changed on Play Store so it was kept.
-            applicationIdSuffix ".sync"
+            applicationIdSuffix = ".sync"
 
-            minifyEnabled true
-            shrinkResources = true
-            proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
-            signingConfig = signingConfigs.release
-            buildConfigField "boolean", "ENABLE_DEBUG_FEATURES", "false"
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            signingConfig = signingConfigs.getByName("release")
+            buildConfigField("boolean", "ENABLE_DEBUG_FEATURES", "false")
         }
     }
 
-    packagingOptions {
+    packaging {
         // see https://stackoverflow.com/questions/44342455
         resources.excludes.add("META-INF/*")
     }
@@ -160,10 +161,10 @@ dependencies {
     testFixturesApi(libs.androidx.test.rules)
 
     // Dependencies for unit tests
-    testImplementation testFixtures(project(":app"))
+    testImplementation(testFixtures(project(":app")))
 
     // Dependencies for android tests
-    androidTestImplementation testFixtures(project(":app"))
+    androidTestImplementation(testFixtures (project(":app")))
     androidTestImplementation(libs.androidx.test.runner)
     androidTestImplementation(libs.mockito.android)
     androidTestImplementation(libs.room.testing)
@@ -173,37 +174,32 @@ dependencies {
 }
 
 tasks.named("build") {
-    // don't test, don't lint, don't run detekt for build task.
-    setDependsOn(getDependsOn().findAll { it != "check" })
+    // don't test & don't lint for build task.
+    setDependsOn(dependsOn.filter { it != "check" })
 }
 
 play {
     serviceAccountCredentials = file("fake-key.json")
 }
 if (file("publishing.gradle").exists()) {
-    apply from: "publishing.gradle"
+    apply(from = "publishing.gradle")
 }
 
-tasks.register("takeScreenshots", Exec) {
-    commandLine "./screenshots.sh"
+tasks.register<Exec>("takeScreenshots") {
+    commandLine("./screenshots.sh")
 }
 
-class RoomSchemaArgProvider implements CommandLineArgumentProvider {
+class RoomSchemaArgProvider(
+    @get:InputDirectory
+    @get:PathSensitive(PathSensitivity.RELATIVE)
+    val schemaDir: File
+) : CommandLineArgumentProvider {
 
-    @InputDirectory
-    @PathSensitive(PathSensitivity.RELATIVE)
-    File schemaDir
-
-    RoomSchemaArgProvider(File schemaDir) {
-        this.schemaDir = schemaDir
-    }
-
-    @Override
-    Iterable<String> asArguments() {
-        return ["room.schemaLocation=${schemaDir.path}".toString()]
+    override fun asArguments(): Iterable<String> {
+        return listOf("room.schemaLocation=${schemaDir.path}")
     }
 }
 
 ksp {
-    arg(new RoomSchemaArgProvider(new File(projectDir, "schemas")))
+    arg(RoomSchemaArgProvider(File(projectDir, "schemas")))
 }
