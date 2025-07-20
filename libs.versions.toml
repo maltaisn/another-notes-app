@@ -1,0 +1,110 @@
+[versions]
+kotlin = "2.2.0"
+coroutines = "1.10.2"
+serialization = "1.9.0"
+
+ksp = "2.2.0-2.0.2"
+detekt = "1.23.8"
+
+androidGradlePlugin = "8.11.1"
+
+githubReleasePlugin = "2.5.2"
+
+coreKtx = "1.16.0"
+fragmentKtx = "1.8.8"
+appCompat = "1.7.1"
+recyclerView = "1.4.0"
+constraintLayout = "2.2.1"
+preference = "1.2.1"
+room = "2.7.2"
+material = "1.12.0"
+nav = "2.9.2"
+lifecycle = "2.9.2"
+recurpicker = "2.1.7"
+
+dagger = "2.57"
+leakCanary = "2.14"
+venom = "0.7.1"
+
+gpp = "3.12.1"
+
+kotlinMockito = "6.0.0"
+mockitoAndroid = "5.18.0"
+androidxArchTesting = "2.2.0"
+androidxTestRunner = "1.6.2"
+androidxTestCore = "1.6.1"
+androidxTestCoreKtx = "1.6.1"
+androidxTestExt = "1.2.1"
+androidxTestRules = "1.6.1"
+junit = "4.13.2"
+espresso = "3.6.1"
+
+[libraries]
+# See https://blog.gradle.org/best-practices-naming-version-catalog-entries
+
+androidx-coreKtx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+androidx-fragmentKtx = { group = "androidx.fragment", name = "fragment-ktx", version.ref = "fragmentKtx" }
+androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appCompat" }
+androidx-recyclerview = { group = "androidx.recyclerview", name = "recyclerview", version.ref = "recyclerView" }
+androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintLayout" }
+androidx-preferenceKtx = { group = "androidx.preference", name = "preference-ktx", version.ref = "preference" }
+
+material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+
+recurpicker = { group = "com.maltaisn", name = "recurpicker", version.ref = "recurpicker" }
+
+kotlin-stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", version.ref = "kotlin" }
+kotlin-coroutinesCore = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "coroutines" }
+kotlin-coroutinesAndroid = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "coroutines" }
+kotlin-coroutinesTest = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "coroutines" }
+kotlin-serializationJson = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "serialization" }
+kotlin-test = { group = "org.jetbrains.kotlin", name = "kotlin-test", version.ref = "kotlin" }
+
+dagger = { group = "com.google.dagger", name = "dagger", version.ref = "dagger" }
+dagger-compiler = { group = "com.google.dagger", name = "dagger-compiler", version.ref = "dagger" }
+
+room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
+room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
+room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
+room-testing = { group = "androidx.room", name = "room-testing", version.ref = "room" }
+
+lifecycle-common = { group = "androidx.lifecycle", name = "lifecycle-common", version.ref = "lifecycle" }
+lifecycle-livedataKtx = { group = "androidx.lifecycle", name = "lifecycle-livedata-ktx", version.ref = "lifecycle" }
+lifecycle-viewmodelKtx = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "lifecycle" }
+lifecycle-viewmodelSavedstate = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-savedstate", version.ref = "lifecycle" }
+
+navigation-uiKtx = { group = "androidx.navigation", name = "navigation-ui-ktx", version.ref = "nav" }
+navigation-fragmentKtx = { group = "androidx.navigation", name = "navigation-fragment-ktx", version.ref = "nav" }
+
+leakcanary-android = { group = "com.squareup.leakcanary", name = "leakcanary-android", version.ref = "leakCanary" }
+
+venom = { group = "com.github.YarikSOffice.Venom", name = "venom", version.ref = "venom" }
+venom-noop = { group = "com.github.YarikSOffice.Venom", name = "venom-no-op", version.ref = "venom" }
+
+junit = { group = "junit", name = "junit", version.ref = "junit" }
+
+androidx-test-core = { group = "androidx.test", name = "core", version.ref = "androidxTestCore" }
+androidx-arch-coreTesting = { group = "androidx.arch.core", name = "core-testing", version.ref = "androidxArchTesting" }
+androidx-test-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidxTestExt" }
+androidx-test-junitKtx = { group = "androidx.test.ext", name = "junit-ktx", version.ref = "androidxTestExt" }
+androidx-test-coreKtx = { group = "androidx.test", name = "core-ktx", version.ref = "androidxTestCoreKtx" }
+androidx-test-rules = { group = "androidx.test", name = "rules", version.ref = "androidxTestRules" }
+androidx-test-runner = { group = "androidx.test", name = "runner", version.ref = "androidxTestRunner" }
+
+mockito-kotlin = { group = "org.mockito.kotlin", name = "mockito-kotlin", version.ref = "kotlinMockito" }
+mockito-android = { group = "org.mockito", name = "mockito-android", version.ref = "mockitoAndroid" }
+
+espresso = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espresso" }
+espresso-contrib = { group = "androidx.test.espresso", name = "espresso-contrib", version.ref = "espresso" }
+
+[plugins]
+android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "serialization" }
+kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }
+navigation-safeargs = { id = "androidx.navigation.safeargs.kotlin", version.ref = "nav" }
+googlePlayPublisher = { id = "com.github.triplet.play", version.ref = "gpp" }
+githubRelease = { id = "com.github.breadmoirai.github-release", version.ref = "githubReleasePlugin" }
+kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }

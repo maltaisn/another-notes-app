@@ -1,17 +1,21 @@
 plugins {
-    id "com.android.application"
-    id "kotlin-android"
-    id "org.jetbrains.kotlin.plugin.serialization"
-    id "androidx.navigation.safeargs.kotlin"
-    id "com.github.triplet.play"
-    id "com.github.breadmoirai.github-release"
-    id "kotlin-parcelize"
-    id "kotlin-kapt"
-    id "com.google.devtools.ksp"
+    alias libs.plugins.android.application
+    alias libs.plugins.kotlin.android
+    alias libs.plugins.kotlin.serialization
+    alias libs.plugins.kotlin.parcelize
+    alias libs.plugins.navigation.safeargs
+    alias libs.plugins.googlePlayPublisher
+    alias libs.plugins.githubRelease
+    alias libs.plugins.kapt
+    alias libs.plugins.ksp
+    alias libs.plugins.detekt
 }
 
 kotlin {
     jvmToolchain 17
+    compilerOptions {
+        optIn.add("kotlinx.coroutines.ExperimentalCoroutinesApi")
+    }
 }
 
 android {
@@ -19,10 +23,10 @@ android {
 
     defaultConfig {
         applicationId "com.maltaisn.notes"
-        minSdkVersion 21
+        minSdk = 21
         compileSdk = 36
         buildToolsVersion = "35.0.0"
-        targetSdkVersion 36
+        targetSdk = 36
         versionCode 10505
         versionName "1.5.5"
 
@@ -106,66 +110,66 @@ android {
 
 dependencies {
     // App dependencies
-    implementation "androidx.core:core-ktx:$coreKtxVersion"
-    implementation "androidx.fragment:fragment-ktx:$fragmentKtxVersion"
-    implementation "androidx.appcompat:appcompat:$appCompatVersion"
-    implementation "androidx.recyclerview:recyclerview:$recyclerViewVersion"
-    implementation "androidx.constraintlayout:constraintlayout:$constraintLayoutVersion"
-    implementation "androidx.preference:preference-ktx:$preferenceVersion"
-    implementation "com.google.android.material:material:$materialVersion"
-    implementation "com.maltaisn:recurpicker:$recurpickerVersion"
+    implementation(libs.androidx.coreKtx)
+    implementation(libs.androidx.fragmentKtx)
+    implementation(libs.androidx.appcompat)
+    implementation(libs.androidx.recyclerview)
+    implementation(libs.androidx.constraintlayout)
+    implementation(libs.androidx.preferenceKtx)
+    implementation(libs.material)
+    implementation(libs.recurpicker)
 
     // Kotlin
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion"
-    implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:$serializationVersion"
+    implementation(libs.kotlin.stdlib)
+    implementation(libs.kotlin.coroutinesCore)
+    implementation(libs.kotlin.coroutinesAndroid)
+    implementation(libs.kotlin.serializationJson)
 
     // Dagger
-    implementation "com.google.dagger:dagger:$daggerVersion"
-    kapt "com.google.dagger:dagger-compiler:$daggerVersion"
+    implementation(libs.dagger)
+    kapt(libs.dagger.compiler)
 
     // Architecture components
-    ksp "androidx.room:room-compiler:$roomVersion"
-    implementation "androidx.room:room-runtime:$roomVersion"
-    implementation "androidx.room:room-ktx:$roomVersion"
-    implementation "androidx.lifecycle:lifecycle-common-java8:$lifecycleVersion"
-    implementation "androidx.lifecycle:lifecycle-livedata-ktx:$lifecycleVersion"
-    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycleVersion"
-    implementation "androidx.lifecycle:lifecycle-viewmodel-savedstate:$lifecycleVersion"
+    ksp(libs.room.compiler)
+    implementation(libs.room.runtime)
+    implementation(libs.room.ktx)
+    implementation(libs.lifecycle.common)
+    implementation(libs.lifecycle.livedataKtx)
+    implementation(libs.lifecycle.viewmodelKtx)
+    implementation(libs.lifecycle.viewmodelSavedstate)
 
     // Navigation component
-    implementation "androidx.navigation:navigation-ui-ktx:$navVersion"
-    implementation "androidx.navigation:navigation-fragment-ktx:$navVersion"
+    implementation(libs.navigation.uiKtx)
+    implementation(libs.navigation.fragmentKtx)
 
     // Debug
-    debugImplementation "com.squareup.leakcanary:leakcanary-android:$leakCanaryVersion"
-    debugImplementation "com.github.YarikSOffice.Venom:venom:$venomVersion"
-    releaseImplementation "com.github.YarikSOffice.Venom:venom-no-op:$venomVersion"
+    debugImplementation(libs.leakcanary.android)
+    debugImplementation(libs.venom)
+    releaseImplementation(libs.venom.noop)
 
     // Dependencies for shared test code
-    testFixturesApi "junit:junit:$junitVersion"
-    testFixturesApi "org.jetbrains.kotlin:kotlin-test:$kotlinVersion"
-    testFixturesApi "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion"
-    testFixturesApi "org.mockito.kotlin:mockito-kotlin:$kotlinMockitoVersion"
-    testFixturesApi "androidx.arch.core:core-testing:$androidxArchTestingVersion"
-    testFixturesApi "androidx.test:core:$androidxTestCoreVersion"
-    testFixturesApi "androidx.test:core-ktx:$androidxTestCoreKtxVersion"
-    testFixturesApi "androidx.test.ext:junit:$androidxTestExtVersion"
-    testFixturesApi "androidx.test.ext:junit-ktx:$androidxTestExtVersion"
-    testFixturesApi "androidx.test:rules:$androidxTestRulesVersion"
+    testFixturesApi(libs.junit)
+    testFixturesApi(libs.kotlin.test)
+    testFixturesApi(libs.kotlin.coroutinesTest)
+    testFixturesApi(libs.mockito.kotlin)
+    testFixturesApi(libs.androidx.arch.coreTesting)
+    testFixturesApi(libs.androidx.test.core)
+    testFixturesApi(libs.androidx.test.coreKtx)
+    testFixturesApi(libs.androidx.test.junit)
+    testFixturesApi(libs.androidx.test.junitKtx)
+    testFixturesApi(libs.androidx.test.rules)
 
     // Dependencies for unit tests
     testImplementation testFixtures(project(":app"))
 
     // Dependencies for android tests
     androidTestImplementation testFixtures(project(":app"))
-    androidTestImplementation "androidx.test:runner:$androidxTestRunnerVersion"
-    androidTestImplementation "org.mockito:mockito-android:$mockitoAndroidVersion"
-    androidTestImplementation "androidx.room:room-testing:$roomVersion"
+    androidTestImplementation(libs.androidx.test.runner)
+    androidTestImplementation(libs.mockito.android)
+    androidTestImplementation(libs.room.testing)
     // For screenshots
-    androidTestImplementation "androidx.test.espresso:espresso-core:$espressoVersion"
-    androidTestImplementation "androidx.test.espresso:espresso-contrib:$espressoVersion"
+    androidTestImplementation(libs.espresso)
+    androidTestImplementation(libs.espresso.contrib)
 }
 
 tasks.named("build") {
@@ -201,5 +205,5 @@ class RoomSchemaArgProvider implements CommandLineArgumentProvider {
 }
 
 ksp {
-  arg(new RoomSchemaArgProvider(new File(projectDir, "schemas")))
+    arg(new RoomSchemaArgProvider(new File(projectDir, "schemas")))
 }
