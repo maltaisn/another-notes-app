@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  Copyright 2023 Nicolas Maltais
+  Copyright 2025 Nicolas Maltais
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -180,7 +180,6 @@ Quest\'azione non può essere annullata.</string>
     <string name="pref_data_clear_success_message">Tutti i dai sono stati cancellati con successo.</string>
     <string name="pref_group_about">Informazioni</string>
     <string name="pref_about_view_source">Vedi su GitHub</string>
-    <string name="pref_about_view_licenses">Licenze Open source</string>
     <string name="pref_about_version">Versione</string>
     <!-- Import/export data messages -->
     <string name="export_success">Dati esportati con successo!</string>

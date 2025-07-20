@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  Copyright 2023 Nicolas Maltais
+  Copyright 2025 Nicolas Maltais
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -190,7 +190,6 @@
     <string name="pref_data_clear_success_message">全てのデータが削除されました。</string>
     <string name="pref_group_about">詳細</string>
     <string name="pref_about_view_source">Githubで表示</string>
-    <string name="pref_about_view_licenses">オープンソースライセンス</string>
     <string name="pref_about_version">バージョン</string>
     <string name="pref_restart_dialog_title">再起動が必要です！</string>
     <string name="pref_restart_dialog_description">これらの変更を有効にするには再起動が必要です。

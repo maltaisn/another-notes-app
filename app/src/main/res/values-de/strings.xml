@@ -204,7 +204,6 @@ Danach können Sie eine Erinnerung einstellen.</string>
     <string name="pref_data_clear_success_message">Alle Daten wurden erfolgreich gelöscht.</string>
     <string name="pref_group_about">Über</string>
     <string name="pref_about_view_source">Bei Github anzeigen</string>
-    <string name="pref_about_view_licenses">Open-Source-Lizenzen</string>
     <string name="pref_about_version">Version</string>
     <string name="pref_restart_dialog_title">Neustart erforderlich!</string>
     <string name="pref_restart_dialog_description">Ein Neustart ist erforderlich, um die Änderungen anzuwenden. Möchten Sie die App jetzt neustarten?</string>

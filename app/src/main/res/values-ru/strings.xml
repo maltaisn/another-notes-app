@@ -211,7 +211,6 @@
     <string name="pref_data_clear_success_message">Все данные успешно очищены.</string>
     <string name="pref_group_about">О программе</string>
     <string name="pref_about_view_source">Посмотреть на GitHub</string>
-    <string name="pref_about_view_licenses">Лицензии открытого ПО</string>
     <string name="pref_about_version">Версия</string>
     <string name="pref_restart_dialog_title">Необходим перезапуск!</string>
     <string name="pref_restart_dialog_description">Чтобы изменения вступили в силу, необходим перезапуск.

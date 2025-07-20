@@ -211,7 +211,6 @@
     <string name="pref_data_clear_success_message">Verwijderen van alle gegevens geslaagd.</string>
     <string name="pref_group_about">Over</string>
     <string name="pref_about_view_source">Bekijken op GitHub</string>
-    <string name="pref_about_view_licenses">Open-source licenties</string>
     <string name="pref_about_version">Versie</string>
     <string name="pref_restart_dialog_title">Herstarten vereist!</string>
     <string name="pref_restart_dialog_description">De app moet worden herstart om deze wijzigingen door te voeren.

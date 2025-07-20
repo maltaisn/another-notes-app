@@ -208,7 +208,6 @@
     <string name="pref_data_clear_success_message">Todos los datos se han borrado correctamente.</string>
     <string name="pref_group_about">Acerca de</string>
     <string name="pref_about_view_source">Ver en Github</string>
-    <string name="pref_about_view_licenses">Licencias de código abierto</string>
     <string name="pref_about_version">Versión</string>
     <string name="pref_restart_dialog_title">¡Es necesario reiniciar!</string>
     <string name="pref_restart_dialog_description">Es necesario reiniciar para que estos cambios surtan efecto.

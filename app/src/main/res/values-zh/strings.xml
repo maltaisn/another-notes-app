@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  Copyright 2023 Nicolas Maltais
+  Copyright 2025 Nicolas Maltais
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -179,7 +179,6 @@
     <string name="pref_data_clear_success_message">已成功清除所有数据。</string>
     <string name="pref_group_about">关于</string>
     <string name="pref_about_view_source">在 GitHub 上查看</string>
-    <string name="pref_about_view_licenses">开放源代码许可</string>
     <string name="pref_about_version">版本</string>
     <string name="pref_restart_dialog_title">需要重启！</string>
     <string name="pref_restart_dialog_description">需要重新启动才能使这些更改生效。您现在想重新启动应用程序吗？</string>

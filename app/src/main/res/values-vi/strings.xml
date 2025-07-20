@@ -203,7 +203,6 @@
     <string name="pref_data_clear_success_message">Đã dọn sạch mọi dữ liệu thành công.</string>
     <string name="pref_group_about">Thông tin</string>
     <string name="pref_about_view_source">Xem trên Github</string>
-    <string name="pref_about_view_licenses">Giấy phép nguồn mở</string>
     <string name="pref_about_version">Phiên bản</string>
     <string name="pref_restart_dialog_title">Yêu cầu khởi động lại!</string>
     <string name="pref_restart_dialog_description">Cần phải khởi động lại để những thay đổi này có hiệu lực.

@@ -243,7 +243,6 @@
     <string name="pref_data_clear_success_message">تم محو كافة البيانات بنجاح.</string>
     <string name="pref_group_about">حول</string>
     <string name="pref_about_view_source">عرض على Github</string>
-    <string name="pref_about_view_licenses">تراخيص مفتوحة المصدر</string>
     <string name="pref_about_version">الإصدار</string>
     <string name="pref_restart_dialog_title">إعادة التشغيل مطلوبة!</string>
     <string name="pref_restart_dialog_description">يلزم إعادة التشغيل حتى تصبح هذه التغييرات سارية المفعول.

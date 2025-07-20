@@ -28,7 +28,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.annotation.StringRes
 import androidx.core.net.toUri
-import androidx.core.os.bundleOf
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
@@ -55,7 +54,6 @@ import com.maltaisn.notes.ui.notification.NotificationPermission
 import com.maltaisn.notes.ui.observeEvent
 import com.maltaisn.notes.ui.reminder.ReminderPermission
 import com.maltaisn.notes.ui.viewModel
-import com.mikepenz.aboutlibraries.LibsBuilder
 import java.text.DateFormat
 import javax.inject.Inject
 import com.google.android.material.R as RMaterial
@@ -273,18 +271,6 @@ class SettingsFragment : PreferenceFragmentCompat(), ConfirmDialog.Callback, Exp
                 message = R.string.pref_data_clear_confirm_message,
                 btnPositive = R.string.action_clear
             ).show(childFragmentManager, CLEAR_DATA_DIALOG_TAG)
-            true
-        }
-
-        requirePreference<Preference>(DefaultPrefsManager.VIEW_LICENSES).setOnPreferenceClickListener {
-            findNavController().navigate(R.id.action_about_libraries, bundleOf(
-                // Navigation component safe args seem to fail for cross module navigation.
-                // So pass the customization argument the old way.
-                "data" to LibsBuilder().apply {
-                    aboutShowIcon = false
-                    aboutShowVersion = false
-                }
-            ))
             true
         }
 

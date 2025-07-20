@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  Copyright 2023 Nicolas Maltais
+  Copyright 2025 Nicolas Maltais
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -198,7 +198,6 @@
     <string name="pref_data_clear_success_message">Усі дані успішно стерто.</string>
     <string name="pref_group_about">Про застосунок</string>
     <string name="pref_about_view_source">Переглянути на Github</string>
-    <string name="pref_about_view_licenses">Ліцензії відкритого коду</string>
     <string name="pref_about_version">Версія</string>
     <!-- Import/export data messages -->
     <string name="export_success">Дані вдало експортовано!</string>

@@ -11,7 +11,6 @@ buildscript {
         classpath "androidx.navigation:navigation-safe-args-gradle-plugin:$navVersion"
         classpath "com.github.triplet.gradle:play-publisher:$gppVersion"
         classpath "com.github.breadmoirai:github-release:$githubReleasePluginVersion"
-        classpath "com.mikepenz.aboutlibraries.plugin:aboutlibraries-plugin:$aboutLibrariesVersion"
         classpath "com.google.devtools.ksp:com.google.devtools.ksp.gradle.plugin:2.2.0-2.0.2"
     }
 }

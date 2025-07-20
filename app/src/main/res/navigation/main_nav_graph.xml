@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?><!--
-  Copyright 2021 Nicolas Maltais
+  Copyright 2025 Nicolas Maltais
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -21,8 +21,6 @@
     android:id="@+id/nav_graph_main"
     app:startDestination="@id/fragment_home"
     >
-
-    <include app:graph="@navigation/aboutlibs_navigation" />
 
     <fragment
         android:id="@+id/fragment_home"
@@ -100,10 +98,6 @@
         android:name="com.maltaisn.notes.ui.settings.SettingsFragment"
         tools:layout="@layout/fragment_settings"
         >
-        <action
-            android:id="@+id/action_about_libraries"
-            app:destination="@id/about_libraries"
-            />
         <action
             android:id="@+id/action_nested_settings"
             app:destination="@id/fragment_settings_nested"

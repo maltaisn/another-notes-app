@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  Copyright 2023 Nicolas Maltais
+  Copyright 2025 Nicolas Maltais
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -204,7 +204,6 @@
     <string name="pref_data_clear_success_message">Toutes les données ont été effacées avec succès.</string>
     <string name="pref_group_about">À propos</string>
     <string name="pref_about_view_source">Voir sur GitHub</string>
-    <string name="pref_about_view_licenses">Licences open source</string>
     <string name="pref_about_version">Version</string>
     <string name="pref_restart_dialog_title">Redémarrage requis!</string>
     <string name="pref_restart_dialog_description">Un redémarrage est nécessaire pour que ces modifications prennent effet. Voulez-vous redémarrer l\'application maintenant?</string>
