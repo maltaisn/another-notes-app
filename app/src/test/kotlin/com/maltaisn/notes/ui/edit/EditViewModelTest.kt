@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Nicolas Maltais
+ * Copyright 2025 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,13 +42,13 @@ import com.maltaisn.notes.ui.edit.adapter.EditTitleItem
 import com.maltaisn.notes.ui.edit.adapter.EditableText
 import com.maltaisn.notes.ui.getOrAwaitValue
 import com.maltaisn.notes.ui.note.ShownDateField
-import com.maltaisn.notesshared.MainCoroutineRule
-import com.maltaisn.notesshared.assertNoteEquals
-import com.maltaisn.notesshared.dateFor
-import com.maltaisn.notesshared.listNote
-import com.maltaisn.notesshared.model.MockLabelsRepository
-import com.maltaisn.notesshared.model.MockNotesRepository
-import com.maltaisn.notesshared.testNote
+import com.maltaisn.notes.MainCoroutineRule
+import com.maltaisn.notes.assertNoteEquals
+import com.maltaisn.notes.dateFor
+import com.maltaisn.notes.listNote
+import com.maltaisn.notes.model.MockLabelsRepository
+import com.maltaisn.notes.model.MockNotesRepository
+import com.maltaisn.notes.testNote
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule

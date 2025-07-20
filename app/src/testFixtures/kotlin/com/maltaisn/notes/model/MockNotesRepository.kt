@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.maltaisn.notesshared.model
+package com.maltaisn.notes.model
 
 import com.maltaisn.notes.model.DefaultNotesRepository
 import com.maltaisn.notes.model.NotesRepository

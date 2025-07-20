@@ -4,4 +4,3 @@ plugins {
 rootProject.name = "notes"
 
 include "app"
-include "sharedTest"

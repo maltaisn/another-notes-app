@@ -42,11 +42,11 @@ import com.maltaisn.notes.ui.note.adapter.MessageItem
 import com.maltaisn.notes.ui.note.adapter.NoteAdapter
 import com.maltaisn.notes.ui.note.adapter.NoteItem
 import com.maltaisn.notes.ui.note.adapter.NoteListLayoutMode
-import com.maltaisn.notesshared.MainCoroutineRule
-import com.maltaisn.notesshared.dateFor
-import com.maltaisn.notesshared.model.MockLabelsRepository
-import com.maltaisn.notesshared.model.MockNotesRepository
-import com.maltaisn.notesshared.testNote
+import com.maltaisn.notes.MainCoroutineRule
+import com.maltaisn.notes.dateFor
+import com.maltaisn.notes.model.MockLabelsRepository
+import com.maltaisn.notes.model.MockNotesRepository
+import com.maltaisn.notes.testNote
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import org.junit.Before

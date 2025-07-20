@@ -43,6 +43,10 @@ android {
         buildConfig = true
     }
 
+    testFixtures {
+        enable = true
+    }
+
     sourceSets {
         // This just add "kotlin" folder to source sets since the default is "java".
         main {
@@ -53,6 +57,9 @@ android {
         }
         release {
             java.srcDirs += "src/release/kotlin"
+        }
+        testFixtures {
+            java.srcDirs += "src/testFixtures/kotlin"
         }
 
         // Adds exported schema location as test app assets.
@@ -140,14 +147,23 @@ dependencies {
     debugImplementation "com.github.YarikSOffice.Venom:venom:$venomVersion"
     releaseImplementation "com.github.YarikSOffice.Venom:venom-no-op:$venomVersion"
 
-    // NOTE: dependencies for 'test' and 'androidTest' source sets include several
-    // dependencies declared as `api` in sharedTest/build.gradle.
+    // Dependencies for shared test code
+    testFixturesApi "junit:junit:$junitVersion"
+    testFixturesApi "org.jetbrains.kotlin:kotlin-test:$kotlinVersion"
+    testFixturesApi "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion"
+    testFixturesApi "org.mockito.kotlin:mockito-kotlin:$kotlinMockitoVersion"
+    testFixturesApi "androidx.arch.core:core-testing:$androidxArchTestingVersion"
+    testFixturesApi "androidx.test:core:$androidxTestCoreVersion"
+    testFixturesApi "androidx.test:core-ktx:$androidxTestCoreKtxVersion"
+    testFixturesApi "androidx.test.ext:junit:$androidxTestExtVersion"
+    testFixturesApi "androidx.test.ext:junit-ktx:$androidxTestExtVersion"
+    testFixturesApi "androidx.test:rules:$androidxTestRulesVersion"
 
-    // Dependencies for local unit tests
-    testImplementation project(":sharedTest")
+    // Dependencies for unit tests
+    testImplementation testFixtures(project(":app"))
 
     // Dependencies for android tests
-    androidTestImplementation project(":sharedTest")
+    androidTestImplementation testFixtures(project(":app"))
     androidTestImplementation "androidx.test:runner:$androidxTestRunnerVersion"
     androidTestImplementation "org.mockito:mockito-android:$mockitoAndroidVersion"
     androidTestImplementation "androidx.room:room-testing:$roomVersion"

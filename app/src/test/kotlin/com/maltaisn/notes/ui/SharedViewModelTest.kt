@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Nicolas Maltais
+ * Copyright 2025 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,10 +21,10 @@ import com.maltaisn.notes.model.ReminderAlarmManager
 import com.maltaisn.notes.model.entity.NoteStatus
 import com.maltaisn.notes.model.entity.PinnedStatus
 import com.maltaisn.notes.model.entity.Reminder
-import com.maltaisn.notesshared.MainCoroutineRule
-import com.maltaisn.notesshared.model.MockLabelsRepository
-import com.maltaisn.notesshared.model.MockNotesRepository
-import com.maltaisn.notesshared.testNote
+import com.maltaisn.notes.MainCoroutineRule
+import com.maltaisn.notes.model.MockLabelsRepository
+import com.maltaisn.notes.model.MockNotesRepository
+import com.maltaisn.notes.testNote
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule

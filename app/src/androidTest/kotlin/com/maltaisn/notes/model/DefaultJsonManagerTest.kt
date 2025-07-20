@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Nicolas Maltais
+ * Copyright 2025 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,8 +34,8 @@ import com.maltaisn.notes.model.entity.NoteType
 import com.maltaisn.notes.model.entity.NoteWithLabels
 import com.maltaisn.notes.model.entity.PinnedStatus
 import com.maltaisn.notes.model.entity.Reminder
-import com.maltaisn.notesshared.dateFor
-import com.maltaisn.notesshared.testNote
+import com.maltaisn.notes.dateFor
+import com.maltaisn.notes.testNote
 import com.maltaisn.recurpicker.Recurrence
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json

@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Nicolas Maltais
+ * Copyright 2025 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,8 +23,8 @@ import com.maltaisn.notes.model.entity.NoteType
 import com.maltaisn.notes.ui.note.adapter.NoteItemList
 import com.maltaisn.notes.ui.note.adapter.NoteItemText
 import com.maltaisn.notes.ui.note.adapter.NoteListLayoutMode
-import com.maltaisn.notesshared.listNote
-import com.maltaisn.notesshared.testNote
+import com.maltaisn.notes.listNote
+import com.maltaisn.notes.testNote
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any

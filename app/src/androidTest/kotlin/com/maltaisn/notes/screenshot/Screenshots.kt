@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Nicolas Maltais
+ * Copyright 2025 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,7 +48,7 @@ import com.maltaisn.notes.ui.edit.adapter.EditItemViewHolder
 import com.maltaisn.notes.ui.main.MainActivity
 import com.maltaisn.notes.ui.note.ShownDateField
 import com.maltaisn.notes.ui.note.adapter.NoteViewHolder
-import com.maltaisn.notesshared.dateFor
+import com.maltaisn.notes.dateFor
 import com.maltaisn.recurpicker.Recurrence
 import com.maltaisn.recurpicker.RecurrenceFinder
 import kotlinx.coroutines.CoroutineScope
