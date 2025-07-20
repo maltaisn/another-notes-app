@@ -18,16 +18,16 @@ package com.maltaisn.notes.ui.reminder
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.SavedStateHandle
-import com.maltaisn.notes.model.ReminderAlarmManager
+import com.maltaisn.notes.MainCoroutineRule
+import com.maltaisn.notes.dateFor
+import com.maltaisn.notes.model.DefaultReminderAlarmManager
+import com.maltaisn.notes.model.MockLabelsRepository
+import com.maltaisn.notes.model.MockNotesRepository
 import com.maltaisn.notes.model.entity.Reminder
+import com.maltaisn.notes.testNote
 import com.maltaisn.notes.ui.MockAlarmCallback
 import com.maltaisn.notes.ui.assertLiveDataEventSent
 import com.maltaisn.notes.ui.getOrAwaitValue
-import com.maltaisn.notes.MainCoroutineRule
-import com.maltaisn.notes.dateFor
-import com.maltaisn.notes.model.MockLabelsRepository
-import com.maltaisn.notes.model.MockNotesRepository
-import com.maltaisn.notes.testNote
 import com.maltaisn.recurpicker.Recurrence
 import com.maltaisn.recurpicker.RecurrenceFinder
 import kotlinx.coroutines.test.runTest
@@ -73,7 +73,7 @@ class ReminderViewModelTest {
         alarmCallback.alarms[2] = dateFor("2020-08-15T00:00:00.000").time
 
         viewModel = ReminderViewModel(SavedStateHandle(), notesRepo,
-            ReminderAlarmManager(notesRepo, alarmCallback))
+            DefaultReminderAlarmManager(notesRepo, alarmCallback))
     }
 
     @Test

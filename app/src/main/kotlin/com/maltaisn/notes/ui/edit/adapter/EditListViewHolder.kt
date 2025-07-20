@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Nicolas Maltais
+ * Copyright 2025 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,7 +35,7 @@ import com.maltaisn.notes.databinding.ItemEditItemBinding
 import com.maltaisn.notes.databinding.ItemEditLabelsBinding
 import com.maltaisn.notes.databinding.ItemEditTitleBinding
 import com.maltaisn.notes.hideKeyboard
-import com.maltaisn.notes.model.PrefsManager
+import com.maltaisn.notes.model.DefaultPrefsManager
 import com.maltaisn.notes.model.entity.Label
 import com.maltaisn.notes.model.entity.Reminder
 import com.maltaisn.notes.showKeyboard
@@ -63,7 +63,7 @@ class EditDateViewHolder(binding: ItemEditDateBinding) :
 
     fun bind(item: EditDateItem) {
         dateEdt.text = dateFormatter.format(item.date, System.currentTimeMillis(),
-            PrefsManager.MAXIMUM_RELATIVE_DATE_DAYS)
+            DefaultPrefsManager.MAXIMUM_RELATIVE_DATE_DAYS)
     }
 }
 
@@ -284,7 +284,7 @@ class EditItemLabelsViewHolder(binding: ItemEditLabelsBinding, callback: EditAda
                         false) as Chip
                     chipGroup.addView(view)
                     view.text = reminderDateFormatter.format(chip.next.time,
-                        System.currentTimeMillis(), PrefsManager.MAXIMUM_RELATIVE_DATE_DAYS)
+                        System.currentTimeMillis(), DefaultPrefsManager.MAXIMUM_RELATIVE_DATE_DAYS)
                     view.strikethroughText = chip.done
                     view.isActivated = !chip.done
                     view.setChipIconResource(if (chip.recurrence != null) R.drawable.ic_repeat else R.drawable.ic_alarm)

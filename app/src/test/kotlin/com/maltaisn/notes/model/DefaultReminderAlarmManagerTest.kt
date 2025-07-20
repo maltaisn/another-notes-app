@@ -17,13 +17,11 @@
 package com.maltaisn.notes.model
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.maltaisn.notes.model.entity.Reminder
-import com.maltaisn.notes.ui.MockAlarmCallback
 import com.maltaisn.notes.MainCoroutineRule
 import com.maltaisn.notes.dateFor
-import com.maltaisn.notes.model.MockLabelsRepository
-import com.maltaisn.notes.model.MockNotesRepository
+import com.maltaisn.notes.model.entity.Reminder
 import com.maltaisn.notes.testNote
+import com.maltaisn.notes.ui.MockAlarmCallback
 import com.maltaisn.recurpicker.Recurrence
 import com.maltaisn.recurpicker.RecurrenceFinder
 import kotlinx.coroutines.test.runTest
@@ -35,7 +33,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
-class ReminderAlarmManagerTest {
+class DefaultReminderAlarmManagerTest {
 
     private lateinit var alarmManager: ReminderAlarmManager
 
@@ -72,7 +70,7 @@ class ReminderAlarmManagerTest {
 
         alarmCallback = MockAlarmCallback()
 
-        alarmManager = ReminderAlarmManager(notesRepo, alarmCallback)
+        alarmManager = DefaultReminderAlarmManager(notesRepo, alarmCallback)
     }
 
     @Test

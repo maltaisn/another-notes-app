@@ -19,6 +19,12 @@ package com.maltaisn.notes.ui.note
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
+import com.maltaisn.notes.MainCoroutineRule
+import com.maltaisn.notes.assertNoteEquals
+import com.maltaisn.notes.listNote
+import com.maltaisn.notes.model.DefaultReminderAlarmManager
+import com.maltaisn.notes.model.MockLabelsRepository
+import com.maltaisn.notes.model.MockNotesRepository
 import com.maltaisn.notes.model.PrefsManager
 import com.maltaisn.notes.model.ReminderAlarmManager
 import com.maltaisn.notes.model.entity.Label
@@ -27,6 +33,7 @@ import com.maltaisn.notes.model.entity.ListNoteItem
 import com.maltaisn.notes.model.entity.NoteStatus
 import com.maltaisn.notes.model.entity.PinnedStatus
 import com.maltaisn.notes.model.entity.Reminder
+import com.maltaisn.notes.testNote
 import com.maltaisn.notes.ui.MockAlarmCallback
 import com.maltaisn.notes.ui.ShareData
 import com.maltaisn.notes.ui.StatusChange
@@ -35,12 +42,6 @@ import com.maltaisn.notes.ui.getOrAwaitValue
 import com.maltaisn.notes.ui.note.NoteViewModel.NoteSelection
 import com.maltaisn.notes.ui.note.adapter.NoteItem
 import com.maltaisn.notes.ui.note.adapter.NoteListLayoutMode
-import com.maltaisn.notes.MainCoroutineRule
-import com.maltaisn.notes.assertNoteEquals
-import com.maltaisn.notes.listNote
-import com.maltaisn.notes.model.MockLabelsRepository
-import com.maltaisn.notes.model.MockNotesRepository
-import com.maltaisn.notes.testNote
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
@@ -109,7 +110,7 @@ class NoteViewModelTest {
         alarmCallback = MockAlarmCallback()
 
         viewModel = TestNoteViewModel(notesRepo, labelsRepo, prefs,
-            ReminderAlarmManager(notesRepo, alarmCallback), itemFactory)
+            DefaultReminderAlarmManager(notesRepo, alarmCallback), itemFactory)
     }
 
     @Test

@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Nicolas Maltais
+ * Copyright 2025 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavDirections
 import com.maltaisn.notes.NavGraphMainDirections
 import com.maltaisn.notes.R
+import com.maltaisn.notes.model.DefaultPrefsManager
 import com.maltaisn.notes.model.JsonManager
 import com.maltaisn.notes.model.LabelsRepository
 import com.maltaisn.notes.model.NotesRepository
@@ -107,7 +108,7 @@ class MainViewModel @AssistedInject constructor(
 
     init {
         viewModelScope.launch {
-            if (prefsManager.shouldAutoExport && prefsManager.autoExportUri == PrefsManager.AUTO_EXPORT_NO_URI) {
+            if (prefsManager.shouldAutoExport && prefsManager.autoExportUri == DefaultPrefsManager.AUTO_EXPORT_NO_URI) {
                 // Auto export was enabled, but setup was not completed, disable it.
                 prefsManager.disableAutoExport()
             }
@@ -129,7 +130,7 @@ class MainViewModel @AssistedInject constructor(
 
                 if (prefsManager.shouldAutoExport &&
                     System.currentTimeMillis() - prefsManager.lastAutoExportTime >
-                    PrefsManager.AUTO_EXPORT_DELAY.inWholeMilliseconds
+                    DefaultPrefsManager.AUTO_EXPORT_DELAY.inWholeMilliseconds
                 ) {
                     _autoExportEvent.send(prefsManager.autoExportUri)
                 }
@@ -182,21 +183,27 @@ class MainViewModel @AssistedInject constructor(
             R.id.drawer_item_notes -> {
                 _currentHomeDestination.value = HomeDestination.Status(NoteStatus.ACTIVE)
             }
+
             R.id.drawer_item_reminders -> {
                 _currentHomeDestination.value = HomeDestination.Reminders
             }
+
             R.id.drawer_item_create_label -> {
                 _navDirectionsEvent.send(HomeFragmentDirections.actionHomeToLabelEdit())
             }
+
             R.id.drawer_item_edit_labels -> {
                 _navDirectionsEvent.send(NavGraphMainDirections.actionLabel(longArrayOf()))
             }
+
             R.id.drawer_item_archived -> {
                 _currentHomeDestination.value = HomeDestination.Status(NoteStatus.ARCHIVED)
             }
+
             R.id.drawer_item_deleted -> {
                 _currentHomeDestination.value = HomeDestination.Status(NoteStatus.DELETED)
             }
+
             R.id.drawer_item_settings -> {
                 _navDirectionsEvent.send(HomeFragmentDirections.actionHomeToSettings())
             }

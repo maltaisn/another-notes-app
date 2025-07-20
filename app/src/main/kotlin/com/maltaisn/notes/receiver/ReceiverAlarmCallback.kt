@@ -23,9 +23,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
-import android.util.Log
 import android.widget.Toast
-import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import com.maltaisn.notes.R
 import com.maltaisn.notes.model.ReminderAlarmCallback
@@ -42,7 +40,6 @@ class ReceiverAlarmCallback @Inject constructor(
 
     private val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
-    @RequiresApi(Build.VERSION_CODES.S)
     override fun addAlarm(noteId: Long, time: Long) {
         val alarmIntent = getAlarmPendingIndent(noteId)
         try {

@@ -18,9 +18,13 @@ package com.maltaisn.notes.ui.home
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.SavedStateHandle
+import com.maltaisn.notes.MainCoroutineRule
 import com.maltaisn.notes.R
+import com.maltaisn.notes.dateFor
+import com.maltaisn.notes.model.DefaultReminderAlarmManager
+import com.maltaisn.notes.model.MockLabelsRepository
+import com.maltaisn.notes.model.MockNotesRepository
 import com.maltaisn.notes.model.PrefsManager
-import com.maltaisn.notes.model.ReminderAlarmManager
 import com.maltaisn.notes.model.SortDirection
 import com.maltaisn.notes.model.SortField
 import com.maltaisn.notes.model.SortSettings
@@ -29,24 +33,20 @@ import com.maltaisn.notes.model.entity.LabelRef
 import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.model.entity.NoteStatus
 import com.maltaisn.notes.model.entity.PinnedStatus
+import com.maltaisn.notes.testNote
 import com.maltaisn.notes.ui.MockAlarmCallback
 import com.maltaisn.notes.ui.StatusChange
 import com.maltaisn.notes.ui.assertLiveDataEventSent
 import com.maltaisn.notes.ui.getOrAwaitValue
 import com.maltaisn.notes.ui.navigation.HomeDestination
-import com.maltaisn.notes.ui.note.TrashCleanDelay
 import com.maltaisn.notes.ui.note.NoteItemFactory
 import com.maltaisn.notes.ui.note.NoteViewModel
 import com.maltaisn.notes.ui.note.SwipeAction
+import com.maltaisn.notes.ui.note.TrashCleanDelay
 import com.maltaisn.notes.ui.note.adapter.MessageItem
 import com.maltaisn.notes.ui.note.adapter.NoteAdapter
 import com.maltaisn.notes.ui.note.adapter.NoteItem
 import com.maltaisn.notes.ui.note.adapter.NoteListLayoutMode
-import com.maltaisn.notes.MainCoroutineRule
-import com.maltaisn.notes.dateFor
-import com.maltaisn.notes.model.MockLabelsRepository
-import com.maltaisn.notes.model.MockNotesRepository
-import com.maltaisn.notes.testNote
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
@@ -104,7 +104,7 @@ class HomeViewModelTest {
         itemFactory = NoteItemFactory(prefs)
 
         viewModel = HomeViewModel(SavedStateHandle(), notesRepo, labelsRepo, prefs,
-            ReminderAlarmManager(notesRepo, MockAlarmCallback()), itemFactory, buildTypeBehavior)
+            DefaultReminderAlarmManager(notesRepo, MockAlarmCallback()), itemFactory, buildTypeBehavior)
     }
 
     @Test

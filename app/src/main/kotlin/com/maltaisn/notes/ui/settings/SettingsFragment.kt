@@ -46,7 +46,7 @@ import com.maltaisn.notes.BuildConfig
 import com.maltaisn.notes.R
 import com.maltaisn.notes.TAG
 import com.maltaisn.notes.databinding.FragmentSettingsBinding
-import com.maltaisn.notes.model.PrefsManager
+import com.maltaisn.notes.model.DefaultPrefsManager
 import com.maltaisn.notes.navigateSafe
 import com.maltaisn.notes.ui.AppTheme
 import com.maltaisn.notes.ui.common.ConfirmDialog
@@ -195,12 +195,12 @@ class SettingsFragment : PreferenceFragmentCompat(), ConfirmDialog.Callback, Exp
         val context = requireContext()
         setPreferencesFromResource(R.xml.prefs, rootKey)
 
-        requirePreference<DropDownPreference>(PrefsManager.THEME).setOnPreferenceChangeListener { _, theme ->
+        requirePreference<DropDownPreference>(DefaultPrefsManager.THEME).setOnPreferenceChangeListener { _, theme ->
             (context.applicationContext as App).updateTheme(AppTheme.fromValue(theme as String))
             true
         }
 
-        requirePreference<Preference>(PrefsManager.DYNAMIC_COLORS).apply {
+        requirePreference<Preference>(DefaultPrefsManager.DYNAMIC_COLORS).apply {
             if (DynamicColors.isDynamicColorAvailable()) {
                 setOnPreferenceClickListener {
                     ConfirmDialog.newInstance(
@@ -216,20 +216,20 @@ class SettingsFragment : PreferenceFragmentCompat(), ConfirmDialog.Callback, Exp
             }
         }
 
-        requirePreference<Preference>(PrefsManager.PREVIEW_LINES).setOnPreferenceClickListener {
+        requirePreference<Preference>(DefaultPrefsManager.PREVIEW_LINES).setOnPreferenceClickListener {
             findNavController().navigateSafe(SettingsFragmentDirections.actionNestedSettings(
                 R.xml.prefs_preview_lines, R.string.pref_preview_lines))
             true
         }
 
-        requirePreference<Preference>(PrefsManager.EXPORT_DATA).setOnPreferenceClickListener {
+        requirePreference<Preference>(DefaultPrefsManager.EXPORT_DATA).setOnPreferenceClickListener {
             val intent = Intent(Intent.ACTION_CREATE_DOCUMENT)
                 .setType("application/json").addCategory(Intent.CATEGORY_OPENABLE)
             exportDataLauncher?.launch(intent)
             true
         }
 
-        val encryptedExportPref: SwitchPreferenceCompat = requirePreference(PrefsManager.ENCRYPTED_EXPORT)
+        val encryptedExportPref: SwitchPreferenceCompat = requirePreference(DefaultPrefsManager.ENCRYPTED_EXPORT)
         // Older versions don't support PBKDF2withHmacSHA512
         if (Build.VERSION.SDK_INT < 26) {
             encryptedExportPref.isVisible = false
@@ -259,7 +259,7 @@ class SettingsFragment : PreferenceFragmentCompat(), ConfirmDialog.Callback, Exp
             true
         }
 
-        requirePreference<Preference>(PrefsManager.IMPORT_DATA).setOnPreferenceClickListener {
+        requirePreference<Preference>(DefaultPrefsManager.IMPORT_DATA).setOnPreferenceClickListener {
             // note: explicit mimetype fails for some devices, see #11
             val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
                 .setType("*/*").addCategory(Intent.CATEGORY_OPENABLE)
@@ -267,7 +267,7 @@ class SettingsFragment : PreferenceFragmentCompat(), ConfirmDialog.Callback, Exp
             true
         }
 
-        requirePreference<Preference>(PrefsManager.CLEAR_DATA).setOnPreferenceClickListener {
+        requirePreference<Preference>(DefaultPrefsManager.CLEAR_DATA).setOnPreferenceClickListener {
             ConfirmDialog.newInstance(
                 title = R.string.pref_data_clear,
                 message = R.string.pref_data_clear_confirm_message,
@@ -276,7 +276,7 @@ class SettingsFragment : PreferenceFragmentCompat(), ConfirmDialog.Callback, Exp
             true
         }
 
-        requirePreference<Preference>(PrefsManager.VIEW_LICENSES).setOnPreferenceClickListener {
+        requirePreference<Preference>(DefaultPrefsManager.VIEW_LICENSES).setOnPreferenceClickListener {
             findNavController().navigate(R.id.action_about_libraries, bundleOf(
                 // Navigation component safe args seem to fail for cross module navigation.
                 // So pass the customization argument the old way.
@@ -289,7 +289,7 @@ class SettingsFragment : PreferenceFragmentCompat(), ConfirmDialog.Callback, Exp
         }
 
         // Set version name as summary text for version preference
-        requirePreference<Preference>(PrefsManager.VERSION).summary = BuildConfig.VERSION_NAME
+        requirePreference<Preference>(DefaultPrefsManager.VERSION).summary = BuildConfig.VERSION_NAME
     }
 
     override fun onDestroy() {
@@ -313,7 +313,7 @@ class SettingsFragment : PreferenceFragmentCompat(), ConfirmDialog.Callback, Exp
         checkNotNull(findPreference<T>(key)) { "Could not find preference with key '$key'." }
 
     private val autoExportPref: SwitchPreferenceCompat
-        get() = requirePreference(PrefsManager.AUTO_EXPORT)
+        get() = requirePreference(DefaultPrefsManager.AUTO_EXPORT)
 
     private fun updateAutoExportSummary(enabled: Boolean, date: Long = 0) {
         if (enabled) {
@@ -376,7 +376,7 @@ class SettingsFragment : PreferenceFragmentCompat(), ConfirmDialog.Callback, Exp
     }
 
     private val exportEncryptionPref: SwitchPreferenceCompat
-        get() = requirePreference(PrefsManager.ENCRYPTED_EXPORT)
+        get() = requirePreference(DefaultPrefsManager.ENCRYPTED_EXPORT)
 
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onExportPasswordDialogPositiveButtonClicked(password: String) {

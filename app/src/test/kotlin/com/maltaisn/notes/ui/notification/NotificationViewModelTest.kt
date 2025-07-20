@@ -18,17 +18,17 @@ package com.maltaisn.notes.ui.notification
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.SavedStateHandle
-import com.maltaisn.notes.model.ReminderAlarmManager
-import com.maltaisn.notes.model.entity.Reminder
-import com.maltaisn.notes.ui.MockAlarmCallback
-import com.maltaisn.notes.ui.assertLiveDataEventSent
-import com.maltaisn.notes.ui.getOrAwaitValue
 import com.maltaisn.notes.MainCoroutineRule
 import com.maltaisn.notes.assertNoteEquals
 import com.maltaisn.notes.dateFor
+import com.maltaisn.notes.model.DefaultReminderAlarmManager
 import com.maltaisn.notes.model.MockLabelsRepository
 import com.maltaisn.notes.model.MockNotesRepository
+import com.maltaisn.notes.model.entity.Reminder
 import com.maltaisn.notes.testNote
+import com.maltaisn.notes.ui.MockAlarmCallback
+import com.maltaisn.notes.ui.assertLiveDataEventSent
+import com.maltaisn.notes.ui.getOrAwaitValue
 import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
@@ -65,7 +65,7 @@ class NotificationViewModelTest {
         alarmCallback = MockAlarmCallback()
 
         viewModel = NotificationViewModel(SavedStateHandle(), notesRepo,
-            ReminderAlarmManager(notesRepo, alarmCallback))
+            DefaultReminderAlarmManager(notesRepo, alarmCallback))
     }
 
     @Test

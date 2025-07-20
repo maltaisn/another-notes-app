@@ -2,7 +2,6 @@ plugins {
     id "com.android.application"
     id "kotlin-android"
     id "org.jetbrains.kotlin.plugin.serialization"
-    id "org.jetbrains.kotlin.plugin.allopen"
     id "androidx.navigation.safeargs.kotlin"
     id "com.github.triplet.play"
     id "com.github.breadmoirai.github-release"
@@ -175,10 +174,6 @@ dependencies {
 tasks.named("build") {
     // don't test, don't lint, don't run detekt for build task.
     setDependsOn(getDependsOn().findAll { it != "check" })
-}
-
-allOpen {
-    annotation "com.maltaisn.notes.OpenClass"
 }
 
 play {

@@ -36,7 +36,9 @@ import androidx.test.filters.LargeTest
 import androidx.test.platform.app.InstrumentationRegistry
 import com.maltaisn.notes.App
 import com.maltaisn.notes.R
+import com.maltaisn.notes.dateFor
 import com.maltaisn.notes.hideKeyboard
+import com.maltaisn.notes.model.DefaultPrefsManager
 import com.maltaisn.notes.model.LabelsDao
 import com.maltaisn.notes.model.NotesDao
 import com.maltaisn.notes.model.PrefsManager
@@ -48,7 +50,6 @@ import com.maltaisn.notes.ui.edit.adapter.EditItemViewHolder
 import com.maltaisn.notes.ui.main.MainActivity
 import com.maltaisn.notes.ui.note.ShownDateField
 import com.maltaisn.notes.ui.note.adapter.NoteViewHolder
-import com.maltaisn.notes.dateFor
 import com.maltaisn.recurpicker.Recurrence
 import com.maltaisn.recurpicker.RecurrenceFinder
 import kotlinx.coroutines.CoroutineScope
@@ -111,7 +112,7 @@ class Screenshots {
     @Test
     fun screenshotEdit() = screenshotTest {
         PreferenceManager.getDefaultSharedPreferences(context).edit()
-            .putString(PrefsManager.SHOWN_DATE, ShownDateField.MODIFIED.value).apply()
+            .putString(DefaultPrefsManager.SHOWN_DATE, ShownDateField.MODIFIED.value).apply()
         notesDao.insertAll(listOf(
             ScreenshotHelper.getNote(1).copy(addedDate = dateFor("2020-01-01"),
                 lastModifiedDate = dateFor("2021-03-23T17:34:00.000Z")),

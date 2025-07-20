@@ -21,6 +21,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.maltaisn.notes.R
+import com.maltaisn.notes.debugCheck
+import com.maltaisn.notes.model.DefaultPrefsManager
 import com.maltaisn.notes.model.LabelsRepository
 import com.maltaisn.notes.model.NotesRepository
 import com.maltaisn.notes.model.PrefsManager
@@ -47,7 +49,6 @@ import com.maltaisn.notes.ui.send
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
-import com.maltaisn.notes.debugCheck
 import kotlinx.coroutines.launch
 import java.util.Calendar
 
@@ -112,11 +113,13 @@ class HomeViewModel @AssistedInject constructor(
                         }
                     }
                 }
+
                 is HomeDestination.Labels -> {
                     notesRepository.getNotesByLabel(destination.label.id).collect { notes ->
                         listItems = createLabelsListItems(notes, destination.label)
                     }
                 }
+
                 is HomeDestination.Reminders -> {
                     notesRepository.getNotesWithReminder().collect { notes ->
                         listItems = createRemindersListItems(notes)
@@ -163,7 +166,8 @@ class HomeViewModel @AssistedInject constructor(
 
     /** Update restrictions status so that appropriate warnings may be shown to user. */
     fun updateRestrictions(battery: Boolean, notifications: Boolean, reminders: Boolean) {
-        val updateList = battery != batteryRestricted || notifications != notificationsRestricted || reminders != remindersRestricted
+        val updateList =
+            battery != batteryRestricted || notifications != notificationsRestricted || reminders != remindersRestricted
         batteryRestricted = battery
         notificationsRestricted = notifications
         remindersRestricted = reminders
@@ -284,7 +288,7 @@ class HomeViewModel @AssistedInject constructor(
         // If needed, add reminder that notes get auto-deleted when in trash.
         if (notes.isNotEmpty() &&
             System.currentTimeMillis() - prefs.lastTrashReminderTime >
-            PrefsManager.TRASH_REMINDER_DELAY.inWholeMilliseconds
+            DefaultPrefsManager.TRASH_REMINDER_DELAY.inWholeMilliseconds
         ) {
             this += MessageItem(TRASH_REMINDER_ITEM_ID, R.plurals.trash_reminder_message,
                 listOf(prefs.trashCleanDelay.value.toInt()))
@@ -335,7 +339,7 @@ class HomeViewModel @AssistedInject constructor(
         // If needed, add warning that notifications won't work properly if battery is restricted.
         if (batteryRestricted && notes.isNotEmpty() &&
             now - prefs.lastRestrictedBatteryReminderTime >
-            PrefsManager.RESTRICTED_BATTERY_REMINDER_DELAY.inWholeMilliseconds
+            DefaultPrefsManager.RESTRICTED_BATTERY_REMINDER_DELAY.inWholeMilliseconds
         ) {
             this += MessageItem(BATTERY_RESTRICTED_ITEM_ID, R.string.reminder_restricted_battery)
         }
@@ -393,14 +397,18 @@ class HomeViewModel @AssistedInject constructor(
         is HomeDestination.Status -> when (destination.status) {
             NoteStatus.ACTIVE -> PlaceholderData(R.drawable.ic_list,
                 R.string.note_placeholder_active)
+
             NoteStatus.ARCHIVED -> PlaceholderData(R.drawable.ic_archive,
                 R.string.note_placeholder_archived)
+
             NoteStatus.DELETED -> PlaceholderData(R.drawable.ic_delete,
                 R.string.note_placeholder_deleted)
         }
+
         is HomeDestination.Reminders -> {
             PlaceholderData(R.drawable.ic_alarm, R.string.reminder_empty_placeholder)
         }
+
         is HomeDestination.Labels -> {
             PlaceholderData(R.drawable.ic_label_outline, R.string.label_notes_empty_placeholder)
         }

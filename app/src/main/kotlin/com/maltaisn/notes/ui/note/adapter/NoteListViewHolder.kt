@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Nicolas Maltais
+ * Copyright 2025 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,7 +40,7 @@ import com.maltaisn.notes.databinding.ItemNoteLabelBinding
 import com.maltaisn.notes.databinding.ItemNoteListBinding
 import com.maltaisn.notes.databinding.ItemNoteListItemBinding
 import com.maltaisn.notes.databinding.ItemNoteTextBinding
-import com.maltaisn.notes.model.PrefsManager
+import com.maltaisn.notes.model.DefaultPrefsManager
 import com.maltaisn.notes.model.entity.Label
 import com.maltaisn.notes.model.entity.NoteType
 import com.maltaisn.notes.strikethroughText
@@ -110,7 +110,8 @@ sealed class NoteViewHolder<T : NoteItem>(itemView: View) :
             ShownDateField.MODIFIED -> note.lastModifiedDate.time
             ShownDateField.NONE -> 0L
         }
-        dateTxv.text = dateFormatter.format(date, System.currentTimeMillis(), PrefsManager.MAXIMUM_RELATIVE_DATE_DAYS)
+        dateTxv.text =
+            dateFormatter.format(date, System.currentTimeMillis(), DefaultPrefsManager.MAXIMUM_RELATIVE_DATE_DAYS)
         dateTxv.isGone = (dateField == ShownDateField.NONE)
     }
 
@@ -119,7 +120,7 @@ sealed class NoteViewHolder<T : NoteItem>(itemView: View) :
         reminderChip.isVisible = note.reminder != null
         if (note.reminder != null) {
             reminderChip.text = reminderDateFormatter.format(note.reminder.next.time,
-                System.currentTimeMillis(), PrefsManager.MAXIMUM_RELATIVE_DATE_DAYS)
+                System.currentTimeMillis(), DefaultPrefsManager.MAXIMUM_RELATIVE_DATE_DAYS)
             reminderChip.strikethroughText = note.reminder.done
             reminderChip.isActivated = !note.reminder.done
             reminderChip.setChipIconResource(if (note.reminder.recurrence != null)

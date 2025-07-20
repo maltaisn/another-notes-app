@@ -18,12 +18,17 @@ package com.maltaisn.notes.ui.home
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.SavedStateHandle
+import com.maltaisn.notes.MainCoroutineRule
+import com.maltaisn.notes.dateFor
+import com.maltaisn.notes.model.DefaultReminderAlarmManager
+import com.maltaisn.notes.model.MockLabelsRepository
+import com.maltaisn.notes.model.MockNotesRepository
 import com.maltaisn.notes.model.PrefsManager
-import com.maltaisn.notes.model.ReminderAlarmManager
 import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.model.entity.NoteStatus
 import com.maltaisn.notes.model.entity.PinnedStatus
 import com.maltaisn.notes.model.entity.Reminder
+import com.maltaisn.notes.testNote
 import com.maltaisn.notes.ui.MockAlarmCallback
 import com.maltaisn.notes.ui.getOrAwaitValue
 import com.maltaisn.notes.ui.navigation.HomeDestination
@@ -33,11 +38,6 @@ import com.maltaisn.notes.ui.note.SwipeAction
 import com.maltaisn.notes.ui.note.adapter.NoteAdapter
 import com.maltaisn.notes.ui.note.adapter.NoteItem
 import com.maltaisn.notes.ui.note.adapter.NoteListLayoutMode
-import com.maltaisn.notes.MainCoroutineRule
-import com.maltaisn.notes.dateFor
-import com.maltaisn.notes.model.MockLabelsRepository
-import com.maltaisn.notes.model.MockNotesRepository
-import com.maltaisn.notes.testNote
 import com.maltaisn.recurpicker.Recurrence
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
@@ -95,7 +95,7 @@ class HomeViewModelRemindersTest {
         itemFactory = NoteItemFactory(prefs)
 
         viewModel = HomeViewModel(SavedStateHandle(), notesRepo, labelsRepo, prefs,
-            ReminderAlarmManager(notesRepo, MockAlarmCallback()), itemFactory, mock())
+            DefaultReminderAlarmManager(notesRepo, MockAlarmCallback()), itemFactory, mock())
         viewModel.setDestination(HomeDestination.Reminders)
     }
 

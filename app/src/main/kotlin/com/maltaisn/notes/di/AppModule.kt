@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Nicolas Maltais
+ * Copyright 2025 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,10 +22,14 @@ import androidx.preference.PreferenceManager
 import com.maltaisn.notes.model.DefaultJsonManager
 import com.maltaisn.notes.model.DefaultLabelsRepository
 import com.maltaisn.notes.model.DefaultNotesRepository
+import com.maltaisn.notes.model.DefaultPrefsManager
+import com.maltaisn.notes.model.DefaultReminderAlarmManager
 import com.maltaisn.notes.model.JsonManager
 import com.maltaisn.notes.model.LabelsRepository
 import com.maltaisn.notes.model.NotesRepository
+import com.maltaisn.notes.model.PrefsManager
 import com.maltaisn.notes.model.ReminderAlarmCallback
+import com.maltaisn.notes.model.ReminderAlarmManager
 import com.maltaisn.notes.receiver.ReceiverAlarmCallback
 import dagger.Binds
 import dagger.Module
@@ -43,6 +47,12 @@ abstract class AppModule {
 
     @get:Binds
     abstract val DefaultLabelsRepository.bindLabelsRepository: LabelsRepository
+
+    @get:Binds
+    abstract val DefaultPrefsManager.bindsPrefsManager: PrefsManager
+
+    @get:Binds
+    abstract val DefaultReminderAlarmManager.bindsReminderAlarmManager: ReminderAlarmManager
 
     @get:Binds
     abstract val DefaultJsonManager.bindJsonManager: JsonManager
