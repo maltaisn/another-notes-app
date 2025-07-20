@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Nicolas Maltais
+ * Copyright 2025 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,20 +25,19 @@ import com.maltaisn.notes.model.NotesRepository
 import com.maltaisn.notes.model.ReminderAlarmManager
 import com.maltaisn.notes.model.entity.Reminder
 import com.maltaisn.notes.setToStartOfDay
-import com.maltaisn.notes.ui.AssistedSavedStateViewModelFactory
 import com.maltaisn.notes.ui.Event
 import com.maltaisn.notes.ui.send
 import com.maltaisn.recurpicker.Recurrence
 import com.maltaisn.recurpicker.RecurrenceFinder
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedFactory
-import dagger.assisted.AssistedInject
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import java.util.Calendar
 import java.util.Date
+import javax.inject.Inject
 
-class ReminderViewModel @AssistedInject constructor(
-    @Assisted private val savedStateHandle: SavedStateHandle,
+@HiltViewModel
+class ReminderViewModel @Inject constructor(
+    private val savedStateHandle: SavedStateHandle,
     private val notesRepository: NotesRepository,
     private val reminderAlarmManager: ReminderAlarmManager
 ) : ViewModel() {
@@ -231,7 +230,7 @@ class ReminderViewModel @AssistedInject constructor(
         if (invalidTime.value == false) {
             val reminder = try {
                 Reminder.create(Date(date), recurrence, RecurrenceFinder())
-            } catch (e: Reminder.InvalidReminderException) {
+            } catch (_: Reminder.InvalidReminderException) {
                 // Reminder has no events, so don't set a reminder.
                 null
             }
@@ -284,11 +283,6 @@ class ReminderViewModel @AssistedInject constructor(
     }
 
     data class ReminderDetails(val date: Long, val recurrence: Recurrence)
-
-    @AssistedFactory
-    interface Factory : AssistedSavedStateViewModelFactory<ReminderViewModel> {
-        override fun create(savedStateHandle: SavedStateHandle): ReminderViewModel
-    }
 
     private fun Long.compareDateTo(other: Long): Int {
         calendar.timeInMillis = this

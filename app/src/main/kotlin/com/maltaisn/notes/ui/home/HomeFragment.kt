@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Nicolas Maltais
+ * Copyright 2025 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,11 +31,11 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.transition.Hold
-import com.maltaisn.notes.App
 import com.maltaisn.notes.BuildConfig
 import com.maltaisn.notes.NavGraphMainDirections
 import com.maltaisn.notes.R
@@ -46,26 +46,17 @@ import com.maltaisn.notes.ui.navigation.HomeDestination
 import com.maltaisn.notes.ui.note.NoteFragment
 import com.maltaisn.notes.ui.note.adapter.NoteListLayoutMode
 import com.maltaisn.notes.ui.observeEvent
-import com.maltaisn.notes.ui.viewModel
-import javax.inject.Inject
+import dagger.hilt.android.AndroidEntryPoint
 import com.google.android.material.R as RMaterial
 
 /**
  * Start screen fragment displaying a list of notes for different note status,
  * by label, or with a reminder.
  */
+@AndroidEntryPoint
 class HomeFragment : NoteFragment(), Toolbar.OnMenuItemClickListener {
 
-    @Inject
-    lateinit var viewModelFactory: HomeViewModel.Factory
-    override val viewModel by viewModel { viewModelFactory.create(it) }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        val context = requireContext()
-        (context.applicationContext as App).appComponent.inject(this)
-    }
+    override val viewModel: HomeViewModel by viewModels()
 
     override fun onResume() {
         super.onResume()
@@ -91,10 +82,10 @@ class HomeFragment : NoteFragment(), Toolbar.OnMenuItemClickListener {
         }
 
         var reminderRestricted = false
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             val alarmManager: AlarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-            if (!alarmManager.canScheduleExactAlarms()){
-                Log.d("TAG","Crash" +alarmManager.canScheduleExactAlarms())
+            if (!alarmManager.canScheduleExactAlarms()) {
+                Log.d("TAG", "Crash" + alarmManager.canScheduleExactAlarms())
                 reminderRestricted = true
             }
         }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Nicolas Maltais
+ * Copyright 2025 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,6 +38,7 @@ import androidx.core.view.isVisible
 import androidx.core.view.updatePadding
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
+import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.fragment.FragmentNavigatorExtras
@@ -59,7 +60,6 @@ import com.maltaisn.notes.ui.SharedViewModel
 import com.maltaisn.notes.ui.StatusChange
 import com.maltaisn.notes.ui.common.ConfirmDialog
 import com.maltaisn.notes.ui.main.MainActivity
-import com.maltaisn.notes.ui.navGraphViewModel
 import com.maltaisn.notes.ui.note.adapter.NoteAdapter
 import com.maltaisn.notes.ui.note.adapter.NoteListLayoutMode
 import com.maltaisn.notes.ui.observeEvent
@@ -69,7 +69,6 @@ import java.text.NumberFormat
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
-import javax.inject.Provider
 import com.google.android.material.R as RMaterial
 
 /**
@@ -78,9 +77,7 @@ import com.google.android.material.R as RMaterial
 abstract class NoteFragment : Fragment(), ActionMode.Callback, ConfirmDialog.Callback,
     NavController.OnDestinationChangedListener {
 
-    @Inject
-    lateinit var sharedViewModelProvider: Provider<SharedViewModel>
-    val sharedViewModel: SharedViewModel by navGraphViewModel(R.id.nav_graph_main) { sharedViewModelProvider.get() }
+    val sharedViewModel: SharedViewModel by hiltNavGraphViewModels(R.id.nav_graph_main)
 
     @Inject
     lateinit var prefsManager: PrefsManager

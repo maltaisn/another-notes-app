@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Nicolas Maltais
+ * Copyright 2025 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,25 +26,22 @@ import com.google.android.material.datepicker.DateValidatorPointForward
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat
-import com.maltaisn.notes.App
 import com.maltaisn.notes.R
 import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.receiver.AlarmReceiver
-import com.maltaisn.notes.ui.navGraphViewModel
+import com.maltaisn.notes.ui.hiltNavGraphViewModels
 import com.maltaisn.notes.ui.observeEvent
+import dagger.hilt.android.AndroidEntryPoint
 import java.util.Calendar
 import java.util.TimeZone
-import javax.inject.Inject
 
+@AndroidEntryPoint
 class NotificationActivity : AppCompatActivity() {
 
-    @Inject
-    lateinit var viewModelFactory: NotificationViewModel.Factory
-    private val viewModel by navGraphViewModel(R.id.nav_graph_notification) { viewModelFactory.create(it) }
+    private val viewModel: NotificationViewModel by hiltNavGraphViewModels(R.id.nav_graph_notification)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        (applicationContext as App).appComponent.inject(this)
 
         setContentView(R.layout.activity_notification)
 

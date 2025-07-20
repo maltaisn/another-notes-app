@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Nicolas Maltais
+ * Copyright 2025 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,26 +22,19 @@ import android.os.Bundle
 import android.view.WindowManager
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.viewModels
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.maltaisn.notes.App
 import com.maltaisn.notes.R
 import com.maltaisn.notes.databinding.DialogImportPasswordBinding
 import com.maltaisn.notes.hideCursorInAllViews
 import com.maltaisn.notes.setTitleIfEnoughSpace
 import com.maltaisn.notes.ui.observeEvent
-import com.maltaisn.notes.ui.viewModel
-import javax.inject.Inject
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class ImportPasswordDialog : DialogFragment() {
 
-    @Inject
-    lateinit var viewModelFactory: ImportPasswordViewModel.Factory
-    val viewModel by viewModel { viewModelFactory.create(it) }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        (requireContext().applicationContext as App).appComponent.inject(this)
-    }
+    private val viewModel: ImportPasswordViewModel by viewModels()
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val context = requireContext()

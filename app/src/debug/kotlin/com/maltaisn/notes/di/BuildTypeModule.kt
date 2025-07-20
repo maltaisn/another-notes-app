@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Nicolas Maltais
+ * Copyright 2025 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,10 +20,13 @@ import com.maltaisn.notes.ui.home.BuildTypeBehavior
 import com.maltaisn.notes.ui.home.DebugBuildTypeBehavior
 import dagger.Binds
 import dagger.Module
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
 
 @Module
+@InstallIn(SingletonComponent::class)
 abstract class BuildTypeModule {
 
-    @get:Binds
-    abstract val DebugBuildTypeBehavior.bind: BuildTypeBehavior
+    @Binds
+    abstract fun bindsBuildTypeBehavior(b: DebugBuildTypeBehavior): BuildTypeBehavior
 }

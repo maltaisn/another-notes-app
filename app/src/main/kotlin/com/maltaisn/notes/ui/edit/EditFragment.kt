@@ -20,7 +20,6 @@ import android.annotation.SuppressLint
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.graphics.Color
-import android.net.Uri
 import android.os.Bundle
 import android.provider.Browser
 import android.view.LayoutInflater
@@ -29,11 +28,14 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.addCallback
 import androidx.appcompat.widget.Toolbar
+import androidx.core.net.toUri
 import androidx.core.view.OneShotPreDrawListener
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.lifecycle.asFlow
 import androidx.lifecycle.asLiveData
 import androidx.navigation.fragment.findNavController
@@ -45,7 +47,6 @@ import androidx.transition.Transition
 import androidx.transition.TransitionListenerAdapter
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.transition.MaterialContainerTransform
-import com.maltaisn.notes.App
 import com.maltaisn.notes.NavGraphMainDirections
 import com.maltaisn.notes.R
 import com.maltaisn.notes.databinding.FragmentEditBinding
@@ -60,25 +61,17 @@ import com.maltaisn.notes.showKeyboard
 import com.maltaisn.notes.ui.SharedViewModel
 import com.maltaisn.notes.ui.common.ConfirmDialog
 import com.maltaisn.notes.ui.edit.adapter.EditAdapter
-import com.maltaisn.notes.ui.navGraphViewModel
 import com.maltaisn.notes.ui.observeEvent
 import com.maltaisn.notes.ui.startSharingData
-import com.maltaisn.notes.ui.viewModel
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.combine
-import javax.inject.Inject
-import javax.inject.Provider
 import com.google.android.material.R as RMaterial
-import androidx.core.net.toUri
 
+@AndroidEntryPoint
 class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener, ConfirmDialog.Callback {
 
-    @Inject
-    lateinit var viewModelFactory: EditViewModel.Factory
-    val viewModel by viewModel { viewModelFactory.create(it) }
-
-    @Inject
-    lateinit var sharedViewModelProvider: Provider<SharedViewModel>
-    private val sharedViewModel by navGraphViewModel(R.id.nav_graph_main) { sharedViewModelProvider.get() }
+    val viewModel: EditViewModel by viewModels()
+    val sharedViewModel: SharedViewModel by hiltNavGraphViewModels(R.id.nav_graph_main)
 
     private val args: EditFragmentArgs by navArgs()
 
@@ -105,7 +98,6 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener, ConfirmDialog.
         })
 
         super.onCreate(savedInstanceState)
-        (requireContext().applicationContext as App).appComponent.inject(this)
     }
 
     override fun onCreateView(

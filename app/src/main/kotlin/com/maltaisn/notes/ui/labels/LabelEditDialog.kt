@@ -22,38 +22,27 @@ import android.os.Bundle
 import android.view.WindowManager
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.viewModels
+import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.navArgs
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.maltaisn.notes.App
 import com.maltaisn.notes.R
 import com.maltaisn.notes.databinding.DialogLabelEditBinding
+import com.maltaisn.notes.debugCheck
 import com.maltaisn.notes.hideCursorInAllViews
 import com.maltaisn.notes.model.entity.Label
 import com.maltaisn.notes.setTitleIfEnoughSpace
 import com.maltaisn.notes.ui.SharedViewModel
-import com.maltaisn.notes.ui.navGraphViewModel
 import com.maltaisn.notes.ui.observeEvent
-import com.maltaisn.notes.ui.viewModel
-import com.maltaisn.notes.debugCheck
-import javax.inject.Inject
-import javax.inject.Provider
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class LabelEditDialog : DialogFragment() {
 
-    @Inject
-    lateinit var sharedViewModelProvider: Provider<SharedViewModel>
-    private val sharedViewModel by navGraphViewModel(R.id.nav_graph_main) { sharedViewModelProvider.get() }
-
-    @Inject
-    lateinit var viewModelFactory: LabelEditViewModel.Factory
-    val viewModel by viewModel { viewModelFactory.create(it) }
+    val viewModel: LabelEditViewModel by viewModels()
+    private val sharedViewModel: SharedViewModel by hiltNavGraphViewModels(R.id.nav_graph_main)
 
     private val args: LabelEditDialogArgs by navArgs()
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        (requireContext().applicationContext as App).appComponent.inject(this)
-    }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val context = requireContext()

@@ -24,27 +24,20 @@ import android.view.View.OnClickListener
 import android.view.WindowManager
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.viewModels
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputLayout
-import com.maltaisn.notes.App
 import com.maltaisn.notes.R
 import com.maltaisn.notes.databinding.DialogExportPasswordBinding
 import com.maltaisn.notes.hideCursorInAllViews
 import com.maltaisn.notes.setTitleIfEnoughSpace
 import com.maltaisn.notes.ui.observeEvent
-import com.maltaisn.notes.ui.viewModel
-import javax.inject.Inject
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class ExportPasswordDialog : DialogFragment() {
 
-    @Inject
-    lateinit var viewModelFactory: ExportPasswordViewModel.Factory
-    val viewModel by viewModel { viewModelFactory.create(it) }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        (requireContext().applicationContext as App).appComponent.inject(this)
-    }
+    private val viewModel: ExportPasswordViewModel by viewModels()
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val context = requireContext()

@@ -36,14 +36,11 @@ import com.maltaisn.notes.model.ReminderAlarmManager
 import com.maltaisn.notes.model.entity.Label
 import com.maltaisn.notes.model.entity.NoteStatus
 import com.maltaisn.notes.model.entity.NoteType
-import com.maltaisn.notes.ui.AssistedSavedStateViewModelFactory
 import com.maltaisn.notes.ui.Event
 import com.maltaisn.notes.ui.home.HomeFragmentDirections
 import com.maltaisn.notes.ui.navigation.HomeDestination
 import com.maltaisn.notes.ui.send
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedFactory
-import dagger.assisted.AssistedInject
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -51,15 +48,17 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import java.io.OutputStream
+import javax.inject.Inject
 import kotlin.time.Duration.Companion.hours
 
-class MainViewModel @AssistedInject constructor(
+@HiltViewModel
+class MainViewModel @Inject constructor(
     private val notesRepository: NotesRepository,
     private val labelsRepository: LabelsRepository,
     private val prefsManager: PrefsManager,
     private val jsonManager: JsonManager,
     private val reminderAlarmManager: ReminderAlarmManager,
-    @Assisted savedStateHandle: SavedStateHandle
+    savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
     private val _editNoteEvent = MutableLiveData<Event<Long>>()
@@ -255,11 +254,6 @@ class MainViewModel @AssistedInject constructor(
         } else {
             prefsManager.autoExportFailed = true
         }
-    }
-
-    @AssistedFactory
-    interface Factory : AssistedSavedStateViewModelFactory<MainViewModel> {
-        override fun create(savedStateHandle: SavedStateHandle): MainViewModel
     }
 
     data class NewNoteData(val type: NoteType, val title: String = "", val content: String = "")

@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Nicolas Maltais
+ * Copyright 2025 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,17 +23,16 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.maltaisn.notes.model.LabelsRepository
 import com.maltaisn.notes.model.entity.Label
-import com.maltaisn.notes.ui.AssistedSavedStateViewModelFactory
 import com.maltaisn.notes.ui.Event
 import com.maltaisn.notes.ui.send
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedFactory
-import dagger.assisted.AssistedInject
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class LabelEditViewModel @AssistedInject constructor(
+@HiltViewModel
+class LabelEditViewModel @Inject constructor(
     private val labelsRepository: LabelsRepository,
-    @Assisted private val savedStateHandle: SavedStateHandle,
+    private val savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
     private val _setLabelEvent = MutableLiveData<Event<Label>>()
@@ -129,11 +128,6 @@ class LabelEditViewModel @AssistedInject constructor(
         NONE,
         DUPLICATE,
         BLANK
-    }
-
-    @AssistedFactory
-    interface Factory : AssistedSavedStateViewModelFactory<LabelEditViewModel> {
-        override fun create(savedStateHandle: SavedStateHandle): LabelEditViewModel
     }
 
     companion object {

@@ -20,9 +20,10 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.kotlin.parcelize)
     alias(libs.plugins.navigation.safeargs)
+    alias(libs.plugins.dagger.hilt)
+    alias(libs.plugins.room)
     alias(libs.plugins.googlePlayPublisher)
     alias(libs.plugins.githubRelease)
-    alias(libs.plugins.kapt)
     alias(libs.plugins.ksp)
 }
 
@@ -46,13 +47,6 @@ android {
         versionName = "1.5.5"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-
-        javaCompileOptions {
-            annotationProcessorOptions {
-                // See https://developer.android.com/training/data-storage/room/migrating-db-versions
-                compilerArgumentProviders(RoomSchemaArgProvider(File(projectDir, "schemas")))
-            }
-        }
     }
 
     buildFeatures {
@@ -63,6 +57,10 @@ android {
     @Suppress("UnstableApiUsage")
     testFixtures {
         enable = true
+    }
+
+    room {
+        schemaDirectory("$projectDir/schemas")
     }
 
     sourceSets {
@@ -126,9 +124,9 @@ dependencies {
     implementation(libs.kotlin.coroutinesAndroid)
     implementation(libs.kotlin.serializationJson)
 
-    // Dagger
-    implementation(libs.dagger)
-    kapt(libs.dagger.compiler)
+    // Dagger Hilt
+    implementation(libs.dagger.hilt)
+    ksp(libs.dagger.hiltCompiler)
 
     // Architecture components
     ksp(libs.room.compiler)
@@ -142,6 +140,7 @@ dependencies {
     // Navigation component
     implementation(libs.navigation.uiKtx)
     implementation(libs.navigation.fragmentKtx)
+    implementation(libs.navigation.hilt)
 
     // Debug
     debugImplementation(libs.leakcanary.android)
@@ -164,7 +163,7 @@ dependencies {
     testImplementation(testFixtures(project(":app")))
 
     // Dependencies for android tests
-    androidTestImplementation(testFixtures (project(":app")))
+    androidTestImplementation(testFixtures(project(":app")))
     androidTestImplementation(libs.androidx.test.runner)
     androidTestImplementation(libs.mockito.android)
     androidTestImplementation(libs.room.testing)
@@ -187,19 +186,4 @@ if (file("publishing.gradle").exists()) {
 
 tasks.register<Exec>("takeScreenshots") {
     commandLine("./screenshots.sh")
-}
-
-class RoomSchemaArgProvider(
-    @get:InputDirectory
-    @get:PathSensitive(PathSensitivity.RELATIVE)
-    val schemaDir: File
-) : CommandLineArgumentProvider {
-
-    override fun asArguments(): Iterable<String> {
-        return listOf("room.schemaLocation=${schemaDir.path}")
-    }
-}
-
-ksp {
-    arg(RoomSchemaArgProvider(File(projectDir, "schemas")))
 }

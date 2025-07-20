@@ -31,6 +31,7 @@ import androidx.core.net.toUri
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.preference.DropDownPreference
 import androidx.preference.Preference
@@ -53,17 +54,15 @@ import com.maltaisn.notes.ui.main.MainActivity
 import com.maltaisn.notes.ui.notification.NotificationPermission
 import com.maltaisn.notes.ui.observeEvent
 import com.maltaisn.notes.ui.reminder.ReminderPermission
-import com.maltaisn.notes.ui.viewModel
+import dagger.hilt.android.AndroidEntryPoint
 import java.text.DateFormat
-import javax.inject.Inject
 import com.google.android.material.R as RMaterial
 
+@AndroidEntryPoint
 class SettingsFragment : PreferenceFragmentCompat(), ConfirmDialog.Callback, ExportPasswordDialog.Callback,
     ImportPasswordDialog.Callback {
 
-    @Inject
-    lateinit var viewModelFactory: SettingsViewModel.Factory
-    val viewModel by viewModel { viewModelFactory.create(it) }
+    private val viewModel: SettingsViewModel by viewModels()
 
     private var exportDataLauncher: ActivityResultLauncher<Intent>? = null
     private var autoExportLauncher: ActivityResultLauncher<Intent>? = null
@@ -75,7 +74,6 @@ class SettingsFragment : PreferenceFragmentCompat(), ConfirmDialog.Callback, Exp
     override fun onCreate(state: Bundle?) {
         super.onCreate(state)
         val context = requireContext()
-        (context.applicationContext as App).appComponent.inject(this)
 
         exportDataLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             val uri = result.data?.data

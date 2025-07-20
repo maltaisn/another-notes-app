@@ -19,35 +19,24 @@ package com.maltaisn.notes.ui.sort
 import android.app.Dialog
 import android.os.Bundle
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.viewModels
+import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.maltaisn.notes.App
 import com.maltaisn.notes.R
 import com.maltaisn.notes.databinding.DialogSortBinding
+import com.maltaisn.notes.debugCheck
 import com.maltaisn.notes.model.SortDirection
 import com.maltaisn.notes.model.SortField
 import com.maltaisn.notes.model.SortSettings
 import com.maltaisn.notes.ui.SharedViewModel
-import com.maltaisn.notes.ui.navGraphViewModel
 import com.maltaisn.notes.ui.observeEvent
-import com.maltaisn.notes.ui.viewModel
-import com.maltaisn.notes.debugCheck
-import javax.inject.Inject
-import javax.inject.Provider
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class SortDialog : DialogFragment() {
 
-    @Inject
-    lateinit var sharedViewModelProvider: Provider<SharedViewModel>
-    private val sharedViewModel by navGraphViewModel(R.id.nav_graph_main) { sharedViewModelProvider.get() }
-
-    @Inject
-    lateinit var viewModelProvider: Provider<SortViewModel>
-    private val viewModel by viewModel { viewModelProvider.get() }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        (requireContext().applicationContext as App).appComponent.inject(this)
-    }
+    private val sharedViewModel: SharedViewModel by hiltNavGraphViewModels(R.id.nav_graph_main)
+    private val viewModel: SortViewModel by viewModels()
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val context = requireContext()

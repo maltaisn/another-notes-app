@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Nicolas Maltais
+ * Copyright 2025 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,12 +33,9 @@ import com.maltaisn.notes.model.LabelsRepository
 import com.maltaisn.notes.model.NotesRepository
 import com.maltaisn.notes.model.PrefsManager
 import com.maltaisn.notes.model.ReminderAlarmManager
-import com.maltaisn.notes.ui.AssistedSavedStateViewModelFactory
 import com.maltaisn.notes.ui.Event
 import com.maltaisn.notes.ui.send
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedFactory
-import dagger.assisted.AssistedInject
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
@@ -50,14 +47,16 @@ import javax.crypto.SecretKey
 import javax.crypto.SecretKeyFactory
 import javax.crypto.spec.PBEKeySpec
 import javax.crypto.spec.SecretKeySpec
+import javax.inject.Inject
 
-class SettingsViewModel @AssistedInject constructor(
+@HiltViewModel
+class SettingsViewModel @Inject constructor(
     private val notesRepository: NotesRepository,
     private val labelsRepository: LabelsRepository,
     private val prefsManager: PrefsManager,
     private val jsonManager: JsonManager,
     private val reminderAlarmManager: ReminderAlarmManager,
-    @Assisted private val savedStateHandle: SavedStateHandle
+    private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
     private val _messageEvent = MutableLiveData<Event<Int>>()
@@ -98,7 +97,7 @@ class SettingsViewModel @AssistedInject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             val jsonData = try {
                 jsonManager.exportJsonData()
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 showMessage(R.string.export_serialization_fail)
                 return@launch
             }
@@ -109,7 +108,7 @@ class SettingsViewModel @AssistedInject constructor(
                     output.write(jsonData.toByteArray())
                 }
                 showMessage(R.string.export_success)
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 showMessage(R.string.export_fail)
             }
         }
@@ -120,7 +119,7 @@ class SettingsViewModel @AssistedInject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             val jsonData = try {
                 jsonManager.exportJsonData()
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 showMessage(R.string.export_serialization_fail)
                 return@launch
             }
@@ -134,7 +133,7 @@ class SettingsViewModel @AssistedInject constructor(
                 val now = System.currentTimeMillis()
                 prefsManager.lastAutoExportTime = now
                 _lastAutoExport.postValue(now)
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 showMessage(R.string.export_fail)
             }
         }
@@ -149,7 +148,7 @@ class SettingsViewModel @AssistedInject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             val jsonData = try {
                 input.bufferedReader().readText()
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 showMessage(R.string.import_bad_input)
                 return@launch
             }
@@ -260,11 +259,6 @@ class SettingsViewModel @AssistedInject constructor(
 
     private fun showMessage(messageId: Int) {
         _messageEvent.postValue(Event(messageId))
-    }
-
-    @AssistedFactory
-    interface Factory : AssistedSavedStateViewModelFactory<SettingsViewModel> {
-        override fun create(savedStateHandle: SavedStateHandle): SettingsViewModel
     }
 
     companion object {

@@ -34,42 +34,45 @@ import com.maltaisn.notes.receiver.ReceiverAlarmCallback
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.components.SingletonComponent
 import kotlinx.serialization.json.Json
 
 @Module(includes = [
     DatabaseModule::class,
     BuildTypeModule::class,
 ])
+@InstallIn(SingletonComponent::class)
 abstract class AppModule {
 
-    @get:Binds
-    abstract val DefaultNotesRepository.bindNotesRepository: NotesRepository
+    @Binds
+    abstract fun bindNotesRepository(b: DefaultNotesRepository): NotesRepository
 
-    @get:Binds
-    abstract val DefaultLabelsRepository.bindLabelsRepository: LabelsRepository
+    @Binds
+    abstract fun bindLabelsRepository(b: DefaultLabelsRepository): LabelsRepository
 
-    @get:Binds
-    abstract val DefaultPrefsManager.bindsPrefsManager: PrefsManager
+    @Binds
+    abstract fun bindsPrefsManager(b: DefaultPrefsManager): PrefsManager
 
-    @get:Binds
-    abstract val DefaultReminderAlarmManager.bindsReminderAlarmManager: ReminderAlarmManager
+    @Binds
+    abstract fun bindsReminderAlarmManager(b: DefaultReminderAlarmManager): ReminderAlarmManager
 
-    @get:Binds
-    abstract val DefaultJsonManager.bindJsonManager: JsonManager
+    @Binds
+    abstract fun bindJsonManager(b: DefaultJsonManager): JsonManager
 
-    @get:Binds
-    abstract val ReceiverAlarmCallback.bindAlarmCallback: ReminderAlarmCallback
+    @Binds
+    abstract fun bindAlarmCallback(b: ReceiverAlarmCallback): ReminderAlarmCallback
 
     companion object {
         @Provides
-        fun providesSharedPreferences(context: Context): SharedPreferences =
+        fun providesSharedPreferences(@ApplicationContext context: Context): SharedPreferences =
             PreferenceManager.getDefaultSharedPreferences(context)
 
-        @get:Provides
-        val json
-            get() = Json {
-                encodeDefaults = false
-                ignoreUnknownKeys = true
-            }
+        @Provides
+        fun providesJson() = Json {
+            encodeDefaults = false
+            ignoreUnknownKeys = true
+        }
     }
 }

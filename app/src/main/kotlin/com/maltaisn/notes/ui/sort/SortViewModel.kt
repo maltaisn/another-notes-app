@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Nicolas Maltais
+ * Copyright 2025 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,8 +24,10 @@ import com.maltaisn.notes.model.SortDirection
 import com.maltaisn.notes.model.SortField
 import com.maltaisn.notes.ui.Event
 import com.maltaisn.notes.ui.send
+import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
+@HiltViewModel
 class SortViewModel @Inject constructor(
     private val prefs: PrefsManager,
 ) : ViewModel() {

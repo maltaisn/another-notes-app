@@ -22,6 +22,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AlertDialog
 import androidx.core.view.isVisible
 import androidx.fragment.app.DialogFragment
+import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.navArgs
 import com.google.android.material.datepicker.CalendarConstraints
 import com.google.android.material.datepicker.DateValidatorPointForward
@@ -29,14 +30,13 @@ import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat
-import com.maltaisn.notes.App
 import com.maltaisn.notes.R
 import com.maltaisn.notes.contains
 import com.maltaisn.notes.databinding.DialogReminderBinding
+import com.maltaisn.notes.debugCheck
 import com.maltaisn.notes.setMaxWidth
 import com.maltaisn.notes.ui.SharedViewModel
 import com.maltaisn.notes.ui.common.ConfirmDialog
-import com.maltaisn.notes.ui.navGraphViewModel
 import com.maltaisn.notes.ui.notification.NotificationPermission
 import com.maltaisn.notes.ui.observeEvent
 import com.maltaisn.recurpicker.Recurrence
@@ -46,22 +46,16 @@ import com.maltaisn.recurpicker.list.RecurrenceListCallback
 import com.maltaisn.recurpicker.list.RecurrenceListDialog
 import com.maltaisn.recurpicker.picker.RecurrencePickerCallback
 import com.maltaisn.recurpicker.picker.RecurrencePickerDialog
-import com.maltaisn.notes.debugCheck
+import dagger.hilt.android.AndroidEntryPoint
 import java.text.DateFormat
 import java.util.Calendar
 import java.util.TimeZone
-import javax.inject.Inject
-import javax.inject.Provider
 
+@AndroidEntryPoint
 class ReminderDialog : DialogFragment(), RecurrenceListCallback, RecurrencePickerCallback, ConfirmDialog.Callback {
 
-    @Inject
-    lateinit var sharedViewModelProvider: Provider<SharedViewModel>
-    private val sharedViewModel by navGraphViewModel(R.id.nav_graph_main) { sharedViewModelProvider.get() }
-
-    @Inject
-    lateinit var viewModelFactory: ReminderViewModel.Factory
-    private val viewModel by navGraphViewModel(R.id.nav_graph_reminder) { viewModelFactory.create(it) }
+    private val sharedViewModel: SharedViewModel by hiltNavGraphViewModels(R.id.nav_graph_main)
+    private val viewModel: ReminderViewModel by hiltNavGraphViewModels(R.id.nav_graph_reminder)
 
     private val args: ReminderDialogArgs by navArgs()
 
@@ -71,11 +65,6 @@ class ReminderDialog : DialogFragment(), RecurrenceListCallback, RecurrencePicke
 
     private var notificationPermission: NotificationPermission? = null
     private var reminderPermission: ReminderPermission? = null
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        (requireContext().applicationContext as App).appComponent.inject(this)
-    }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val context = requireContext()

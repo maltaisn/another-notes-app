@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Nicolas Maltais
+ * Copyright 2025 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,28 +20,24 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.isVisible
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.SimpleItemAnimator
 import com.google.android.material.transition.MaterialElevationScale
-import com.maltaisn.notes.App
 import com.maltaisn.notes.R
 import com.maltaisn.notes.hideKeyboard
 import com.maltaisn.notes.showKeyboard
 import com.maltaisn.notes.ui.note.NoteFragment
-import com.maltaisn.notes.ui.viewModel
-import javax.inject.Inject
+import dagger.hilt.android.AndroidEntryPoint
 import com.google.android.material.R as RMaterial
 
+@AndroidEntryPoint
 class SearchFragment : NoteFragment() {
 
-    @Inject
-    lateinit var viewModelFactory: SearchViewModel.Factory
-
-    override val viewModel by viewModel { viewModelFactory.create(it) }
+    override val viewModel: SearchViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        (requireContext().applicationContext as App).appComponent.inject(this)
 
         enterTransition = MaterialElevationScale(false).apply {
             duration = resources.getInteger(RMaterial.integer.material_motion_duration_short_2).toLong()

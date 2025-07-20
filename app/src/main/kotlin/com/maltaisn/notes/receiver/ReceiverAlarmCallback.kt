@@ -28,6 +28,7 @@ import androidx.core.content.ContextCompat
 import com.maltaisn.notes.R
 import com.maltaisn.notes.model.ReminderAlarmCallback
 import com.maltaisn.notes.model.ReminderAlarmManager
+import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
 /**
@@ -35,7 +36,7 @@ import javax.inject.Inject
  * Uses the app context to set alarms broadcasted to [AlarmReceiver].
  */
 class ReceiverAlarmCallback @Inject constructor(
-    private val context: Context
+    @param:ApplicationContext private val context: Context
 ) : ReminderAlarmCallback {
 
     private val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager

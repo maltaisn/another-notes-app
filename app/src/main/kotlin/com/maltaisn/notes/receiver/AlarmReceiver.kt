@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Nicolas Maltais
+ * Copyright 2025 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,14 @@
 
 package com.maltaisn.notes.receiver
 
+import android.Manifest
 import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Build
+import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.maltaisn.notes.App
@@ -30,12 +33,14 @@ import com.maltaisn.notes.model.ReminderAlarmManager
 import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.ui.main.MainActivity
 import com.maltaisn.notes.ui.notification.NotificationActivity
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
+@AndroidEntryPoint
 class AlarmReceiver : BroadcastReceiver() {
 
     private val coroutineScope = CoroutineScope(Dispatchers.Main)
@@ -48,8 +53,6 @@ class AlarmReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context?, intent: Intent) {
         if (context == null) return
-
-        (context.applicationContext as App).appComponent.inject(this)
 
         coroutineScope.launch {
             val noteId = intent.getLongExtra(EXTRA_NOTE_ID, Note.NO_ID)
@@ -117,7 +120,11 @@ class AlarmReceiver : BroadcastReceiver() {
                 PendingIntent.getActivity(context, noteId.toInt(), postponeIntent, pendingIntentFlags))
         }
 
-        NotificationManagerCompat.from(context).notify(noteId.toInt(), builder.build())
+        if (ActivityCompat.checkSelfPermission(context,
+                Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED
+        ) {
+            NotificationManagerCompat.from(context).notify(noteId.toInt(), builder.build())
+        }
     }
 
     private suspend fun markReminderAsDone(context: Context, noteId: Long) {

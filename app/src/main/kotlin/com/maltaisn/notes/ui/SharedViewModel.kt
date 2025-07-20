@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Nicolas Maltais
+ * Copyright 2025 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,12 +28,14 @@ import com.maltaisn.notes.model.entity.Label
 import com.maltaisn.notes.model.entity.NoteStatus
 import com.maltaisn.notes.model.entity.Reminder
 import com.maltaisn.notes.ui.navigation.HomeDestination
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 /**
  * Shared view model used to send Snackbars from a fragment being popped from backstack.
  */
+@HiltViewModel
 class SharedViewModel @Inject constructor(
     private val notesRepository: NotesRepository,
     private val reminderAlarmManager: ReminderAlarmManager,

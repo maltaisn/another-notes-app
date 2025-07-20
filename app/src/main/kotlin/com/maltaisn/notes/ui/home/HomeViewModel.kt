@@ -33,7 +33,6 @@ import com.maltaisn.notes.model.entity.NoteStatus
 import com.maltaisn.notes.model.entity.NoteWithLabels
 import com.maltaisn.notes.model.entity.PinnedStatus
 import com.maltaisn.notes.setToStartOfDay
-import com.maltaisn.notes.ui.AssistedSavedStateViewModelFactory
 import com.maltaisn.notes.ui.Event
 import com.maltaisn.notes.ui.navigation.HomeDestination
 import com.maltaisn.notes.ui.note.NoteItemFactory
@@ -46,14 +45,14 @@ import com.maltaisn.notes.ui.note.adapter.NoteAdapter
 import com.maltaisn.notes.ui.note.adapter.NoteItem
 import com.maltaisn.notes.ui.note.adapter.NoteListItem
 import com.maltaisn.notes.ui.send
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedFactory
-import dagger.assisted.AssistedInject
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import java.util.Calendar
+import javax.inject.Inject
 
-class HomeViewModel @AssistedInject constructor(
-    @Assisted savedStateHandle: SavedStateHandle,
+@HiltViewModel
+class HomeViewModel @Inject constructor(
+    savedStateHandle: SavedStateHandle,
     notesRepository: NotesRepository,
     labelsRepository: LabelsRepository,
     prefs: PrefsManager,
@@ -415,11 +414,6 @@ class HomeViewModel @AssistedInject constructor(
     }
 
     data class NewNoteSettings(val labelId: Long, val initialReminder: Boolean)
-
-    @AssistedFactory
-    interface Factory : AssistedSavedStateViewModelFactory<HomeViewModel> {
-        override fun create(savedStateHandle: SavedStateHandle): HomeViewModel
-    }
 
     companion object {
         private const val TRASH_REMINDER_ITEM_ID = -1L

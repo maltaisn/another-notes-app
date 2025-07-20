@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Nicolas Maltais
+ * Copyright 2025 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,17 +21,14 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.os.Build
 import androidx.appcompat.app.AppCompatDelegate
-import com.maltaisn.notes.di.DaggerAppComponent
 import com.maltaisn.notes.model.NotesDatabase
 import com.maltaisn.notes.model.PrefsManager
 import com.maltaisn.notes.ui.AppTheme
+import dagger.hilt.android.HiltAndroidApp
 import javax.inject.Inject
 
+@HiltAndroidApp
 class App : Application() {
-
-    val appComponent by lazy {
-        DaggerAppComponent.factory().create(applicationContext)
-    }
 
     @Inject
     lateinit var prefs: PrefsManager
@@ -43,8 +40,6 @@ class App : Application() {
 
     override fun onCreate() {
         super.onCreate()
-
-        appComponent.inject(this)
 
         // Initialize shared preferences
         prefs.migratePreferences()

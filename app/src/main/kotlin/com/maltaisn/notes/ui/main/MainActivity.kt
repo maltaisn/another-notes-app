@@ -24,7 +24,9 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import androidx.activity.addCallback
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.net.toUri
 import androidx.core.view.GravityCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
@@ -38,7 +40,6 @@ import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.fragment.NavHostFragment
 import com.google.android.material.color.DynamicColors
-import com.maltaisn.notes.App
 import com.maltaisn.notes.NavGraphMainDirections
 import com.maltaisn.notes.R
 import com.maltaisn.notes.TAG
@@ -51,26 +52,20 @@ import com.maltaisn.notes.model.entity.NoteType
 import com.maltaisn.notes.navigateSafe
 import com.maltaisn.notes.receiver.AlarmReceiver
 import com.maltaisn.notes.ui.SharedViewModel
+import com.maltaisn.notes.ui.hiltNavGraphViewModels
 import com.maltaisn.notes.ui.main.MainViewModel.NewNoteData
-import com.maltaisn.notes.ui.navGraphViewModel
 import com.maltaisn.notes.ui.navigation.HomeDestination
 import com.maltaisn.notes.ui.observeEvent
-import com.maltaisn.notes.ui.viewModel
+import dagger.hilt.android.AndroidEntryPoint
 import java.io.IOException
 import java.io.InputStreamReader
 import javax.inject.Inject
-import javax.inject.Provider
-import androidx.core.net.toUri
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedListener {
 
-    @Inject
-    lateinit var sharedViewModelProvider: Provider<SharedViewModel>
-    private val sharedViewModel by navGraphViewModel(R.id.nav_graph_main) { sharedViewModelProvider.get() }
-
-    @Inject
-    lateinit var viewModelFactory: MainViewModel.Factory
-    private val viewModel by viewModel { viewModelFactory.create(it) }
+    private val sharedViewModel: SharedViewModel by hiltNavGraphViewModels(R.id.nav_graph_main)
+    private val viewModel: MainViewModel by viewModels()
 
     @Inject
     lateinit var prefs: PrefsManager
@@ -84,7 +79,6 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
         setTheme(R.style.AppTheme_DayNight)
 
         super.onCreate(savedInstanceState)
-        (applicationContext as App).appComponent.inject(this)
 
         // Apply dynamic colors
         if (prefs.dynamicColors) {
@@ -309,7 +303,7 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
                         val content = reader.readText()
                         noteData = NewNoteData(NoteType.TEXT, title, content)
                         reader.close()
-                    } catch (e: IOException) {
+                    } catch (_: IOException) {
                         // nothing to do (file doesn't exist, access error, etc)
                     }
                 }

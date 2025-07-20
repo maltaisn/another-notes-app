@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Nicolas Maltais
+ * Copyright 2025 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,18 +24,17 @@ import androidx.lifecycle.viewModelScope
 import com.maltaisn.notes.model.NotesRepository
 import com.maltaisn.notes.model.ReminderAlarmManager
 import com.maltaisn.notes.model.entity.Note
-import com.maltaisn.notes.ui.AssistedSavedStateViewModelFactory
 import com.maltaisn.notes.ui.Event
 import com.maltaisn.notes.ui.send
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedFactory
-import dagger.assisted.AssistedInject
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.Calendar
+import javax.inject.Inject
 
-class NotificationViewModel @AssistedInject constructor(
-    @Assisted private val savedStateHandle: SavedStateHandle,
+@HiltViewModel
+class NotificationViewModel @Inject constructor(
+    private val savedStateHandle: SavedStateHandle,
     private val notesRepository: NotesRepository,
     private val reminderAlarmManager: ReminderAlarmManager
 ) : ViewModel() {
@@ -138,11 +137,6 @@ class NotificationViewModel @AssistedInject constructor(
 
     fun cancelPostpone() {
         _exitEvent.send()
-    }
-
-    @AssistedFactory
-    interface Factory : AssistedSavedStateViewModelFactory<NotificationViewModel> {
-        override fun create(savedStateHandle: SavedStateHandle): NotificationViewModel
     }
 
     companion object {

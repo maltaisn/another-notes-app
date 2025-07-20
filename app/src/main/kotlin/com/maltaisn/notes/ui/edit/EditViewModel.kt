@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Nicolas Maltais
+ * Copyright 2025 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,7 +35,6 @@ import com.maltaisn.notes.model.entity.NoteStatus
 import com.maltaisn.notes.model.entity.NoteType
 import com.maltaisn.notes.model.entity.PinnedStatus
 import com.maltaisn.notes.model.entity.Reminder
-import com.maltaisn.notes.ui.AssistedSavedStateViewModelFactory
 import com.maltaisn.notes.ui.Event
 import com.maltaisn.notes.ui.ShareData
 import com.maltaisn.notes.ui.StatusChange
@@ -51,24 +50,24 @@ import com.maltaisn.notes.ui.edit.adapter.EditTitleItem
 import com.maltaisn.notes.ui.edit.adapter.EditableText
 import com.maltaisn.notes.ui.note.ShownDateField
 import com.maltaisn.notes.ui.send
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedFactory
-import dagger.assisted.AssistedInject
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.launch
 import java.util.Collections
 import java.util.Date
+import javax.inject.Inject
 
 /**
  * View model for the edit note screen.
  */
-class EditViewModel @AssistedInject constructor(
+@HiltViewModel
+class EditViewModel @Inject constructor(
     private val notesRepository: NotesRepository,
     private val labelsRepository: LabelsRepository,
     private val prefs: PrefsManager,
     private val reminderAlarmManager: ReminderAlarmManager,
-    @Assisted private val savedStateHandle: SavedStateHandle,
+    private val savedStateHandle: SavedStateHandle,
 ) : ViewModel(), EditAdapter.Callback {
 
     /**
@@ -918,11 +917,6 @@ class EditViewModel @AssistedInject constructor(
         override fun hashCode() = text.hashCode()
 
         override fun toString() = text.toString()
-    }
-
-    @AssistedFactory
-    interface Factory : AssistedSavedStateViewModelFactory<EditViewModel> {
-        override fun create(savedStateHandle: SavedStateHandle): EditViewModel
     }
 
     companion object {

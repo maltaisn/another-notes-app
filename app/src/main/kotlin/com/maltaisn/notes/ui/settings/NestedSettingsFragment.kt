@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Nicolas Maltais
+ * Copyright 2025 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import androidx.navigation.fragment.navArgs
 import androidx.preference.PreferenceFragmentCompat
 import com.google.android.material.transition.MaterialElevationScale
 import com.maltaisn.notes.databinding.FragmentSettingsBinding
+import dagger.hilt.android.AndroidEntryPoint
 import com.google.android.material.R as RMaterial
 
 /**
@@ -32,6 +33,7 @@ import com.google.android.material.R as RMaterial
  * Instead of making one fragment per nested screen, this fragment takes an argument indicating
  * the preferences XML to display. The argument is passed via navigation component safe args.
  */
+@AndroidEntryPoint
 class NestedSettingsFragment : PreferenceFragmentCompat() {
 
     private val args: NestedSettingsFragmentArgs by navArgs()

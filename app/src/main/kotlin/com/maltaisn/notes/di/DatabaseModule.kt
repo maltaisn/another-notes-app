@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Nicolas Maltais
+ * Copyright 2025 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,14 +21,18 @@ import androidx.room.Room
 import com.maltaisn.notes.model.NotesDatabase
 import dagger.Module
 import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
 @Module
+@InstallIn(SingletonComponent::class)
 object DatabaseModule {
 
     @Provides
     @Singleton
-    fun providesDatabase(context: Context) = Room.databaseBuilder(context,
+    fun providesDatabase(@ApplicationContext context: Context) = Room.databaseBuilder(context,
         NotesDatabase::class.java, "notes_db")
         .addMigrations(*NotesDatabase.ALL_MIGRATIONS)
         .build()

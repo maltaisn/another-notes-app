@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Nicolas Maltais
+ * Copyright 2025 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,28 +31,26 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.animation.addListener
 import androidx.core.view.isVisible
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.viewModels
+import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.shape.MaterialShapeDrawable
 import com.google.android.material.transition.MaterialElevationScale
-import com.maltaisn.notes.App
 import com.maltaisn.notes.R
 import com.maltaisn.notes.databinding.FragmentLabelBinding
 import com.maltaisn.notes.navigateSafe
 import com.maltaisn.notes.ui.SharedViewModel
 import com.maltaisn.notes.ui.common.ConfirmDialog
 import com.maltaisn.notes.ui.labels.adapter.LabelAdapter
-import com.maltaisn.notes.ui.navGraphViewModel
 import com.maltaisn.notes.ui.observeEvent
 import com.maltaisn.notes.ui.utils.startSafeActionMode
-import com.maltaisn.notes.ui.viewModel
+import dagger.hilt.android.AndroidEntryPoint
 import java.text.NumberFormat
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
-import javax.inject.Inject
-import javax.inject.Provider
 import com.google.android.material.R as RMaterial
 
 /**
@@ -63,16 +61,12 @@ import com.google.android.material.R as RMaterial
  *
  * The mode is determined by the argument passed by the navigation component.
  */
+@AndroidEntryPoint
 class LabelFragment : DialogFragment(), Toolbar.OnMenuItemClickListener,
     ActionMode.Callback, ConfirmDialog.Callback {
 
-    @Inject
-    lateinit var viewModelFactory: LabelViewModel.Factory
-    val viewModel by viewModel { viewModelFactory.create(it) }
-
-    @Inject
-    lateinit var sharedViewModelProvider: Provider<SharedViewModel>
-    private val sharedViewModel by navGraphViewModel(R.id.nav_graph_main) { sharedViewModelProvider.get() }
+    val viewModel: LabelViewModel by viewModels()
+    private val sharedViewModel: SharedViewModel by hiltNavGraphViewModels(R.id.nav_graph_main)
 
     private val args: LabelFragmentArgs by navArgs()
 
@@ -83,7 +77,6 @@ class LabelFragment : DialogFragment(), Toolbar.OnMenuItemClickListener,
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        (requireContext().applicationContext as App).appComponent.inject(this)
 
         enterTransition = MaterialElevationScale(false).apply {
             duration = resources.getInteger(RMaterial.integer.material_motion_duration_short_2).toLong()

@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Nicolas Maltais
+ * Copyright 2025 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,20 +24,19 @@ import androidx.lifecycle.viewModelScope
 import com.maltaisn.notes.model.LabelsRepository
 import com.maltaisn.notes.model.entity.Label
 import com.maltaisn.notes.model.entity.LabelRef
-import com.maltaisn.notes.ui.AssistedSavedStateViewModelFactory
 import com.maltaisn.notes.ui.Event
 import com.maltaisn.notes.ui.labels.adapter.LabelAdapter
 import com.maltaisn.notes.ui.labels.adapter.LabelListItem
 import com.maltaisn.notes.ui.send
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedFactory
-import dagger.assisted.AssistedInject
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class LabelViewModel @AssistedInject constructor(
+@HiltViewModel
+class LabelViewModel @Inject constructor(
     private val labelsRepository: LabelsRepository,
-    @Assisted private val savedStateHandle: SavedStateHandle,
+    private val savedStateHandle: SavedStateHandle,
 ) : ViewModel(), LabelAdapter.Callback {
 
     private val _labelItems = MutableLiveData<List<LabelListItem>>()
@@ -293,11 +292,6 @@ class LabelViewModel @AssistedInject constructor(
     /** Save [selectedLabels] to [savedStateHandle]. */
     private fun saveLabelSelectionState() {
         savedStateHandle[KEY_SELECTED_IDS] = selectedLabelIds.toList()
-    }
-
-    @AssistedFactory
-    interface Factory : AssistedSavedStateViewModelFactory<LabelViewModel> {
-        override fun create(savedStateHandle: SavedStateHandle): LabelViewModel
     }
 
     companion object {

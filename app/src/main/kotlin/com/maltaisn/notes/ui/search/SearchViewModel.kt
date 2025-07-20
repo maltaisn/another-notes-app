@@ -20,27 +20,26 @@ import android.database.sqlite.SQLiteException
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.maltaisn.notes.R
+import com.maltaisn.notes.debugCheck
 import com.maltaisn.notes.model.LabelsRepository
 import com.maltaisn.notes.model.NotesRepository
 import com.maltaisn.notes.model.PrefsManager
 import com.maltaisn.notes.model.ReminderAlarmManager
 import com.maltaisn.notes.model.entity.NoteStatus
 import com.maltaisn.notes.model.entity.NoteWithLabels
-import com.maltaisn.notes.ui.AssistedSavedStateViewModelFactory
 import com.maltaisn.notes.ui.note.NoteItemFactory
 import com.maltaisn.notes.ui.note.NoteViewModel
 import com.maltaisn.notes.ui.note.PlaceholderData
 import com.maltaisn.notes.ui.note.adapter.HeaderItem
 import com.maltaisn.notes.ui.note.adapter.NoteAdapter
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedFactory
-import dagger.assisted.AssistedInject
-import com.maltaisn.notes.debugCheck
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class SearchViewModel @AssistedInject constructor(
-    @Assisted savedStateHandle: SavedStateHandle,
+@HiltViewModel
+class SearchViewModel @Inject constructor(
+    savedStateHandle: SavedStateHandle,
     notesRepository: NotesRepository,
     labelsRepository: LabelsRepository,
     prefs: PrefsManager,
@@ -74,7 +73,7 @@ class SearchViewModel @AssistedInject constructor(
                 notesRepository.searchNotes(cleanedQuery).collect { notes ->
                     createListItems(notes)
                 }
-            } catch (e: SQLiteException) {
+            } catch (_: SQLiteException) {
                 // SearchQueryCleaner may not be perfect, user might have entered
                 // something that produces erronous FTS match syntax. Just ignore it.
                 debugCheck(false) { "Search query cleaner failed for query '$cleanedQuery'" }
@@ -112,11 +111,6 @@ class SearchViewModel @AssistedInject constructor(
 
     override fun updatePlaceholder() = PlaceholderData(
         R.drawable.ic_search, R.string.search_empty_placeholder)
-
-    @AssistedFactory
-    interface Factory : AssistedSavedStateViewModelFactory<SearchViewModel> {
-        override fun create(savedStateHandle: SavedStateHandle): SearchViewModel
-    }
 
     companion object {
         val ARCHIVED_HEADER_ITEM = HeaderItem(-1, R.string.note_location_archived)
