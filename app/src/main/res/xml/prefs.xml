@@ -91,6 +91,7 @@
             />
 
         <DropDownPreference
+            app:defaultValue="7"
             app:entries="@array/pref_deleted_notes_timeout_entries"
             app:entryValues="@array/pref_deleted_notes_timeout_values"
             app:key="deleted_timeout"
