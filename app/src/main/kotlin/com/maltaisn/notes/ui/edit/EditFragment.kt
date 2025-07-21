@@ -41,7 +41,6 @@ import androidx.lifecycle.asLiveData
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.DefaultItemAnimator
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.transition.Transition
 import androidx.transition.TransitionListenerAdapter
@@ -152,7 +151,7 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener, ConfirmDialog.
         val rcv = binding.recyclerView
         rcv.setHasFixedSize(true)
         val adapter = EditAdapter(context, viewModel)
-        val layoutManager = LinearLayoutManager(context)
+        val layoutManager = EditLayoutManager(context)
         rcv.adapter = adapter
         rcv.layoutManager = layoutManager
         rcv.itemAnimator = object : DefaultItemAnimator() {
