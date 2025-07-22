@@ -220,7 +220,9 @@ class SettingsFragment : PreferenceFragmentCompat(), ConfirmDialog.Callback, Exp
 
         requirePreference<Preference>(DefaultPrefsManager.EXPORT_DATA).setOnPreferenceClickListener {
             val intent = Intent(Intent.ACTION_CREATE_DOCUMENT)
-                .setType("application/json").addCategory(Intent.CATEGORY_OPENABLE)
+                .setType("application/json").addCategory(Intent.CATEGORY_OPENABLE).apply {
+                    putExtra(Intent.EXTRA_TITLE, "notes.json")
+                }
             exportDataLauncher?.launch(intent)
             true
         }
