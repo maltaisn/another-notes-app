@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?><!--
-  Copyright 2022 Nicolas Maltais
+  Copyright 2025 Nicolas Maltais
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -24,20 +24,22 @@
 
         <SeekBarPreference
             android:defaultValue="5"
-            app:key="preview_lines_text_list"
-            app:title="@string/pref_preview_lines_text"
-            app:min="0"
             android:max="20"
+            app:key="preview_lines_text_list"
+            app:min="0"
             app:showSeekBarValue="true"
+            app:singleLineTitle="false"
+            app:title="@string/pref_preview_lines_text"
             />
 
         <SeekBarPreference
             android:defaultValue="5"
-            app:key="preview_lines_list_list"
-            app:title="@string/pref_preview_lines_list"
-            app:min="0"
             android:max="20"
+            app:key="preview_lines_list_list"
+            app:min="0"
             app:showSeekBarValue="true"
+            app:singleLineTitle="false"
+            app:title="@string/pref_preview_lines_list"
             />
 
     </PreferenceCategory>
@@ -46,20 +48,22 @@
 
         <SeekBarPreference
             android:defaultValue="10"
-            app:key="preview_lines_text_grid"
-            app:title="@string/pref_preview_lines_text"
-            app:min="0"
             android:max="20"
+            app:key="preview_lines_text_grid"
+            app:min="0"
             app:showSeekBarValue="true"
+            app:singleLineTitle="false"
+            app:title="@string/pref_preview_lines_text"
             />
 
         <SeekBarPreference
             android:defaultValue="10"
-            app:key="preview_lines_list_grid"
-            app:title="@string/pref_preview_lines_list"
-            app:min="0"
             android:max="20"
+            app:key="preview_lines_list_grid"
+            app:min="0"
             app:showSeekBarValue="true"
+            app:singleLineTitle="false"
+            app:title="@string/pref_preview_lines_list"
             />
 
     </PreferenceCategory>

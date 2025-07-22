@@ -35,12 +35,14 @@
         <SwitchPreferenceCompat
             android:defaultValue="true"
             app:key="dynamic_colors"
+            app:singleLineTitle="false"
             app:title="@string/pref_dynamic_colors"
             />
 
         <SwitchPreferenceCompat
             android:defaultValue="true"
             app:key="strikethrough_checked"
+            app:singleLineTitle="false"
             app:title="@string/pref_strikethrough_checked"
             />
 
@@ -50,6 +52,7 @@
             app:key="preview_labels"
             app:min="0"
             app:showSeekBarValue="true"
+            app:singleLineTitle="false"
             app:title="@string/pref_preview_labels"
             />
 
@@ -102,6 +105,7 @@
         <SwitchPreferenceCompat
             app:defaultValue="false"
             app:key="move_checked_to_bottom"
+            app:singleLineTitle="false"
             app:title="@string/pref_behavior_move_checked"
             />
 
