@@ -20,15 +20,15 @@ import android.content.Context
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.maltaisn.notes.dateFor
 import com.maltaisn.notes.model.entity.Label
 import com.maltaisn.notes.model.entity.LabelRef
 import com.maltaisn.notes.model.entity.NoteStatus
 import com.maltaisn.notes.model.entity.NoteWithLabels
 import com.maltaisn.notes.model.entity.PinnedStatus
 import com.maltaisn.notes.model.entity.Reminder
-import com.maltaisn.notes.ui.search.SearchQueryCleaner
-import com.maltaisn.notes.dateFor
 import com.maltaisn.notes.testNote
+import com.maltaisn.notes.ui.search.SearchQueryCleaner
 import com.maltaisn.recurpicker.RecurrenceFinder
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
@@ -263,7 +263,8 @@ class NotesDaoTest {
             Reminder.create(dateFor("2020-01-01"),
                 null, recurFinder),
             null,
-            null,
+            Reminder.create(dateFor("2020-01-01"),
+                null, recurFinder),
             Reminder.create(dateFor("2020-02-02"),
                 null, recurFinder),
             Reminder.create(dateFor("2020-02-02"),
@@ -275,7 +276,8 @@ class NotesDaoTest {
             NoteWithLabels(newNote, note.labels)
         }
 
-        assertEquals(listOf(notes[0], notes[3]), notesDao.getAllWithReminder().first())
+        assertEquals(listOf(notes[2], notes[0], notes[3]),
+            notesDao.getAllWithReminder(SortSettings(SortField.MODIFIED_DATE, SortDirection.DESCENDING)).first())
     }
 
     @Test

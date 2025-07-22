@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Nicolas Maltais
+ * Copyright 2025 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -115,9 +115,10 @@ interface NotesDao {
      * Get all notes with a reminder set and reminder not done, sorted by ascending date.
      * Used for reminders screen and for adding alarms back on boot.
      */
-    @Transaction
-    @Query("SELECT * FROM notes WHERE reminder_start IS NOT NULL AND NOT reminder_done ORDER BY reminder_next ASC")
-    fun getAllWithReminder(): Flow<List<NoteWithLabels>>
+    fun getAllWithReminder(sort: SortSettings) = sortedQuery("""
+        SELECT * FROM notes WHERE reminder_start IS NOT NULL AND NOT reminder_done 
+        ORDER BY reminder_next ASC, :sort, id ASC
+    """, sort)
 
     /**
      * Search active and archived notes for a [query] using full-text search,
@@ -126,7 +127,7 @@ interface NotesDao {
     fun search(query: String, sort: SortSettings) = sortedQuery("""
             SELECT * FROM notes JOIN notes_fts ON notes_fts.rowid == notes.id
             WHERE notes_fts MATCH :query AND status != 2
-            ORDER BY status ASC, :sort
+            ORDER BY status ASC, :sort, id ASC
         """, sort, query)
 
     /**

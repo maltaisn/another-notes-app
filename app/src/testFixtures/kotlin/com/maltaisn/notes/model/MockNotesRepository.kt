@@ -16,10 +16,6 @@
 
 package com.maltaisn.notes.model
 
-import com.maltaisn.notes.model.DefaultNotesRepository
-import com.maltaisn.notes.model.NotesRepository
-import com.maltaisn.notes.model.SortDirection
-import com.maltaisn.notes.model.SortField
 import com.maltaisn.notes.model.entity.LabelRef
 import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.model.entity.NoteStatus
@@ -164,7 +160,9 @@ class MockNotesRepository(private val labelsRepository: MockLabelsRepository) : 
     override fun getNotesWithReminder() = changeFlow.map {
         notes.values.asSequence()
             .filter { it.reminder?.done == false }
-            .sortedBy { it.reminder!!.next.time }
+            .sortedWith(compareBy<Note> { it.reminder!!.next.time }
+                .thenBy(sortComparator) { it }
+                .thenBy(Note::id))
             .map(labelsRepository::getNoteWithLabels)
             .toList()
     }.distinctUntilChanged()

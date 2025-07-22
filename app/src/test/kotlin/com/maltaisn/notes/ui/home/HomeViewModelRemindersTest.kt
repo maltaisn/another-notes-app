@@ -24,6 +24,8 @@ import com.maltaisn.notes.model.DefaultReminderAlarmManager
 import com.maltaisn.notes.model.MockLabelsRepository
 import com.maltaisn.notes.model.MockNotesRepository
 import com.maltaisn.notes.model.PrefsManager
+import com.maltaisn.notes.model.SortDirection
+import com.maltaisn.notes.model.SortField
 import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.model.entity.NoteStatus
 import com.maltaisn.notes.model.entity.PinnedStatus
@@ -81,7 +83,11 @@ class HomeViewModelRemindersTest {
         notesRepo.addNote(testNote(id = 3, status = NoteStatus.ARCHIVED,
             reminder = Reminder(upcoming, null, upcoming, 1, false)))
         notesRepo.addNote(testNote(id = 4, status = NoteStatus.ARCHIVED,
-            reminder = Reminder(overdue, null, overdue, 1, false)))
+            reminder = Reminder(overdue, null, overdue, 1, false),
+            title = "def"))
+        notesRepo.addNote(testNote(id = 7, status = NoteStatus.ACTIVE,
+            reminder = Reminder(overdue, null, overdue, 1, false),
+            title = "abc"))
 
         // never shown
         notesRepo.addNote(testNote(id = 5, status = NoteStatus.ACTIVE,
@@ -91,6 +97,8 @@ class HomeViewModelRemindersTest {
         prefs = mock {
             on { listLayoutMode } doReturn NoteListLayoutMode.LIST
         }
+        notesRepo.sortField = SortField.TITLE
+        notesRepo.sortDirection = SortDirection.ASCENDING
 
         itemFactory = NoteItemFactory(prefs)
 
@@ -104,6 +112,7 @@ class HomeViewModelRemindersTest {
         assertTrue(viewModel.fabShown.getOrAwaitValue())
         assertEquals(listOf(
             HomeViewModel.OVERDUE_HEADER_ITEM,
+            noteItem(notesRepo.requireNoteById(7), true),
             noteItem(notesRepo.requireNoteById(4), true),
             noteItem(notesRepo.requireNoteById(1), true),
             HomeViewModel.TODAY_HEADER_ITEM,
@@ -116,7 +125,7 @@ class HomeViewModelRemindersTest {
     @Test
     fun `should mark reminder as done on action button click`() = runTest {
         val note = notesRepo.requireNoteById(4)
-        viewModel.onNoteActionButtonClicked(noteItem(note), 1)
+        viewModel.onNoteActionButtonClicked(noteItem(note), 2)
         assertEquals(note.copy(reminder = note.reminder?.markAsDone()),
             notesRepo.requireNoteById(4))
     }
@@ -126,6 +135,7 @@ class HomeViewModelRemindersTest {
         notesRepo.deleteNote(1)
         notesRepo.deleteNote(2)
         notesRepo.deleteNote(3)
+        notesRepo.deleteNote(7)
         notesRepo.insertNote(testNote(id = 8, status = NoteStatus.ACTIVE,
             reminder = Reminder(dateFor("2020-01-01"), null, dateFor("2020-01-01"), 1, false)))
 
@@ -138,8 +148,8 @@ class HomeViewModelRemindersTest {
 
     @Test
     fun `should consider selection as active (only active selected)`() = runTest {
-        viewModel.onNoteItemLongClicked(getNoteItemAt(4), 4)
-        viewModel.onNoteItemLongClicked(getNoteItemAt(6), 6)
+        viewModel.onNoteItemLongClicked(getNoteItemAt(5), 5)
+        viewModel.onNoteItemLongClicked(getNoteItemAt(7), 7)
         assertEquals(NoteViewModel.NoteSelection(2,
             NoteStatus.ACTIVE, PinnedStatus.UNPINNED, true),
             viewModel.currentSelection.getOrAwaitValue())
@@ -147,7 +157,7 @@ class HomeViewModelRemindersTest {
 
     @Test
     fun `should consider selection as archived (only archived selected)`() = runTest {
-        viewModel.onNoteItemLongClicked(getNoteItemAt(1), 1)
+        viewModel.onNoteItemLongClicked(getNoteItemAt(2), 2)
         assertEquals(NoteViewModel.NoteSelection(1,
             NoteStatus.ARCHIVED, PinnedStatus.CANT_PIN, true),
             viewModel.currentSelection.getOrAwaitValue())
@@ -155,8 +165,8 @@ class HomeViewModelRemindersTest {
 
     @Test
     fun `should consider selection as active (active + archived selected)`() = runTest {
-        viewModel.onNoteItemLongClicked(getNoteItemAt(1), 1)
-        viewModel.onNoteItemLongClicked(getNoteItemAt(4), 4)
+        viewModel.onNoteItemLongClicked(getNoteItemAt(2), 2)
+        viewModel.onNoteItemLongClicked(getNoteItemAt(5), 5)
         assertEquals(NoteViewModel.NoteSelection(2,
             NoteStatus.ACTIVE, PinnedStatus.UNPINNED, true),
             viewModel.currentSelection.getOrAwaitValue())
