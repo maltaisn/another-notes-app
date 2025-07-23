@@ -650,6 +650,39 @@ class EditViewModelTest {
         }
 
     @Test
+    fun `should focus title on backspace in content note (no date)`() =
+        runTest {
+            whenever(prefs.shownDateField) doReturn ShownDateField.NONE
+
+            viewModel.start(1)
+            viewModel.onNoteItemBackspacePressed(1)
+
+            assertEquals(listOf(
+                EditTitleItem("title".e, true),
+                EditContentItem("content".e, editable = true),
+                EditChipsItem(listOf(labelsRepo.requireLabelById(1))),
+            ), viewModel.editItems.getOrAwaitValue())
+            assertLiveDataEventSent(viewModel.focusEvent,
+                EditViewModel.FocusChange(0, 5, true))
+        }
+
+    @Test
+    fun `should focus title on backspace in content note (with date)`() =
+        runTest {
+            viewModel.start(1)
+            viewModel.onNoteItemBackspacePressed(2)
+
+            assertEquals(listOf(
+                EditDateItem(dateFor("2018-01-01").time),
+                EditTitleItem("title".e, true),
+                EditContentItem("content".e, editable = true),
+                EditChipsItem(listOf(labelsRepo.requireLabelById(1))),
+            ), viewModel.editItems.getOrAwaitValue())
+            assertLiveDataEventSent(viewModel.focusEvent,
+                EditViewModel.FocusChange(1, 5, true))
+        }
+
+    @Test
     fun `should delete list note item and focus previous`() = runTest {
         viewModel.start(2)
         viewModel.onNoteItemDeleteClicked(3)

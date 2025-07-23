@@ -1,5 +1,9 @@
 ## v1.5.5 (2025-07-19)
 - Added Vietnamese translation (#146, @ngocanhtve) & updated other languages.
+- Focus title if backspace is pressed at the start of content in a text note (#157).
+- Fixed sort settings not being applied in reminders views (#152).
+- Fixed note scrolling back to the beginning on first focus (#156).
+- Fixed text being ellipsized in some preferences (#158).
 
 ## v1.5.4 (2023-12-28)
 - Ask for notification permission on Android 13 when importing data with reminders.

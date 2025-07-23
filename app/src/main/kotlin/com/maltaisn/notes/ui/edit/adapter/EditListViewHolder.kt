@@ -113,6 +113,18 @@ class EditContentViewHolder(binding: ItemEditContentBinding, callback: EditAdapt
                 item?.content = AndroidEditableText(editable)
             }
         }
+        contentEdt.setOnKeyListener { _, _, event ->
+            val isCursorAtStart =
+                contentEdt.selectionStart == 0 && contentEdt.selectionStart == contentEdt.selectionEnd
+            if (isCursorAtStart && event.action == KeyEvent.ACTION_DOWN && event.keyCode == KeyEvent.KEYCODE_DEL) {
+                // If user presses backspace at the start of the content, focus to the title
+                val pos = bindingAdapterPosition
+                if (pos != RecyclerView.NO_POSITION) {
+                    callback.onNoteItemBackspacePressed(pos)
+                }
+            }
+            false
+        }
 
         contentEdt.setOnClickListener {
             callback.onNoteClickedToEdit()
