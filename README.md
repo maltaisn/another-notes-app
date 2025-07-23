@@ -52,6 +52,7 @@ Contributions are welcome, especially translations (see [`TRANSLATING.md`][trans
     - Dutch: Jeroen de Jong
     - German: @memyselfandi
     - Italian: carallo
+    - Japanese: @kuragehimekurara1
     - Norwegian: @FTno
     - Polish: Sebastian Jasiński
     - Portuguese: Fabricio Duarte
@@ -59,6 +60,7 @@ Contributions are welcome, especially translations (see [`TRANSLATING.md`][trans
     - Spanish: Juan Carlos Vallejo, CyanWolf
     - Turkish: language_is_alive
     - Ukrainian: Andrij Mizyk
+    - Vietnamese: @ngocanhtve
 
 [changelog]: CHANGELOG.md
 [translating]: TRANSLATING.md
