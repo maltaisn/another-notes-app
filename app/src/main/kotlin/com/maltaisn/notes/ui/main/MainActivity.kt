@@ -266,6 +266,9 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
                         viewModel.createNote(noteData)
                     }
                 }
+                Intent.ACTION_APPLICATION_PREFERENCES -> {
+                    viewModel.openSettings();
+                }
                 INTENT_ACTION_CREATE -> {
                     // Intent to create a note of a certain type. Used by launcher shortcuts.
                     val type = NoteTypeConverter.toType(

@@ -182,29 +182,23 @@ class MainViewModel @Inject constructor(
             R.id.drawer_item_notes -> {
                 _currentHomeDestination.value = HomeDestination.Status(NoteStatus.ACTIVE)
             }
-
             R.id.drawer_item_reminders -> {
                 _currentHomeDestination.value = HomeDestination.Reminders
             }
-
             R.id.drawer_item_create_label -> {
                 _navDirectionsEvent.send(HomeFragmentDirections.actionHomeToLabelEdit())
             }
-
             R.id.drawer_item_edit_labels -> {
                 _navDirectionsEvent.send(NavGraphMainDirections.actionLabel(longArrayOf()))
             }
-
             R.id.drawer_item_archived -> {
                 _currentHomeDestination.value = HomeDestination.Status(NoteStatus.ARCHIVED)
             }
-
             R.id.drawer_item_deleted -> {
                 _currentHomeDestination.value = HomeDestination.Status(NoteStatus.DELETED)
             }
-
             R.id.drawer_item_settings -> {
-                _navDirectionsEvent.send(HomeFragmentDirections.actionHomeToSettings())
+                openSettings()
             }
         }
 
@@ -247,13 +241,17 @@ class MainViewModel @Inject constructor(
                     }
                     prefsManager.lastAutoExportTime = System.currentTimeMillis()
                     false
-                } catch (e: Exception) {
+                } catch (_: Exception) {
                     true
                 }
             }
         } else {
             prefsManager.autoExportFailed = true
         }
+    }
+
+    fun openSettings() {
+        _navDirectionsEvent.send(HomeFragmentDirections.actionHomeToSettings())
     }
 
     data class NewNoteData(val type: NoteType, val title: String = "", val content: String = "")
