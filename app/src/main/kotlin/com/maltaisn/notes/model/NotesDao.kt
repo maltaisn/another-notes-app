@@ -123,10 +123,11 @@ interface NotesDao {
     /**
      * Search active and archived notes for a [query] using full-text search,
      * sorted by status first then by last modified date.
+     * Deleted notes can also be included, optionally.
      */
-    fun search(query: String, sort: SortSettings) = sortedQuery("""
+    fun search(query: String, sort: SortSettings, includeDeleted: Boolean = false) = sortedQuery("""
             SELECT * FROM notes JOIN notes_fts ON notes_fts.rowid == notes.id
-            WHERE notes_fts MATCH :query AND status != 2
+            WHERE notes_fts MATCH :query AND status != ${if (includeDeleted) -1 else NoteStatus.DELETED.value}
             ORDER BY status ASC, :sort, id ASC
         """, sort, query)
 

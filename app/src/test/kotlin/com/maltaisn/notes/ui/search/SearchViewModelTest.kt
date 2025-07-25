@@ -19,7 +19,6 @@ package com.maltaisn.notes.ui.search
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.SavedStateHandle
 import com.maltaisn.notes.MainCoroutineRule
-import com.maltaisn.notes.R
 import com.maltaisn.notes.model.DefaultReminderAlarmManager
 import com.maltaisn.notes.model.MockLabelsRepository
 import com.maltaisn.notes.model.MockNotesRepository
@@ -32,9 +31,9 @@ import com.maltaisn.notes.model.entity.PinnedStatus
 import com.maltaisn.notes.testNote
 import com.maltaisn.notes.ui.MockAlarmCallback
 import com.maltaisn.notes.ui.getOrAwaitValue
+import com.maltaisn.notes.ui.navigation.HomeDestination
 import com.maltaisn.notes.ui.note.NoteItemFactory
 import com.maltaisn.notes.ui.note.NoteViewModel.NoteSelection
-import com.maltaisn.notes.ui.note.adapter.HeaderItem
 import com.maltaisn.notes.ui.note.adapter.NoteItem
 import com.maltaisn.notes.ui.note.adapter.NoteListLayoutMode
 import kotlinx.coroutines.test.TestScope
@@ -103,7 +102,7 @@ class SearchViewModelTest {
         runTest {
             searchNotesAndWait("2")
             assertEquals(listOf(
-                HeaderItem(-1, R.string.note_location_archived),
+                SearchViewModel.ARCHIVED_HEADER_ITEM,
                 noteItem(notesRepo.requireNoteById(2), emptyList())
             ), viewModel.noteItems.getOrAwaitValue())
         }
@@ -114,8 +113,21 @@ class SearchViewModelTest {
             searchNotesAndWait("3")
             assertEquals(listOf(
                 noteItem(notesRepo.requireNoteById(1), listOf(labelsRepo.requireLabelById(1))),
-                HeaderItem(-1, R.string.note_location_archived),
+                SearchViewModel.ARCHIVED_HEADER_ITEM,
                 noteItem(notesRepo.requireNoteById(2), emptyList())
+            ), viewModel.noteItems.getOrAwaitValue())
+        }
+
+    @Test
+    fun `should show search results for query (archive + deleted)`() =
+        runTest {
+            viewModel.setDestination(HomeDestination.Status(NoteStatus.DELETED))
+            searchNotesAndWait("2")
+            assertEquals(listOf(
+                SearchViewModel.ARCHIVED_HEADER_ITEM,
+                noteItem(notesRepo.requireNoteById(2), emptyList()),
+                SearchViewModel.DELETED_HEADER_ITEM,
+                noteItem(notesRepo.requireNoteById(3), emptyList())
             ), viewModel.noteItems.getOrAwaitValue())
         }
 

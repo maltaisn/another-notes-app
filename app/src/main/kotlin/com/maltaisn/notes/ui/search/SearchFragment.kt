@@ -94,5 +94,7 @@ class SearchFragment : NoteFragment() {
             }
         }
         searchView.requestFocus()
+
+        sharedViewModel.currentHomeDestination.observe(viewLifecycleOwner, viewModel::setDestination)
     }
 }

@@ -189,14 +189,14 @@ class MockNotesRepository(private val labelsRepository: MockLabelsRepository) : 
             .toList()
     }.distinctUntilChanged()
 
-    override fun searchNotes(query: String): Flow<List<NoteWithLabels>> {
+    override fun searchNotes(query: String, includeDeleted: Boolean): Flow<List<NoteWithLabels>> {
         val queryNoFtsSyntax = query.replace("[*\"-]".toRegex(), "")
         return if (queryNoFtsSyntax.isEmpty()) {
             flow { emit(emptyList()) }
         } else {
             noteWithLabelsChangeFlow.map {
                 notes.values.asSequence()
-                    .filter { it.status != NoteStatus.DELETED }
+                    .filter { includeDeleted || it.status != NoteStatus.DELETED }
                     .filter { (queryNoFtsSyntax in it.title || queryNoFtsSyntax in it.content) }
                     .sortedWith(compareBy(Note::status)
                         .thenBy(sortComparator) { it })

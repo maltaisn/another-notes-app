@@ -27,6 +27,7 @@ import com.maltaisn.notes.model.PrefsManager
 import com.maltaisn.notes.model.ReminderAlarmManager
 import com.maltaisn.notes.model.entity.NoteStatus
 import com.maltaisn.notes.model.entity.NoteWithLabels
+import com.maltaisn.notes.ui.navigation.HomeDestination
 import com.maltaisn.notes.ui.note.NoteItemFactory
 import com.maltaisn.notes.ui.note.NoteViewModel
 import com.maltaisn.notes.ui.note.PlaceholderData
@@ -48,6 +49,8 @@ class SearchViewModel @Inject constructor(
 ) : NoteViewModel(savedStateHandle, notesRepository, labelsRepository, prefs, noteItemFactory, reminderAlarmManager),
     NoteAdapter.Callback {
 
+    private var currentDestination: HomeDestination = HomeDestination.Status(NoteStatus.ACTIVE)
+
     // No need to save this is a saved state handle, SearchView will
     // call query changed listener after it's been recreated.
     private var lastQuery = ""
@@ -67,10 +70,11 @@ class SearchViewModel @Inject constructor(
 
         // Update note items live data when database flow emits a list.
         val cleanedQuery = SearchQueryCleaner.clean(query)
+        val includeDeleted = (currentDestination == HomeDestination.Status(NoteStatus.DELETED))
         noteListJob = viewModelScope.launch {
             delay(SEARCH_DEBOUNCE_DELAY)
             try {
-                notesRepository.searchNotes(cleanedQuery).collect { notes ->
+                notesRepository.searchNotes(cleanedQuery, includeDeleted).collect { notes ->
                     createListItems(notes)
                 }
             } catch (_: SQLiteException) {
@@ -80,6 +84,10 @@ class SearchViewModel @Inject constructor(
                 createListItems(emptyList())
             }
         }
+    }
+
+    fun setDestination(destination: HomeDestination) {
+        currentDestination = destination
     }
 
     override val selectedNoteStatus: NoteStatus?
@@ -94,13 +102,18 @@ class SearchViewModel @Inject constructor(
     private fun createListItems(notes: List<NoteWithLabels>) {
         listItems = buildList {
             var addedArchivedHeader = false
+            var addedDeletedHeader = false
             for (noteWithLabels in notes) {
                 val note = noteWithLabels.note
 
-                // If this is the first archived note, add a header before it.
+                // If this is the first note of its status, add a header before it.
                 if (!addedArchivedHeader && note.status == NoteStatus.ARCHIVED) {
                     this += ARCHIVED_HEADER_ITEM
                     addedArchivedHeader = true
+                }
+                if (!addedDeletedHeader && note.status == NoteStatus.DELETED) {
+                    this += DELETED_HEADER_ITEM
+                    addedDeletedHeader = true
                 }
 
                 val checked = isNoteSelected(note)
@@ -114,6 +127,7 @@ class SearchViewModel @Inject constructor(
 
     companion object {
         val ARCHIVED_HEADER_ITEM = HeaderItem(-1, R.string.note_location_archived)
+        val DELETED_HEADER_ITEM = HeaderItem(-2, R.string.note_location_deleted)
 
         private const val SEARCH_DEBOUNCE_DELAY = 100L
     }

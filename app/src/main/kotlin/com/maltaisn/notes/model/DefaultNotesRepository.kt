@@ -64,7 +64,8 @@ class DefaultNotesRepository @Inject constructor(
 
     override fun getNotesWithReminder() = notesDao.getAllWithReminder(prefs.sortSettings)
 
-    override fun searchNotes(query: String) = notesDao.search(query, prefs.sortSettings)
+    override fun searchNotes(query: String, includeDeleted: Boolean) =
+        notesDao.search(query, prefs.sortSettings, includeDeleted)
 
     override suspend fun emptyTrash() {
         withContext(NonCancellable) {

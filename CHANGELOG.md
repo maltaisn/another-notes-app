@@ -1,6 +1,8 @@
 ## v1.5.5 (2025-07-19)
 - Added Vietnamese translation (#146, @ngocanhtve) & updated other languages.
 - Focus title if backspace is pressed at the start of content in a text note (#157).
+- Allow searching from deleted notes when search is started from trash (#159).
+- Changed default trash auto-delete delay from 1 day to 7 days, as it used to be.
 - Fixed sort settings not being applied in reminders views (#152).
 - Fixed note scrolling back to the beginning on first focus (#156).
 - Fixed text being ellipsized in some preferences (#158).

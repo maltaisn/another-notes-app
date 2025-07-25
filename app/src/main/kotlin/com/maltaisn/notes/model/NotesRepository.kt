@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Nicolas Maltais
+ * Copyright 2025 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,7 +39,7 @@ interface NotesRepository {
     fun getNotesByStatus(status: NoteStatus): Flow<List<NoteWithLabels>>
     fun getNotesByLabel(labelId: Long): Flow<List<NoteWithLabels>>
     fun getNotesWithReminder(): Flow<List<NoteWithLabels>>
-    fun searchNotes(query: String): Flow<List<NoteWithLabels>>
+    fun searchNotes(query: String, includeDeleted: Boolean = false): Flow<List<NoteWithLabels>>
 
     suspend fun emptyTrash()
     suspend fun deleteOldNotesInTrash()

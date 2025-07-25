@@ -283,9 +283,14 @@ class NotesDaoTest {
     @Test
     fun searchTest() = runBlocking {
         val note0 = testNote(id = 1, title = "note", content = "content")
+        val note2 = testNote(id = 2, title = "title", content = "foo", added = Date(1000))
+        val note3 = testNote(id = 3, title = "my note", content = "bar")
+        val note6 =
+            testNote(id = 6, title = "title", content = "baz", status = NoteStatus.DELETED, added = Date(2000))
         notesDao.insert(note0)
-        notesDao.insert(testNote(id = 2, title = "title", content = "foo"))
-        notesDao.insert(testNote(id = 3, title = "my note", content = "bar"))
+        notesDao.insert(note2)
+        notesDao.insert(note3)
+        notesDao.insert(note6)
 
         labelsDao.insert(Label(1, "label 1"))
         labelsDao.insertRefs(listOf(LabelRef(1, 1)))
@@ -294,14 +299,20 @@ class NotesDaoTest {
         assertEquals(listOf(NoteWithLabels(note0, listOf(labelsDao.getById(1)!!))),
             noteFlow.first())
 
-        val note1 = testNote(id = 4, title = "note copy", content = "content copy")
-        val note2 = testNote(id = 5,
+        val note4 = testNote(id = 4, title = "note copy", content = "content copy")
+        val note5 = testNote(id = 5,
             title = "archived",
             content = "archived content",
             status = NoteStatus.ARCHIVED)
-        notesDao.insert(note1)
-        notesDao.insert(note2)
-        assertEquals(listOf(note1, note0, note2), noteFlow.first().map { it.note })
+        notesDao.insert(note4)
+        notesDao.insert(note5)
+        assertEquals(listOf(note4, note0, note5), noteFlow.first().map { it.note })
+
+        val noteFlowIncludingDeleted =
+            notesDao.search("title",
+                SortSettings(SortField.ADDED_DATE, SortDirection.DESCENDING),
+                includeDeleted = true)
+        assertEquals(listOf(note2, note6), noteFlowIncludingDeleted.first().map { it.note })
     }
 
     @Test
