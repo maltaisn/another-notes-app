@@ -9,6 +9,7 @@
 - Fixed several URL linking bugs (#140, #141, #142, #147).
 - Fixed arrows keys moving between links instead of moving in text (#133).
 - Fixed navigation bar fully transparent on API 27 & 28 (#117).
+- Fixed blink after splash screen on API 28 (#115).
 
 ## v1.5.4 (2023-12-28)
 - Ask for notification permission on Android 13 when importing data with reminders.

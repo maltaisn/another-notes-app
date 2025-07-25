@@ -66,8 +66,6 @@
 
         <item name="preferenceTheme">@style/PreferenceTheme</item>
 
-        <item name="android:windowAnimationStyle">@style/WindowAnimationTransition</item>
-
         <!-- This is needed to avoid dialogs getting shrunk when in split-screen. -->
         <item name="windowMinWidthMajor">100%</item>
         <item name="windowMinWidthMinor">65%</item>
@@ -77,11 +75,6 @@
         <item name="snackbarStyle">@style/Widget.App.Snackbar</item>
 
         <item name="navigationBarColorApi27">#A0FFFFFF</item>
-    </style>
-
-    <style name="WindowAnimationTransition">
-        <item name="android:windowEnterAnimation">@android:anim/fade_in</item>
-        <item name="android:windowExitAnimation">@android:anim/fade_out</item>
     </style>
 
     <style name="MaterialAlertDialogThemeOverlay" parent="ThemeOverlay.Material3.MaterialAlertDialog">
