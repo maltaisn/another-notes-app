@@ -55,6 +55,11 @@ android {
     }
 
     @Suppress("UnstableApiUsage")
+    androidResources {
+        generateLocaleConfig = true
+    }
+
+    @Suppress("UnstableApiUsage")
     testFixtures {
         enable = true
     }
