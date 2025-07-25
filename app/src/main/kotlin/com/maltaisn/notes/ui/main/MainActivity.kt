@@ -17,7 +17,9 @@
 package com.maltaisn.notes.ui.main
 
 import android.content.Intent
+import android.graphics.Color
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
@@ -40,6 +42,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.fragment.NavHostFragment
 import com.google.android.material.color.DynamicColors
+import com.google.android.material.color.MaterialColors
 import com.maltaisn.notes.NavGraphMainDirections
 import com.maltaisn.notes.R
 import com.maltaisn.notes.TAG
@@ -98,7 +101,16 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
         setContentView(binding.root)
 
         // Allow for transparent status and navigation bars
+        // See https://developer.android.com/design/ui/mobile/guides/layout-and-content/edge-to-edge
+        // TODO eventually, use WindowCompat.enableEdgeToEdge
         WindowCompat.setDecorFitsSystemWindows(window, false)
+
+        if (Build.VERSION.SDK_INT >= 27 && Build.VERSION.SDK_INT <= 28) {
+            // On API 27 & 28, there's no Window.isNavigationBarContrastEnforced that ensures a transparent navigation
+            // bar, as configured, has proper constrast. So, we manage the color manually.
+            @Suppress("DEPRECATION")
+            window.navigationBarColor = MaterialColors.getColor(this, R.attr.navigationBarColorApi27, Color.TRANSPARENT)
+        }
 
         // Apply padding to navigation drawer
         val initialPadding = resources.getDimensionPixelSize(R.dimen.navigation_drawer_bottom_padding)
@@ -111,7 +123,7 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
             if (sysWindow.left > 0) {
                 WindowCompat.setDecorFitsSystemWindows(window, true)
             }
-            insets
+            WindowInsetsCompat.CONSUMED
         }
 
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
