@@ -65,7 +65,6 @@ class EditEditText @JvmOverloads constructor(
                 if (editable == null) return@doAfterTextChanged
                 LinkifyCompat.addLinks(editable,
                     Linkify.EMAIL_ADDRESSES or Linkify.WEB_URLS or Linkify.PHONE_NUMBERS)
-                LinkifyCompat.addLinks(editable, URL_REGEX, null)
             }
 
             movementMethod = LinkArrowKeyMovementMethod.getInstance()
@@ -74,10 +73,6 @@ class EditEditText @JvmOverloads constructor(
 
     fun onLinkClicked(text: String, url: String) {
         onLinkClickListener?.invoke(text, url)
-    }
-
-    companion object {
-        private val URL_REGEX = """[a-z]+://[^ \n]+""".toRegex().toPattern()
     }
 }
 
