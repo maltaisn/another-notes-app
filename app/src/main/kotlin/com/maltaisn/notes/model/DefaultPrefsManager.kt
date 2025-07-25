@@ -44,6 +44,7 @@ class DefaultPrefsManager @Inject constructor(
     override val dynamicColors: Boolean by preference(DYNAMIC_COLORS, true)
     override val strikethroughChecked: Boolean by preference(STRIKETHROUGH_CHECKED, false)
     override val moveCheckedToBottom: Boolean by preference(MOVE_CHECKED_TO_BOTTOM, false)
+    override val textSize: Int by preference(TEXT_SIZE, 15)
     override var listLayoutMode: NoteListLayoutMode by enumPreference(LIST_LAYOUT_MODE,
         NoteListLayoutMode.LIST)
     override val swipeActionLeft: SwipeAction by enumPreference(SWIPE_ACTION_LEFT, SwipeAction.ARCHIVE)
@@ -179,6 +180,7 @@ class DefaultPrefsManager @Inject constructor(
         const val PREVIEW_LINES_LIST_GRID = "preview_lines_list_grid"
         const val STRIKETHROUGH_CHECKED = "strikethrough_checked"
         const val MOVE_CHECKED_TO_BOTTOM = "move_checked_to_bottom"
+        const val TEXT_SIZE = "text_size"
         const val SHOWN_DATE = "shown_date"
         const val SWIPE_ACTION_LEFT = "swipe_action_left"
         const val SWIPE_ACTION_RIGHT = "swipe_action_right"

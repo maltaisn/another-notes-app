@@ -20,6 +20,7 @@
 
     <declare-styleable name="EditEditText">
         <attr name="autoLink" format="boolean"/>
+        <attr name="textSizeMultiplier" format="float"/>
     </declare-styleable>
 
     <attr name="navigationBarColorApi27" format="color" />

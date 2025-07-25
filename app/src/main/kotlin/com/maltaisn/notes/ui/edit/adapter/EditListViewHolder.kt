@@ -82,7 +82,8 @@ class EditTitleViewHolder(binding: ItemEditTitleBinding, callback: EditAdapter.C
                 item?.title = AndroidEditableText(editable ?: return@doAfterTextChanged)
             }
         }
-        titleEdt.setHorizontallyScrolling(false)
+        titleEdt.setHorizontallyScrolling(false)  // Fails when set as an attribute for some reason
+        titleEdt.setAutoTextSize(callback.textSize)
         titleEdt.maxLines = Integer.MAX_VALUE
     }
 
@@ -130,6 +131,8 @@ class EditContentViewHolder(binding: ItemEditContentBinding, callback: EditAdapt
             callback.onNoteClickedToEdit()
         }
         contentEdt.onLinkClickListener = callback::onLinkClickedInNote
+
+        contentEdt.setAutoTextSize(callback.textSize)
     }
 
     fun bind(item: EditContentItem) {
@@ -208,6 +211,8 @@ class EditItemViewHolder(binding: ItemEditItemBinding, callback: EditAdapter.Cal
             callback.onNoteClickedToEdit()
         }
         itemEdt.onLinkClickListener = callback::onLinkClickedInNote
+
+        itemEdt.setAutoTextSize(callback.textSize)
 
         deleteImv.setOnClickListener {
             val pos = bindingAdapterPosition

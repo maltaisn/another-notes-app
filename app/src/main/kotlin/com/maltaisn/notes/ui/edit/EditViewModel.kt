@@ -838,6 +838,9 @@ class EditViewModel @Inject constructor(
     override val moveCheckedToBottom: Boolean
         get() = prefs.moveCheckedToBottom
 
+    override val textSize: Float
+        get() = prefs.textSize.toFloat()
+
     private fun focusItemAt(pos: Int, textPos: Int, itemExists: Boolean) {
         _focusEvent.send(FocusChange(pos, textPos, itemExists))
     }

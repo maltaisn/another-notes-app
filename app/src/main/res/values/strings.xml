@@ -194,6 +194,7 @@
     <string name="pref_theme_system">Follow system</string>
     <string name="pref_dynamic_colors">Use dynamic colors</string>
     <string name="pref_strikethrough_checked">Strikethrough checked list items</string>
+    <string name="pref_text_size">Text size for editing</string>
     <string name="pref_preview_labels">Maximum number of labels in preview</string>
 
     <string name="pref_shown_date">Date shown for notes</string>

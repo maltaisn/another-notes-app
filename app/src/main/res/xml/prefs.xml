@@ -47,6 +47,15 @@
             />
 
         <SeekBarPreference
+            android:defaultValue="15"
+            android:max="20"
+            app:key="text_size"
+            app:min="10"
+            app:showSeekBarValue="true"
+            app:title="@string/pref_text_size"
+            />
+
+        <SeekBarPreference
             android:defaultValue="2"
             android:max="10"
             app:key="preview_labels"

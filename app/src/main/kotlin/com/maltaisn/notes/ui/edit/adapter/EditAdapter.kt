@@ -187,5 +187,8 @@ class EditAdapter(val context: Context, val callback: Callback) :
 
         /** Whether checked items are moved to the bottom or not. */
         val moveCheckedToBottom: Boolean
+
+        /** Notes text size. */
+        val textSize: Float
     }
 }

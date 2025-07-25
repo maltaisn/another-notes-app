@@ -35,6 +35,7 @@ interface PrefsManager {
     val dynamicColors: Boolean
     val strikethroughChecked: Boolean
     val moveCheckedToBottom: Boolean
+    val textSize: Int
     var listLayoutMode: NoteListLayoutMode
     val swipeActionLeft: SwipeAction
     val swipeActionRight: SwipeAction

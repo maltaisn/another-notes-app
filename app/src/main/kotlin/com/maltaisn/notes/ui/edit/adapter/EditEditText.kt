@@ -16,14 +16,15 @@
 
 package com.maltaisn.notes.ui.edit.adapter
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.text.style.CharacterStyle
 import android.text.util.Linkify
 import android.util.AttributeSet
+import android.util.TypedValue
 import android.view.View
 import android.widget.EditText
 import androidx.appcompat.widget.AppCompatEditText
-import androidx.core.content.res.use
 import androidx.core.text.getSpans
 import androidx.core.text.util.LinkifyCompat
 import androidx.core.widget.doAfterTextChanged
@@ -40,13 +41,17 @@ class EditEditText @JvmOverloads constructor(
     defStyleAddr: Int = android.R.attr.editTextStyle,
 ) : AppCompatEditText(context, attrs, defStyleAddr) {
 
-    val autoLink = context.obtainStyledAttributes(attrs, R.styleable.EditEditText, defStyleAddr, 0).use {
-        it.getBoolean(R.styleable.EditEditText_autoLink, false)
-    }
+    val autoLink: Boolean
+    val textSizeMultiplier: Float
 
     var onLinkClickListener: ((text: String, url: String) -> Unit)? = null
 
     init {
+        @SuppressLint("UseKtx")
+        val attrs = context.obtainStyledAttributes(attrs, R.styleable.EditEditText, defStyleAddr, 0)
+        autoLink = attrs.getBoolean(R.styleable.EditEditText_autoLink, false)
+        textSizeMultiplier = attrs.getFloat(R.styleable.EditEditText_textSizeMultiplier, 1.0f)
+        attrs.recycle()
 
         doAfterTextChanged { editable ->
             if (editable == null) return@doAfterTextChanged
@@ -73,6 +78,10 @@ class EditEditText @JvmOverloads constructor(
 
     fun onLinkClicked(text: String, url: String) {
         onLinkClickListener?.invoke(text, url)
+    }
+
+    fun setAutoTextSize(size: Float) {
+        setTextSize(TypedValue.COMPLEX_UNIT_SP, size * textSizeMultiplier)
     }
 }
 
