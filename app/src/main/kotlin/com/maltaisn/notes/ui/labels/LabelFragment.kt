@@ -16,10 +16,6 @@
 
 package com.maltaisn.notes.ui.labels
 
-import android.animation.ArgbEvaluator
-import android.animation.ValueAnimator
-import android.graphics.Color
-import android.os.Build
 import android.os.Bundle
 import android.view.ActionMode
 import android.view.LayoutInflater
@@ -28,7 +24,6 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.Toolbar
-import androidx.core.animation.addListener
 import androidx.core.view.isVisible
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
@@ -42,6 +37,7 @@ import com.google.android.material.transition.MaterialElevationScale
 import com.maltaisn.notes.R
 import com.maltaisn.notes.databinding.FragmentLabelBinding
 import com.maltaisn.notes.navigateSafe
+import com.maltaisn.notes.switchStatusBarColor
 import com.maltaisn.notes.ui.SharedViewModel
 import com.maltaisn.notes.ui.common.ConfirmDialog
 import com.maltaisn.notes.ui.labels.adapter.LabelAdapter
@@ -49,8 +45,6 @@ import com.maltaisn.notes.ui.observeEvent
 import com.maltaisn.notes.ui.utils.startSafeActionMode
 import dagger.hilt.android.AndroidEntryPoint
 import java.text.NumberFormat
-import java.util.concurrent.Executors
-import java.util.concurrent.TimeUnit
 import com.google.android.material.R as RMaterial
 
 /**
@@ -220,36 +214,13 @@ class LabelFragment : DialogFragment(), Toolbar.OnMenuItemClickListener,
         return true
     }
 
-    private fun switchStatusBarColor(colorFrom: Int, colorTo: Int, duration: Long, endAsTransparent: Boolean = false) {
-        val anim = ValueAnimator.ofObject(ArgbEvaluator(), colorFrom, colorTo)
-
-        anim.duration = duration
-        anim.addUpdateListener { animator ->
-            requireActivity().window.statusBarColor = animator.animatedValue as Int
-        }
-
-        if (endAsTransparent) {
-            anim.addListener(onEnd = {
-                // Wait 50ms before resetting the status bar color to prevent flickering, when the
-                // regular toolbar isn't yet visible again.
-                Executors.newSingleThreadScheduledExecutor().schedule({
-                    requireActivity().window.statusBarColor = Color.TRANSPARENT
-                }, 50, TimeUnit.MILLISECONDS)
-            })
-        }
-
-        anim.start()
-    }
-
     override fun onCreateActionMode(mode: ActionMode, menu: Menu): Boolean {
         mode.menuInflater.inflate(R.menu.cab_label_selection, menu)
-        if (Build.VERSION.SDK_INT >= 23) {
-            switchStatusBarColor(
-                (binding.toolbarLayout.background as MaterialShapeDrawable).resolvedTintColor,
-                MaterialColors.getColor(requireView(), RMaterial.attr.colorSurfaceVariant),
-                resources.getInteger(RMaterial.integer.material_motion_duration_long_2).toLong()
-            )
-        }
+        switchStatusBarColor(
+            (binding.toolbarLayout.background as MaterialShapeDrawable).resolvedTintColor,
+            MaterialColors.getColor(requireView(), RMaterial.attr.colorSurfaceVariant),
+            resources.getInteger(RMaterial.integer.material_motion_duration_long_2).toLong()
+        )
         return true
     }
 
@@ -258,14 +229,12 @@ class LabelFragment : DialogFragment(), Toolbar.OnMenuItemClickListener,
     override fun onDestroyActionMode(mode: ActionMode) {
         actionMode = null
         viewModel.clearSelection()
-        if (Build.VERSION.SDK_INT >= 23) {
-            switchStatusBarColor(
-                MaterialColors.getColor(requireView(), RMaterial.attr.colorSurfaceVariant),
-                (binding.toolbarLayout.background as MaterialShapeDrawable).resolvedTintColor,
-                resources.getInteger(RMaterial.integer.material_motion_duration_long_1).toLong(),
-                true
-            )
-        }
+        switchStatusBarColor(
+            MaterialColors.getColor(requireView(), RMaterial.attr.colorSurfaceVariant),
+            (binding.toolbarLayout.background as MaterialShapeDrawable).resolvedTintColor,
+            resources.getInteger(RMaterial.integer.material_motion_duration_long_1).toLong(),
+            true
+        )
     }
 
     override fun onDialogPositiveButtonClicked(tag: String?) {

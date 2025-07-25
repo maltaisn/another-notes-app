@@ -16,11 +16,7 @@
 
 package com.maltaisn.notes.ui.note
 
-import android.animation.ArgbEvaluator
-import android.animation.ValueAnimator
 import android.annotation.SuppressLint
-import android.graphics.Color
-import android.os.Build
 import android.os.Bundle
 import android.view.ActionMode
 import android.view.LayoutInflater
@@ -28,7 +24,6 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.animation.addListener
 import androidx.core.app.SharedElementCallback
 import androidx.core.view.OneShotPreDrawListener
 import androidx.core.view.ViewCompat
@@ -56,6 +51,7 @@ import com.maltaisn.notes.model.PrefsManager
 import com.maltaisn.notes.model.entity.NoteStatus
 import com.maltaisn.notes.model.entity.PinnedStatus
 import com.maltaisn.notes.navigateSafe
+import com.maltaisn.notes.switchStatusBarColor
 import com.maltaisn.notes.ui.SharedViewModel
 import com.maltaisn.notes.ui.StatusChange
 import com.maltaisn.notes.ui.common.ConfirmDialog
@@ -66,8 +62,6 @@ import com.maltaisn.notes.ui.observeEvent
 import com.maltaisn.notes.ui.startSharingData
 import com.maltaisn.notes.ui.utils.startSafeActionMode
 import java.text.NumberFormat
-import java.util.concurrent.Executors
-import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import com.google.android.material.R as RMaterial
 
@@ -459,36 +453,13 @@ abstract class NoteFragment : Fragment(), ActionMode.Callback, ConfirmDialog.Cal
         return true
     }
 
-    private fun switchStatusBarColor(colorFrom: Int, colorTo: Int, duration: Long, endAsTransparent: Boolean = false) {
-        val anim = ValueAnimator.ofObject(ArgbEvaluator(), colorFrom, colorTo)
-
-        anim.duration = duration
-        anim.addUpdateListener { animator ->
-            requireActivity().window.statusBarColor = animator.animatedValue as Int
-        }
-
-        if (endAsTransparent) {
-            anim.addListener(onEnd = {
-                // Wait 50ms before resetting the status bar color to prevent flickering, when the
-                // regular toolbar isn't yet visible again.
-                Executors.newSingleThreadScheduledExecutor().schedule({
-                    requireActivity().window.statusBarColor = Color.TRANSPARENT
-                }, 50, TimeUnit.MILLISECONDS)
-            })
-        }
-
-        anim.start()
-    }
-
     override fun onCreateActionMode(mode: ActionMode, menu: Menu): Boolean {
         mode.menuInflater.inflate(R.menu.cab_note_selection, menu)
-        if (Build.VERSION.SDK_INT >= 23) {
-            switchStatusBarColor(
-                (binding.toolbarLayout.background as MaterialShapeDrawable).resolvedTintColor,
-                MaterialColors.getColor(requireView(), RMaterial.attr.colorSurfaceVariant),
-                resources.getInteger(RMaterial.integer.material_motion_duration_long_2).toLong()
-            )
-        }
+        switchStatusBarColor(
+            (binding.toolbarLayout.background as MaterialShapeDrawable).resolvedTintColor,
+            MaterialColors.getColor(requireView(), RMaterial.attr.colorSurfaceVariant),
+            resources.getInteger(RMaterial.integer.material_motion_duration_long_2).toLong()
+        )
         return true
     }
 
@@ -499,14 +470,12 @@ abstract class NoteFragment : Fragment(), ActionMode.Callback, ConfirmDialog.Cal
         if (!hideActionMode) {
             viewModel.clearSelection()
 
-            if (Build.VERSION.SDK_INT >= 23) {
-                switchStatusBarColor(
-                    MaterialColors.getColor(requireView(), RMaterial.attr.colorSurfaceVariant),
-                    (binding.toolbarLayout.background as MaterialShapeDrawable).resolvedTintColor,
-                    resources.getInteger(RMaterial.integer.material_motion_duration_long_1).toLong(),
-                    true
-                )
-            }
+            switchStatusBarColor(
+                MaterialColors.getColor(requireView(), RMaterial.attr.colorSurfaceVariant),
+                (binding.toolbarLayout.background as MaterialShapeDrawable).resolvedTintColor,
+                resources.getInteger(RMaterial.integer.material_motion_duration_long_1).toLong(),
+                true
+            )
         }
         hideActionMode = false
     }
@@ -523,17 +492,15 @@ abstract class NoteFragment : Fragment(), ActionMode.Callback, ConfirmDialog.Cal
             viewModel.clearSelection()
         }
 
-        val noteIdsSize = arguments?.getLongArray("noteIds")?.size
-        if (destination.id == R.id.fragment_label && noteIdsSize != null && noteIdsSize > 0) {
+        val noteIdsSize = arguments?.getLongArray("noteIds")?.size ?: 0
+        if (destination.id == R.id.fragment_label && noteIdsSize > 0) {
             // Change status bar color to match label fragment
-            if (Build.VERSION.SDK_INT >= 23) {
-                switchStatusBarColor(
-                    MaterialColors.getColor(requireView(), RMaterial.attr.colorSurfaceVariant),
-                    MaterialColors.getColor(requireView(), RMaterial.attr.colorSurface),
-                    resources.getInteger(RMaterial.integer.material_motion_duration_long_1).toLong() * 2,
-                    true
-                )
-            }
+            switchStatusBarColor(
+                MaterialColors.getColor(requireView(), RMaterial.attr.colorSurfaceVariant),
+                MaterialColors.getColor(requireView(), RMaterial.attr.colorSurface),
+                resources.getInteger(RMaterial.integer.material_motion_duration_long_1).toLong() * 2,
+                true
+            )
         }
     }
 
