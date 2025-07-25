@@ -144,68 +144,21 @@ public class LinkArrowKeyMovementMethod extends ArrowKeyMovementMethod {
             selStart = selEnd = -1;
         }
 
-        switch (what) {
-            case CLICK: {
-                if (selStart == selEnd) {
-                    return false;
-                }
-
-                ClickableSpan[] links = buffer.getSpans(selStart, selEnd, ClickableSpan.class);
-
-                if (links.length != 1) {
-                    return false;
-                }
-
-                ClickableSpan link = links[0];
-                final int start = buffer.getSpanStart(link);
-                final int end = buffer.getSpanEnd(link);
-                linkOnClick(widget, buffer, link);
-                break;
+        if (what == CLICK) {
+            if (selStart == selEnd) {
+                return false;
             }
-            case UP: {
-                int bestStart = -1;
-                int bestEnd = -1;
 
-                for (ClickableSpan clickableSpan : candidates) {
-                    int end = buffer.getSpanEnd(clickableSpan);
+            ClickableSpan[] links = buffer.getSpans(selStart, selEnd, ClickableSpan.class);
 
-                    if (end < selEnd || selStart == selEnd) {
-                        if (end > bestEnd) {
-                            bestStart = buffer.getSpanStart(clickableSpan);
-                            bestEnd = end;
-                        }
-                    }
-                }
-
-                if (bestStart >= 0) {
-                    Selection.setSelection(buffer, bestEnd, bestStart);
-                    return true;
-                }
-
-                break;
+            if (links.length != 1) {
+                return false;
             }
-            case DOWN: {
-                int bestStart = Integer.MAX_VALUE;
-                int bestEnd = Integer.MAX_VALUE;
 
-                for (ClickableSpan candidate : candidates) {
-                    int start = buffer.getSpanStart(candidate);
-
-                    if (start > selStart || selStart == selEnd) {
-                        if (start < bestStart) {
-                            bestStart = start;
-                            bestEnd = buffer.getSpanEnd(candidate);
-                        }
-                    }
-                }
-
-                if (bestEnd < Integer.MAX_VALUE) {
-                    Selection.setSelection(buffer, bestStart, bestEnd);
-                    return true;
-                }
-
-                break;
-            }
+            ClickableSpan link = links[0];
+            final int start = buffer.getSpanStart(link);
+            final int end = buffer.getSpanEnd(link);
+            linkOnClick(widget, buffer, link);
         }
 
         return false;
