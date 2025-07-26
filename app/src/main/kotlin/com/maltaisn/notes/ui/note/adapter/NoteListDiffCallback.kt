@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Nicolas Maltais
+ * Copyright 2025 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,14 +46,12 @@ class NoteListDiffCallback : DiffUtil.ItemCallback<NoteListItem>() {
                 new.checked == old.checked &&
                         newNote.type == oldNote.type &&
                         newNote.status == oldNote.status &&
-                        newNote.pinned == oldNote.pinned &&
-                        newNote.title == oldNote.title &&
-                        newNote.content == oldNote.content &&
+                        new.title == old.title &&
                         newNote.metadata == oldNote.metadata &&
                         newNote.reminder == oldNote.reminder &&
                         new.labels == old.labels &&
                         new.showMarkAsDone == old.showMarkAsDone &&
-                        // At this point only content highlights can differ
+                        // At this point only content can differ
                         when (new) {
                             is NoteItemText -> {
                                 old as NoteItemText
