@@ -319,12 +319,12 @@ class EditViewModelTest {
         assertEquals(listOf(
             EditDateItem(dateFor("2020-03-30").time),
             EditTitleItem("title".e, true),
-            EditContentItem("- item 1\n- item 2".e, true),
+            EditContentItem("item 1\nitem 2".e, true),
             EditChipsItem(listOf(notesRepo.requireNoteById(3).reminder!!,
                 labelsRepo.requireLabelById(1), labelsRepo.requireLabelById(2)))
         ), viewModel.editItems.getOrAwaitValue())
 
-        assertLiveDataEventSent(viewModel.focusEvent, EditViewModel.FocusChange(2, 17, false))
+        assertLiveDataEventSent(viewModel.focusEvent, EditViewModel.FocusChange(2, 13, false))
     }
 
     @Test
@@ -344,7 +344,7 @@ class EditViewModelTest {
         assertEquals(listOf(
             EditDateItem(dateFor("2020-03-30").time),
             EditTitleItem("title".e, true),
-            EditContentItem("- item 2".e, true),
+            EditContentItem("item 2".e, true),
             EditChipsItem(listOf(labelsRepo.requireLabelById(1))),
         ), viewModel.editItems.getOrAwaitValue())
     }
@@ -357,7 +357,7 @@ class EditViewModelTest {
         assertEquals(listOf(
             EditDateItem(dateFor("2020-03-30").time),
             EditTitleItem("title".e, true),
-            EditContentItem("- item 1\n- item 2".e, true),
+            EditContentItem("item 1\nitem 2".e, true),
             EditChipsItem(listOf(labelsRepo.requireLabelById(1))),
         ), viewModel.editItems.getOrAwaitValue())
     }

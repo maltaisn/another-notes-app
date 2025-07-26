@@ -185,7 +185,7 @@ class NoteTest {
         val listNote = listNote(listOf(
             ListNoteItem("0", false),
             ListNoteItem("1", false)))
-        val textNote = testNote(content = "- 0\n- 1")
+        val textNote = testNote(content = "0\n1")
         assertNoteEquals(textNote, listNote.asTextNote(true), ignoreId = false)
     }
 
@@ -212,7 +212,7 @@ class NoteTest {
             ListNoteItem("item 1", true),
             ListNoteItem("item 2", true),
             ListNoteItem("item 3", false)))
-        val textNote = testNote(content = "- item 3")
+        val textNote = testNote(content = "item 3")
         assertNoteEquals(textNote, listNote.asTextNote(false), ignoreId = false)
     }
 
@@ -260,7 +260,7 @@ class NoteTest {
             ListNoteItem("item 1", false),
             ListNoteItem("item 2", true)
         ), title = "list title")
-        assertEquals("list title\n- item 1\n- item 2", note.asText())
+        assertEquals("list title\nitem 1\nitem 2", note.asText())
     }
 
     @Test
@@ -269,6 +269,6 @@ class NoteTest {
             ListNoteItem("item 1", false),
             ListNoteItem("item 2", true)
         ), title = "list title")
-        assertEquals("- item 1\n- item 2", note.asText(includeTitle = false))
+        assertEquals("item 1\nitem 2", note.asText(includeTitle = false))
     }
 }

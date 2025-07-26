@@ -22,9 +22,9 @@ import androidx.room.Entity
 import androidx.room.Junction
 import androidx.room.PrimaryKey
 import androidx.room.Relation
-import com.maltaisn.notes.model.converter.NoteMetadataConverter
 import com.maltaisn.notes.debugCheck
 import com.maltaisn.notes.debugRequire
+import com.maltaisn.notes.model.converter.NoteMetadataConverter
 import kotlinx.serialization.Transient
 import java.util.Date
 
@@ -155,7 +155,7 @@ data class Note(
     /**
      * Returns conversion of this note to a text note if it's not already one.
      * If all items were blank, resulting list note is empty. Otherwise, each item
-     * because a text line with a bullet point at the start. Checked state is always lost.
+     * becomes a text line. Checked state is always lost.
      *
      * @param keepCheckedItems Whether to keep checked items or delete them.
      */
@@ -171,8 +171,6 @@ data class Note(
                 buildString {
                     for (item in items) {
                         if (keepCheckedItems || !item.checked) {
-                            append(DEFAULT_BULLET_CHAR)
-                            append(' ')
                             appendLine(item.content)
                         }
                     }
