@@ -182,4 +182,9 @@
         app:destination="@id/fragment_label"
         />
 
+    <action
+        android:id="@+id/action_settings"
+        app:destination="@id/fragment_settings"
+        />
+
 </navigation>

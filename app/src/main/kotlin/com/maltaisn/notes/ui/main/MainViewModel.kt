@@ -198,7 +198,7 @@ class MainViewModel @Inject constructor(
                 _currentHomeDestination.value = HomeDestination.Status(NoteStatus.DELETED)
             }
             R.id.drawer_item_settings -> {
-                openSettings()
+                _navDirectionsEvent.send(HomeFragmentDirections.actionHomeToSettings())
             }
         }
 
@@ -251,7 +251,7 @@ class MainViewModel @Inject constructor(
     }
 
     fun openSettings() {
-        _navDirectionsEvent.send(HomeFragmentDirections.actionHomeToSettings())
+        _navDirectionsEvent.send(NavGraphMainDirections.actionSettings())
     }
 
     data class NewNoteData(val type: NoteType, val title: String = "", val content: String = "")
