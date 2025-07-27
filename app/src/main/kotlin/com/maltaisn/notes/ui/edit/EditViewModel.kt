@@ -39,6 +39,7 @@ import com.maltaisn.notes.model.entity.Reminder
 import com.maltaisn.notes.ui.Event
 import com.maltaisn.notes.ui.ShareData
 import com.maltaisn.notes.ui.StatusChange
+import com.maltaisn.notes.ui.edit.actions.EditActionsVisibility
 import com.maltaisn.notes.ui.edit.adapter.EditAdapter
 import com.maltaisn.notes.ui.edit.adapter.EditCheckedHeaderItem
 import com.maltaisn.notes.ui.edit.adapter.EditChipsItem
@@ -133,21 +134,9 @@ class EditViewModel @Inject constructor(
      */
     private val listItems: MutableList<EditListItem> = mutableListOf()
 
-    private val _noteType = MutableLiveData<NoteType>()
-    val noteType: LiveData<NoteType>
-        get() = _noteType
-
-    private val _noteStatus = MutableLiveData<NoteStatus>()
-    val noteStatus: LiveData<NoteStatus>
-        get() = _noteStatus
-
-    private val _notePinned = MutableLiveData<PinnedStatus>()
-    val notePinned: LiveData<PinnedStatus>
-        get() = _notePinned
-
-    private val _noteReminder = MutableLiveData<Reminder?>()
-    val noteReminder: LiveData<Reminder?>
-        get() = _noteReminder
+    private val _editActionsVisibility = MutableLiveData<EditActionsVisibility>()
+    val editActionsVisibility: LiveData<EditActionsVisibility>
+        get() = _editActionsVisibility
 
     private val _editItems = MutableLiveData<MutableList<EditListItem>>()
     val editItems: LiveData<out List<EditListItem>>
@@ -301,14 +290,10 @@ class EditViewModel @Inject constructor(
             pinned = note.pinned
             reminder = note.reminder
 
-            _noteType.value = note.type
-            _noteStatus.value = status
-            _notePinned.value = pinned
-            _noteReminder.value = reminder
-
             savedStateHandle[KEY_NOTE_ID] = note.id
 
             recreateListItems()
+            updateEditActionsVisibility()
 
             if (isFirstStart && isNewNote) {
                 // Focus on title or content initially.
@@ -371,6 +356,30 @@ class EditViewModel @Inject constructor(
         }
     }
 
+    fun updateEditActionsVisibility() {
+        val isList = note.type == NoteType.LIST
+        val inTrash = isNoteInTrash
+        val anyChecked = listItems.asSequence().filterIsInstance<EditItemItem>().any { it.checked }
+
+        _editActionsVisibility.value = EditActionsVisibility(
+            convertToList = !isList && !inTrash,
+            convertToText = isList && !inTrash,
+            reminderAdd = !inTrash && reminder == null,
+            reminderEdit = !inTrash && reminder != null,
+            archive = status == NoteStatus.ACTIVE,
+            unarchive = status == NoteStatus.ARCHIVED,
+            delete = !inTrash,
+            deleteForever = inTrash,
+            restore = inTrash,
+            pin = pinned == PinnedStatus.UNPINNED,
+            unpin = pinned == PinnedStatus.PINNED,
+            share = !inTrash,
+            copy = !inTrash,
+            uncheckAll = isList && anyChecked && !inTrash,
+            deleteChecked = isList && anyChecked && !inTrash,
+        )
+    }
+
     fun toggleNoteType() {
         updateNote()
 
@@ -386,7 +395,7 @@ class EditViewModel @Inject constructor(
                 }
             }
         }
-        _noteType.value = note.type
+        updateEditActionsVisibility()
 
         // Update list items
         recreateListItems()
@@ -410,7 +419,7 @@ class EditViewModel @Inject constructor(
             PinnedStatus.UNPINNED -> PinnedStatus.PINNED
             PinnedStatus.CANT_PIN -> error("Can't pin")
         }
-        _notePinned.value = pinned
+        updateEditActionsVisibility()
     }
 
     fun changeReminder() {
@@ -423,7 +432,7 @@ class EditViewModel @Inject constructor(
 
     fun onReminderChange(reminder: Reminder?) {
         this.reminder = reminder
-        _noteReminder.value = reminder
+        updateEditActionsVisibility()
 
         // Update reminder chip
         updateNote()
@@ -432,7 +441,7 @@ class EditViewModel @Inject constructor(
 
     fun convertToText(keepCheckedItems: Boolean) {
         note = note.asTextNote(keepCheckedItems)
-        _noteType.value = NoteType.TEXT
+        updateEditActionsVisibility()
 
         // Update list items (updateNote previously called in toggleNoteType)
         recreateListItems()
@@ -451,8 +460,7 @@ class EditViewModel @Inject constructor(
 
         status = note.status
         pinned = note.pinned
-        _noteStatus.value = status
-        _notePinned.value = pinned
+        updateEditActionsVisibility()
 
         // Recreate list items so that they are editable.
         recreateListItems()
@@ -520,7 +528,7 @@ class EditViewModel @Inject constructor(
                 listItems[i] = item.copy(checked = false)
             }
         }
-        moveCheckedItemsToBottom()
+        onListItemsChanged()
     }
 
     fun deleteCheckedItems() {
@@ -538,7 +546,7 @@ class EditViewModel @Inject constructor(
             lastActualPos = item.actualPos
         }
 
-        moveCheckedItemsToBottom()
+        onListItemsChanged()
     }
 
     fun focusNoteContent() {
@@ -567,6 +575,8 @@ class EditViewModel @Inject constructor(
             } else {
                 PinnedStatus.CANT_PIN
             }
+
+            updateEditActionsVisibility()
 
             if (newStatus == NoteStatus.DELETED) {
                 // Remove reminder for deleted note
@@ -736,7 +746,7 @@ class EditViewModel @Inject constructor(
                     checked = item.checked && moveCheckedToBottom, editable = true, item.actualPos + i))
             }
 
-            moveCheckedItemsToBottom() // just to update checked count
+            onListItemsChanged() // just to update checked count
             updateListItems()
 
             // If text was pasted, set focus at the end of last items pasted.
@@ -749,7 +759,7 @@ class EditViewModel @Inject constructor(
         val item = listItems[pos] as EditItemItem
         if (item.checked != checked) {
             item.checked = checked
-            moveCheckedItemsToBottom()
+            onListItemsChanged()
         }
     }
 
@@ -862,6 +872,11 @@ class EditViewModel @Inject constructor(
         _focusEvent.send(FocusChange(pos, textPos, itemExists))
     }
 
+    private fun onListItemsChanged() {
+        moveCheckedItemsToBottom()
+        updateEditActionsVisibility()
+    }
+
     private fun deleteListItemAt(pos: Int) {
         val listItem = listItems[pos] as EditItemItem
         listItems.removeAt(pos)
@@ -872,7 +887,7 @@ class EditViewModel @Inject constructor(
             }
         }
         // Update checked/unchecked sections in cast this was the only checked item
-        moveCheckedItemsToBottom()
+        onListItemsChanged()
     }
 
     /**

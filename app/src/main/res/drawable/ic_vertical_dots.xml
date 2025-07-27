@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><!--
+<!--
   Copyright 2025 Nicolas Maltais
 
   Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,11 +14,19 @@
   limitations under the License.
   -->
 
-<resources>
+<vector
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:autoMirrored="true"
+    android:height="24dp"
+    android:tint="?colorControlNormal"
+    android:viewportHeight="24"
+    android:viewportWidth="24"
+    android:width="24dp"
+    >
 
-    <integer name="note_list_layout_span_count">1</integer>
-    <integer name="note_grid_layout_span_count">3</integer>
+    <path
+        android:fillColor="#000000"
+        android:pathData="M12,16A2,2 0,0 1,14 18A2,2 0,0 1,12 20A2,2 0,0 1,10 18A2,2 0,0 1,12 16M12,10A2,2 0,0 1,14 12A2,2 0,0 1,12 14A2,2 0,0 1,10 12A2,2 0,0 1,12 10M12,4A2,2 0,0 1,14 6A2,2 0,0 1,12 8A2,2 0,0 1,10 6A2,2 0,0 1,12 4Z"
+        />
 
-    <integer name="edit_actions_in_toolbar">5</integer>
-
-</resources>
+</vector>

@@ -32,12 +32,10 @@ import androidx.core.net.toUri
 import androidx.core.view.OneShotPreDrawListener
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.get
 import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
-import androidx.lifecycle.asFlow
-import androidx.lifecycle.asLiveData
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.DefaultItemAnimator
@@ -50,32 +48,30 @@ import com.maltaisn.notes.NavGraphMainDirections
 import com.maltaisn.notes.R
 import com.maltaisn.notes.databinding.FragmentEditBinding
 import com.maltaisn.notes.hideKeyboard
-import com.maltaisn.notes.model.entity.Note
-import com.maltaisn.notes.model.entity.NoteStatus
 import com.maltaisn.notes.model.entity.NoteType
-import com.maltaisn.notes.model.entity.PinnedStatus
-import com.maltaisn.notes.model.entity.Reminder
 import com.maltaisn.notes.navigateSafe
-import com.maltaisn.notes.showKeyboard
 import com.maltaisn.notes.ui.SharedViewModel
 import com.maltaisn.notes.ui.common.ConfirmDialog
+import com.maltaisn.notes.ui.edit.actions.EditAction
+import com.maltaisn.notes.ui.edit.actions.EditActionsVisibility
 import com.maltaisn.notes.ui.edit.adapter.EditAdapter
 import com.maltaisn.notes.ui.observeEvent
 import com.maltaisn.notes.ui.startSharingData
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.combine
 import com.google.android.material.R as RMaterial
 
 @AndroidEntryPoint
 class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener, ConfirmDialog.Callback {
 
-    val viewModel: EditViewModel by viewModels()
+    val viewModel: EditViewModel by hiltNavGraphViewModels(R.id.fragment_edit)
     val sharedViewModel: SharedViewModel by hiltNavGraphViewModels(R.id.nav_graph_main)
 
     private val args: EditFragmentArgs by navArgs()
 
     private var _binding: FragmentEditBinding? = null
     private val binding get() = _binding!!
+
+    var editActions: List<EditAction> = emptyList()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         sharedElementEnterTransition = MaterialContainerTransform(requireContext(), true).apply {
@@ -110,6 +106,7 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener, ConfirmDialog.
             binding.fragmentEditLayout,
             "noteContainer$noteId"
         )
+        createActionItems()
         return binding.root
     }
 
@@ -205,15 +202,10 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener, ConfirmDialog.
     private fun setupViewModelObservers(adapter: EditAdapter) {
         val navController = findNavController()
 
+        viewModel.editActionsVisibility.observe(viewLifecycleOwner, ::updateActionItemsVisibility)
+
         // Each observer must take care not to undo the work of another observer
         // in case an attribute of a menu item is dependant on more than one criterion.
-        viewModel.noteStatus.observe(viewLifecycleOwner, ::updateItemsForNoteStatus)
-        viewModel.notePinned.observe(viewLifecycleOwner, ::updateItemsForPinnedStatus)
-        viewModel.noteReminder.observe(viewLifecycleOwner, ::updateItemsForStatusAndReminder)
-        viewModel.noteType.observe(viewLifecycleOwner, ::updateItemsForNoteType)
-        viewModel.noteType.asFlow().combine(viewModel.noteStatus.asFlow()) { type, status -> status to type }
-            .asLiveData().observe(viewLifecycleOwner, ::updateItemsForStatusAndType)
-
         viewModel.editItems.observe(viewLifecycleOwner, adapter::submitList)
 
         viewModel.focusEvent.observeEvent(viewLifecycleOwner, adapter::setItemFocus)
@@ -284,7 +276,7 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener, ConfirmDialog.
             intent.putExtra(Browser.EXTRA_APPLICATION_ID, context.packageName)
             try {
                 context.startActivity(intent)
-            } catch (e: ActivityNotFoundException) {
+            } catch (_: ActivityNotFoundException) {
                 // do nothing
             }
         }
@@ -298,89 +290,49 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener, ConfirmDialog.
         }
     }
 
-    private fun updateItemsForNoteStatus(status: NoteStatus) {
+    private fun createActionItems() {
+        editActions = EditActionsVisibility().createActions(requireContext())
+
         val menu = binding.toolbar.menu
-
-        val moveItem = menu.findItem(R.id.item_move)
-        when (status) {
-            NoteStatus.ACTIVE -> {
-                moveItem.setIcon(R.drawable.ic_archive)
-                moveItem.setTitle(R.string.action_archive)
-            }
-
-            NoteStatus.ARCHIVED -> {
-                moveItem.setIcon(R.drawable.ic_unarchive)
-                moveItem.setTitle(R.string.action_unarchive)
-            }
-
-            NoteStatus.DELETED -> {
-                moveItem.setIcon(R.drawable.ic_restore)
-                moveItem.setTitle(R.string.action_restore)
+        for ((i, action) in editActions.withIndex()) {
+            menu.add(0, i, 0, action.title).apply {
+                setIcon(action.icon)
+                isVisible = false
+                setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
             }
         }
-
-        val isTrash = status == NoteStatus.DELETED
-        menu.findItem(R.id.item_share).isVisible = !isTrash
-        menu.findItem(R.id.item_copy).isVisible = !isTrash
-        menu.findItem(R.id.item_reminder).isVisible = !isTrash
-        menu.findItem(R.id.item_delete).setTitle(if (isTrash) {
-            R.string.action_delete_forever
-        } else {
-            R.string.action_delete
-        })
-    }
-
-    private fun updateItemsForPinnedStatus(pinned: PinnedStatus) {
-        val item = binding.toolbar.menu.findItem(R.id.item_pin)
-        when (pinned) {
-            PinnedStatus.PINNED -> {
-                item.isVisible = true
-                item.setTitle(R.string.action_unpin)
-                item.setIcon(R.drawable.ic_pin_outline)
-            }
-
-            PinnedStatus.UNPINNED -> {
-                item.isVisible = true
-                item.setTitle(R.string.action_pin)
-                item.setIcon(R.drawable.ic_pin)
-            }
-
-            PinnedStatus.CANT_PIN -> {
-                item.isVisible = false
-            }
+        @SuppressLint("PrivateResource")
+        menu.add(0, editActions.size, 0, androidx.appcompat.R.string.abc_action_menu_overflow_description).apply {
+            setIcon(R.drawable.ic_vertical_dots)
+            setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
         }
     }
 
-    private fun updateItemsForStatusAndReminder(reminder: Reminder?) {
-        binding.toolbar.menu.findItem(R.id.item_reminder).setTitle(if (reminder != null) {
-            R.string.action_reminder_edit
-        } else {
-            R.string.action_reminder_add
-        })
-    }
+    private fun updateActionItemsVisibility(visibility: EditActionsVisibility) {
+        val context = requireContext()
+        editActions = visibility.createActions(context)
 
-    private fun updateItemsForNoteType(type: NoteType) {
         val menu = binding.toolbar.menu
-
-        val typeItem = menu.findItem(R.id.item_type)
-        when (type) {
-            NoteType.TEXT -> {
-                typeItem.setIcon(R.drawable.ic_checkbox)
-                typeItem.setTitle(R.string.action_convert_to_list)
-            }
-
-            NoteType.LIST -> {
-                typeItem.setIcon(R.drawable.ic_text)
-                typeItem.setTitle(R.string.action_convert_to_text)
+        val inToolbarMax = context.resources.getInteger(R.integer.edit_actions_in_toolbar)
+        var inToolbarCount = 0
+        var overflow = false
+        for ((i, action) in editActions.withIndex()) {
+            menu[i].isVisible = false
+            if (action.visible) {
+                if (action.showInToolbar) {
+                    if (inToolbarCount < inToolbarMax) {
+                        menu[i].isVisible = true
+                        inToolbarCount++
+                    } else {
+                        overflow = true
+                    }
+                } else {
+                    overflow = true
+                }
             }
         }
-    }
-
-    private fun updateItemsForStatusAndType(state: Pair<NoteStatus, NoteType>) {
-        val menu = binding.toolbar.menu
-        val isEditableList = state.first != NoteStatus.DELETED && state.second == NoteType.LIST
-        menu.findItem(R.id.item_uncheck_all).isVisible = isEditableList
-        menu.findItem(R.id.item_delete_checked).isVisible = isEditableList
+        // Show overflow icon only if there are hidden items
+        menu[editActions.size].isVisible = overflow
     }
 
     override fun onDestroyView() {
@@ -394,25 +346,17 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener, ConfirmDialog.
     }
 
     override fun onMenuItemClick(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.item_type -> viewModel.toggleNoteType()
-            R.id.item_move -> viewModel.moveNoteAndExit()
-            R.id.item_pin -> viewModel.togglePin()
-            R.id.item_reminder -> viewModel.changeReminder()
-            R.id.item_labels -> viewModel.changeLabels()
-            R.id.item_share -> viewModel.shareNote()
-            R.id.item_uncheck_all -> {
-                viewModel.uncheckAllItems()
+        for ((i, action) in editActions.withIndex()) {
+            if (item.itemId == i && action.visible) {
+                action.action(viewModel)
+                return true
             }
-
-            R.id.item_delete_checked -> viewModel.deleteCheckedItems()
-            R.id.item_copy -> viewModel.copyNote(getString(R.string.edit_copy_untitled_name),
-                getString(R.string.edit_copy_suffix))
-
-            R.id.item_delete -> viewModel.deleteNote()
-            else -> return false
         }
-        return true
+        if (item.itemId == editActions.size) {
+            // Overflow item
+            findNavController().navigateSafe(EditFragmentDirections.actionEditToEditActions())
+        }
+        return false
     }
 
     override fun onDialogPositiveButtonClicked(tag: String?) {

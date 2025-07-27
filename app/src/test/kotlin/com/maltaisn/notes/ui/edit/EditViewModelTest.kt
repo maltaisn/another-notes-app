@@ -30,7 +30,6 @@ import com.maltaisn.notes.model.entity.Label
 import com.maltaisn.notes.model.entity.LabelRef
 import com.maltaisn.notes.model.entity.ListNoteItem
 import com.maltaisn.notes.model.entity.NoteStatus
-import com.maltaisn.notes.model.entity.NoteType
 import com.maltaisn.notes.model.entity.PinnedStatus
 import com.maltaisn.notes.model.entity.Reminder
 import com.maltaisn.notes.testNote
@@ -39,6 +38,7 @@ import com.maltaisn.notes.ui.ShareData
 import com.maltaisn.notes.ui.StatusChange
 import com.maltaisn.notes.ui.assertLiveDataEventSent
 import com.maltaisn.notes.ui.edit.EditViewModel.DefaultEditableText
+import com.maltaisn.notes.ui.edit.actions.EditActionsVisibility
 import com.maltaisn.notes.ui.edit.adapter.EditCheckedHeaderItem
 import com.maltaisn.notes.ui.edit.adapter.EditChipsItem
 import com.maltaisn.notes.ui.edit.adapter.EditContentItem
@@ -147,8 +147,23 @@ class EditViewModelTest {
 
         assertNoteEquals(testNote(title = "", content = ""), notesRepo.lastAddedNote!!)
 
-        assertEquals(NoteStatus.ACTIVE, viewModel.noteStatus.getOrAwaitValue())
-        assertEquals(NoteType.TEXT, viewModel.noteType.getOrAwaitValue())
+        assertEquals(EditActionsVisibility(
+            convertToList = true,
+            convertToText = false,
+            reminderAdd = true,
+            reminderEdit = false,
+            archive = true,
+            unarchive = false,
+            delete = true,
+            restore = false,
+            deleteForever = false,
+            pin = true,
+            unpin = false,
+            share = true,
+            copy = true,
+            uncheckAll = false,
+            deleteChecked = false,
+        ), viewModel.editActionsVisibility.getOrAwaitValue())
 
         assertEquals(listOf(
             EditTitleItem("".e, true),
@@ -196,8 +211,23 @@ class EditViewModelTest {
     fun `should edit existing text note`() = runTest {
         viewModel.start(1)
 
-        assertEquals(NoteStatus.ACTIVE, viewModel.noteStatus.getOrAwaitValue())
-        assertEquals(NoteType.TEXT, viewModel.noteType.getOrAwaitValue())
+        assertEquals(EditActionsVisibility(
+            convertToList = true,
+            convertToText = false,
+            reminderAdd = true,
+            reminderEdit = false,
+            archive = true,
+            unarchive = false,
+            delete = true,
+            restore = false,
+            deleteForever = false,
+            pin = true,
+            unpin = false,
+            share = true,
+            copy = true,
+            uncheckAll = false,
+            deleteChecked = false,
+        ), viewModel.editActionsVisibility.getOrAwaitValue())
 
         assertEquals(listOf(
             EditDateItem(dateFor("2018-01-01").time),
@@ -211,8 +241,23 @@ class EditViewModelTest {
     fun `should edit existing list note`() = runTest {
         viewModel.start(2)
 
-        assertEquals(NoteStatus.ACTIVE, viewModel.noteStatus.getOrAwaitValue())
-        assertEquals(NoteType.LIST, viewModel.noteType.getOrAwaitValue())
+        assertEquals(EditActionsVisibility(
+            convertToList = false,
+            convertToText = true,
+            reminderAdd = true,
+            reminderEdit = false,
+            archive = true,
+            unarchive = false,
+            delete = true,
+            restore = false,
+            deleteForever = false,
+            pin = true,
+            unpin = false,
+            share = true,
+            copy = true,
+            uncheckAll = true,
+            deleteChecked = true,
+        ), viewModel.editActionsVisibility.getOrAwaitValue())
 
         assertEquals(listOf(
             EditDateItem(dateFor("2020-03-30").time),
@@ -229,8 +274,23 @@ class EditViewModelTest {
         runTest {
             viewModel.start(4)
 
-            assertEquals(viewModel.noteStatus.getOrAwaitValue(), NoteStatus.DELETED)
-            assertEquals(viewModel.noteType.getOrAwaitValue(), NoteType.TEXT)
+            assertEquals(EditActionsVisibility(
+                convertToList = false,
+                convertToText = false,
+                reminderAdd = false,
+                reminderEdit = false,
+                archive = false,
+                unarchive = false,
+                delete = false,
+                restore = true,
+                deleteForever = true,
+                pin = false,
+                unpin = false,
+                share = false,
+                copy = false,
+                uncheckAll = false,
+                deleteChecked = false,
+            ), viewModel.editActionsVisibility.getOrAwaitValue())
 
             assertEquals(listOf(
                 EditDateItem(dateFor("2020-03-30").time),
@@ -243,8 +303,23 @@ class EditViewModelTest {
     fun `should open existing list note in trash, not editable`() = runTest {
         viewModel.start(5)
 
-        assertEquals(NoteStatus.DELETED, viewModel.noteStatus.getOrAwaitValue())
-        assertEquals(NoteType.LIST, viewModel.noteType.getOrAwaitValue())
+        assertEquals(EditActionsVisibility(
+            convertToList = false,
+            convertToText = false,
+            reminderAdd = false,
+            reminderEdit = false,
+            archive = false,
+            unarchive = false,
+            delete = false,
+            restore = true,
+            deleteForever = true,
+            pin = false,
+            unpin = false,
+            share = false,
+            copy = false,
+            uncheckAll = false,
+            deleteChecked = false,
+        ), viewModel.editActionsVisibility.getOrAwaitValue())
 
         assertEquals(listOf(
             EditDateItem(dateFor("2020-03-30").time),
@@ -421,7 +496,24 @@ class EditViewModelTest {
         viewModel.start(4)
         viewModel.restoreNoteAndEdit()
 
-        assertEquals(NoteStatus.ACTIVE, viewModel.noteStatus.getOrAwaitValue())
+        assertEquals(EditActionsVisibility(
+            convertToList = true,
+            convertToText = false,
+            reminderAdd = true,
+            reminderEdit = false,
+            archive = true,
+            unarchive = false,
+            delete = true,
+            restore = false,
+            deleteForever = false,
+            pin = true,
+            unpin = false,
+            share = true,
+            copy = true,
+            uncheckAll = false,
+            deleteChecked = false,
+        ), viewModel.editActionsVisibility.getOrAwaitValue())
+
         assertLiveDataEventSent(viewModel.messageEvent, EditMessage.RESTORED_NOTE)
         assertEquals(listOf(
             EditDateItem(dateFor("2020-03-30").time),
@@ -440,7 +532,24 @@ class EditViewModelTest {
         viewModel.start(5)
         viewModel.restoreNoteAndEdit()
 
-        assertEquals(NoteStatus.ACTIVE, viewModel.noteStatus.getOrAwaitValue())
+        assertEquals(EditActionsVisibility(
+            convertToList = false,
+            convertToText = true,
+            reminderAdd = true,
+            reminderEdit = false,
+            archive = true,
+            unarchive = false,
+            delete = true,
+            restore = false,
+            deleteForever = false,
+            pin = true,
+            unpin = false,
+            share = true,
+            copy = true,
+            uncheckAll = true,
+            deleteChecked = true,
+        ), viewModel.editActionsVisibility.getOrAwaitValue())
+
         assertLiveDataEventSent(viewModel.messageEvent, EditMessage.RESTORED_NOTE)
         assertEquals(listOf(
             EditDateItem(dateFor("2020-03-30").time),
@@ -814,32 +923,46 @@ class EditViewModelTest {
     @Test
     fun `should set correct pinned status (unpinned)`() = runTest {
         viewModel.start(1)
-        assertEquals(PinnedStatus.UNPINNED, viewModel.notePinned.getOrAwaitValue())
+
+        val visibility = viewModel.editActionsVisibility.getOrAwaitValue()
+        assertTrue(visibility.pin)
+        assertFalse(visibility.unpin)
     }
 
     @Test
     fun `should set correct pinned status (pinned)`() = runTest {
         viewModel.start(3)
-        assertEquals(PinnedStatus.PINNED, viewModel.notePinned.getOrAwaitValue())
+
+        val visibility = viewModel.editActionsVisibility.getOrAwaitValue()
+        assertTrue(visibility.unpin)
+        assertFalse(visibility.pin)
     }
 
     @Test
     fun `should set correct pinned status (can't pin)`() = runTest {
         viewModel.start(4)
-        assertEquals(PinnedStatus.CANT_PIN, viewModel.notePinned.getOrAwaitValue())
+
+        val visibility = viewModel.editActionsVisibility.getOrAwaitValue()
+        assertFalse(visibility.unpin)
+        assertFalse(visibility.pin)
     }
 
     @Test
     fun `should set correct reminder (no reminder)`() = runTest {
         viewModel.start(1)
-        assertNull(viewModel.noteReminder.getOrAwaitValue())
+
+        val visibility = viewModel.editActionsVisibility.getOrAwaitValue()
+        assertFalse(visibility.reminderEdit)
+        assertTrue(visibility.reminderAdd)
     }
 
     @Test
     fun `should set correct reminder (has reminder)`() = runTest {
         viewModel.start(3)
-        assertEquals(notesRepo.requireNoteById(3).reminder,
-            viewModel.noteReminder.getOrAwaitValue())
+
+        val visibility = viewModel.editActionsVisibility.getOrAwaitValue()
+        assertTrue(visibility.reminderEdit)
+        assertFalse(visibility.reminderAdd)
     }
 
     @Test
@@ -847,9 +970,6 @@ class EditViewModelTest {
         runTest {
             whenever(prefs.shownDateField) doReturn ShownDateField.MODIFIED
             viewModel.start(1)
-
-            assertEquals(NoteStatus.ACTIVE, viewModel.noteStatus.getOrAwaitValue())
-            assertEquals(NoteType.TEXT, viewModel.noteType.getOrAwaitValue())
 
             assertEquals(listOf(
                 EditDateItem(dateFor("2019-01-01").time),
@@ -863,9 +983,6 @@ class EditViewModelTest {
     fun `should edit existing text note (no date field)`() = runTest {
         whenever(prefs.shownDateField) doReturn ShownDateField.NONE
         viewModel.start(1)
-
-        assertEquals(NoteStatus.ACTIVE, viewModel.noteStatus.getOrAwaitValue())
-        assertEquals(NoteType.TEXT, viewModel.noteType.getOrAwaitValue())
 
         assertEquals(listOf(
             EditTitleItem("title".e, true),
@@ -1166,6 +1283,29 @@ class EditViewModelTest {
             EditContentItem("modified".e, true),
             EditChipsItem(listOf(reminder, labelsRepo.requireLabelById(1))),
         ), viewModel.editItems.getOrAwaitValue())
+    }
+
+    @Test
+    fun `should hide list action items if none checked`() = runTest {
+        viewModel.start(3)
+
+        assertEquals(EditActionsVisibility(
+            convertToList = false,
+            convertToText = true,
+            reminderAdd = false,
+            reminderEdit = true,
+            archive = true,
+            unarchive = false,
+            delete = true,
+            restore = false,
+            deleteForever = false,
+            pin = false,
+            unpin = true,
+            share = true,
+            copy = true,
+            uncheckAll = false,
+            deleteChecked = false,
+        ), viewModel.editActionsVisibility.getOrAwaitValue())
     }
 
     private val String.e: EditableText

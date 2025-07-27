@@ -14,11 +14,19 @@
   limitations under the License.
   -->
 
-<resources>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingTop="8dp"
+    android:paddingBottom="16dp"
+    >
 
-    <integer name="note_list_layout_span_count">1</integer>
-    <integer name="note_grid_layout_span_count">3</integer>
+    <LinearLayout
+        android:id="@+id/content_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        />
 
-    <integer name="edit_actions_in_toolbar">5</integer>
-
-</resources>
+</ScrollView>

@@ -86,7 +86,17 @@
             android:defaultValue=""
             app:argType="string"
             />
+        <action
+            android:id="@+id/action_edit_to_edit_actions"
+            app:destination="@id/dialog_edit_actions"
+            />
     </fragment>
+
+    <dialog
+        android:id="@+id/dialog_edit_actions"
+        android:name="com.maltaisn.notes.ui.edit.actions.EditActionsDialog"
+        tools:layout="@layout/dialog_edit_actions"
+        />
 
     <dialog
         android:id="@+id/dialog_sort"
@@ -139,7 +149,6 @@
                 app:argType="long[]"
                 />
         </dialog>
-
     </navigation>
 
     <fragment
