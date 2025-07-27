@@ -753,26 +753,32 @@ class EditViewModel @Inject constructor(
         }
     }
 
+    private fun focusEndOfTitle() {
+        // Backspace in the content, focus the end of the title.
+        val titlePos = findItemPos<EditTitleItem>()
+        val titleLength = (listItems[titlePos] as EditTitleItem).title.text.length
+        focusItemAt(titlePos, titleLength, true)
+    }
+
     override fun onNoteItemBackspacePressed(pos: Int) {
         when (listItems[pos]) {
-            is EditContentItem -> {
-                // Backspace in the content, focus the end of the title.
-                val titlePos = findItemPos<EditTitleItem>()
-                val titleLength = (listItems[titlePos] as EditTitleItem).title.text.length
-                focusItemAt(titlePos, titleLength, true)
-            }
+            is EditContentItem -> focusEndOfTitle()
             is EditItemItem -> {
                 val prevItem = listItems[pos - 1]
-                if (prevItem is EditItemItem) {
-                    // Previous item is also a note list item. Merge the two items content,
-                    // and delete the current item.
-                    val prevText = prevItem.content
-                    val prevLength = prevText.text.length
-                    prevText.append((listItems[pos] as EditItemItem).content.text)
-                    deleteListItemAt(pos)
+                when (prevItem) {
+                    is EditItemItem -> {
+                        // Previous item is also a note list item. Merge the two items content,
+                        // and delete the current item.
+                        val prevText = prevItem.content
+                        val prevLength = prevText.text.length
+                        prevText.append((listItems[pos] as EditItemItem).content.text)
+                        deleteListItemAt(pos)
 
-                    // Set focus on merge boundary.
-                    focusItemAt(pos - 1, prevLength, true)
+                        // Set focus on merge boundary.
+                        focusItemAt(pos - 1, prevLength, true)
+                    }
+                    is EditTitleItem -> focusEndOfTitle()
+                    else -> {}
                 }
             }
             else -> {}

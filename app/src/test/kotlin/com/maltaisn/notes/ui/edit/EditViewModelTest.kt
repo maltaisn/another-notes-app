@@ -693,6 +693,24 @@ class EditViewModelTest {
         }
 
     @Test
+    fun `should focus title on backspace in first list item`() =
+        runTest {
+            viewModel.start(2)
+            viewModel.onNoteItemBackspacePressed(2)
+
+            assertEquals(listOf(
+                EditDateItem(dateFor("2020-03-30").time),
+                EditTitleItem("title".e, true),
+                EditItemItem("item 1".e, checked = true, editable = true, 0),
+                EditItemItem("item 2".e, checked = false, editable = true, 1),
+                EditItemAddItem,
+                EditChipsItem(listOf(labelsRepo.requireLabelById(1))),
+            ), viewModel.editItems.getOrAwaitValue())
+            assertLiveDataEventSent(viewModel.focusEvent,
+                EditViewModel.FocusChange(1, 5, true))
+        }
+
+    @Test
     fun `should delete list note item and focus previous`() = runTest {
         viewModel.start(2)
         viewModel.onNoteItemDeleteClicked(3)
