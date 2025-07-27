@@ -455,7 +455,7 @@ abstract class NoteFragment : Fragment(), ActionMode.Callback, ConfirmDialog.Cal
     }
 
     override fun onCreateActionMode(mode: ActionMode, menu: Menu): Boolean {
-        mode.menuInflater.inflate(R.menu.cab_note_selection, menu)
+        requireActivity().menuInflater.inflate(R.menu.cab_note_selection, menu)
         switchStatusBarColor(
             (binding.toolbarLayout.background as MaterialShapeDrawable).resolvedTintColor,
             MaterialColors.getColor(requireView(), RMaterial.attr.colorSurfaceVariant),

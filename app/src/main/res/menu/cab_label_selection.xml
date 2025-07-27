@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?><!--
-  Copyright 2021 Nicolas Maltais
+  Copyright 2025 Nicolas Maltais
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 <menu
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:ignore="AppCompatResource"
     >
 
@@ -24,20 +25,20 @@
         android:id="@+id/item_rename"
         android:icon="@drawable/ic_pencil"
         android:title="@string/action_rename"
-        android:showAsAction="ifRoom"
+        app:showAsAction="ifRoom"
         />
 
     <item
         android:id="@+id/item_delete"
         android:icon="@drawable/ic_delete"
-        android:showAsAction="ifRoom"
+        app:showAsAction="ifRoom"
         android:title="@string/action_delete"
         />
 
     <item
         android:id="@+id/item_select_all"
         android:icon="@drawable/ic_select_all"
-        android:showAsAction="ifRoom"
+        app:showAsAction="ifRoom"
         android:title="@string/action_select_all"
         />
 
