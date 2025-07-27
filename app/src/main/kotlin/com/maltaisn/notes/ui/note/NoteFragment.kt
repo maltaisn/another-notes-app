@@ -18,12 +18,13 @@ package com.maltaisn.notes.ui.note
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.view.ActionMode
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.view.ActionMode
 import androidx.core.app.SharedElementCallback
 import androidx.core.view.OneShotPreDrawListener
 import androidx.core.view.ViewCompat
@@ -314,7 +315,7 @@ abstract class NoteFragment : Fragment(), ActionMode.Callback, ConfirmDialog.Cal
 
     private fun updateActionModeForSelection(selection: NoteViewModel.NoteSelection) {
         if (selection.count != 0 && actionMode == null) {
-            actionMode = binding.toolbar.startSafeActionMode(this)
+            actionMode = (requireActivity() as AppCompatActivity).startSafeActionMode(this)
         } else if (selection.count == 0 && actionMode != null) {
             actionMode?.finish()
             actionMode = null

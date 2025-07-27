@@ -100,31 +100,7 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
         drawerLayout = binding.drawerLayout
         setContentView(binding.root)
 
-        // Allow for transparent status and navigation bars
-        // See https://developer.android.com/design/ui/mobile/guides/layout-and-content/edge-to-edge
-        // TODO eventually, use WindowCompat.enableEdgeToEdge
-        WindowCompat.setDecorFitsSystemWindows(window, false)
-
-        if (Build.VERSION.SDK_INT >= 27 && Build.VERSION.SDK_INT <= 28) {
-            // On API 27 & 28, there's no Window.isNavigationBarContrastEnforced that ensures a transparent navigation
-            // bar, as configured, has proper constrast. So, we manage the color manually.
-            @Suppress("DEPRECATION")
-            window.navigationBarColor = MaterialColors.getColor(this, R.attr.navigationBarColorApi27, Color.TRANSPARENT)
-        }
-
-        // Apply padding to navigation drawer
-        val initialPadding = resources.getDimensionPixelSize(R.dimen.navigation_drawer_bottom_padding)
-        ViewCompat.setOnApplyWindowInsetsListener(binding.navView) { _, insets ->
-            val sysWindow = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            binding.navView.getHeaderView(0).updatePadding(top = sysWindow.top)
-            binding.navView.children.last().updatePadding(bottom = initialPadding + sysWindow.bottom)
-            // Don't draw under system bars, if it conflicts with the navigation drawer.
-            // This is mainly the case if the app is used in landscape mode with traditional 3 button navigation.
-            if (sysWindow.left > 0) {
-                WindowCompat.setDecorFitsSystemWindows(window, true)
-            }
-            WindowInsetsCompat.CONSUMED
-        }
+        enableEdgeToEdge()
 
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         navController = navHostFragment.navController
@@ -152,6 +128,35 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
         }
 
         setupViewModelObservers()
+    }
+
+    private fun enableEdgeToEdge() {
+        // Allow for transparent status and navigation bars
+        // See https://developer.android.com/design/ui/mobile/guides/layout-and-content/edge-to-edge
+        // WindowCompat.enableEdgeToEdge() set transparent system bars, which doesn't work well for the status bar
+        // under API 23 and for the navigation bar under API 27 because the contrast is bad in light theme.
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+
+        if (Build.VERSION.SDK_INT >= 27 && Build.VERSION.SDK_INT <= 28) {
+            // On API 27 & 28, there's no Window.isNavigationBarContrastEnforced that ensures a transparent navigation
+            // bar, as configured, has proper constrast. So, we manage the color manually.
+            @Suppress("DEPRECATION")
+            window.navigationBarColor = MaterialColors.getColor(this, R.attr.navigationBarColorApi27, Color.TRANSPARENT)
+        }
+
+        // Apply padding to navigation drawer
+        val initialPadding = resources.getDimensionPixelSize(R.dimen.navigation_drawer_bottom_padding)
+        ViewCompat.setOnApplyWindowInsetsListener(binding.navView) { _, insets ->
+            val sysWindow = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            binding.navView.getHeaderView(0).updatePadding(top = sysWindow.top)
+            binding.navView.children.last().updatePadding(bottom = initialPadding + sysWindow.bottom)
+            if (sysWindow.left > 0) {
+                // Add left padding to the navigation view to avoid showing it under the navigation bar.
+                // This occurs only in landscape mode with the navigation bar on the left.
+                binding.navView.updatePadding(left = sysWindow.left)
+            }
+            WindowInsetsCompat.CONSUMED
+        }
     }
 
     private fun setupViewModelObservers() {

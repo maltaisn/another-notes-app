@@ -64,11 +64,10 @@ fun Fragment.switchStatusBarColor(
 
 fun Fragment.setStatusBarColor(@ColorInt color: Int) {
     val window = requireActivity().window
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
-        window.decorView.setOnApplyWindowInsetsListener { view, insets ->
-            view.setBackgroundColor(color)
-            insets
-        }
+    if (Build.VERSION.SDK_INT > Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+        // TODO I haven't found a way to make this work for API 35+ with the action mode.
+        // It used to work but the material library broke something in a recent version.
+        // Relevant link: https://stackoverflow.com/questions/79391083
     } else {
         // For Android 14 and below
         @Suppress("DEPRECATION")

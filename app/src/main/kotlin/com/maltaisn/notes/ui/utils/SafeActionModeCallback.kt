@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Nicolas Maltais
+ * Copyright 2025 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,10 @@
 
 package com.maltaisn.notes.ui.utils
 
-import android.view.ActionMode
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.view.ActionMode
 
 /**
  * Can't remove action mode callback after adding it, and setting the action mode to `null`
@@ -48,6 +48,6 @@ private class SafeActionModeCallback(
     }
 }
 
-fun View.startSafeActionMode(callback: ActionMode.Callback): ActionMode {
-    return this.startActionMode(SafeActionModeCallback(callback))
+fun AppCompatActivity.startSafeActionMode(callback: ActionMode.Callback): ActionMode? {
+    return this.startSupportActionMode(SafeActionModeCallback(callback))
 }

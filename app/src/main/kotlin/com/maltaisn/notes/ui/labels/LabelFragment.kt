@@ -17,12 +17,13 @@
 package com.maltaisn.notes.ui.labels
 
 import android.os.Bundle
-import android.view.ActionMode
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.view.ActionMode
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.isVisible
 import androidx.fragment.app.DialogFragment
@@ -162,7 +163,7 @@ class LabelFragment : DialogFragment(), Toolbar.OnMenuItemClickListener,
 
     private fun updateActionModeForSelection(count: Int) {
         if (count != 0 && actionMode == null) {
-            actionMode = binding.toolbar.startSafeActionMode(this)
+            actionMode = (requireActivity() as AppCompatActivity).startSafeActionMode(this)
         } else if (count == 0 && actionMode != null) {
             actionMode?.finish()
             actionMode = null
