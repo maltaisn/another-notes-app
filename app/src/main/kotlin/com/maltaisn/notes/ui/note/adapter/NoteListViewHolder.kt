@@ -88,10 +88,16 @@ sealed class NoteViewHolder<T : NoteItem>(itemView: View) :
         // Click listeners
         cardView.isChecked = item.checked
         cardView.setOnClickListener {
-            adapter.callback.onNoteItemClicked(item, bindingAdapterPosition)
+            val pos = bindingAdapterPosition
+            if (pos != RecyclerView.NO_POSITION) {
+                adapter.callback.onNoteItemClicked(item, bindingAdapterPosition)
+            }
         }
         cardView.setOnLongClickListener {
-            adapter.callback.onNoteItemLongClicked(item, bindingAdapterPosition)
+            val pos = bindingAdapterPosition
+            if (pos != RecyclerView.NO_POSITION) {
+                adapter.callback.onNoteItemLongClicked(item, bindingAdapterPosition)
+            }
             true
         }
     }
