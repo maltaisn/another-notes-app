@@ -7,6 +7,7 @@
 - Changed default trash auto-delete delay from 1 day to 7 days, as it used to be.
 - Allow changing the app language and settings from the system app info page.
 - Don't automatically add bullet points when converting a list note to text.
+- Don't show "Create note" or "Edit note" in edit screen.
 - Fixed sort settings not being applied in reminders views (#152).
 - Fixed note scrolling back to the beginning on first focus (#156).
 - Fixed text being ellipsized in some preferences (#158).

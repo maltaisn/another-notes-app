@@ -139,12 +139,6 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener, ConfirmDialog.
                 viewModel.saveNote()
                 viewModel.exit()
             }
-            setTitle(if (args.noteId == Note.NO_ID) {
-                view.showKeyboard()
-                R.string.edit_add_title
-            } else {
-                R.string.edit_change_title
-            })
         }
 
         // Recycler view
