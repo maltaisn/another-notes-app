@@ -34,10 +34,10 @@ import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.shape.MaterialShapeDrawable
-import com.google.android.material.transition.MaterialElevationScale
 import com.maltaisn.notes.R
 import com.maltaisn.notes.databinding.FragmentLabelBinding
 import com.maltaisn.notes.navigateSafe
+import com.maltaisn.notes.setEnterExitTransitions
 import com.maltaisn.notes.switchStatusBarColor
 import com.maltaisn.notes.ui.SharedViewModel
 import com.maltaisn.notes.ui.common.ConfirmDialog
@@ -72,13 +72,7 @@ class LabelFragment : DialogFragment(), Toolbar.OnMenuItemClickListener,
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        enterTransition = MaterialElevationScale(false).apply {
-            duration = resources.getInteger(RMaterial.integer.material_motion_duration_short_2).toLong()
-        }
-        exitTransition = MaterialElevationScale(true).apply {
-            duration = resources.getInteger(RMaterial.integer.material_motion_duration_short_2).toLong()
-        }
+        setEnterExitTransitions()
     }
 
     override fun onCreateView(

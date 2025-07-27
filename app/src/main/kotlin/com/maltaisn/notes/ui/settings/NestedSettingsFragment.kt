@@ -21,10 +21,9 @@ import android.view.View
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.preference.PreferenceFragmentCompat
-import com.google.android.material.transition.MaterialElevationScale
 import com.maltaisn.notes.databinding.FragmentSettingsBinding
+import com.maltaisn.notes.setEnterExitTransitions
 import dagger.hilt.android.AndroidEntryPoint
-import com.google.android.material.R as RMaterial
 
 /**
  * Secondary settings fragment for showing nested preference screens.
@@ -40,13 +39,7 @@ class NestedSettingsFragment : PreferenceFragmentCompat() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        enterTransition = MaterialElevationScale(false).apply {
-            duration = resources.getInteger(RMaterial.integer.material_motion_duration_short_2).toLong()
-        }
-        exitTransition = MaterialElevationScale(true).apply {
-            duration = resources.getInteger(RMaterial.integer.material_motion_duration_short_2).toLong()
-        }
+        setEnterExitTransitions()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

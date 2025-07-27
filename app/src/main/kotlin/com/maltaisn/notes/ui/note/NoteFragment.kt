@@ -44,7 +44,6 @@ import com.google.android.material.color.MaterialColors
 import com.google.android.material.shape.MaterialShapeDrawable
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.transition.Hold
-import com.google.android.material.transition.MaterialElevationScale
 import com.maltaisn.notes.NavGraphMainDirections
 import com.maltaisn.notes.R
 import com.maltaisn.notes.databinding.FragmentNoteBinding
@@ -52,6 +51,7 @@ import com.maltaisn.notes.model.PrefsManager
 import com.maltaisn.notes.model.entity.NoteStatus
 import com.maltaisn.notes.model.entity.PinnedStatus
 import com.maltaisn.notes.navigateSafe
+import com.maltaisn.notes.setEnterExitTransitions
 import com.maltaisn.notes.switchStatusBarColor
 import com.maltaisn.notes.ui.SharedViewModel
 import com.maltaisn.notes.ui.StatusChange
@@ -148,12 +148,7 @@ abstract class NoteFragment : Fragment(), ActionMode.Callback, ConfirmDialog.Cal
 
         setupViewModelObservers(adapter, layoutManager)
 
-        enterTransition = MaterialElevationScale(false).apply {
-            duration = resources.getInteger(RMaterial.integer.material_motion_duration_short_2).toLong()
-        }
-        exitTransition = MaterialElevationScale(true).apply {
-            duration = resources.getInteger(RMaterial.integer.material_motion_duration_short_2).toLong()
-        }
+        setEnterExitTransitions()
 
         // Handle Shared Element Transitions when returning to this fragment.
         if (isSharedElementTransitionPlaying) {

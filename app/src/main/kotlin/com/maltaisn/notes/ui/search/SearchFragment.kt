@@ -23,13 +23,12 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.SimpleItemAnimator
-import com.google.android.material.transition.MaterialElevationScale
 import com.maltaisn.notes.R
 import com.maltaisn.notes.hideKeyboard
+import com.maltaisn.notes.setEnterExitTransitions
 import com.maltaisn.notes.showKeyboard
 import com.maltaisn.notes.ui.note.NoteFragment
 import dagger.hilt.android.AndroidEntryPoint
-import com.google.android.material.R as RMaterial
 
 @AndroidEntryPoint
 class SearchFragment : NoteFragment() {
@@ -38,13 +37,7 @@ class SearchFragment : NoteFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        enterTransition = MaterialElevationScale(false).apply {
-            duration = resources.getInteger(RMaterial.integer.material_motion_duration_short_2).toLong()
-        }
-        exitTransition = MaterialElevationScale(true).apply {
-            duration = resources.getInteger(RMaterial.integer.material_motion_duration_short_2).toLong()
-        }
+        setEnterExitTransitions()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

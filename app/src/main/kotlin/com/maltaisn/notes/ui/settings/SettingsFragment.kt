@@ -40,7 +40,6 @@ import androidx.preference.SwitchPreferenceCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.color.DynamicColors
 import com.google.android.material.snackbar.Snackbar
-import com.google.android.material.transition.MaterialElevationScale
 import com.maltaisn.notes.App
 import com.maltaisn.notes.BuildConfig
 import com.maltaisn.notes.R
@@ -48,6 +47,7 @@ import com.maltaisn.notes.TAG
 import com.maltaisn.notes.databinding.FragmentSettingsBinding
 import com.maltaisn.notes.model.DefaultPrefsManager
 import com.maltaisn.notes.navigateSafe
+import com.maltaisn.notes.setEnterExitTransitions
 import com.maltaisn.notes.ui.AppTheme
 import com.maltaisn.notes.ui.common.ConfirmDialog
 import com.maltaisn.notes.ui.main.MainActivity
@@ -56,7 +56,6 @@ import com.maltaisn.notes.ui.observeEvent
 import com.maltaisn.notes.ui.reminder.ReminderPermission
 import dagger.hilt.android.AndroidEntryPoint
 import java.text.DateFormat
-import com.google.android.material.R as RMaterial
 
 @AndroidEntryPoint
 class SettingsFragment : PreferenceFragmentCompat(), ConfirmDialog.Callback, ExportPasswordDialog.Callback,
@@ -133,12 +132,7 @@ class SettingsFragment : PreferenceFragmentCompat(), ConfirmDialog.Callback, Exp
         notificationPermission = NotificationPermission(this)
         reminderPermission = getContext()?.let { ReminderPermission(this, it) }
 
-        enterTransition = MaterialElevationScale(false).apply {
-            duration = resources.getInteger(RMaterial.integer.material_motion_duration_short_2).toLong()
-        }
-        exitTransition = MaterialElevationScale(true).apply {
-            duration = resources.getInteger(RMaterial.integer.material_motion_duration_short_2).toLong()
-        }
+        setEnterExitTransitions()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

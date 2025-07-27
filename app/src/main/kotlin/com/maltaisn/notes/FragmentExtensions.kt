@@ -24,8 +24,10 @@ import androidx.annotation.ColorInt
 import androidx.core.animation.addListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
+import com.google.android.material.transition.MaterialElevationScale
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
+import com.google.android.material.R as RMaterial
 
 /**
  * Returns whether this fragment manager contains a fragment with a [tag].
@@ -72,5 +74,14 @@ fun Fragment.setStatusBarColor(@ColorInt color: Int) {
         // For Android 14 and below
         @Suppress("DEPRECATION")
         window.statusBarColor = color
+    }
+}
+
+fun Fragment.setEnterExitTransitions() {
+    enterTransition = MaterialElevationScale(false).apply {
+        duration = resources.getInteger(RMaterial.integer.material_motion_duration_short_2).toLong()
+    }
+    exitTransition = MaterialElevationScale(true).apply {
+        duration = resources.getInteger(RMaterial.integer.material_motion_duration_short_2).toLong()
     }
 }
