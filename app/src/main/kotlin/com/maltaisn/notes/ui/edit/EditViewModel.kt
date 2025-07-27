@@ -21,6 +21,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.maltaisn.notes.debugCheck
 import com.maltaisn.notes.model.LabelsRepository
 import com.maltaisn.notes.model.NotesRepository
 import com.maltaisn.notes.model.PrefsManager
@@ -712,7 +713,14 @@ class EditViewModel @Inject constructor(
     }
 
     override fun onNoteItemChanged(pos: Int, isPaste: Boolean) {
-        val item = listItems[pos] as EditItemItem
+        val item = listItems.getOrNull(pos) as? EditItemItem?
+        debugCheck(item != null)
+        if (item == null) {
+            // This shouldn't happen, but I've seen two crashes here.
+            // It might be better to just ignore it for now.
+            return
+        }
+
         if ('\n' in item.content.text) {
             // User inserted line breaks in list items, split it into multiple items.
             // If this happens in the checked group when moving checked to the bottom, new items will be checked.
