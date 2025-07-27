@@ -1,6 +1,7 @@
-## v1.5.5 (2025-07-19)
+## v1.5.5 (WIP)
 - Added Vietnamese translation (#146, @ngocanhtve) & updated other languages.
 - Allow adjusting the text size in the editor (#22).
+- Added a setting for initially focusing on the content when a new note is created (#116).
 - Focus title if backspace is pressed at the start of content in a text note (#157).
 - Allow searching from deleted notes when search is started from trash (#159).
 - Changed default trash auto-delete delay from 1 day to 7 days, as it used to be.

@@ -310,8 +310,11 @@ class EditViewModel @Inject constructor(
             recreateListItems()
 
             if (isFirstStart && isNewNote) {
-                // Focus on title
-                focusItemAt(findItemPos<EditTitleItem>(), 0, false)
+                // Focus on title or content initially.
+                focusItemAt(when (prefs.editInitialFocus) {
+                    EditInitialFocus.TITLE -> findItemPos<EditTitleItem>()
+                    EditInitialFocus.CONTENT -> findItemPos<EditContentItem>()
+                }, 0, false)
 
                 if (changeReminder) {
                     changeReminder()

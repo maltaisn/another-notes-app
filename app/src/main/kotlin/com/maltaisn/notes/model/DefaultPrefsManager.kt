@@ -23,6 +23,7 @@ import androidx.preference.PreferenceManager
 import com.maltaisn.notes.R
 import com.maltaisn.notes.model.entity.NoteType
 import com.maltaisn.notes.ui.AppTheme
+import com.maltaisn.notes.ui.edit.EditInitialFocus
 import com.maltaisn.notes.ui.note.ShownDateField
 import com.maltaisn.notes.ui.note.SwipeAction
 import com.maltaisn.notes.ui.note.TrashCleanDelay
@@ -49,6 +50,7 @@ class DefaultPrefsManager @Inject constructor(
         NoteListLayoutMode.LIST)
     override val swipeActionLeft: SwipeAction by enumPreference(SWIPE_ACTION_LEFT, SwipeAction.ARCHIVE)
     override val swipeActionRight: SwipeAction by enumPreference(SWIPE_ACTION_RIGHT, SwipeAction.ARCHIVE)
+    override val editInitialFocus: EditInitialFocus by enumPreference(EDIT_INITIAL_FOCUS, EditInitialFocus.TITLE)
     override val shownDateField: ShownDateField by enumPreference(SHOWN_DATE, ShownDateField.NONE)
     override val maximumPreviewLabels: Int by preference(PREVIEW_LABELS, 0)
     override val trashCleanDelay: TrashCleanDelay by enumPreference(DELETED_TIMEOUT, TrashCleanDelay.WEEK)
@@ -184,6 +186,7 @@ class DefaultPrefsManager @Inject constructor(
         const val SHOWN_DATE = "shown_date"
         const val SWIPE_ACTION_LEFT = "swipe_action_left"
         const val SWIPE_ACTION_RIGHT = "swipe_action_right"
+        const val EDIT_INITIAL_FOCUS = "edit_initial_focus"
         const val ENCRYPTED_EXPORT = "encrypted_export"
         const val EXPORT_DATA = "export_data"
         const val AUTO_EXPORT = "auto_export"

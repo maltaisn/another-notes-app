@@ -19,6 +19,7 @@ package com.maltaisn.notes.model
 import android.content.Context
 import com.maltaisn.notes.model.entity.NoteType
 import com.maltaisn.notes.ui.AppTheme
+import com.maltaisn.notes.ui.edit.EditInitialFocus
 import com.maltaisn.notes.ui.note.ShownDateField
 import com.maltaisn.notes.ui.note.SwipeAction
 import com.maltaisn.notes.ui.note.TrashCleanDelay
@@ -39,6 +40,7 @@ interface PrefsManager {
     var listLayoutMode: NoteListLayoutMode
     val swipeActionLeft: SwipeAction
     val swipeActionRight: SwipeAction
+    val editInitialFocus: EditInitialFocus
     val shownDateField: ShownDateField
     val maximumPreviewLabels: Int
     val trashCleanDelay: TrashCleanDelay

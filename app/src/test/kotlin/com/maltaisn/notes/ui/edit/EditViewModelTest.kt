@@ -93,6 +93,7 @@ class EditViewModelTest {
         prefs = mock {
             on { shownDateField } doReturn ShownDateField.ADDED
             on { moveCheckedToBottom } doReturn false
+            on { editInitialFocus } doReturn EditInitialFocus.TITLE
         }
 
         // Sample active notes
@@ -155,6 +156,15 @@ class EditViewModelTest {
         ), viewModel.editItems.getOrAwaitValue())
 
         assertLiveDataEventSent(viewModel.focusEvent, EditViewModel.FocusChange(0, 0, false))
+    }
+
+    @Test
+    fun `should create new blank note (focus content)`() = runTest {
+        whenever(prefs.editInitialFocus) doReturn EditInitialFocus.CONTENT
+
+        viewModel.start()
+
+        assertLiveDataEventSent(viewModel.focusEvent, EditViewModel.FocusChange(1, 0, false))
     }
 
     @Test

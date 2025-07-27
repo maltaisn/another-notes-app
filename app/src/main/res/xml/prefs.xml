@@ -111,6 +111,15 @@
             app:useSimpleSummaryProvider="true"
             />
 
+        <DropDownPreference
+            app:defaultValue="title"
+            app:entries="@array/pref_edit_initial_focus_entries"
+            app:entryValues="@array/pref_edit_initial_focus_values"
+            app:key="edit_initial_focus"
+            app:title="@string/pref_edit_initial_focus"
+            app:useSimpleSummaryProvider="true"
+            />
+
         <SwitchPreferenceCompat
             app:defaultValue="false"
             app:key="move_checked_to_bottom"
