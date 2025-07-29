@@ -149,20 +149,12 @@ class EditViewModelTest {
 
         assertEquals(EditActionsVisibility(
             convertToList = true,
-            convertToText = false,
             reminderAdd = true,
-            reminderEdit = false,
             archive = true,
-            unarchive = false,
             delete = true,
-            restore = false,
-            deleteForever = false,
             pin = true,
-            unpin = false,
             share = true,
             copy = true,
-            uncheckAll = false,
-            deleteChecked = false,
         ), viewModel.editActionsVisibility.getOrAwaitValue())
 
         assertEquals(listOf(
@@ -213,20 +205,12 @@ class EditViewModelTest {
 
         assertEquals(EditActionsVisibility(
             convertToList = true,
-            convertToText = false,
             reminderAdd = true,
-            reminderEdit = false,
             archive = true,
-            unarchive = false,
             delete = true,
-            restore = false,
-            deleteForever = false,
             pin = true,
-            unpin = false,
             share = true,
             copy = true,
-            uncheckAll = false,
-            deleteChecked = false,
         ), viewModel.editActionsVisibility.getOrAwaitValue())
 
         assertEquals(listOf(
@@ -242,17 +226,11 @@ class EditViewModelTest {
         viewModel.start(2)
 
         assertEquals(EditActionsVisibility(
-            convertToList = false,
             convertToText = true,
             reminderAdd = true,
-            reminderEdit = false,
             archive = true,
-            unarchive = false,
             delete = true,
-            restore = false,
-            deleteForever = false,
             pin = true,
-            unpin = false,
             share = true,
             copy = true,
             uncheckAll = true,
@@ -275,21 +253,8 @@ class EditViewModelTest {
             viewModel.start(4)
 
             assertEquals(EditActionsVisibility(
-                convertToList = false,
-                convertToText = false,
-                reminderAdd = false,
-                reminderEdit = false,
-                archive = false,
-                unarchive = false,
-                delete = false,
                 restore = true,
                 deleteForever = true,
-                pin = false,
-                unpin = false,
-                share = false,
-                copy = false,
-                uncheckAll = false,
-                deleteChecked = false,
             ), viewModel.editActionsVisibility.getOrAwaitValue())
 
             assertEquals(listOf(
@@ -304,21 +269,8 @@ class EditViewModelTest {
         viewModel.start(5)
 
         assertEquals(EditActionsVisibility(
-            convertToList = false,
-            convertToText = false,
-            reminderAdd = false,
-            reminderEdit = false,
-            archive = false,
-            unarchive = false,
-            delete = false,
             restore = true,
             deleteForever = true,
-            pin = false,
-            unpin = false,
-            share = false,
-            copy = false,
-            uncheckAll = false,
-            deleteChecked = false,
         ), viewModel.editActionsVisibility.getOrAwaitValue())
 
         assertEquals(listOf(
@@ -498,20 +450,12 @@ class EditViewModelTest {
 
         assertEquals(EditActionsVisibility(
             convertToList = true,
-            convertToText = false,
             reminderAdd = true,
-            reminderEdit = false,
             archive = true,
-            unarchive = false,
             delete = true,
-            restore = false,
-            deleteForever = false,
             pin = true,
-            unpin = false,
             share = true,
             copy = true,
-            uncheckAll = false,
-            deleteChecked = false,
         ), viewModel.editActionsVisibility.getOrAwaitValue())
 
         assertLiveDataEventSent(viewModel.messageEvent, EditMessage.RESTORED_NOTE)
@@ -533,17 +477,11 @@ class EditViewModelTest {
         viewModel.restoreNoteAndEdit()
 
         assertEquals(EditActionsVisibility(
-            convertToList = false,
             convertToText = true,
             reminderAdd = true,
-            reminderEdit = false,
             archive = true,
-            unarchive = false,
             delete = true,
-            restore = false,
-            deleteForever = false,
             pin = true,
-            unpin = false,
             share = true,
             copy = true,
             uncheckAll = true,
@@ -1237,6 +1175,7 @@ class EditViewModelTest {
 
     @Test
     fun `should delete checked items in list note (move checked to bottom)`() = runTest {
+        whenever(prefs.moveCheckedToBottom) doReturn true
         viewModel.start(7)
         viewModel.deleteCheckedItems()
 
@@ -1290,21 +1229,13 @@ class EditViewModelTest {
         viewModel.start(3)
 
         assertEquals(EditActionsVisibility(
-            convertToList = false,
             convertToText = true,
-            reminderAdd = false,
             reminderEdit = true,
             archive = true,
-            unarchive = false,
             delete = true,
-            restore = false,
-            deleteForever = false,
-            pin = false,
             unpin = true,
             share = true,
             copy = true,
-            uncheckAll = false,
-            deleteChecked = false,
         ), viewModel.editActionsVisibility.getOrAwaitValue())
     }
 
