@@ -854,7 +854,7 @@ class EditViewModelTest {
     @Test
     fun `should add blank list note item and focus it`() = runTest {
         viewModel.start(2)
-        viewModel.onNoteItemAddClicked(4)
+        viewModel.onNoteItemAddClicked()
 
         assertEquals(listOf(
             EditDateItem(dateFor("2020-03-30").time),
@@ -900,7 +900,7 @@ class EditViewModelTest {
     fun `should swap list items`() = runTest {
         viewModel.start(2)
         viewModel.onNoteItemSwapped(3, 2)
-        viewModel.onNoteItemAddClicked(4)  // swap doesn't update live data, force it to update
+        viewModel.onNoteItemAddClicked()  // swap doesn't update live data, force it to update
         viewModel.saveNote()
 
         assertEquals(listOf(
@@ -1199,7 +1199,7 @@ class EditViewModelTest {
     fun `should add new items in unchecked section`() = runTest {
         whenever(prefs.moveCheckedToBottom) doReturn true
         viewModel.start(2)
-        viewModel.onNoteItemAddClicked(3)
+        viewModel.onNoteItemAddClicked()
 
         assertEquals(listOf(
             EditDateItem(dateFor("2020-03-30").time),
@@ -1306,6 +1306,52 @@ class EditViewModelTest {
             uncheckAll = false,
             deleteChecked = false,
         ), viewModel.editActionsVisibility.getOrAwaitValue())
+    }
+
+    @Test
+    fun `should add list item on enter in title if none exist`() = runTest {
+        viewModel.start(2)
+        viewModel.onNoteItemDeleteClicked(2)
+        viewModel.onNoteItemDeleteClicked(2)
+
+        viewModel.onNoteTitleEnterPressed()
+        assertLiveDataEventSent(viewModel.focusEvent, EditViewModel.FocusChange(2, 0, false))
+
+        assertEquals(listOf(
+            EditDateItem(dateFor("2020-03-30").time),
+            EditTitleItem("title".e, true),
+            EditItemItem("".e, checked = false, editable = true, 0),
+            EditItemAddItem,
+            EditChipsItem(listOf(labelsRepo.requireLabelById(1))),
+        ), viewModel.editItems.getOrAwaitValue())
+    }
+
+    @Test
+    fun `should not add list item on enter in title if any exist`() = runTest {
+        viewModel.start(2)
+        viewModel.onNoteItemDeleteClicked(2)
+        viewModel.onNoteTitleEnterPressed()
+
+        assertEquals(listOf(
+            EditDateItem(dateFor("2020-03-30").time),
+            EditTitleItem("title".e, true),
+            EditItemItem("item 2".e, checked = false, editable = true, 0),
+            EditItemAddItem,
+            EditChipsItem(listOf(labelsRepo.requireLabelById(1))),
+        ), viewModel.editItems.getOrAwaitValue())
+    }
+
+    @Test
+    fun `should not do anything on enter in text note title`() = runTest {
+        viewModel.start(1)
+        viewModel.onNoteTitleEnterPressed()
+
+        assertEquals(listOf(
+            EditDateItem(dateFor("2018-01-01").time),
+            EditTitleItem("title".e, true),
+            EditContentItem("content".e, editable = true),
+            EditChipsItem(listOf(labelsRepo.requireLabelById(1))),
+        ), viewModel.editItems.getOrAwaitValue())
     }
 
     private val String.e: EditableText

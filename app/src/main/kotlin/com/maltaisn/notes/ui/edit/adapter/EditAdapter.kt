@@ -155,6 +155,11 @@ class EditAdapter(val context: Context, val callback: Callback) :
         fun onNoteItemCheckChanged(pos: Int, checked: Boolean)
 
         /**
+         * Called when enter is pressed in a title item.
+         */
+        fun onNoteTitleEnterPressed()
+
+        /**
          * Called when backspace is pressed when EditText selection
          * is a position 0 in an [EditItemItem] at [pos].
          */
@@ -164,7 +169,7 @@ class EditAdapter(val context: Context, val callback: Callback) :
         fun onNoteItemDeleteClicked(pos: Int)
 
         /** Called when [EditItemAddItem] is clicked.*/
-        fun onNoteItemAddClicked(pos: Int)
+        fun onNoteItemAddClicked()
 
         /** Called when a chip in [EditChipsItem] is clicked. */
         fun onNoteLabelClicked()

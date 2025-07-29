@@ -21,6 +21,7 @@ import android.text.format.DateUtils
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
+import android.view.inputmethod.EditorInfo
 import androidx.core.view.isInvisible
 import androidx.core.widget.doAfterTextChanged
 import androidx.core.widget.doOnTextChanged
@@ -81,6 +82,12 @@ class EditTitleViewHolder(binding: ItemEditTitleBinding, callback: EditAdapter.C
             if (editable != item?.title?.text) {
                 item?.title = AndroidEditableText(editable ?: return@doAfterTextChanged)
             }
+        }
+        titleEdt.setOnEditorActionListener { _, action, event ->
+            if (action == EditorInfo.IME_ACTION_NEXT) {
+                callback.onNoteTitleEnterPressed()
+            }
+            false
         }
         titleEdt.setHorizontallyScrolling(false)  // Fails when set as an attribute for some reason
         titleEdt.setAutoTextSize(callback.textSize)
@@ -250,7 +257,7 @@ class EditItemAddViewHolder(binding: ItemEditItemAddBinding, callback: EditAdapt
 
     init {
         itemView.setOnClickListener {
-            callback.onNoteItemAddClicked(bindingAdapterPosition)
+            callback.onNoteItemAddClicked()
         }
     }
 }

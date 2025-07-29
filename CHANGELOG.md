@@ -3,6 +3,7 @@
 - Allow adjusting the text size in the editor (#22).
 - Added a setting for initially focusing on the content when a new note is created (#116).
 - Focus title if backspace is pressed at the start of content in a text note (#157).
+- Add new list item if enter is pressed in title and no items exist.
 - Allow searching from deleted notes when search is started from trash (#159).
 - Changed default trash auto-delete delay from 1 day to 7 days, as it used to be.
 - Allow changing the app language and settings from the system app info page.

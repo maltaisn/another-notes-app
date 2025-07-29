@@ -763,6 +763,13 @@ class EditViewModel @Inject constructor(
         }
     }
 
+    override fun onNoteTitleEnterPressed() {
+        if (note.type == NoteType.LIST && listItems.none { it is EditItemItem }) {
+            // No list items, add one.
+            onNoteItemAddClicked()
+        }
+    }
+
     private fun focusEndOfTitle() {
         // Backspace in the content, focus the end of the title.
         val titlePos = findItemPos<EditTitleItem>()
@@ -811,13 +818,14 @@ class EditViewModel @Inject constructor(
         deleteListItemAt(pos)
     }
 
-    override fun onNoteItemAddClicked(pos: Int) {
+    override fun onNoteItemAddClicked() {
         // pos is the position of EditItemAdd item, which is also the position to insert the new item.
         // The new item is added last, so the actual pos is the maximum plus one.
+        val insertPos = findItemPos<EditItemAddItem>()
         val actualPos = listItems.maxOf { (it as? EditItemItem)?.actualPos ?: -1 } + 1
-        listItems.add(pos, EditItemItem(DefaultEditableText(), checked = false, editable = true, actualPos))
+        listItems.add(insertPos, EditItemItem(DefaultEditableText(), checked = false, editable = true, actualPos))
         updateListItems()
-        focusItemAt(pos, 0, false)
+        focusItemAt(insertPos, 0, false)
     }
 
     override fun onNoteLabelClicked() {
