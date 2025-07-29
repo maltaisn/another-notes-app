@@ -5,6 +5,7 @@
 - Focus title if backspace is pressed at the start of content in a text note (#157).
 - Add new list item if enter is pressed in title and no items exist.
 - Allow searching from deleted notes when search is started from trash (#159).
+- Allow sorting list note items in alphabetical order (#70).
 - Changed default trash auto-delete delay from 1 day to 7 days, as it used to be.
 - Allow changing the app language and settings from the system app info page.
 - Don't automatically add bullet points when converting a list note to text.

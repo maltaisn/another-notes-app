@@ -56,6 +56,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.launch
+import java.text.Collator
 import java.util.Collections
 import java.util.Date
 import javax.inject.Inject
@@ -377,6 +378,7 @@ class EditViewModel @Inject constructor(
             copy = !inTrash,
             uncheckAll = isList && anyChecked && !inTrash,
             deleteChecked = isList && anyChecked && !inTrash,
+            sortItems = isList && !inTrash,
         )
     }
 
@@ -547,6 +549,23 @@ class EditViewModel @Inject constructor(
         }
 
         onListItemsChanged()
+    }
+
+    fun sortItems() {
+        val collator = Collator.getInstance().apply { strength = Collator.TERTIARY }
+
+        // Remove all items, sort them, then add them back.
+        val firstPos = listItems.indexOfFirst { it is EditItemItem }
+        val sortedItems = listItems.asSequence().filterIsInstance<EditItemItem>().sortedWith { a, b ->
+            collator.compare(a.content.text.toString().trimStart(), b.content.text.toString().trimStart())
+        }.toList()
+
+        for ((i, item) in sortedItems.withIndex()) {
+            item.actualPos = i
+        }
+        listItems.removeAll { it is EditItemItem }
+        listItems.addAll(firstPos, sortedItems)
+        moveCheckedItemsToBottom()
     }
 
     fun focusNoteContent() {
@@ -743,7 +762,7 @@ class EditViewModel @Inject constructor(
             }
             for (i in 1 until lines.size) {
                 listItems.add(pos + i, EditItemItem(DefaultEditableText(lines[i]),
-                    checked = item.checked && moveCheckedToBottom, editable = true, item.actualPos + i))
+                    checked = item.checked && prefs.moveCheckedToBottom, editable = true, item.actualPos + i))
             }
 
             onListItemsChanged() // just to update checked count

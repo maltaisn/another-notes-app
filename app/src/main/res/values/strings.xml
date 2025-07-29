@@ -54,6 +54,7 @@
     <string name="action_select_all">Select all</string>
     <string name="action_settings">Settings</string>
     <string name="action_share">Share</string>
+    <string name="action_sort_items">Sort items alphabetically</string>
     <string name="action_unarchive">Unarchive</string>
     <string name="action_uncheck_all">Uncheck all items</string>
     <string name="action_undo">Undo</string>

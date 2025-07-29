@@ -235,6 +235,7 @@ class EditViewModelTest {
             copy = true,
             uncheckAll = true,
             deleteChecked = true,
+            sortItems = true,
         ), viewModel.editActionsVisibility.getOrAwaitValue())
 
         assertEquals(listOf(
@@ -486,6 +487,7 @@ class EditViewModelTest {
             copy = true,
             uncheckAll = true,
             deleteChecked = true,
+            sortItems = true,
         ), viewModel.editActionsVisibility.getOrAwaitValue())
 
         assertLiveDataEventSent(viewModel.messageEvent, EditMessage.RESTORED_NOTE)
@@ -1189,6 +1191,52 @@ class EditViewModelTest {
     }
 
     @Test
+    fun `should sort items in list note`() = runTest {
+        notesRepo.addNote(listNote(listOf(
+            ListNoteItem("xZ", false),
+            ListNoteItem("éponge", true),
+            ListNoteItem("Ev", false),
+            ListNoteItem("xyz", true)
+        ), id = 10, title = "title", status = NoteStatus.ACTIVE,
+            added = dateFor("2020-03-30")))
+
+        viewModel.start(10)
+        (viewModel.editItems.getOrAwaitValue()[4] as EditItemItem).content.replaceAll(" Ev")
+
+        viewModel.sortItems()
+
+        assertEquals(listOf(
+            EditDateItem(dateFor("2020-03-30").time),
+            EditTitleItem("title".e, true),
+            EditItemItem("éponge".e, checked = true, editable = true, 0),
+            EditItemItem(" Ev".e, checked = false, editable = true, 1),
+            EditItemItem("xyz".e, checked = true, editable = true, 2),
+            EditItemItem("xZ".e, checked = false, editable = true, 3),
+            EditItemAddItem,
+        ), viewModel.editItems.getOrAwaitValue())
+    }
+
+    @Test
+    fun `should sort items in list note (move checked to bottom)`() = runTest {
+        whenever(prefs.moveCheckedToBottom) doReturn true
+        viewModel.start(7)
+        viewModel.onNoteItemSwapped(2, 3)
+        viewModel.onNoteItemSwapped(6, 7)
+        viewModel.sortItems()
+
+        assertEquals(listOf(
+            EditDateItem(dateFor("2020-03-30").time),
+            EditTitleItem("title".e, true),
+            EditItemItem("item 1".e, checked = false, editable = true, 0),
+            EditItemItem("item 3".e, checked = false, editable = true, 2),
+            EditItemAddItem,
+            EditCheckedHeaderItem(2),
+            EditItemItem("item 2".e, checked = true, editable = true, 1),
+            EditItemItem("item 4".e, checked = true, editable = true, 3),
+        ), viewModel.editItems.getOrAwaitValue())
+    }
+
+    @Test
     fun `should keep note changes on conversion`() = runTest {
         viewModel.start(1)
 
@@ -1236,6 +1284,7 @@ class EditViewModelTest {
             unpin = true,
             share = true,
             copy = true,
+            sortItems = true,
         ), viewModel.editActionsVisibility.getOrAwaitValue())
     }
 

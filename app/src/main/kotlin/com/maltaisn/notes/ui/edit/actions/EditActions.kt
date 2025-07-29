@@ -46,6 +46,7 @@ data class EditActionsVisibility(
     val copy: Boolean = false,
     val uncheckAll: Boolean = false,
     val deleteChecked: Boolean = false,
+    val sortItems: Boolean = false,
 ) {
 
     fun createActions(context: Context): List<EditAction> {
@@ -118,6 +119,11 @@ data class EditActionsVisibility(
                 R.drawable.ic_checkbox_multiple_delete,
                 false,
                 EditViewModel::deleteCheckedItems),
+            EditAction(sortItems,
+                R.string.action_sort_items,
+                R.drawable.ic_sort_alphabetical,
+                false,
+                EditViewModel::sortItems),
             EditAction(delete,
                 R.string.action_delete,
                 R.drawable.ic_delete,
