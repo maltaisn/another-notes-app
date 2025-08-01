@@ -132,15 +132,7 @@ class EditContentViewHolder(binding: ItemEditContentBinding, callback: EditAdapt
                 TextUndoActionType.CONTENT, start, end, oldText, newText))
         }
         contentEdt.setOnKeyListener { _, _, event ->
-            val isCursorAtStart =
-                contentEdt.selectionStart == 0 && contentEdt.selectionStart == contentEdt.selectionEnd
-            if (isCursorAtStart && event.action == KeyEvent.ACTION_DOWN && event.keyCode == KeyEvent.KEYCODE_DEL) {
-                // If user presses backspace at the start of the content, focus to the title
-                val pos = bindingAdapterPosition
-                if (pos != RecyclerView.NO_POSITION) {
-                    callback.onNoteItemBackspacePressed(pos)
-                }
-            }
+            handleBackspaceAtStart(contentEdt, bindingAdapterPosition, event, callback)
             false
         }
 
@@ -223,16 +215,7 @@ class EditItemViewHolder(binding: ItemEditItemBinding, callback: EditAdapter.Cal
             deleteImv.isInvisible = !hasFocus
         }
         itemEdt.setOnKeyListener { _, _, event ->
-            val isCursorAtStart =
-                itemEdt.selectionStart == 0 && itemEdt.selectionStart == itemEdt.selectionEnd
-            if (isCursorAtStart && event.action == KeyEvent.ACTION_DOWN && event.keyCode == KeyEvent.KEYCODE_DEL) {
-                // If user presses backspace at the start of an item, current item
-                // will be merged with previous.
-                val pos = bindingAdapterPosition
-                if (pos != RecyclerView.NO_POSITION) {
-                    callback.onNoteItemBackspacePressed(pos)
-                }
-            }
+            handleBackspaceAtStart(itemEdt, bindingAdapterPosition, event, callback)
             false
         }
         itemEdt.setOnClickListener {
@@ -338,6 +321,21 @@ class EditItemLabelsViewHolder(binding: ItemEditLabelsBinding, callback: EditAda
 
                 else -> error("Unknown chip type")
             }
+        }
+    }
+}
+
+private fun handleBackspaceAtStart(
+    editText: EditEditText,
+    pos: Int,
+    event: KeyEvent,
+    callback: EditAdapter.Callback
+) {
+    val isCursorAtStart = editText.selectionStart == 0 && editText.selectionStart == editText.selectionEnd
+    if (isCursorAtStart && event.action == KeyEvent.ACTION_DOWN && event.keyCode == KeyEvent.KEYCODE_DEL) {
+        // If user presses backspace at the start of the content, focus to the title
+        if (pos != RecyclerView.NO_POSITION) {
+            callback.onNoteItemBackspacePressed(pos)
         }
     }
 }
