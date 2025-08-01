@@ -154,7 +154,7 @@ dependencies {
 
     // Dependencies for shared test code
     testFixturesApi(libs.junit)
-    testFixturesApi(libs.kotlin.test)
+    testFixturesApi(libs.kotlin.test.junit)
     testFixturesApi(libs.kotlin.coroutinesTest)
     testFixturesApi(libs.mockito.kotlin)
     testFixturesApi(libs.androidx.arch.coreTesting)

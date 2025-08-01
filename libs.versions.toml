@@ -58,7 +58,7 @@ kotlin-coroutinesCore = { group = "org.jetbrains.kotlinx", name = "kotlinx-corou
 kotlin-coroutinesAndroid = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "coroutines" }
 kotlin-coroutinesTest = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "coroutines" }
 kotlin-serializationJson = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "serialization" }
-kotlin-test = { group = "org.jetbrains.kotlin", name = "kotlin-test", version.ref = "kotlin" }
+kotlin-test-junit = { group = "org.jetbrains.kotlin", name = "kotlin-test-junit", version.ref = "kotlin" }
 
 dagger-hilt = { group = "com.google.dagger", name = "hilt-android", version.ref = "dagger" }
 dagger-hiltCompiler = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "dagger" }

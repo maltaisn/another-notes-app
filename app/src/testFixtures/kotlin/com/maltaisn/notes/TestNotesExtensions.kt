@@ -27,9 +27,9 @@ import com.maltaisn.notes.model.entity.NoteStatus
 import com.maltaisn.notes.model.entity.NoteType
 import com.maltaisn.notes.model.entity.PinnedStatus
 import com.maltaisn.notes.model.entity.Reminder
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
 import java.util.Date
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 fun testNote(
     id: Long = Note.NO_ID,
@@ -66,10 +66,10 @@ fun assertNoteEquals(
     dateEpsilon: Long = 1000,
     ignoreId: Boolean = true
 ) {
-    assertTrue("Notes have different added dates.",
-        (expected.addedDate.time - actual.addedDate.time) < dateEpsilon)
-    assertTrue("Notes have different last modified dates.",
-        (expected.lastModifiedDate.time - actual.lastModifiedDate.time) < dateEpsilon)
+    assertTrue((expected.addedDate.time - actual.addedDate.time) < dateEpsilon,
+        "Notes have different added dates.")
+    assertTrue((expected.lastModifiedDate.time - actual.lastModifiedDate.time) < dateEpsilon,
+        "Notes have different last modified dates.")
     assertEquals(expected, actual.copy(
         id = if (ignoreId) expected.id else actual.id,
         addedDate = expected.addedDate,

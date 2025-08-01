@@ -21,7 +21,7 @@ import com.maltaisn.notes.ui.edit.actions.EditActionAvailability.AVAILABLE
 import com.maltaisn.notes.ui.edit.actions.EditActionAvailability.HIDDEN
 import com.maltaisn.notes.ui.edit.actions.EditActionAvailability.UNAVAILABLE
 import com.maltaisn.notes.ui.edit.actions.createDialogItemsForEditActions
-import kotlin.test.Test
+import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
