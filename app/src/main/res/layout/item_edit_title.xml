@@ -17,6 +17,7 @@
 <com.maltaisn.notes.ui.edit.adapter.EditEditText
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/title_edt"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -24,6 +25,7 @@
     android:paddingBottom="8dp"
     android:paddingStart="16dp"
     android:paddingEnd="16dp"
+    android:allowUndo="false"
     android:background="@null"
     android:hint="@string/edit_hint_note_title"
     android:imeOptions="flagNoExtractUi|actionNext"
@@ -35,4 +37,5 @@
     android:textDirection="anyRtl"
     app:autoLink="false"
     app:textSizeMultiplier="1.25"
+    tools:targetApi="23"
     />

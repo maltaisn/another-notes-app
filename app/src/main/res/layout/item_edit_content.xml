@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?><!--
-  Copyright 2023 Nicolas Maltais
+  Copyright 2025 Nicolas Maltais
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 <com.maltaisn.notes.ui.edit.adapter.EditEditText
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/content_edt"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -24,6 +25,7 @@
     android:paddingBottom="16dp"
     android:paddingStart="16dp"
     android:paddingEnd="16dp"
+    android:allowUndo="false"
     android:background="@null"
     android:hint="@string/edit_hint_note_content"
     android:imeOptions="flagNoExtractUi"
@@ -34,4 +36,5 @@
     android:textSize="15sp"
     android:linksClickable="true"
     app:autoLink="true"
+    tools:targetApi="23"
     />
