@@ -86,4 +86,5 @@ interface EditableText {
 
     fun append(text: CharSequence)
     fun replaceAll(text: CharSequence)
+
 }

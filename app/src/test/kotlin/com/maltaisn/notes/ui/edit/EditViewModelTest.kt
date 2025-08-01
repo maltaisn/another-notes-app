@@ -162,7 +162,7 @@ class EditViewModelTest {
             EditContentItem("".e, true)
         ), viewModel.editItems.getOrAwaitValue())
 
-        assertLiveDataEventSent(viewModel.focusEvent, EditViewModel.FocusChange(0, 0, false))
+        assertWasFocused(0, 0, false)
     }
 
     @Test
@@ -171,7 +171,7 @@ class EditViewModelTest {
 
         viewModel.start()
 
-        assertLiveDataEventSent(viewModel.focusEvent, EditViewModel.FocusChange(1, 0, false))
+        assertWasFocused(1, 0, false)
     }
 
     @Test
@@ -287,7 +287,7 @@ class EditViewModelTest {
         val oldNote = notesRepo.requireNoteById(1)
 
         viewModel.start(1)
-        (viewModel.editItems.getOrAwaitValue()[1] as EditTitleItem).title.replaceAll("modified")
+        replaceItemText(1, "modified")
         viewModel.saveNote()
 
         assertNoteEquals(testNote(id = 1, title = "modified", content = "content",
@@ -346,7 +346,7 @@ class EditViewModelTest {
             EditChipsItem(listOf(labelsRepo.requireLabelById(1))),
         ), viewModel.editItems.getOrAwaitValue())
 
-        assertLiveDataEventSent(viewModel.focusEvent, EditViewModel.FocusChange(2, 7, false))
+        assertWasFocused(2, 7, false)
     }
 
     @Test
@@ -362,7 +362,7 @@ class EditViewModelTest {
                 labelsRepo.requireLabelById(1), labelsRepo.requireLabelById(2)))
         ), viewModel.editItems.getOrAwaitValue())
 
-        assertLiveDataEventSent(viewModel.focusEvent, EditViewModel.FocusChange(2, 13, false))
+        assertWasFocused(2, 13, false)
     }
 
     @Test
@@ -523,7 +523,7 @@ class EditViewModelTest {
             EditChipsItem(listOf(notesRepo.requireNoteById(3).reminder!!,
                 labelsRepo.requireLabelById(1), labelsRepo.requireLabelById(2))),
         ), viewModel.editItems.getOrAwaitValue())
-        assertLiveDataEventSent(viewModel.focusEvent, EditViewModel.FocusChange(1, 12, true))
+        assertWasFocused(1, 12)
 
         assertNull(alarmCallback.alarms[noteCopy.id])
     }
@@ -540,7 +540,7 @@ class EditViewModelTest {
             EditTitleItem("untitled - Copy".e, true),
             EditContentItem("".e, true)
         ), viewModel.editItems.getOrAwaitValue())
-        assertLiveDataEventSent(viewModel.focusEvent, EditViewModel.FocusChange(0, 15, true))
+        assertWasFocused(0, 15)
     }
 
     @Test
@@ -647,8 +647,7 @@ class EditViewModelTest {
             EditItemAddItem,
             EditChipsItem(listOf(labelsRepo.requireLabelById(1))),
         ), viewModel.editItems.getOrAwaitValue())
-        assertLiveDataEventSent(viewModel.focusEvent,
-            EditViewModel.FocusChange(3, 0, false))
+        assertWasFocused(3, 0, false)
     }
 
     @Test
@@ -671,8 +670,7 @@ class EditViewModelTest {
                 EditItemAddItem,
                 EditChipsItem(listOf(labelsRepo.requireLabelById(1))),
             ), viewModel.editItems.getOrAwaitValue())
-            assertLiveDataEventSent(viewModel.focusEvent,
-                EditViewModel.FocusChange(4, 15, false))
+            assertWasFocused(4, 15, false)
         }
 
     @Test
@@ -688,8 +686,7 @@ class EditViewModelTest {
                 EditItemAddItem,
                 EditChipsItem(listOf(labelsRepo.requireLabelById(1))),
             ), viewModel.editItems.getOrAwaitValue())
-            assertLiveDataEventSent(viewModel.focusEvent,
-                EditViewModel.FocusChange(2, 6, true))
+            assertWasFocused(2, 6)
         }
 
     @Test
@@ -721,8 +718,7 @@ class EditViewModelTest {
                 EditContentItem("content".e, editable = true),
                 EditChipsItem(listOf(labelsRepo.requireLabelById(1))),
             ), viewModel.editItems.getOrAwaitValue())
-            assertLiveDataEventSent(viewModel.focusEvent,
-                EditViewModel.FocusChange(0, 5, true))
+            assertWasFocused(0, 5)
         }
 
     @Test
@@ -737,8 +733,7 @@ class EditViewModelTest {
                 EditContentItem("content".e, editable = true),
                 EditChipsItem(listOf(labelsRepo.requireLabelById(1))),
             ), viewModel.editItems.getOrAwaitValue())
-            assertLiveDataEventSent(viewModel.focusEvent,
-                EditViewModel.FocusChange(1, 5, true))
+            assertWasFocused(1, 5)
         }
 
     @Test
@@ -755,8 +750,7 @@ class EditViewModelTest {
                 EditItemAddItem,
                 EditChipsItem(listOf(labelsRepo.requireLabelById(1))),
             ), viewModel.editItems.getOrAwaitValue())
-            assertLiveDataEventSent(viewModel.focusEvent,
-                EditViewModel.FocusChange(1, 5, true))
+            assertWasFocused(1, 5)
         }
 
     @Test
@@ -771,8 +765,7 @@ class EditViewModelTest {
             EditItemAddItem,
             EditChipsItem(listOf(labelsRepo.requireLabelById(1))),
         ), viewModel.editItems.getOrAwaitValue())
-        assertLiveDataEventSent(viewModel.focusEvent,
-            EditViewModel.FocusChange(2, 6, true))
+        assertWasFocused(2, 6)
     }
 
     @Test
@@ -787,8 +780,7 @@ class EditViewModelTest {
             EditItemAddItem,
             EditChipsItem(listOf(labelsRepo.requireLabelById(1))),
         ), viewModel.editItems.getOrAwaitValue())
-        assertLiveDataEventSent(viewModel.focusEvent,
-            EditViewModel.FocusChange(3, 6, true))
+        assertWasFocused(3, 6)
     }
 
     @Test
@@ -805,8 +797,7 @@ class EditViewModelTest {
             EditItemAddItem,
             EditChipsItem(listOf(labelsRepo.requireLabelById(1))),
         ), viewModel.editItems.getOrAwaitValue())
-        assertLiveDataEventSent(viewModel.focusEvent,
-            EditViewModel.FocusChange(4, 0, false))
+        assertWasFocused(4, 0, false)
     }
 
     @Test
@@ -1201,7 +1192,7 @@ class EditViewModelTest {
             added = dateFor("2020-03-30")))
 
         viewModel.start(10)
-        (viewModel.editItems.getOrAwaitValue()[4] as EditItemItem).content.replaceAll(" Ev")
+        replaceItemText(4, " Ev")
 
         viewModel.sortItems()
 
@@ -1239,9 +1230,7 @@ class EditViewModelTest {
     @Test
     fun `should keep note changes on conversion`() = runTest {
         viewModel.start(1)
-
-        val contentItem = viewModel.editItems.getOrAwaitValue()[2] as EditContentItem
-        contentItem.content.replaceAll("modified")
+        replaceItemText(2, "modified")
 
         viewModel.toggleNoteType()
 
@@ -1257,9 +1246,7 @@ class EditViewModelTest {
     @Test
     fun `should keep note changes on reminder change`() = runTest {
         viewModel.start(1)
-
-        val contentItem = viewModel.editItems.getOrAwaitValue()[2] as EditContentItem
-        contentItem.content.replaceAll("modified")
+        replaceItemText(2, "modified")
 
         val reminder = Reminder(dateFor("2020-01-01"), null, dateFor("2020-01-01"), 1, false)
         viewModel.onReminderChange(reminder)
@@ -1295,7 +1282,7 @@ class EditViewModelTest {
         viewModel.onNoteItemDeleteClicked(2)
 
         viewModel.onNoteTitleEnterPressed()
-        assertLiveDataEventSent(viewModel.focusEvent, EditViewModel.FocusChange(2, 0, false))
+        assertWasFocused(2, 0, false)
 
         assertEquals(listOf(
             EditDateItem(dateFor("2020-03-30").time),
@@ -1332,6 +1319,21 @@ class EditViewModelTest {
             EditContentItem("content".e, editable = true),
             EditChipsItem(listOf(labelsRepo.requireLabelById(1))),
         ), viewModel.editItems.getOrAwaitValue())
+    }
+
+    private fun replaceItemText(pos: Int, replacement: String) {
+        val item = viewModel.editItems.getOrAwaitValue()[pos]
+        val text = when (item) {
+            is EditTitleItem -> item.title
+            is EditContentItem -> item.content
+            is EditItemItem -> item.content
+            else -> error("no text in item")
+        }
+        text.replaceAll(replacement)
+    }
+
+    private fun assertWasFocused(itemPos: Int, pos: Int, itemExists: Boolean = true) {
+        assertLiveDataEventSent(viewModel.focusEvent, EditViewModel.FocusChange(itemPos, pos, itemExists))
     }
 
     private val String.e: EditableText
