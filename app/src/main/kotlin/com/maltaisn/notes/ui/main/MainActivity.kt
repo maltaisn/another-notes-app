@@ -22,6 +22,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.view.KeyEvent
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -265,6 +266,36 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
     override fun onResume() {
         super.onResume()
         handleIntent()
+    }
+
+    override fun onKeyShortcut(keyCode: Int, event: KeyEvent): Boolean {
+        // Intercept undo/redo shortcut keys for the whole app. Some keyboards will send these keys to use the
+        // EditText undo manager added on API 24. Since we have our own undo, the undo manager is disabled,
+        // and we can intercept these keys and to do a proper undo/redo instead.
+
+        // On API 35+, the system has a more complete support for undo/redo, which is not interceptible *at all*.
+        // The key events are never sent to the app if undo/redo occurs, it this messes up the app's undo system.
+        // There's nothing that can be done. See https://stackoverflow.com/questions/79722988
+        if (event.hasModifiers(KeyEvent.META_CTRL_ON)) {
+            when (event.keyCode) {
+                KeyEvent.KEYCODE_Z -> {
+                    sharedViewModel.undo()
+                    return true
+                }
+                KeyEvent.KEYCODE_Y -> {
+                    sharedViewModel.redo()
+                    return true
+                }
+            }
+        } else if (event.hasModifiers(KeyEvent.META_CTRL_ON or KeyEvent.META_SHIFT_ON)) {
+            when (event.keyCode) {
+                KeyEvent.KEYCODE_Z -> {
+                    sharedViewModel.redo()
+                    return true
+                }
+            }
+        }
+        return super.onKeyShortcut(keyCode, event)
     }
 
     override fun onDestroy() {

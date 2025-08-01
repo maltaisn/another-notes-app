@@ -87,6 +87,10 @@ class SharedViewModel @Inject constructor(
     val noteCreatedEvent: LiveData<Event<Long>>
         get() = _noteCreatedEvent
 
+    private val _undoRedoEvent = MutableLiveData<Event<UndoRedoAction>>()
+    val undoRedoEvent: LiveData<Event<UndoRedoAction>>
+        get() = _undoRedoEvent
+
     fun onBlankNoteDiscarded() {
         // Not shown from EditFragment so that FAB is pushed up.
         _messageEvent.send(R.string.edit_message_blank_note_discarded)
@@ -143,5 +147,18 @@ class SharedViewModel @Inject constructor(
 
     fun noteCreated(noteId: Long) {
         _noteCreatedEvent.send(noteId)
+    }
+
+    fun undo() {
+        _undoRedoEvent.send(UndoRedoAction.UNDO)
+    }
+
+    fun redo() {
+        _undoRedoEvent.send(UndoRedoAction.REDO)
+    }
+
+    enum class UndoRedoAction {
+        UNDO,
+        REDO,
     }
 }

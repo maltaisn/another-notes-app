@@ -282,12 +282,19 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener, ConfirmDialog.
             }
         }
 
+        viewModel.exitEvent.observeEvent(viewLifecycleOwner) {
+            navController.popBackStack()
+        }
+
         sharedViewModel.reminderChangeEvent.observeEvent(viewLifecycleOwner) { reminder ->
             viewModel.onReminderChange(reminder)
         }
 
-        viewModel.exitEvent.observeEvent(viewLifecycleOwner) {
-            navController.popBackStack()
+        sharedViewModel.undoRedoEvent.observeEvent(viewLifecycleOwner) { action ->
+           when (action)  {
+               SharedViewModel.UndoRedoAction.UNDO -> viewModel.undo()
+               SharedViewModel.UndoRedoAction.REDO -> viewModel.redo()
+           }
         }
     }
 
