@@ -58,10 +58,10 @@ class EditActionsDialog : BottomSheetDialogFragment() {
     }
 
     private fun setupViewModelObservers() {
-        viewModel.editActionsVisibility.observe(this, ::createActionItems)
+        viewModel.editActionsAvailability.observe(this, ::createActionItems)
     }
 
-    private fun createActionItems(visibility: EditActionsVisibility) {
+    private fun createActionItems(visibility: EditActionsAvailability) {
         if (itemsCreated) {
             // If a change occurs in action visibility, it's when the dialog is being dismissed,
             // so don't update the items.
@@ -69,19 +69,9 @@ class EditActionsDialog : BottomSheetDialogFragment() {
         }
 
         val context = requireContext()
-        val actions = visibility.createActions(context)
         val inToolbarMax = context.resources.getInteger(R.integer.edit_actions_in_toolbar)
-        var inToolbarCount = 0
-        for (action in actions) {
-            if (action.visible) {
-                if (!action.showInToolbar || inToolbarCount >= inToolbarMax) {
-                    createActionItem(action)
-                } else {
-                    inToolbarCount++
-                }
-            }
-        }
-
+        val editActions = visibility.createActions(context)
+        createDialogItemsForEditActions(inToolbarMax, editActions, ::createActionItem)
         itemsCreated = true
     }
 
@@ -94,6 +84,24 @@ class EditActionsDialog : BottomSheetDialogFragment() {
             dismiss()
 
             action.action(viewModel)
+        }
+        itemBinding.root.isEnabled = action.available == EditActionAvailability.AVAILABLE
+    }
+}
+
+fun createDialogItemsForEditActions(
+    maxCountInToolbar: Int,
+    editActions: List<EditAction>,
+    callback: (EditAction) -> Unit,
+) {
+    var inToolbarCount = 0
+    for (action in editActions) {
+        if (action.available != EditActionAvailability.HIDDEN) {
+            if (!action.showInToolbar || inToolbarCount >= maxCountInToolbar) {
+                callback(action)
+            } else {
+                inToolbarCount++
+            }
         }
     }
 }

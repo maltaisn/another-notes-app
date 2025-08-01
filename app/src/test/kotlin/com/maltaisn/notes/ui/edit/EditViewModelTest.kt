@@ -37,7 +37,10 @@ import com.maltaisn.notes.ui.MockAlarmCallback
 import com.maltaisn.notes.ui.ShareData
 import com.maltaisn.notes.ui.StatusChange
 import com.maltaisn.notes.ui.assertLiveDataEventSent
-import com.maltaisn.notes.ui.edit.actions.EditActionsVisibility
+import com.maltaisn.notes.ui.edit.actions.EditActionAvailability.AVAILABLE
+import com.maltaisn.notes.ui.edit.actions.EditActionAvailability.HIDDEN
+import com.maltaisn.notes.ui.edit.actions.EditActionAvailability.UNAVAILABLE
+import com.maltaisn.notes.ui.edit.actions.EditActionsAvailability
 import com.maltaisn.notes.ui.edit.adapter.EditCheckedHeaderItem
 import com.maltaisn.notes.ui.edit.adapter.EditChipsItem
 import com.maltaisn.notes.ui.edit.adapter.EditContentItem
@@ -150,15 +153,17 @@ class EditViewModelTest {
 
         assertNoteEquals(testNote(title = "", content = ""), notesRepo.lastAddedNote!!)
 
-        assertEquals(EditActionsVisibility(
-            convertToList = true,
-            reminderAdd = true,
-            archive = true,
-            delete = true,
-            pin = true,
-            share = true,
-            copy = true,
-        ), viewModel.editActionsVisibility.getOrAwaitValue())
+        assertEquals(EditActionsAvailability(
+            undo = UNAVAILABLE,
+            redo = UNAVAILABLE,
+            convertToList = AVAILABLE,
+            reminderAdd = AVAILABLE,
+            archive = AVAILABLE,
+            delete = AVAILABLE,
+            pin = AVAILABLE,
+            share = AVAILABLE,
+            copy = AVAILABLE,
+        ), viewModel.editActionsAvailability.getOrAwaitValue())
 
         assertEquals(listOf(
             EditTitleItem("".e, true),
@@ -206,15 +211,17 @@ class EditViewModelTest {
     fun `should edit existing text note`() = runTest {
         viewModel.start(1)
 
-        assertEquals(EditActionsVisibility(
-            convertToList = true,
-            reminderAdd = true,
-            archive = true,
-            delete = true,
-            pin = true,
-            share = true,
-            copy = true,
-        ), viewModel.editActionsVisibility.getOrAwaitValue())
+        assertEquals(EditActionsAvailability(
+            undo = UNAVAILABLE,
+            redo = UNAVAILABLE,
+            convertToList = AVAILABLE,
+            reminderAdd = AVAILABLE,
+            archive = AVAILABLE,
+            delete = AVAILABLE,
+            pin = AVAILABLE,
+            share = AVAILABLE,
+            copy = AVAILABLE,
+        ), viewModel.editActionsAvailability.getOrAwaitValue())
 
         assertEquals(listOf(
             EditDateItem(dateFor("2018-01-01").time),
@@ -228,18 +235,20 @@ class EditViewModelTest {
     fun `should edit existing list note`() = runTest {
         viewModel.start(2)
 
-        assertEquals(EditActionsVisibility(
-            convertToText = true,
-            reminderAdd = true,
-            archive = true,
-            delete = true,
-            pin = true,
-            share = true,
-            copy = true,
-            uncheckAll = true,
-            deleteChecked = true,
-            sortItems = true,
-        ), viewModel.editActionsVisibility.getOrAwaitValue())
+        assertEquals(EditActionsAvailability(
+            undo = UNAVAILABLE,
+            redo = UNAVAILABLE,
+            convertToText = AVAILABLE,
+            reminderAdd = AVAILABLE,
+            archive = AVAILABLE,
+            delete = AVAILABLE,
+            pin = AVAILABLE,
+            share = AVAILABLE,
+            copy = AVAILABLE,
+            uncheckAll = AVAILABLE,
+            deleteChecked = AVAILABLE,
+            sortItems = AVAILABLE,
+        ), viewModel.editActionsAvailability.getOrAwaitValue())
 
         assertEquals(listOf(
             EditDateItem(dateFor("2020-03-30").time),
@@ -256,10 +265,10 @@ class EditViewModelTest {
         runTest {
             viewModel.start(4)
 
-            assertEquals(EditActionsVisibility(
-                restore = true,
-                deleteForever = true,
-            ), viewModel.editActionsVisibility.getOrAwaitValue())
+            assertEquals(EditActionsAvailability(
+                restore = AVAILABLE,
+                deleteForever = AVAILABLE,
+            ), viewModel.editActionsAvailability.getOrAwaitValue())
 
             assertEquals(listOf(
                 EditDateItem(dateFor("2020-03-30").time),
@@ -272,10 +281,10 @@ class EditViewModelTest {
     fun `should open existing list note in trash, not editable`() = runTest {
         viewModel.start(5)
 
-        assertEquals(EditActionsVisibility(
-            restore = true,
-            deleteForever = true,
-        ), viewModel.editActionsVisibility.getOrAwaitValue())
+        assertEquals(EditActionsAvailability(
+            restore = AVAILABLE,
+            deleteForever = AVAILABLE,
+        ), viewModel.editActionsAvailability.getOrAwaitValue())
 
         assertEquals(listOf(
             EditDateItem(dateFor("2020-03-30").time),
@@ -452,15 +461,17 @@ class EditViewModelTest {
         viewModel.start(4)
         viewModel.restoreNoteAndEdit()
 
-        assertEquals(EditActionsVisibility(
-            convertToList = true,
-            reminderAdd = true,
-            archive = true,
-            delete = true,
-            pin = true,
-            share = true,
-            copy = true,
-        ), viewModel.editActionsVisibility.getOrAwaitValue())
+        assertEquals(EditActionsAvailability(
+            undo = UNAVAILABLE,
+            redo = UNAVAILABLE,
+            convertToList = AVAILABLE,
+            reminderAdd = AVAILABLE,
+            archive = AVAILABLE,
+            delete = AVAILABLE,
+            pin = AVAILABLE,
+            share = AVAILABLE,
+            copy = AVAILABLE,
+        ), viewModel.editActionsAvailability.getOrAwaitValue())
 
         assertLiveDataEventSent(viewModel.messageEvent, EditMessage.RESTORED_NOTE)
         assertEquals(listOf(
@@ -480,18 +491,20 @@ class EditViewModelTest {
         viewModel.start(5)
         viewModel.restoreNoteAndEdit()
 
-        assertEquals(EditActionsVisibility(
-            convertToText = true,
-            reminderAdd = true,
-            archive = true,
-            delete = true,
-            pin = true,
-            share = true,
-            copy = true,
-            uncheckAll = true,
-            deleteChecked = true,
-            sortItems = true,
-        ), viewModel.editActionsVisibility.getOrAwaitValue())
+        assertEquals(EditActionsAvailability(
+            undo = UNAVAILABLE,
+            redo = UNAVAILABLE,
+            convertToText = AVAILABLE,
+            reminderAdd = AVAILABLE,
+            archive = AVAILABLE,
+            delete = AVAILABLE,
+            pin = AVAILABLE,
+            share = AVAILABLE,
+            copy = AVAILABLE,
+            uncheckAll = AVAILABLE,
+            deleteChecked = AVAILABLE,
+            sortItems = AVAILABLE,
+        ), viewModel.editActionsAvailability.getOrAwaitValue())
 
         assertLiveDataEventSent(viewModel.messageEvent, EditMessage.RESTORED_NOTE)
         assertEquals(listOf(
@@ -858,45 +871,45 @@ class EditViewModelTest {
     fun `should set correct pinned status (unpinned)`() = runTest {
         viewModel.start(1)
 
-        val visibility = viewModel.editActionsVisibility.getOrAwaitValue()
-        assertTrue(visibility.pin)
-        assertFalse(visibility.unpin)
+        val visibility = viewModel.editActionsAvailability.getOrAwaitValue()
+        assertEquals(AVAILABLE, visibility.pin)
+        assertEquals(HIDDEN, visibility.unpin)
     }
 
     @Test
     fun `should set correct pinned status (pinned)`() = runTest {
         viewModel.start(3)
 
-        val visibility = viewModel.editActionsVisibility.getOrAwaitValue()
-        assertTrue(visibility.unpin)
-        assertFalse(visibility.pin)
+        val visibility = viewModel.editActionsAvailability.getOrAwaitValue()
+        assertEquals(AVAILABLE, visibility.unpin)
+        assertEquals(HIDDEN, visibility.pin)
     }
 
     @Test
     fun `should set correct pinned status (can't pin)`() = runTest {
         viewModel.start(4)
 
-        val visibility = viewModel.editActionsVisibility.getOrAwaitValue()
-        assertFalse(visibility.unpin)
-        assertFalse(visibility.pin)
+        val visibility = viewModel.editActionsAvailability.getOrAwaitValue()
+        assertEquals(HIDDEN, visibility.unpin)
+        assertEquals(HIDDEN, visibility.pin)
     }
 
     @Test
     fun `should set correct reminder (no reminder)`() = runTest {
         viewModel.start(1)
 
-        val visibility = viewModel.editActionsVisibility.getOrAwaitValue()
-        assertFalse(visibility.reminderEdit)
-        assertTrue(visibility.reminderAdd)
+        val visibility = viewModel.editActionsAvailability.getOrAwaitValue()
+        assertEquals(HIDDEN, visibility.reminderEdit)
+        assertEquals(AVAILABLE, visibility.reminderAdd)
     }
 
     @Test
     fun `should set correct reminder (has reminder)`() = runTest {
         viewModel.start(3)
 
-        val visibility = viewModel.editActionsVisibility.getOrAwaitValue()
-        assertTrue(visibility.reminderEdit)
-        assertFalse(visibility.reminderAdd)
+        val visibility = viewModel.editActionsAvailability.getOrAwaitValue()
+        assertEquals(AVAILABLE, visibility.reminderEdit)
+        assertEquals(HIDDEN, visibility.reminderAdd)
     }
 
     @Test
@@ -1266,16 +1279,18 @@ class EditViewModelTest {
     fun `should hide list action items if none checked`() = runTest {
         viewModel.start(3)
 
-        assertEquals(EditActionsVisibility(
-            convertToText = true,
-            reminderEdit = true,
-            archive = true,
-            delete = true,
-            unpin = true,
-            share = true,
-            copy = true,
-            sortItems = true,
-        ), viewModel.editActionsVisibility.getOrAwaitValue())
+        assertEquals(EditActionsAvailability(
+            undo = UNAVAILABLE,
+            redo = UNAVAILABLE,
+            convertToText = AVAILABLE,
+            reminderEdit = AVAILABLE,
+            archive = AVAILABLE,
+            delete = AVAILABLE,
+            unpin = AVAILABLE,
+            share = AVAILABLE,
+            copy = AVAILABLE,
+            sortItems = AVAILABLE,
+        ), viewModel.editActionsAvailability.getOrAwaitValue())
     }
 
     @Test
@@ -1332,24 +1347,24 @@ class EditViewModelTest {
 
         viewModel.onTextChanged(TextUndoAction.create(1, TextUndoActionType.TITLE, 2, 5, "tle", "ananmen square"))
 
-        var visibility = viewModel.editActionsVisibility.getOrAwaitValue()
-        assertTrue(visibility.undo)
-        assertFalse(visibility.redo)
+        var visibility = viewModel.editActionsAvailability.getOrAwaitValue()
+        assertEquals(AVAILABLE,visibility.undo)
+        assertEquals(UNAVAILABLE, visibility.redo)
 
         viewModel.undo()
         assertWasFocused(1, 4)
         assertEquals("title", item.text.text.toString())
 
-        visibility = viewModel.editActionsVisibility.getOrAwaitValue()
-        assertFalse(visibility.undo)
-        assertTrue(visibility.redo)
+        visibility = viewModel.editActionsAvailability.getOrAwaitValue()
+        assertEquals(UNAVAILABLE,visibility.undo)
+        assertEquals(AVAILABLE, visibility.redo)
 
         viewModel.redo()
         assertWasFocused(1, 15)
-        visibility = viewModel.editActionsVisibility.getOrAwaitValue()
+        visibility = viewModel.editActionsAvailability.getOrAwaitValue()
         assertEquals("tiananmen square", item.text.text.toString())
-        assertTrue(visibility.undo)
-        assertFalse(visibility.redo)
+        assertEquals(AVAILABLE,visibility.undo)
+        assertEquals(UNAVAILABLE, visibility.redo)
     }
 
     @Test

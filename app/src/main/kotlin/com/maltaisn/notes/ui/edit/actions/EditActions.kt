@@ -22,33 +22,41 @@ import androidx.annotation.StringRes
 import com.maltaisn.notes.R
 import com.maltaisn.notes.ui.edit.EditViewModel
 
-data class EditAction(
-    val visible: Boolean,
-    @field:StringRes @param:StringRes val title: Int,
-    @field:DrawableRes @param:DrawableRes val icon: Int,
-    val showInToolbar: Boolean,
-    val action: (EditViewModel) -> Unit,
-)
+enum class EditActionAvailability {
+    /* Available & visible. */
+    AVAILABLE,
 
-data class EditActionsVisibility(
-    val undo: Boolean = false,
-    val redo: Boolean = false,
-    val convertToList: Boolean = false,
-    val convertToText: Boolean = false,
-    val reminderAdd: Boolean = false,
-    val reminderEdit: Boolean = false,
-    val archive: Boolean = false,
-    val unarchive: Boolean = false,
-    val delete: Boolean = false,
-    val restore: Boolean = false,
-    val deleteForever: Boolean = false,
-    val pin: Boolean = false,
-    val unpin: Boolean = false,
-    val share: Boolean = false,
-    val copy: Boolean = false,
-    val uncheckAll: Boolean = false,
-    val deleteChecked: Boolean = false,
-    val sortItems: Boolean = false,
+    /* Unavailable & visible. */
+    UNAVAILABLE,
+
+    /* Unavailable & hidden. */
+    HIDDEN;
+
+    companion object {
+        fun fromBoolean(visible: Boolean, available: Boolean = true) =
+            if (!visible) HIDDEN else if (available) AVAILABLE else UNAVAILABLE
+    }
+}
+
+data class EditActionsAvailability(
+    val undo: EditActionAvailability = EditActionAvailability.HIDDEN,
+    val redo: EditActionAvailability = EditActionAvailability.HIDDEN,
+    val convertToList: EditActionAvailability = EditActionAvailability.HIDDEN,
+    val convertToText: EditActionAvailability = EditActionAvailability.HIDDEN,
+    val reminderAdd: EditActionAvailability = EditActionAvailability.HIDDEN,
+    val reminderEdit: EditActionAvailability = EditActionAvailability.HIDDEN,
+    val archive: EditActionAvailability = EditActionAvailability.HIDDEN,
+    val unarchive: EditActionAvailability = EditActionAvailability.HIDDEN,
+    val delete: EditActionAvailability = EditActionAvailability.HIDDEN,
+    val restore: EditActionAvailability = EditActionAvailability.HIDDEN,
+    val deleteForever: EditActionAvailability = EditActionAvailability.HIDDEN,
+    val pin: EditActionAvailability = EditActionAvailability.HIDDEN,
+    val unpin: EditActionAvailability = EditActionAvailability.HIDDEN,
+    val share: EditActionAvailability = EditActionAvailability.HIDDEN,
+    val copy: EditActionAvailability = EditActionAvailability.HIDDEN,
+    val uncheckAll: EditActionAvailability = EditActionAvailability.HIDDEN,
+    val deleteChecked: EditActionAvailability = EditActionAvailability.HIDDEN,
+    val sortItems: EditActionAvailability = EditActionAvailability.HIDDEN,
 ) {
 
     fun createActions(context: Context): List<EditAction> {
@@ -83,7 +91,7 @@ data class EditActionsVisibility(
                 R.drawable.ic_alarm,
                 true,
                 EditViewModel::changeReminder),
-            EditAction(true,
+            EditAction(EditActionAvailability.AVAILABLE,
                 R.string.action_labels,
                 R.drawable.ic_label_outline,
                 true,
@@ -154,3 +162,11 @@ data class EditActionsVisibility(
         )
     }
 }
+
+data class EditAction(
+    val available: EditActionAvailability,
+    @field:StringRes @param:StringRes val title: Int,
+    @field:DrawableRes @param:DrawableRes val icon: Int,
+    val showInToolbar: Boolean,
+    val action: (EditViewModel) -> Unit,
+)

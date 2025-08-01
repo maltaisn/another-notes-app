@@ -53,7 +53,8 @@ import com.maltaisn.notes.navigateSafe
 import com.maltaisn.notes.ui.SharedViewModel
 import com.maltaisn.notes.ui.common.ConfirmDialog
 import com.maltaisn.notes.ui.edit.actions.EditAction
-import com.maltaisn.notes.ui.edit.actions.EditActionsVisibility
+import com.maltaisn.notes.ui.edit.actions.EditActionAvailability
+import com.maltaisn.notes.ui.edit.actions.EditActionsAvailability
 import com.maltaisn.notes.ui.edit.adapter.EditAdapter
 import com.maltaisn.notes.ui.observeEvent
 import com.maltaisn.notes.ui.startSharingData
@@ -202,7 +203,7 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener, ConfirmDialog.
     private fun setupViewModelObservers(adapter: EditAdapter) {
         val navController = findNavController()
 
-        viewModel.editActionsVisibility.observe(viewLifecycleOwner, ::updateActionItemsVisibility)
+        viewModel.editActionsAvailability.observe(viewLifecycleOwner, ::updateActionItemsVisibility)
 
         // Each observer must take care not to undo the work of another observer
         // in case an attribute of a menu item is dependant on more than one criterion.
@@ -291,7 +292,7 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener, ConfirmDialog.
     }
 
     private fun createActionItems() {
-        editActions = EditActionsVisibility().createActions(requireContext())
+        editActions = EditActionsAvailability().createActions(requireContext())
 
         val menu = binding.toolbar.menu
         for ((i, action) in editActions.withIndex()) {
@@ -308,31 +309,20 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener, ConfirmDialog.
         }
     }
 
-    private fun updateActionItemsVisibility(visibility: EditActionsVisibility) {
+    private fun updateActionItemsVisibility(visibility: EditActionsAvailability) {
         val context = requireContext()
         editActions = visibility.createActions(context)
 
         val menu = binding.toolbar.menu
         val inToolbarMax = context.resources.getInteger(R.integer.edit_actions_in_toolbar)
-        var inToolbarCount = 0
-        var overflow = false
-        for ((i, action) in editActions.withIndex()) {
-            menu[i].isVisible = false
-            if (action.visible) {
-                if (action.showInToolbar) {
-                    if (inToolbarCount < inToolbarMax) {
-                        menu[i].isVisible = true
-                        inToolbarCount++
-                    } else {
-                        overflow = true
-                    }
-                } else {
-                    overflow = true
-                }
-            }
+        val showOverflow = updateToolbarItemsForEditActions(inToolbarMax, editActions) { pos, visible, enabled ->
+            val item = menu[pos]
+            item.isVisible = visible
+            item.isEnabled = enabled
         }
+
         // Show overflow icon only if there are hidden items
-        menu[editActions.size].isVisible = overflow
+        menu[editActions.size].isVisible = showOverflow
     }
 
     override fun onDestroyView() {
@@ -347,7 +337,7 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener, ConfirmDialog.
 
     override fun onMenuItemClick(item: MenuItem): Boolean {
         for ((i, action) in editActions.withIndex()) {
-            if (item.itemId == i && action.visible) {
+            if (item.itemId == i && action.available == EditActionAvailability.AVAILABLE) {
                 action.action(viewModel)
                 return true
             }
@@ -380,4 +370,30 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener, ConfirmDialog.
 
         private const val CANT_EDIT_SNACKBAR_DURATION = 5000
     }
+}
+
+fun updateToolbarItemsForEditActions(
+    maxCountInToolbar: Int,
+    editActions: List<EditAction>,
+    callback: (pos: Int, visible: Boolean, enabled: Boolean) -> Unit
+): Boolean {
+    var inToolbarCount = 0
+    var overflow = false
+    for ((i, action) in editActions.withIndex()) {
+        if (action.available != EditActionAvailability.HIDDEN) {
+            if (action.showInToolbar) {
+                if (inToolbarCount < maxCountInToolbar) {
+                    callback(i, true, action.available == EditActionAvailability.AVAILABLE)
+                    inToolbarCount++
+                    continue
+                } else {
+                    overflow = true
+                }
+            } else {
+                overflow = true
+            }
+        }
+        callback(i, false, false)
+    }
+    return overflow
 }

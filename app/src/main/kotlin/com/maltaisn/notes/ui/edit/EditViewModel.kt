@@ -39,7 +39,8 @@ import com.maltaisn.notes.model.entity.Reminder
 import com.maltaisn.notes.ui.Event
 import com.maltaisn.notes.ui.ShareData
 import com.maltaisn.notes.ui.StatusChange
-import com.maltaisn.notes.ui.edit.actions.EditActionsVisibility
+import com.maltaisn.notes.ui.edit.actions.EditActionAvailability
+import com.maltaisn.notes.ui.edit.actions.EditActionsAvailability
 import com.maltaisn.notes.ui.edit.adapter.EditAdapter
 import com.maltaisn.notes.ui.edit.adapter.EditCheckedHeaderItem
 import com.maltaisn.notes.ui.edit.adapter.EditChipsItem
@@ -153,9 +154,9 @@ class EditViewModel @Inject constructor(
     /** Job used to debounce end of batch for text edit undo actions. */
     private var undoAppendJob: Job? = null
 
-    private val _editActionsVisibility = MutableLiveData<EditActionsVisibility>()
-    val editActionsVisibility: LiveData<EditActionsVisibility>
-        get() = _editActionsVisibility
+    private val _editActionsAvailability = MutableLiveData<EditActionsAvailability>()
+    val editActionsAvailability: LiveData<EditActionsAvailability>
+        get() = _editActionsAvailability
 
     private val _editItems = MutableLiveData<MutableList<EditListItem>>()
     val editItems: LiveData<out List<EditListItem>>
@@ -382,28 +383,28 @@ class EditViewModel @Inject constructor(
         val inTrash = isNoteInTrash
         val anyChecked = listItems.asSequence().filterIsInstance<EditItemItem>().any { it.checked }
 
-        val visibility = EditActionsVisibility(
-            undo = undoManager.canUndo,
-            redo = undoManager.canRedo,
-            convertToList = !isList && !inTrash,
-            convertToText = isList && !inTrash,
-            reminderAdd = !inTrash && reminder == null,
-            reminderEdit = !inTrash && reminder != null,
-            archive = status == NoteStatus.ACTIVE,
-            unarchive = status == NoteStatus.ARCHIVED,
-            delete = !inTrash,
-            deleteForever = inTrash,
-            restore = inTrash,
-            pin = pinned == PinnedStatus.UNPINNED,
-            unpin = pinned == PinnedStatus.PINNED,
-            share = !inTrash,
-            copy = !inTrash,
-            uncheckAll = isList && anyChecked && !inTrash,
-            deleteChecked = isList && anyChecked && !inTrash,
-            sortItems = isList && !inTrash,
+        val visibility = EditActionsAvailability(
+            undo = EditActionAvailability.fromBoolean(!inTrash, undoManager.canUndo),
+            redo = EditActionAvailability.fromBoolean(!inTrash, undoManager.canRedo),
+            convertToList = EditActionAvailability.fromBoolean(!isList && !inTrash),
+            convertToText = EditActionAvailability.fromBoolean(isList && !inTrash),
+            reminderAdd = EditActionAvailability.fromBoolean(!inTrash && reminder == null),
+            reminderEdit = EditActionAvailability.fromBoolean(!inTrash && reminder != null),
+            archive = EditActionAvailability.fromBoolean(status == NoteStatus.ACTIVE),
+            unarchive = EditActionAvailability.fromBoolean(status == NoteStatus.ARCHIVED),
+            delete = EditActionAvailability.fromBoolean(!inTrash),
+            deleteForever = EditActionAvailability.fromBoolean(inTrash),
+            restore = EditActionAvailability.fromBoolean(inTrash),
+            pin = EditActionAvailability.fromBoolean(pinned == PinnedStatus.UNPINNED),
+            unpin = EditActionAvailability.fromBoolean(pinned == PinnedStatus.PINNED),
+            share = EditActionAvailability.fromBoolean(!inTrash),
+            copy = EditActionAvailability.fromBoolean(!inTrash),
+            uncheckAll = EditActionAvailability.fromBoolean(isList && anyChecked && !inTrash),
+            deleteChecked = EditActionAvailability.fromBoolean(isList && anyChecked && !inTrash),
+            sortItems = EditActionAvailability.fromBoolean(isList && !inTrash),
         )
-        if (visibility != editActionsVisibility.value) {
-            _editActionsVisibility.value = visibility
+        if (visibility != editActionsAvailability.value) {
+            _editActionsAvailability.value = visibility
         }
     }
 
