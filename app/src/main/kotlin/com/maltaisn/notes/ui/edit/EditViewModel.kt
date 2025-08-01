@@ -382,7 +382,7 @@ class EditViewModel @Inject constructor(
         val inTrash = isNoteInTrash
         val anyChecked = listItems.asSequence().filterIsInstance<EditItemItem>().any { it.checked }
 
-        _editActionsVisibility.value = EditActionsVisibility(
+        val visibility = EditActionsVisibility(
             undo = undoManager.canUndo,
             redo = undoManager.canRedo,
             convertToList = !isList && !inTrash,
@@ -402,6 +402,9 @@ class EditViewModel @Inject constructor(
             deleteChecked = isList && anyChecked && !inTrash,
             sortItems = isList && !inTrash,
         )
+        if (visibility != editActionsVisibility.value) {
+            _editActionsVisibility.value = visibility
+        }
     }
 
     fun undo() {
