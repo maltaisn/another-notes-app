@@ -21,6 +21,7 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.os.Build
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.content.getSystemService
 import com.maltaisn.notes.model.NotesDatabase
 import com.maltaisn.notes.model.PrefsManager
 import com.maltaisn.notes.ui.AppTheme
@@ -60,8 +61,7 @@ class App : Application() {
     private fun createNotificationChannel() {
         // https://developer.android.com/training/notify-user/build-notification#Priority
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val notificationManager: NotificationManager =
-                getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+            val notificationManager = getSystemService<NotificationManager>() ?: return
             val channel = NotificationChannel(NOTIFICATION_CHANNEL_ID,
                 getString(R.string.reminder_notif_channel_title),
                 NotificationManager.IMPORTANCE_HIGH)

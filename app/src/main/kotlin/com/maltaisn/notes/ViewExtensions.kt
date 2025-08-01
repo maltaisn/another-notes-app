@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Nicolas Maltais
+ * Copyright 2025 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,19 +16,19 @@
 
 package com.maltaisn.notes
 
-import android.content.Context
 import android.graphics.Paint
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.TextView
+import androidx.core.content.getSystemService
 
 /**
  * Try to hide the keyboard from [this] view.
  */
 fun View.hideKeyboard() {
     val context = this.context ?: return
-    val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-    imm.hideSoftInputFromWindow(this.windowToken, 0)
+    val imm = context.getSystemService<InputMethodManager>()
+    imm?.hideSoftInputFromWindow(this.windowToken, 0)
 }
 
 /**
@@ -39,8 +39,8 @@ fun View.showKeyboard(delay: Long = 200L) {
     val context = this.context ?: return
     this.postDelayed({
         val focus = this.findFocus() ?: return@postDelayed
-        val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-        imm.showSoftInput(focus, 0)
+        val imm = context.getSystemService<InputMethodManager>()
+        imm?.showSoftInput(focus, 0)
     }, delay)
 }
 

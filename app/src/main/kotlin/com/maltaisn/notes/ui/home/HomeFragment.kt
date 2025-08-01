@@ -19,7 +19,6 @@ package com.maltaisn.notes.ui.home
 import android.Manifest
 import android.app.ActivityManager
 import android.app.AlarmManager
-import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
@@ -28,6 +27,7 @@ import android.view.View
 import androidx.appcompat.view.ActionMode
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
+import androidx.core.content.getSystemService
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.viewModels
@@ -65,7 +65,7 @@ class HomeFragment : NoteFragment(), Toolbar.OnMenuItemClickListener {
         var batteryRestricted = false
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             // Detect battery restriction as it affects reminder alarms.
-            val activityManager = context.getSystemService(Context.ACTIVITY_SERVICE) as? ActivityManager
+            val activityManager = context.getSystemService<ActivityManager>()
             if (activityManager?.isBackgroundRestricted == true) {
                 batteryRestricted = true
             }
@@ -82,8 +82,8 @@ class HomeFragment : NoteFragment(), Toolbar.OnMenuItemClickListener {
 
         var reminderRestricted = false
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-            val alarmManager: AlarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-            if (!alarmManager.canScheduleExactAlarms()) {
+            val alarmManager = context.getSystemService<AlarmManager>()
+            if (alarmManager?.canScheduleExactAlarms() == false) {
                 reminderRestricted = true
             }
         }

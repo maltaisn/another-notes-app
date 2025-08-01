@@ -24,6 +24,7 @@ import android.os.Build
 import android.provider.Settings
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.getSystemService
 import androidx.fragment.app.Fragment
 import com.maltaisn.notes.R
 import com.maltaisn.notes.ui.common.ConfirmDialog
@@ -64,7 +65,7 @@ class ReminderPermission(
         if (Build.VERSION.SDK_INT < 34) {
             return
         }
-        val alarmManager: AlarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        val alarmManager = context.getSystemService<AlarmManager>() ?: return
         when {
             alarmManager.canScheduleExactAlarms() -> {
                 // OK, permission already granted.
