@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Nicolas Maltais
+ * Copyright 2025 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,7 +60,7 @@ fun <T> LiveData<T>.getOrAwaitValue(time: Duration = 1.seconds): T {
 fun <T> assertLiveDataEventSent(liveData: LiveData<Event<T>>, expected: T?) {
     val event = liveData.getOrAwaitValue()
     assertFalse(event.hasBeenHandled)
-    assertEquals(event.requireUnhandledContent(), expected)
+    assertEquals(expected, event.requireUnhandledContent())
 }
 
 fun assertLiveDataEventSent(liveData: LiveData<Event<Unit>>) = assertLiveDataEventSent(liveData, Unit)
