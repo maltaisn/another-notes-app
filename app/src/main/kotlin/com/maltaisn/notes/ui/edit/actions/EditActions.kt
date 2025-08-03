@@ -33,7 +33,7 @@ enum class EditActionAvailability {
     HIDDEN;
 
     companion object {
-        fun fromBoolean(visible: Boolean, available: Boolean = true) =
+        fun fromBoolean(visible: Boolean = true, available: Boolean = true) =
             if (!visible) HIDDEN else if (available) AVAILABLE else UNAVAILABLE
     }
 }

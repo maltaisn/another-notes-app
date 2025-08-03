@@ -21,7 +21,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.maltaisn.notes.debugCheck
 import com.maltaisn.notes.model.LabelsRepository
 import com.maltaisn.notes.model.NotesRepository
 import com.maltaisn.notes.model.PrefsManager
@@ -49,8 +48,11 @@ import com.maltaisn.notes.ui.edit.adapter.EditDateItem
 import com.maltaisn.notes.ui.edit.adapter.EditItemAddItem
 import com.maltaisn.notes.ui.edit.adapter.EditItemItem
 import com.maltaisn.notes.ui.edit.adapter.EditListItem
+import com.maltaisn.notes.ui.edit.adapter.EditTextItem
 import com.maltaisn.notes.ui.edit.adapter.EditTitleItem
 import com.maltaisn.notes.ui.edit.adapter.EditableText
+import com.maltaisn.notes.ui.edit.undo.BatchUndoAction
+import com.maltaisn.notes.ui.edit.undo.ItemAddUndoAction
 import com.maltaisn.notes.ui.edit.undo.ItemUndoAction
 import com.maltaisn.notes.ui.edit.undo.NoteUndoAction
 import com.maltaisn.notes.ui.edit.undo.TextUndoAction
@@ -446,9 +448,9 @@ class EditViewModel @Inject constructor(
             return
         }
 
-        ignoreTextChanges = true
-        val focusChange = work(action)
-        ignoreTextChanges = false
+        val focusChange = ignoringTextChanges {
+            work(action)
+        }
 
         // Update the items for the performed change
         when (action) {
@@ -465,6 +467,42 @@ class EditViewModel @Inject constructor(
             _focusEvent.send(focusChange)
         }
 
+        updateEditActionsVisibility()
+    }
+
+    private fun appendUndoAction(action: UndoAction, batch: Boolean = true, execute: Boolean = false) {
+        if (execute) {
+            val focusChange = when (action) {
+                is ItemUndoAction -> ignoringTextChanges {
+                    action.redo(listItems)
+                }
+                is NoteUndoAction -> {
+                    note = action.redo()
+                    null
+                }
+            }
+            // Note updateListItems is not called, it's the responsability of caller.
+            if (focusChange != null) {
+                _focusEvent.send(focusChange)
+            }
+        }
+
+        // Batch all actions and stop if inactive for a certain delay.
+        undoAppendJob?.cancel()
+        if (batch) {
+            if (!undoManager.isInBatchMode) {
+                undoManager.startBatch()
+            }
+            undoAppendJob = viewModelScope.launch {
+                delay(UNDO_TEXT_DEBOUNCE_DELAY)
+                undoManager.endBatch()
+            }
+        } else {
+            undoAppendJob = null
+            undoManager.endBatch()
+        }
+
+        undoManager.append(action)
         updateEditActionsVisibility()
     }
 
@@ -834,57 +872,71 @@ class EditViewModel @Inject constructor(
         _editItems.value = listItems.toMutableList()
     }
 
-    override fun onTextChanged(undoAction: TextUndoAction) {
+    private fun convertNewlinesToListItems(pos: Int, start: Int, oldText: String, newText: String) {
+        // User inserted line breaks in list items, split it into multiple items.
+        // The item at pos will keep the first line of text.
+        val item = listItems[pos] as EditItemItem
+        val itemText = item.text.text
+        val textBefore = itemText.substring(0, start) + oldText + itemText.substring(start + newText.length)
+        val lines = itemText.split("\n")
+        ignoringTextChanges {
+            item.text.replaceAll(textBefore)
+        }
+        val newItemsCount = lines.size - 1
+
+        appendUndoAction(BatchUndoAction(listOf(
+            // Note: this action may be empty, that's fine. It will handle the focus change on undo.
+            TextUndoAction.create(
+                itemPos = pos,
+                start = 0,
+                end = textBefore.length,
+                oldText = textBefore,
+                newText = lines.first()
+            ),
+            ItemAddUndoAction(
+                itemPos = pos + 1,
+                itemCount = newItemsCount,
+                text = lines.subList(1, lines.size).joinToString("\n"),
+                // If this happens in the checked group when moving checked to the bottom, new items will be checked.
+                checked = item.checked && prefs.moveCheckedToBottom,
+                actualPos = item.actualPos + 1,
+            ),
+        )), execute = true)
+
+        // Focus the last added item at the position where the text change ends.
+        val lastAddedLine = newText.substringAfterLast('\n')
+        focusItemAt(pos + newItemsCount, lastAddedLine.length, false)
+
+        onListItemsChanged() // just to update checked count
+        updateListItems()
+    }
+
+    override fun onTextChanged(pos: Int, start: Int, end: Int, oldText: String, newText: String) {
         if (ignoreTextChanges) {
             // Currently undoing or redoing something, ignore text changes.
             return
         }
 
-        // For text edits, batch all actions and stop if inactive for a certain delay.
-        if (!undoManager.isInBatchMode) {
-            undoManager.startBatch()
-        }
-        undoAppendJob?.cancel()
-        undoAppendJob = viewModelScope.launch {
-            delay(UNDO_TEXT_DEBOUNCE_DELAY)
-            undoManager.endBatch()
-        }
-
-        undoManager.append(undoAction)
-        updateEditActionsVisibility()
-    }
-
-    override fun onNoteItemChanged(pos: Int, isPaste: Boolean) {
-        val item = listItems.getOrNull(pos) as? EditItemItem?
-        debugCheck(item != null)
-        if (item == null) {
-            // This shouldn't happen, but I've seen two crashes here.
-            // It might be better to just ignore it for now.
-            return
-        }
-
-        if ('\n' in item.text.text) {
-            // User inserted line breaks in list items, split it into multiple items.
-            // If this happens in the checked group when moving checked to the bottom, new items will be checked.
-            val lines = item.text.text.split('\n')
-            item.text.replaceAll(lines.first())
-            for (listItem in listItems) {
-                if (listItem is EditItemItem && listItem.actualPos > item.actualPos) {
-                    listItem.actualPos += lines.size - 1
+        val item = listItems.getOrNull(pos) ?: return
+        val undoAction = TextUndoAction.create(pos, start, end, oldText, newText)
+        when (item) {
+            is EditTitleItem, is EditContentItem -> appendUndoAction(undoAction)
+            is EditItemItem -> {
+                if ('\n' in newText) {
+                    convertNewlinesToListItems(pos, start, oldText, newText)
+                } else {
+                    appendUndoAction(undoAction)
                 }
             }
-            for (i in 1 until lines.size) {
-                listItems.add(pos + i, EditItemItem(DefaultEditableText(lines[i]),
-                    checked = item.checked && prefs.moveCheckedToBottom, editable = true, item.actualPos + i))
-            }
-
-            onListItemsChanged() // just to update checked count
-            updateListItems()
-
-            // If text was pasted, set focus at the end of last items pasted.
-            // If a single linebreak was inserted, focus on the new item.
-            focusItemAt(pos + lines.size - 1, if (isPaste) lines.last().length else 0, false)
+            else -> {}
         }
+    }
+
+    private inline fun <R> ignoringTextChanges(work: () -> R): R {
+        ignoreTextChanges = true
+        val result = work()
+        ignoreTextChanges = false
+        return result
     }
 
     override fun onNoteItemCheckChanged(pos: Int, checked: Boolean) {
@@ -951,13 +1003,18 @@ class EditViewModel @Inject constructor(
     }
 
     override fun onNoteItemAddClicked() {
-        // pos is the position of EditItemAdd item, which is also the position to insert the new item.
-        // The new item is added last, so the actual pos is the maximum plus one.
-        val insertPos = findItemPos<EditItemAddItem>()
-        val actualPos = listItems.maxOf { (it as? EditItemItem)?.actualPos ?: -1 } + 1
-        listItems.add(insertPos, EditItemItem(DefaultEditableText(), checked = false, editable = true, actualPos))
+        val pos = findItemPos<EditItemAddItem>()
+        val previousItem = listItems[pos - 1] as EditTextItem  // Either title or list item
+        appendUndoAction(ItemAddUndoAction(
+            itemPos = pos,
+            itemCount = 1,
+            text = "",
+            checked = false,
+            // The new item is added last, so the actual pos is the maximum plus one.
+            actualPos = listItems.maxOf { (it as? EditItemItem)?.actualPos ?: -1 } + 1,
+            focusBefore = EditFocusChange(pos - 1, previousItem.text.text.length, true),
+        ), execute = true)
         updateListItems()
-        focusItemAt(insertPos, 0, false)
     }
 
     override fun onNoteLabelClicked() {

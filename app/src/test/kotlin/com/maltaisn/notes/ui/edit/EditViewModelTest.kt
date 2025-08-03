@@ -37,6 +37,7 @@ import com.maltaisn.notes.ui.MockAlarmCallback
 import com.maltaisn.notes.ui.ShareData
 import com.maltaisn.notes.ui.StatusChange
 import com.maltaisn.notes.ui.assertLiveDataEventSent
+import com.maltaisn.notes.ui.edit.actions.EditActionAvailability
 import com.maltaisn.notes.ui.edit.actions.EditActionAvailability.AVAILABLE
 import com.maltaisn.notes.ui.edit.actions.EditActionAvailability.HIDDEN
 import com.maltaisn.notes.ui.edit.actions.EditActionAvailability.UNAVAILABLE
@@ -49,8 +50,6 @@ import com.maltaisn.notes.ui.edit.adapter.EditItemAddItem
 import com.maltaisn.notes.ui.edit.adapter.EditItemItem
 import com.maltaisn.notes.ui.edit.adapter.EditTextItem
 import com.maltaisn.notes.ui.edit.adapter.EditTitleItem
-import com.maltaisn.notes.ui.edit.undo.TextUndoAction
-import com.maltaisn.notes.ui.edit.undo.TextUndoActionType
 import com.maltaisn.notes.ui.getOrAwaitValue
 import com.maltaisn.notes.ui.note.ShownDateField
 import kotlinx.coroutines.test.advanceTimeBy
@@ -250,14 +249,7 @@ class EditViewModelTest {
             sortItems = AVAILABLE,
         ), viewModel.editActionsAvailability.getOrAwaitValue())
 
-        assertEquals(listOf(
-            EditDateItem(dateFor("2020-03-30").time),
-            EditTitleItem("title".e, true),
-            EditItemItem("item 1".e, checked = true, editable = true, 0),
-            EditItemItem("item 2".e, checked = false, editable = true, 1),
-            EditItemAddItem,
-            EditChipsItem(listOf(labelsRepo.requireLabelById(1))),
-        ), viewModel.editItems.getOrAwaitValue())
+        assertEquals(NOTE2_ITEMS, viewModel.editItems.getOrAwaitValue())
     }
 
     @Test
@@ -299,7 +291,7 @@ class EditViewModelTest {
         val oldNote = notesRepo.requireNoteById(1)
 
         viewModel.start(1)
-        replaceItemText(1, "modified")
+        replaceText(1, "modified")
         viewModel.saveNote()
 
         assertNoteEquals(testNote(id = 1, title = "modified", content = "content",
@@ -312,9 +304,9 @@ class EditViewModelTest {
 
         viewModel.start(2)
 
-        val firstItem = viewModel.editItems.getOrAwaitValue()[2] as EditItemItem
+        val firstItem = itemAt<EditItemItem>(2)
         firstItem.checked = false
-        firstItem.text.replaceAll("modified item")
+        replaceText(2, "modified item")
 
         viewModel.saveNote()
 
@@ -646,15 +638,11 @@ class EditViewModelTest {
     }
 
     @Test
-    fun `should split list note item on new line`() = runTest {
+    fun `should split list note item on new line (single)`() = runTest {
         viewModel.start(2)
+        replaceText(2, "\n", 6, 6)
 
-        val item = viewModel.editItems.getOrAwaitValue()[2] as EditItemItem
-        item.text.append("\n")
-
-        viewModel.onNoteItemChanged(2, false)
-
-        assertEquals(listOf(
+        val itemsAfter = listOf(
             EditDateItem(dateFor("2020-03-30").time),
             EditTitleItem("title".e, true),
             EditItemItem("item 1".e, checked = true, editable = true, 0),
@@ -662,32 +650,48 @@ class EditViewModelTest {
             EditItemItem("item 2".e, checked = false, editable = true, 2),
             EditItemAddItem,
             EditChipsItem(listOf(labelsRepo.requireLabelById(1))),
-        ), viewModel.editItems.getOrAwaitValue())
+        )
+
+        assertUndoRedoStatus(canUndo = true)
+        assertEquals(itemsAfter, viewModel.editItems.getOrAwaitValue())
         assertWasFocused(3, 0, false)
+
+        viewModel.undo()
+        assertUndoRedoStatus(canRedo = true)
+        assertEquals(NOTE2_ITEMS, viewModel.editItems.getOrAwaitValue())
+        assertWasFocused(2, 6, true)
+
+        viewModel.redo()
+        assertEquals(itemsAfter, viewModel.editItems.getOrAwaitValue())
     }
 
     @Test
-    fun `should split list note item in multiple items on paste`() =
-        runTest {
-            viewModel.start(2)
+    fun `should split list note item on new line (multiple)`() = runTest {
+        viewModel.start(2)
+        replaceText(2, "\nnew item first\nnew item second", 2, 5)
 
-            val item = viewModel.editItems.getOrAwaitValue()[2] as EditItemItem
-            item.text.append("\nnew item first\nnew item second")
+        val itemsAfter = listOf(
+            EditDateItem(dateFor("2020-03-30").time),
+            EditTitleItem("title".e, true),
+            EditItemItem("it".e, checked = true, editable = true, 0),
+            EditItemItem("new item first".e, checked = false, editable = true, 1),
+            EditItemItem("new item second1".e, checked = false, editable = true, 2),
+            EditItemItem("item 2".e, checked = false, editable = true, 3),
+            EditItemAddItem,
+            EditChipsItem(listOf(labelsRepo.requireLabelById(1))),
+        )
 
-            viewModel.onNoteItemChanged(2, true)
+        assertEquals(itemsAfter, viewModel.editItems.getOrAwaitValue())
+        assertWasFocused(4, 15, false)
 
-            assertEquals(listOf(
-                EditDateItem(dateFor("2020-03-30").time),
-                EditTitleItem("title".e, true),
-                EditItemItem("item 1".e, checked = true, editable = true, 0),
-                EditItemItem("new item first".e, checked = false, editable = true, 1),
-                EditItemItem("new item second".e, checked = false, editable = true, 2),
-                EditItemItem("item 2".e, checked = false, editable = true, 3),
-                EditItemAddItem,
-                EditChipsItem(listOf(labelsRepo.requireLabelById(1))),
-            ), viewModel.editItems.getOrAwaitValue())
-            assertWasFocused(4, 15, false)
-        }
+        viewModel.undo()
+        assertUndoRedoStatus(canRedo = true)
+        assertEquals(NOTE2_ITEMS, viewModel.editItems.getOrAwaitValue())
+        assertWasFocused(2, 6, true)
+
+        viewModel.redo()
+        assertEquals(itemsAfter, viewModel.editItems.getOrAwaitValue())
+    }
 
     @Test
     fun `should merge list note item with previous on backspace`() =
@@ -804,7 +808,7 @@ class EditViewModelTest {
         viewModel.start(2)
         viewModel.onNoteItemAddClicked()
 
-        assertEquals(listOf(
+        val itemsAfter = listOf(
             EditDateItem(dateFor("2020-03-30").time),
             EditTitleItem("title".e, true),
             EditItemItem("item 1".e, checked = true, editable = true, 0),
@@ -812,7 +816,20 @@ class EditViewModelTest {
             EditItemItem("".e, checked = false, editable = true, 2),
             EditItemAddItem,
             EditChipsItem(listOf(labelsRepo.requireLabelById(1))),
-        ), viewModel.editItems.getOrAwaitValue())
+        )
+        val itemsBefore = itemsAfter.toMutableList().apply { removeAt(4) }
+
+        assertUndoRedoStatus(canUndo = true)
+        assertEquals(itemsAfter, viewModel.editItems.getOrAwaitValue())
+        assertWasFocused(4, 0, false)
+
+        viewModel.undo()
+        assertUndoRedoStatus(canRedo = true)
+        assertEquals(itemsBefore, viewModel.editItems.getOrAwaitValue())
+        assertWasFocused(3, 6, true)
+
+        viewModel.redo()
+        assertEquals(itemsAfter, viewModel.editItems.getOrAwaitValue())
         assertWasFocused(4, 0, false)
     }
 
@@ -1164,11 +1181,7 @@ class EditViewModelTest {
     fun `should add new checked items if newlines inserted in checked section`() = runTest {
         whenever(prefs.moveCheckedToBottom) doReturn true
         viewModel.start(2)
-
-        val item = viewModel.editItems.getOrAwaitValue()[5] as EditItemItem
-        item.text.append("\n")
-
-        viewModel.onNoteItemChanged(5, false)
+        replaceText(5, "\n", 6, 6)
 
         assertEquals(listOf(
             EditDateItem(dateFor("2020-03-30").time),
@@ -1208,7 +1221,7 @@ class EditViewModelTest {
             added = dateFor("2020-03-30")))
 
         viewModel.start(10)
-        replaceItemText(4, " Ev")
+        replaceText(4, " Ev")
 
         viewModel.sortItems()
 
@@ -1246,7 +1259,7 @@ class EditViewModelTest {
     @Test
     fun `should keep note changes on conversion`() = runTest {
         viewModel.start(1)
-        replaceItemText(2, "modified")
+        replaceText(2, "modified")
 
         viewModel.toggleNoteType()
 
@@ -1262,7 +1275,7 @@ class EditViewModelTest {
     @Test
     fun `should keep note changes on reminder change`() = runTest {
         viewModel.start(1)
-        replaceItemText(2, "modified")
+        replaceText(2, "modified")
 
         val reminder = Reminder(dateFor("2020-01-01"), null, dateFor("2020-01-01"), 1, false)
         viewModel.onReminderChange(reminder)
@@ -1342,41 +1355,31 @@ class EditViewModelTest {
     @Test
     fun `should undo and redo text change`() = runTest {
         viewModel.start(1)
-        val item = viewModel.editItems.getOrAwaitValue()[1] as EditTitleItem
-        item.text.replaceAll("tiananmen square")  // Will I get blacklisted in China??
 
-        viewModel.onTextChanged(TextUndoAction.create(1, TextUndoActionType.TITLE, 2, 5, "tle", "ananmen square"))
-
-        var visibility = viewModel.editActionsAvailability.getOrAwaitValue()
-        assertEquals(AVAILABLE,visibility.undo)
-        assertEquals(UNAVAILABLE, visibility.redo)
+        val item = itemAt<EditTextItem>(1)
+        replaceText(1, "ananmen square", 2, 5) // Will I get blacklisted in China??
+        assertUndoRedoStatus(canUndo = true)
 
         viewModel.undo()
         assertWasFocused(1, 4)
         assertEquals("title", item.text.text.toString())
-
-        visibility = viewModel.editActionsAvailability.getOrAwaitValue()
-        assertEquals(UNAVAILABLE,visibility.undo)
-        assertEquals(AVAILABLE, visibility.redo)
+        assertUndoRedoStatus(canRedo = true)
 
         viewModel.redo()
         assertWasFocused(1, 15)
-        visibility = viewModel.editActionsAvailability.getOrAwaitValue()
         assertEquals("tiananmen square", item.text.text.toString())
-        assertEquals(AVAILABLE,visibility.undo)
-        assertEquals(UNAVAILABLE, visibility.redo)
+        assertUndoRedoStatus(canUndo = true)
     }
 
     @Test
     fun `should batch undo actions`() = runTest {
         viewModel.start(1)
-        val item = viewModel.editItems.getOrAwaitValue()[2] as EditContentItem
-        item.text.replaceAll("abc")
 
-        viewModel.onTextChanged(TextUndoAction.create(2, TextUndoActionType.CONTENT, 0, 7, "content", "a"))
-        viewModel.onTextChanged(TextUndoAction.create(2, TextUndoActionType.CONTENT, 1, 1, "", "b"))
+        val item = itemAt<EditTextItem>(2)
+        replaceText(2, "a", 0, 7)
+        replaceText(2, "b", 1, 1)
         advanceTimeBy(EditViewModel.UNDO_TEXT_DEBOUNCE_DELAY + 100.milliseconds)
-        viewModel.onTextChanged(TextUndoAction.create(2, TextUndoActionType.CONTENT, 2, 2, "", "c"))
+        replaceText(2, "c", 2, 2)
 
         viewModel.undo()
         assertWasFocused(2, 2)
@@ -1386,12 +1389,40 @@ class EditViewModelTest {
         assertEquals("content", item.text.text.toString())
     }
 
-    private fun replaceItemText(pos: Int, replacement: String) {
-        val text = (viewModel.editItems.getOrAwaitValue()[pos] as EditTextItem).text
-        text.replaceAll(replacement)
+    private inline fun <reified T> itemAt(pos: Int): T {
+        val item = viewModel.editItems.getOrAwaitValue().getOrNull(pos)
+        checkNotNull(item) { "No item at pos $pos" }
+        return item as T
+    }
+
+    /** Use this function to change an item's text to ensure onTextChanged is always called. */
+    private fun replaceText(pos: Int, replacement: String, start: Int? = null, end: Int? = null) {
+        val itemText = itemAt<EditTextItem>(pos).text
+        val startPos = start ?: 0
+        val endPos = end ?: itemText.text.length
+        val oldText = itemText.text.substring(startPos, endPos)
+        itemText.replace(startPos, endPos, replacement)
+        viewModel.onTextChanged(pos, startPos, endPos, oldText, replacement)
     }
 
     private fun assertWasFocused(itemPos: Int, pos: Int, itemExists: Boolean = true) {
         assertLiveDataEventSent(viewModel.focusEvent, EditFocusChange(itemPos, pos, itemExists))
+    }
+
+    private fun assertUndoRedoStatus(canUndo: Boolean = false, canRedo: Boolean = false) {
+        val visibility = viewModel.editActionsAvailability.getOrAwaitValue()
+        assertEquals(EditActionAvailability.fromBoolean(available = canUndo), visibility.undo)
+        assertEquals(EditActionAvailability.fromBoolean(available = canRedo), visibility.redo)
+    }
+
+    companion object {
+        val NOTE2_ITEMS = listOf(
+            EditDateItem(dateFor("2020-03-30").time),
+            EditTitleItem("title".e, true),
+            EditItemItem("item 1".e, checked = true, editable = true, 0),
+            EditItemItem("item 2".e, checked = false, editable = true, 1),
+            EditItemAddItem,
+            EditChipsItem(listOf(Label(1, "label1"))),
+        )
     }
 }

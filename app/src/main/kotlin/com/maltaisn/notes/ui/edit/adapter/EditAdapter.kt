@@ -33,7 +33,6 @@ import com.maltaisn.notes.databinding.ItemEditLabelsBinding
 import com.maltaisn.notes.databinding.ItemEditTitleBinding
 import com.maltaisn.notes.hideKeyboard
 import com.maltaisn.notes.ui.edit.EditFocusChange
-import com.maltaisn.notes.ui.edit.undo.TextUndoAction
 
 class EditAdapter(val context: Context, val callback: Callback) :
     ListAdapter<EditListItem, RecyclerView.ViewHolder>(EditDiffCallback()) {
@@ -107,7 +106,7 @@ class EditAdapter(val context: Context, val callback: Callback) :
             is EditHeaderViewHolder -> holder.bind(item as EditCheckedHeaderItem)
             is EditItemLabelsViewHolder -> holder.bind(item as EditChipsItem)
         }
-        if (holder is EditFocusableViewHolder && position == pendingFocusChange?.itemPos) {
+        if (holder is EditFocusableViewHolder<*> && position == pendingFocusChange?.itemPos) {
             // Apply pending focus change event.
             holder.setFocus(pendingFocusChange!!.pos)
             pendingFocusChange = null
@@ -126,7 +125,7 @@ class EditAdapter(val context: Context, val callback: Callback) :
         }
 
         val viewHolder = rcv.findViewHolderForAdapterPosition(focus.itemPos)
-        if (viewHolder is EditFocusableViewHolder) {
+        if (viewHolder is EditFocusableViewHolder<*>) {
             viewHolder.setFocus(focus.pos)
         } else {
             // No item view holder for that position.
@@ -147,15 +146,9 @@ class EditAdapter(val context: Context, val callback: Callback) :
 
     interface Callback {
         /**
-         * Called when the title is edited.
+         * Called when the title or text content is edited.
          */
-        fun onTextChanged(undoAction: TextUndoAction)
-
-        /**
-         * Called when an [EditItemItem] at [pos] text is changed by user,
-         * either from the keyboard or from a paste event.
-         */
-        fun onNoteItemChanged(pos: Int, isPaste: Boolean)
+        fun onTextChanged(pos: Int, start: Int, end: Int, oldText: String, newText: String)
 
         /** Called when an [EditItemItem] at [pos] is checked or unchecked by user. */
         fun onNoteItemCheckChanged(pos: Int, checked: Boolean)

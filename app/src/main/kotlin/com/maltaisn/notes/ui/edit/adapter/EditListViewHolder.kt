@@ -17,7 +17,6 @@
 package com.maltaisn.notes.ui.edit.adapter
 
 import android.text.Editable
-import android.text.TextWatcher
 import android.text.format.DateUtils
 import android.view.KeyEvent
 import android.view.LayoutInflater
@@ -42,16 +41,57 @@ import com.maltaisn.notes.model.entity.Reminder
 import com.maltaisn.notes.showKeyboard
 import com.maltaisn.notes.strikethroughText
 import com.maltaisn.notes.ui.edit.BulletTextWatcher
-import com.maltaisn.notes.ui.edit.undo.TextUndoAction
-import com.maltaisn.notes.ui.edit.undo.TextUndoActionType
 import com.maltaisn.notes.utils.RelativeDateFormatter
 import java.text.DateFormat
 
 /**
- * Interface implemented by any item that can have its focus position changed.
+ * Abstract class for items that can be focused and have their focus position changed.
  */
-sealed interface EditFocusableViewHolder {
-    fun setFocus(pos: Int)
+sealed class EditFocusableViewHolder<T : EditTextItem>(root: View) :
+    RecyclerView.ViewHolder(root) {
+
+    abstract val editText: EditEditText
+    var item: T? = null
+
+    fun init(callback: EditAdapter.Callback) {
+        editText.setOnClickListener {
+            callback.onNoteClickedToEdit()
+        }
+        editText.setOnKeyListener { _, _, event ->
+            val pos = bindingAdapterPosition
+            val isCursorAtStart = editText.selectionStart == 0 && editText.selectionStart == editText.selectionEnd
+            if (pos != RecyclerView.NO_POSITION && isCursorAtStart &&
+                event.action == KeyEvent.ACTION_DOWN && event.keyCode == KeyEvent.KEYCODE_DEL
+            ) {
+                callback.onNoteItemBackspacePressed(pos)
+            }
+            false
+        }
+        editText.onTextChangedForUndoListener = { start, end, oldText, newText ->
+            callback.onTextChanged(bindingAdapterPosition, start, end, oldText, newText)
+        }
+        editText.doAfterTextChanged { editable ->
+            if (editable != null && editable != item?.text?.text) {
+                item?.text = AndroidEditableText(editable)
+            }
+        }
+        editText.onLinkClickListener = callback::onLinkClickedInNote
+
+        editText.setAutoTextSize(callback.textSize)
+    }
+
+    fun setFocus(pos: Int) {
+        editText.requestFocus()
+        editText.setSelection(pos)
+        editText.showKeyboard()
+    }
+
+    open fun bind(item: T) {
+        this.item = item
+        editText.isFocusable = item.editable
+        editText.isFocusableInTouchMode = item.editable
+        editText.setTextIgnoringUndo(item.text.text)
+    }
 }
 
 class EditDateViewHolder(binding: ItemEditDateBinding) :
@@ -71,112 +111,52 @@ class EditDateViewHolder(binding: ItemEditDateBinding) :
 }
 
 class EditTitleViewHolder(binding: ItemEditTitleBinding, callback: EditAdapter.Callback) :
-    RecyclerView.ViewHolder(binding.root), EditFocusableViewHolder {
+    EditFocusableViewHolder<EditTitleItem>(binding.root) {
 
-    private val titleEdt = binding.titleEdt
-    private var item: EditTitleItem? = null
+    override val editText = binding.titleEdt
 
     init {
-        titleEdt.setOnClickListener {
-            callback.onNoteClickedToEdit()
-        }
-        titleEdt.doAfterTextChanged { editable ->
-            if (editable != null && editable != item?.text?.text) {
-                item?.text = AndroidEditableText(editable)
-            }
-        }
-        titleEdt.onTextChangedForUndoListener = { start, end, oldText, newText ->
-            callback.onTextChanged(TextUndoAction.create(bindingAdapterPosition,
-                TextUndoActionType.CONTENT, start, end, oldText, newText))
-        }
-        titleEdt.setOnEditorActionListener { _, action, event ->
+        init(callback)
+        editText.setOnEditorActionListener { _, action, event ->
             if (action == EditorInfo.IME_ACTION_NEXT) {
                 callback.onNoteTitleEnterPressed()
             }
             false
         }
-        titleEdt.setHorizontallyScrolling(false)  // Fails when set as an attribute for some reason
-        titleEdt.setAutoTextSize(callback.textSize)
-        titleEdt.maxLines = Integer.MAX_VALUE
-    }
-
-    fun bind(item: EditTitleItem) {
-        this.item = item
-        titleEdt.isFocusable = item.editable
-        titleEdt.isFocusableInTouchMode = item.editable
-        titleEdt.setTextIgnoringUndo(item.text.text)
-    }
-
-    override fun setFocus(pos: Int) {
-        titleEdt.requestFocus()
-        titleEdt.setSelection(pos)
-        titleEdt.showKeyboard()
+        editText.setHorizontallyScrolling(false)  // Fails when set as an attribute for some reason
+        editText.maxLines = Integer.MAX_VALUE
     }
 }
 
 class EditContentViewHolder(binding: ItemEditContentBinding, callback: EditAdapter.Callback) :
-    RecyclerView.ViewHolder(binding.root), EditFocusableViewHolder {
+    EditFocusableViewHolder<EditContentItem>(binding.root) {
 
-    private val contentEdt = binding.contentEdt
-    private var item: EditContentItem? = null
+    override val editText = binding.contentEdt
 
     init {
-        contentEdt.addTextChangedListener(BulletTextWatcher())
-        contentEdt.doAfterTextChanged { editable ->
-            if (editable != null && editable != item?.text?.text) {
-                item?.text = AndroidEditableText(editable)
-            }
-        }
-        contentEdt.onTextChangedForUndoListener = { start, end, oldText, newText ->
-            callback.onTextChanged(TextUndoAction.create(bindingAdapterPosition,
-                TextUndoActionType.CONTENT, start, end, oldText, newText))
-        }
-        contentEdt.setOnKeyListener { _, _, event ->
-            handleBackspaceAtStart(contentEdt, bindingAdapterPosition, event, callback)
-            false
-        }
-
-        contentEdt.setOnClickListener {
-            callback.onNoteClickedToEdit()
-        }
-        contentEdt.onLinkClickListener = callback::onLinkClickedInNote
-
-        contentEdt.setAutoTextSize(callback.textSize)
-    }
-
-    fun bind(item: EditContentItem) {
-        this.item = item
-        contentEdt.isFocusable = item.editable
-        contentEdt.isFocusableInTouchMode = item.editable
-        contentEdt.setTextIgnoringUndo(item.text.text)
-    }
-
-    override fun setFocus(pos: Int) {
-        contentEdt.requestFocus()
-        contentEdt.setSelection(pos)
-        contentEdt.showKeyboard()
+        init(callback)
+        editText.addTextChangedListener(BulletTextWatcher())
     }
 }
 
 class EditItemViewHolder(binding: ItemEditItemBinding, callback: EditAdapter.Callback) :
-    RecyclerView.ViewHolder(binding.root), EditFocusableViewHolder {
+    EditFocusableViewHolder<EditItemItem>(binding.root) {
 
+    override val editText = binding.contentEdt
     val dragImv = binding.dragImv
     private val itemCheck = binding.itemChk
-    private val itemEdt = binding.contentEdt
     private val deleteImv = binding.deleteImv
-
-    private var item: EditItemItem? = null
 
     val isChecked: Boolean
         get() = itemCheck.isChecked
 
     init {
+        init(callback)
         itemCheck.setOnCheckedChangeListener { _, isChecked ->
-            itemEdt.clearFocus()
-            itemEdt.hideKeyboard()
-            itemEdt.strikethroughText = isChecked && callback.strikethroughCheckedItems
-            itemEdt.isActivated = !isChecked // Controls text color selector.
+            editText.clearFocus()
+            editText.hideKeyboard()
+            editText.strikethroughText = isChecked && callback.strikethroughCheckedItems
+            editText.isActivated = !isChecked // Controls text color selector.
             dragImv.isInvisible = isChecked && callback.moveCheckedToBottom
 
             val pos = bindingAdapterPosition
@@ -185,46 +165,10 @@ class EditItemViewHolder(binding: ItemEditItemBinding, callback: EditAdapter.Cal
             }
         }
 
-        itemEdt.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                // This is used to detect when user enters line breaks into the input, so the
-                // item can be split into multiple items. When user enters a single line break,
-                // selection is set at the beginning of new item. On paste, i.e. when more than one
-                // character is entered, selection is set at the end of last new item.
-                val pos = bindingAdapterPosition
-                if (pos != RecyclerView.NO_POSITION) {
-                    callback.onNoteItemChanged(pos, count > 1)
-                }
-            }
-
-            override fun afterTextChanged(s: Editable?) {
-                if (s != null && s != item?.text?.text) {
-                    item?.text = AndroidEditableText(s)
-                }
-            }
-        })
-        itemEdt.onTextChangedForUndoListener = { start, end, oldText, newText ->
-            callback.onTextChanged(TextUndoAction.create(bindingAdapterPosition,
-                TextUndoActionType.LIST_ITEM, start, end, oldText, newText))
-        }
-        itemEdt.setOnFocusChangeListener { _, hasFocus ->
+        editText.setOnFocusChangeListener { _, hasFocus ->
             // Only show delete icon for currently focused item.
             deleteImv.isInvisible = !hasFocus
         }
-        itemEdt.setOnKeyListener { _, _, event ->
-            handleBackspaceAtStart(itemEdt, bindingAdapterPosition, event, callback)
-            false
-        }
-        itemEdt.setOnClickListener {
-            callback.onNoteClickedToEdit()
-        }
-        itemEdt.onLinkClickListener = callback::onLinkClickedInNote
-
-        itemEdt.setAutoTextSize(callback.textSize)
-
         deleteImv.setOnClickListener {
             val pos = bindingAdapterPosition
             if (pos != RecyclerView.NO_POSITION) {
@@ -233,26 +177,16 @@ class EditItemViewHolder(binding: ItemEditItemBinding, callback: EditAdapter.Cal
         }
     }
 
-    fun bind(item: EditItemItem) {
-        this.item = item
+    override fun bind(item: EditItemItem) {
+        super.bind(item)
 
-        itemEdt.isFocusable = item.editable
-        itemEdt.isFocusableInTouchMode = item.editable
-        itemEdt.setTextIgnoringUndo(item.text.text)
-        itemEdt.isActivated = !item.checked
-
+        editText.isActivated = !item.checked
         itemCheck.isChecked = item.checked
         itemCheck.isEnabled = item.editable
     }
 
-    override fun setFocus(pos: Int) {
-        itemEdt.requestFocus()
-        itemEdt.setSelection(pos)
-        itemEdt.showKeyboard()
-    }
-
     fun clearFocus() {
-        itemEdt.clearFocus()
+        editText.clearFocus()
     }
 }
 
@@ -325,21 +259,6 @@ class EditItemLabelsViewHolder(binding: ItemEditLabelsBinding, callback: EditAda
     }
 }
 
-private fun handleBackspaceAtStart(
-    editText: EditEditText,
-    pos: Int,
-    event: KeyEvent,
-    callback: EditAdapter.Callback
-) {
-    val isCursorAtStart = editText.selectionStart == 0 && editText.selectionStart == editText.selectionEnd
-    if (isCursorAtStart && event.action == KeyEvent.ACTION_DOWN && event.keyCode == KeyEvent.KEYCODE_DEL) {
-        // If user presses backspace at the start of the content, focus to the title
-        if (pos != RecyclerView.NO_POSITION) {
-            callback.onNoteItemBackspacePressed(pos)
-        }
-    }
-}
-
 // Wrapper around Editable to allow transparent access to text content from ViewModel.
 // Editable items have a EditableText field which is set by a text watcher added to the
 // EditText and called when text is set when item is bound.
@@ -352,9 +271,5 @@ private class AndroidEditableText(override val text: Editable) : EditableText {
 
     override fun replace(start: Int, end: Int, text: CharSequence) {
         this.text.replace(start, end, text)
-    }
-
-    override fun replaceAll(text: CharSequence) {
-        this.text.replace(0, this.text.length, text)
     }
 }

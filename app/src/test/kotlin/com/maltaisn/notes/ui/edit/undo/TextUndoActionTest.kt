@@ -83,22 +83,15 @@ class TextUndoActionTest {
             } else {
                 assertNotNull(merged)
                 val textMerged = merged.applyOnText(text)
-                assertEquals(textMerged, textSeq, "Test ${i}")
+                assertEquals(textMerged, textSeq, "Test $i")
             }
         }
     }
 
     @Test
-    fun `should not merge actions with different item type`() {
-        val action0 = TextUndoAction.create(0, TextUndoActionType.TITLE, 0, 0, "a", "b")
-        val action1 = TextUndoAction.create(0, TextUndoActionType.CONTENT, 0, 0, "b", "c")
-        assertNull(action0.mergeWith(action1))
-    }
-
-    @Test
     fun `should not merge actions with different item position`() {
-        val action0 = TextUndoAction.create(0, TextUndoActionType.LIST_ITEM, 0, 0, "a", "b")
-        val action1 = TextUndoAction.create(1, TextUndoActionType.LIST_ITEM, 0, 0, "b", "c")
+        val action0 = TextUndoAction.create(0, 0, 0, "a", "b")
+        val action1 = TextUndoAction.create(1, 0, 0, "b", "c")
         assertNull(action0.mergeWith(action1))
     }
 
@@ -151,5 +144,5 @@ class TextUndoActionTest {
     }
 
     private fun testAction(range: IntRange, old: String, new: String) =
-        TextUndoAction.create(0, TextUndoActionType.CONTENT, range.first, range.last + 1, old, new)
+        TextUndoAction.create(0, range.first, range.last + 1, old, new)
 }

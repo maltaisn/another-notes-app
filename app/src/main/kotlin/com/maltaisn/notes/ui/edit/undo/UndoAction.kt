@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Nicolas Maltais
+ * Copyright 2025 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,7 +46,7 @@ sealed interface ItemUndoAction : UndoAction {
  * The undo / redo callback return the new note to use.
  * A focus change is always made to the first focusable item in note.
  *
- * Note: for now this only supports changing the note type. If further support is needed, the `undoRedoAfterUpdate`
+ * Note: for now this only supports changing the note type. If further support is needed, the `doUndoRedo`
  * method will need to be changed in [EditViewModel] to update the live data for other attributes.
  */
 sealed interface NoteUndoAction : UndoAction {

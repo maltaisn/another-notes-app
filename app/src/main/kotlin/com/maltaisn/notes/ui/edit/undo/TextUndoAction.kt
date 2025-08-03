@@ -29,7 +29,6 @@ import com.maltaisn.notes.ui.edit.adapter.EditTextItem
 @ConsistentCopyVisibility
 data class TextUndoAction private constructor(
     val itemPos: Int,
-    val itemType: TextUndoActionType,
     val start: Int,
     val end: Int,
     val oldText: String,
@@ -37,7 +36,7 @@ data class TextUndoAction private constructor(
 ) : ItemUndoAction {
 
     override fun mergeWith(action: ItemUndoAction): TextUndoAction? {
-        return if (action is TextUndoAction && itemPos == action.itemPos && itemType == action.itemType) {
+        return if (action is TextUndoAction && itemPos == action.itemPos) {
             // There are five possible cases when merging actions, four of which can be merged,
             // depending on the location of the new action relative to the old action.
             // This is a nightmare, surely it could be done more simply?
@@ -82,7 +81,7 @@ data class TextUndoAction private constructor(
                     return null
                 }
             }
-            create(itemPos, itemType, mergeStart, mergeEnd, mergeOldText, mergeNewText)
+            create(itemPos, mergeStart, mergeEnd, mergeOldText, mergeNewText)
         } else {
             null
         }
@@ -105,7 +104,6 @@ data class TextUndoAction private constructor(
          */
         fun create(
             itemPos: Int,
-            itemType: TextUndoActionType,
             start: Int,
             end: Int,
             oldText: String,
@@ -121,14 +119,8 @@ data class TextUndoAction private constructor(
             ) {
                 e++
             }
-            return TextUndoAction(itemPos, itemType, start + s, end - e,
+            return TextUndoAction(itemPos, start + s, end - e,
                 oldText.substring(s, oldText.length - e), newText.substring(s, newText.length - e))
         }
     }
-}
-
-enum class TextUndoActionType {
-    TITLE,
-    CONTENT,
-    LIST_ITEM,
 }
