@@ -695,7 +695,7 @@ class EditViewModelTest {
 
         viewModel.undo()
         assertEquals(NOTE2_ITEMS, viewModel.editItems.getOrAwaitValue())
-        assertWasFocused(2, 6, true)
+        assertWasFocused(2, 2, true)
         assertUndoRedoStatus(canRedo = true)
 
         viewModel.redo()
@@ -721,7 +721,7 @@ class EditViewModelTest {
 
         viewModel.undo()
         assertEquals(NOTE2_ITEMS, viewModel.editItems.getOrAwaitValue())
-        assertWasFocused(2, 6, true)  // TODO focus not correct
+        assertWasFocused(3, 0, false)
         assertUndoRedoStatus(canRedo = true)
 
         viewModel.redo()

@@ -16,7 +16,6 @@
 
 package com.maltaisn.notes.ui.edit.undo
 
-import com.maltaisn.notes.ui.edit.EditFocusChange
 import com.maltaisn.notes.ui.edit.TestEditableTextProvider
 import com.maltaisn.notes.ui.edit.adapter.EditItemItem
 import com.maltaisn.notes.ui.edit.adapter.EditListItem
@@ -36,7 +35,6 @@ class ItemRemoveUndoActionTest {
             text = listOf("new item 1", "new item 2"),
             checked = true,
             actualPos = 1,
-            focusAfter = EditFocusChange(1, 3, true),
         )
 
         val listItemsBefore = listOf<EditListItem>(
@@ -62,12 +60,10 @@ class ItemRemoveUndoActionTest {
             }
         }
 
-        val redoFocus = action.redo(editableTextProvider, listItems)
+        action.redo(editableTextProvider, listItems)
         assertEquals(listItemsAfter, listItems)
-        assertEquals(action.focusAfter, redoFocus)
 
-        val undoFocus = action.undo(editableTextProvider, listItems)
+        action.undo(editableTextProvider, listItems)
         assertEquals(listItemsBefore, listItems)
-        assertEquals(EditFocusChange(3, 10, false), undoFocus)
     }
 }

@@ -21,28 +21,35 @@ import com.maltaisn.notes.ui.edit.EditableTextProvider
 import com.maltaisn.notes.ui.edit.adapter.EditListItem
 
 /**
- * Insert new list items.
+ * Change focus from [before] position to [after] position.
+ * If the undo action is combined with other in a [BatchUndoAction],
+ * it makes sense for one of them to be `null`.
+ * The item may or may not exist in the view at the time the focus change is requested.
  */
-data class ItemAddUndoAction(
-    override val itemPos: Int,
-    override val text: List<String>,
-    override val checked: Boolean,
-    override val actualPos: Int,
-) : ItemChangeUndoAction {
+data class FocusChangeUndoAction(
+    val before: EditFocusChange? = null,
+    val after: EditFocusChange? = null,
+) : ItemUndoAction {
+
+    override fun mergeWith(action: ItemUndoAction): FocusChangeUndoAction? {
+        return if (action is FocusChangeUndoAction) {
+            FocusChangeUndoAction(action.before, after)
+        } else {
+            null
+        }
+    }
 
     override fun undo(
         editableTextProvider: EditableTextProvider,
         listItems: MutableList<EditListItem>
     ): EditFocusChange? {
-        removeItems(listItems)
-        return null
+        return before
     }
 
     override fun redo(
         editableTextProvider: EditableTextProvider,
         listItems: MutableList<EditListItem>
     ): EditFocusChange? {
-        addItems(editableTextProvider, listItems)
-        return null
+        return after
     }
 }

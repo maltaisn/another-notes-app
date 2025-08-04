@@ -28,7 +28,6 @@ data class ItemRemoveUndoAction(
     override val text: List<String>,
     override val checked: Boolean,
     override val actualPos: Int,
-    val focusAfter: EditFocusChange? = null,
 ) : ItemChangeUndoAction {
 
     override fun undo(
@@ -36,7 +35,7 @@ data class ItemRemoveUndoAction(
         listItems: MutableList<EditListItem>
     ): EditFocusChange? {
         addItems(editableTextProvider, listItems)
-        return EditFocusChange(itemPos + text.lastIndex, text.last().length, false)
+        return null
     }
 
     override fun redo(
@@ -44,6 +43,6 @@ data class ItemRemoveUndoAction(
         listItems: MutableList<EditListItem>
     ): EditFocusChange? {
         removeItems(listItems)
-        return focusAfter
+        return null
     }
 }
