@@ -21,29 +21,29 @@ import com.maltaisn.notes.ui.edit.EditableTextProvider
 import com.maltaisn.notes.ui.edit.adapter.EditListItem
 
 /**
- * Insert new list items.
+ * Remove existing list items.
  */
-data class ItemAddUndoAction(
+data class ItemRemoveUndoAction(
     override val itemPos: Int,
     override val text: List<String>,
     override val checked: Boolean,
     override val actualPos: Int,
-    val focusBefore: EditFocusChange? = null,
+    val focusAfter: EditFocusChange? = null,
 ) : ItemChangeUndoAction {
 
     override fun undo(
         editableTextProvider: EditableTextProvider,
         listItems: MutableList<EditListItem>
     ): EditFocusChange? {
-        removeItems(listItems)
-        return focusBefore
+        addItems(editableTextProvider, listItems)
+        return EditFocusChange(itemPos + text.lastIndex, text.last().length, false)
     }
 
     override fun redo(
         editableTextProvider: EditableTextProvider,
         listItems: MutableList<EditListItem>
-    ): EditFocusChange {
-        addItems(editableTextProvider, listItems)
-        return EditFocusChange(itemPos + text.lastIndex, text.last().length, false)
+    ): EditFocusChange? {
+        removeItems(listItems)
+        return focusAfter
     }
 }

@@ -691,31 +691,42 @@ class EditViewModelTest {
 
         assertEquals(itemsAfter, viewModel.editItems.getOrAwaitValue())
         assertWasFocused(4, 15, false)
+        assertUndoRedoStatus(canUndo = true)
 
         viewModel.undo()
-        assertUndoRedoStatus(canRedo = true)
         assertEquals(NOTE2_ITEMS, viewModel.editItems.getOrAwaitValue())
         assertWasFocused(2, 6, true)
+        assertUndoRedoStatus(canRedo = true)
 
         viewModel.redo()
         assertEquals(itemsAfter, viewModel.editItems.getOrAwaitValue())
     }
 
     @Test
-    fun `should merge list note item with previous on backspace`() =
-        runTest {
-            viewModel.start(2)
-            viewModel.onNoteItemBackspacePressed(3)
+    fun `should merge list note item with previous on backspace`() = runTest {
+        viewModel.start(2)
+        viewModel.onNoteItemBackspacePressed(3)
 
-            assertEquals(listOf(
-                EditDateItem(dateFor("2020-03-30").time),
-                EditTitleItem("title".e, true),
-                EditItemItem("item 1item 2".e, checked = true, editable = true, 0),
-                EditItemAddItem,
-                EditChipsItem(listOf(labelsRepo.requireLabelById(1))),
-            ), viewModel.editItems.getOrAwaitValue())
-            assertWasFocused(2, 6)
-        }
+        val itemsAfter = listOf(
+            EditDateItem(dateFor("2020-03-30").time),
+            EditTitleItem("title".e, true),
+            EditItemItem("item 1item 2".e, checked = true, editable = true, 0),
+            EditItemAddItem,
+            EditChipsItem(listOf(labelsRepo.requireLabelById(1))),
+        )
+
+        assertEquals(itemsAfter, viewModel.editItems.getOrAwaitValue())
+        assertWasFocused(2, 6)
+        assertUndoRedoStatus(canUndo = true)
+
+        viewModel.undo()
+        assertEquals(NOTE2_ITEMS, viewModel.editItems.getOrAwaitValue())
+        assertWasFocused(2, 6, true)  // TODO focus not correct
+        assertUndoRedoStatus(canRedo = true)
+
+        viewModel.redo()
+        assertEquals(itemsAfter, viewModel.editItems.getOrAwaitValue())
+    }
 
     @Test
     fun `should do nothing with note first item on backspace`() =
@@ -786,14 +797,25 @@ class EditViewModelTest {
         viewModel.start(2)
         viewModel.onNoteItemDeleteClicked(3)
 
-        assertEquals(listOf(
+        val itemsAfter = listOf(
             EditDateItem(dateFor("2020-03-30").time),
             EditTitleItem("title".e, true),
             EditItemItem("item 1".e, checked = true, editable = true, 0),
             EditItemAddItem,
             EditChipsItem(listOf(labelsRepo.requireLabelById(1))),
-        ), viewModel.editItems.getOrAwaitValue())
+        )
+
+        assertEquals(itemsAfter, viewModel.editItems.getOrAwaitValue())
         assertWasFocused(2, 6)
+        assertUndoRedoStatus(canUndo = true)
+
+        viewModel.undo()
+        assertEquals(NOTE2_ITEMS, viewModel.editItems.getOrAwaitValue())
+        assertWasFocused(3, 6, false)
+        assertUndoRedoStatus(canRedo = true)
+
+        viewModel.redo()
+        assertEquals(itemsAfter, viewModel.editItems.getOrAwaitValue())
     }
 
     @Test

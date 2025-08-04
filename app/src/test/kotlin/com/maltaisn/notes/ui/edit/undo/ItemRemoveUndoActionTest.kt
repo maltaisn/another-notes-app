@@ -25,33 +25,33 @@ import com.maltaisn.notes.ui.edit.e
 import org.junit.Test
 import kotlin.test.assertEquals
 
-class ItemAddUndoActionTest {
+class ItemRemoveUndoActionTest {
 
     private val editableTextProvider = TestEditableTextProvider()
 
     @Test
     fun `should redo and undo correctly`() {
-        val action = ItemAddUndoAction(
+        val action = ItemRemoveUndoAction(
             itemPos = 2,
             text = listOf("new item 1", "new item 2"),
             checked = true,
             actualPos = 1,
-            focusBefore = EditFocusChange(1, 3, true),
+            focusAfter = EditFocusChange(1, 3, true),
         )
 
         val listItemsBefore = listOf<EditListItem>(
-            EditTitleItem("title".e, true),
-            EditItemItem("item 1".e, checked = false, editable = true, actualPos = 0),
-            EditItemItem("item 2".e, checked = true, editable = true, actualPos = 1),
-            EditItemItem("item 3".e, checked = false, editable = true, actualPos = 2),
-        )
-        val listItemsAfter = listOf<EditListItem>(
             EditTitleItem("title".e, true),
             EditItemItem("item 1".e, checked = false, editable = true, actualPos = 0),
             EditItemItem("new item 1".e, checked = true, editable = true, actualPos = 1),
             EditItemItem("new item 2".e, checked = true, editable = true, actualPos = 2),
             EditItemItem("item 2".e, checked = true, editable = true, actualPos = 3),
             EditItemItem("item 3".e, checked = false, editable = true, actualPos = 4),
+        )
+        val listItemsAfter = listOf<EditListItem>(
+            EditTitleItem("title".e, true),
+            EditItemItem("item 1".e, checked = false, editable = true, actualPos = 0),
+            EditItemItem("item 2".e, checked = true, editable = true, actualPos = 1),
+            EditItemItem("item 3".e, checked = false, editable = true, actualPos = 2),
         )
 
         val listItems = listItemsBefore.mapTo(mutableListOf<EditListItem>()) {
@@ -64,10 +64,10 @@ class ItemAddUndoActionTest {
 
         val redoFocus = action.redo(editableTextProvider, listItems)
         assertEquals(listItemsAfter, listItems)
-        assertEquals(EditFocusChange(3, 10, false), redoFocus)
+        assertEquals(action.focusAfter, redoFocus)
 
         val undoFocus = action.undo(editableTextProvider, listItems)
         assertEquals(listItemsBefore, listItems)
-        assertEquals(action.focusBefore, undoFocus)
+        assertEquals(EditFocusChange(3, 10, false), undoFocus)
     }
 }
