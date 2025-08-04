@@ -142,8 +142,16 @@ class EditViewModelTest {
 
         alarmCallback = MockAlarmCallback()
 
+        val editableTextProvider = object : EditableTextProvider {
+            override fun create(text: CharSequence): EditableText {
+                // This editable text will call onTextChanged when changed.
+                return TestEditableText(text, viewModel)
+            }
+        }
+
         viewModel = EditViewModel(notesRepo, labelsRepo, prefs,
-            DefaultReminderAlarmManager(notesRepo, alarmCallback), SavedStateHandle())
+            DefaultReminderAlarmManager(notesRepo, alarmCallback),
+            editableTextProvider, SavedStateHandle())
     }
 
     @Test
@@ -291,7 +299,7 @@ class EditViewModelTest {
         val oldNote = notesRepo.requireNoteById(1)
 
         viewModel.start(1)
-        replaceText(1, "modified")
+        itemAt<EditTextItem>(1).text.replaceAll("modified")
         viewModel.saveNote()
 
         assertNoteEquals(testNote(id = 1, title = "modified", content = "content",
@@ -306,7 +314,7 @@ class EditViewModelTest {
 
         val firstItem = itemAt<EditItemItem>(2)
         firstItem.checked = false
-        replaceText(2, "modified item")
+        firstItem.text.replaceAll("modified item")
 
         viewModel.saveNote()
 
@@ -640,7 +648,7 @@ class EditViewModelTest {
     @Test
     fun `should split list note item on new line (single)`() = runTest {
         viewModel.start(2)
-        replaceText(2, "\n", 6, 6)
+        itemAt<EditTextItem>(2).text.replace(6, 6, "\n")
 
         val itemsAfter = listOf(
             EditDateItem(dateFor("2020-03-30").time),
@@ -668,7 +676,7 @@ class EditViewModelTest {
     @Test
     fun `should split list note item on new line (multiple)`() = runTest {
         viewModel.start(2)
-        replaceText(2, "\nnew item first\nnew item second", 2, 5)
+        itemAt<EditTextItem>(2).text.replace(2, 5, "\nnew item first\nnew item second")
 
         val itemsAfter = listOf(
             EditDateItem(dateFor("2020-03-30").time),
@@ -1181,7 +1189,7 @@ class EditViewModelTest {
     fun `should add new checked items if newlines inserted in checked section`() = runTest {
         whenever(prefs.moveCheckedToBottom) doReturn true
         viewModel.start(2)
-        replaceText(5, "\n", 6, 6)
+        itemAt<EditTextItem>(5).text.replace(6, 6, "\n")
 
         assertEquals(listOf(
             EditDateItem(dateFor("2020-03-30").time),
@@ -1221,7 +1229,7 @@ class EditViewModelTest {
             added = dateFor("2020-03-30")))
 
         viewModel.start(10)
-        replaceText(4, " Ev")
+        itemAt<EditTextItem>(4).text.replaceAll(" Ev")
 
         viewModel.sortItems()
 
@@ -1259,7 +1267,7 @@ class EditViewModelTest {
     @Test
     fun `should keep note changes on conversion`() = runTest {
         viewModel.start(1)
-        replaceText(2, "modified")
+        itemAt<EditTextItem>(2).text.replaceAll("modified")
 
         viewModel.toggleNoteType()
 
@@ -1275,7 +1283,7 @@ class EditViewModelTest {
     @Test
     fun `should keep note changes on reminder change`() = runTest {
         viewModel.start(1)
-        replaceText(2, "modified")
+        itemAt<EditTextItem>(2).text.replaceAll("modified")
 
         val reminder = Reminder(dateFor("2020-01-01"), null, dateFor("2020-01-01"), 1, false)
         viewModel.onReminderChange(reminder)
@@ -1357,7 +1365,7 @@ class EditViewModelTest {
         viewModel.start(1)
 
         val item = itemAt<EditTextItem>(1)
-        replaceText(1, "ananmen square", 2, 5) // Will I get blacklisted in China??
+        item.text.replace(2, 5, "ananmen square") // Will I get blacklisted in China??
         assertUndoRedoStatus(canUndo = true)
 
         viewModel.undo()
@@ -1376,10 +1384,10 @@ class EditViewModelTest {
         viewModel.start(1)
 
         val item = itemAt<EditTextItem>(2)
-        replaceText(2, "a", 0, 7)
-        replaceText(2, "b", 1, 1)
+        item.text.replace(0, 7, "a")
+        item.text.replace(1, 1, "b")
         advanceTimeBy(EditViewModel.UNDO_TEXT_DEBOUNCE_DELAY + 100.milliseconds)
-        replaceText(2, "c", 2, 2)
+        item.text.replace(2, 2, "c")
 
         viewModel.undo()
         assertWasFocused(2, 2)
@@ -1393,16 +1401,6 @@ class EditViewModelTest {
         val item = viewModel.editItems.getOrAwaitValue().getOrNull(pos)
         checkNotNull(item) { "No item at pos $pos" }
         return item as T
-    }
-
-    /** Use this function to change an item's text to ensure onTextChanged is always called. */
-    private fun replaceText(pos: Int, replacement: String, start: Int? = null, end: Int? = null) {
-        val itemText = itemAt<EditTextItem>(pos).text
-        val startPos = start ?: 0
-        val endPos = end ?: itemText.text.length
-        val oldText = itemText.text.substring(startPos, endPos)
-        itemText.replace(startPos, endPos, replacement)
-        viewModel.onTextChanged(pos, startPos, endPos, oldText, replacement)
     }
 
     private fun assertWasFocused(itemPos: Int, pos: Int, itemExists: Boolean = true) {

@@ -16,6 +16,7 @@
 
 package com.maltaisn.notes.ui.edit.undo
 
+import com.maltaisn.notes.ui.edit.TestEditableTextProvider
 import com.maltaisn.notes.ui.edit.adapter.EditContentItem
 import com.maltaisn.notes.ui.edit.e
 import org.junit.Test
@@ -26,6 +27,8 @@ import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 
 class TextUndoActionTest {
+
+    private val editableTextProvider = TestEditableTextProvider()
 
     @Test
     fun `should create action`() {
@@ -111,14 +114,14 @@ class TextUndoActionTest {
             val newText = randomString(0..10, rng)
             val action = testAction(range, oldText, newText)
 
-            val focusChange = action.redo(mutableListOf(item))
+            val focusChange = action.redo(editableTextProvider, mutableListOf(item))
             assertNotNull(focusChange)
             assertContains(0..text.length, focusChange.pos)
             actions += action
         }
 
         for (action in actions.asReversed()) {
-            val focusChange = action.undo(mutableListOf(item))
+            val focusChange = action.undo(editableTextProvider, mutableListOf(item))
             assertNotNull(focusChange)
             assertContains(0..text.length, focusChange.pos)
         }

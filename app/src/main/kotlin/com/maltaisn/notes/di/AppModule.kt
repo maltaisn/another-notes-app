@@ -31,6 +31,8 @@ import com.maltaisn.notes.model.PrefsManager
 import com.maltaisn.notes.model.ReminderAlarmCallback
 import com.maltaisn.notes.model.ReminderAlarmManager
 import com.maltaisn.notes.receiver.ReceiverAlarmCallback
+import com.maltaisn.notes.ui.edit.DefaultEditableTextProvider
+import com.maltaisn.notes.ui.edit.EditableTextProvider
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -63,6 +65,9 @@ abstract class AppModule {
 
     @Binds
     abstract fun bindAlarmCallback(b: ReceiverAlarmCallback): ReminderAlarmCallback
+
+    @Binds
+    abstract fun bindsEditableTextProvider(b: DefaultEditableTextProvider): EditableTextProvider
 
     companion object {
         @Provides

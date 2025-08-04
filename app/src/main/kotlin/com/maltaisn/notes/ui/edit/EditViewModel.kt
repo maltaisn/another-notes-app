@@ -50,7 +50,6 @@ import com.maltaisn.notes.ui.edit.adapter.EditItemItem
 import com.maltaisn.notes.ui.edit.adapter.EditListItem
 import com.maltaisn.notes.ui.edit.adapter.EditTextItem
 import com.maltaisn.notes.ui.edit.adapter.EditTitleItem
-import com.maltaisn.notes.ui.edit.adapter.EditableText
 import com.maltaisn.notes.ui.edit.undo.BatchUndoAction
 import com.maltaisn.notes.ui.edit.undo.ItemAddUndoAction
 import com.maltaisn.notes.ui.edit.undo.ItemUndoAction
@@ -80,6 +79,7 @@ class EditViewModel @Inject constructor(
     private val labelsRepository: LabelsRepository,
     private val prefs: PrefsManager,
     private val reminderAlarmManager: ReminderAlarmManager,
+    private val editableTextProvider: EditableTextProvider,
     private val savedStateHandle: SavedStateHandle,
 ) : ViewModel(), EditAdapter.Callback {
 
@@ -416,7 +416,7 @@ class EditViewModel @Inject constructor(
         doUndoRedo(undoManager.undo()) { action ->
             when (action) {
                 is ItemUndoAction -> {
-                    action.undo(listItems)
+                    action.undo(editableTextProvider, listItems)
                 }
                 is NoteUndoAction -> {
                     note = action.undo()
@@ -432,7 +432,7 @@ class EditViewModel @Inject constructor(
         doUndoRedo(undoManager.redo()) { action ->
             when (action) {
                 is ItemUndoAction -> {
-                    action.redo(listItems)
+                    action.redo(editableTextProvider, listItems)
                 }
                 is NoteUndoAction -> {
                     note = action.redo()
@@ -474,7 +474,7 @@ class EditViewModel @Inject constructor(
         if (execute) {
             val focusChange = when (action) {
                 is ItemUndoAction -> ignoringTextChanges {
-                    action.redo(listItems)
+                    action.redo(editableTextProvider, listItems)
                 }
                 is NoteUndoAction -> {
                     note = action.redo()
@@ -768,7 +768,9 @@ class EditViewModel @Inject constructor(
             }
             NoteType.LIST -> {
                 // Add items in the correct actual order
-                val items = MutableList(listItems.count { it is EditItemItem }) { TEMP_ITEM }
+                val items = MutableList(listItems.count { it is EditItemItem }) {
+                    EditItemItem(editableTextProvider.create(""), checked = false, editable = false, actualPos = 0)
+                }
                 for (item in listItems) {
                     if (item is EditItemItem) {
                         items[item.actualPos] = item
@@ -810,12 +812,12 @@ class EditViewModel @Inject constructor(
         }
 
         // Title item
-        listItems += EditTitleItem(DefaultEditableText(note.title), canEdit)
+        listItems += EditTitleItem(editableTextProvider.create(note.title), canEdit)
 
         when (note.type) {
             NoteType.TEXT -> {
                 // Content item
-                listItems += EditContentItem(DefaultEditableText(note.content), canEdit)
+                listItems += EditContentItem(editableTextProvider.create(note.content), canEdit)
             }
             NoteType.LIST -> {
                 val noteItems = note.listItems
@@ -823,7 +825,7 @@ class EditViewModel @Inject constructor(
                     // Unchecked list items
                     for ((i, item) in noteItems.withIndex()) {
                         if (!item.checked) {
-                            listItems += EditItemItem(DefaultEditableText(item.content), false, canEdit, i)
+                            listItems += EditItemItem(editableTextProvider.create(item.content), false, canEdit, i)
                         }
                     }
 
@@ -838,14 +840,14 @@ class EditViewModel @Inject constructor(
                         listItems += EditCheckedHeaderItem(checkCount)
                         for ((i, item) in noteItems.withIndex()) {
                             if (item.checked) {
-                                listItems += EditItemItem(DefaultEditableText(item.content), true, canEdit, i)
+                                listItems += EditItemItem(editableTextProvider.create(item.content), true, canEdit, i)
                             }
                         }
                     }
                 } else {
                     // List items
                     for ((i, item) in noteItems.withIndex()) {
-                        listItems += EditItemItem(DefaultEditableText(item.content), item.checked, canEdit, i)
+                        listItems += EditItemItem(editableTextProvider.create(item.content), item.checked, canEdit, i)
                     }
 
                     // Item add item
@@ -1136,30 +1138,6 @@ class EditViewModel @Inject constructor(
         return listItems.indexOfFirst { it is T }
     }
 
-    /**
-     * The default class used for editable item text, backed by StringBuilder.
-     * When items are bound by the adapter, this is changed to AndroidEditableText instead.
-     * The default implementation is only used temporarily (before item is bound) and for testing.
-     */
-    class DefaultEditableText(text: CharSequence = "") : EditableText {
-        override val text = StringBuilder(text)
-
-        override fun append(text: CharSequence) {
-            this.text.append(text)
-        }
-
-        override fun replace(start: Int, end: Int, text: CharSequence) {
-            this.text.replace(start, end, text.toString())
-        }
-
-        override fun equals(other: Any?) = (other is DefaultEditableText &&
-                other.text.toString() == text.toString())
-
-        override fun hashCode() = text.hashCode()
-
-        override fun toString() = text.toString()
-    }
-
     companion object {
         private val BLANK_NOTE = Note(Note.NO_ID, NoteType.TEXT, "", "",
             BlankNoteMetadata, Date(0), Date(0), NoteStatus.ACTIVE, PinnedStatus.UNPINNED, null)
@@ -1167,8 +1145,6 @@ class EditViewModel @Inject constructor(
         private const val KEY_NOTE_ID = "noteId"
         private const val KEY_IS_NEW_NOTE = "isNewNote"
         private const val KEY_LINK_URL = "linkUrl"
-
-        private val TEMP_ITEM = EditItemItem(DefaultEditableText(), checked = false, editable = false, actualPos = 0)
 
         val UNDO_TEXT_DEBOUNCE_DELAY = 500.milliseconds
     }

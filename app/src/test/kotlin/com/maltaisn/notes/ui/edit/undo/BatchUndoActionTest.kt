@@ -16,12 +16,15 @@
 
 package com.maltaisn.notes.ui.edit.undo
 
+import com.maltaisn.notes.ui.edit.TestEditableTextProvider
 import com.maltaisn.notes.ui.edit.adapter.EditContentItem
 import com.maltaisn.notes.ui.edit.e
 import org.junit.Test
 import kotlin.test.assertEquals
 
 class BatchUndoActionTest {
+
+    private val editableTextProvider = TestEditableTextProvider()
 
     @Test
     fun `should merge action`() {
@@ -46,7 +49,7 @@ class BatchUndoActionTest {
     fun `should undo action`() {
         val item = EditContentItem("bc".e, true)
         val action = BatchUndoAction(listOf(ACTION0, ACTION1))
-        action.undo(mutableListOf(item))
+        action.undo(editableTextProvider, mutableListOf(item))
         assertEquals("ab", item.text.text.toString())
     }
 
@@ -54,7 +57,7 @@ class BatchUndoActionTest {
     fun `should redo action`() {
         val item = EditContentItem("ab".e, true)
         val action = BatchUndoAction(listOf(ACTION0, ACTION1))
-        action.redo(mutableListOf(item))
+        action.redo(editableTextProvider, mutableListOf(item))
         assertEquals("bc", item.text.text.toString())
     }
 

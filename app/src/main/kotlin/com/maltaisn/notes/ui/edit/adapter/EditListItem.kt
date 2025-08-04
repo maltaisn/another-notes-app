@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Nicolas Maltais
+ * Copyright 2025 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package com.maltaisn.notes.ui.edit.adapter
 
+import com.maltaisn.notes.ui.edit.EditableText
 import com.maltaisn.notes.ui.edit.adapter.EditAdapter.ViewType
 
 sealed class EditListItem {
@@ -80,19 +81,3 @@ data class EditChipsItem(
     override val type get() = ViewType.ITEM_CHIPS
 }
 
-/**
- * This is needed so the view model can know the text and each item at all times and be able
- * to change it. An interface is used to provide a different test implementation.
- * The alternative would be the call the view model every time an item text is changed by
- * user, which wouldn't be great for performance since `toString()` would be needed every time.
- */
-interface EditableText {
-    val text: CharSequence
-
-    fun append(text: CharSequence)
-    fun replace(start: Int, end: Int, text: CharSequence)
-
-    fun replaceAll(text: CharSequence) {
-        replace(0, this.text.length, text)
-    }
-}

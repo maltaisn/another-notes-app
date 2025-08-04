@@ -17,7 +17,7 @@
 package com.maltaisn.notes.ui.edit.undo
 
 import com.maltaisn.notes.ui.edit.EditFocusChange
-import com.maltaisn.notes.ui.edit.EditViewModel
+import com.maltaisn.notes.ui.edit.EditableTextProvider
 import com.maltaisn.notes.ui.edit.adapter.EditItemItem
 import com.maltaisn.notes.ui.edit.adapter.EditListItem
 
@@ -34,7 +34,10 @@ data class ItemAddUndoAction(
     val focusBefore: EditFocusChange? = null,
 ) : ItemUndoAction {
 
-    override fun undo(listItems: MutableList<EditListItem>): EditFocusChange? {
+    override fun undo(
+        editableTextProvider: EditableTextProvider,
+        listItems: MutableList<EditListItem>
+    ): EditFocusChange? {
         listItems.subList(itemPos, itemPos + itemCount).clear()
 
         // Shift all actual pos for items below
@@ -47,7 +50,10 @@ data class ItemAddUndoAction(
         return focusBefore
     }
 
-    override fun redo(listItems: MutableList<EditListItem>): EditFocusChange {
+    override fun redo(
+        editableTextProvider: EditableTextProvider,
+        listItems: MutableList<EditListItem>
+    ): EditFocusChange {
         // Shift all actual pos for items below
         for (listItem in listItems) {
             if (listItem is EditItemItem && listItem.actualPos >= actualPos) {
@@ -58,7 +64,7 @@ data class ItemAddUndoAction(
         // Add items
         var lastItemLen = 0
         for ((i, itemText) in text.splitToSequence('\n').withIndex()) {
-            listItems.add(itemPos + i, EditItemItem(EditViewModel.DefaultEditableText(itemText),
+            listItems.add(itemPos + i, EditItemItem(editableTextProvider.create(itemText),
                 checked = checked, editable = true, actualPos + i))
             lastItemLen = itemText.length
         }

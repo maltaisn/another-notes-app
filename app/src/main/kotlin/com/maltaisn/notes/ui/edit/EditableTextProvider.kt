@@ -16,8 +16,25 @@
 
 package com.maltaisn.notes.ui.edit
 
-import com.maltaisn.notes.ui.edit.EditViewModel.DefaultEditableText
-import com.maltaisn.notes.ui.edit.adapter.EditableText
+/**
+ * This is needed so that the view model can know the text and each item at all times and be able
+ * to change it. An interface is used so we can provide a different implementation for testing,
+ * via the [EditableTextProvider].
+ */
+interface EditableText {
+    val text: CharSequence
 
-val String.e: EditableText
-    get() = DefaultEditableText(this)
+    fun append(text: CharSequence)
+    fun replace(start: Int, end: Int, text: CharSequence)
+
+    fun replaceAll(text: CharSequence) {
+        replace(0, this.text.length, text)
+    }
+}
+
+interface EditableTextProvider {
+    /**
+     * Create an editable with an initial [text].
+     */
+    fun create(text: CharSequence): EditableText
+}

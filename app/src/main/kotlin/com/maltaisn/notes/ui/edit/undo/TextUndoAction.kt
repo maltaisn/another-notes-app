@@ -17,6 +17,7 @@
 package com.maltaisn.notes.ui.edit.undo
 
 import com.maltaisn.notes.ui.edit.EditFocusChange
+import com.maltaisn.notes.ui.edit.EditableTextProvider
 import com.maltaisn.notes.ui.edit.adapter.EditListItem
 import com.maltaisn.notes.ui.edit.adapter.EditTextItem
 
@@ -87,12 +88,18 @@ data class TextUndoAction private constructor(
         }
     }
 
-    override fun undo(listItems: MutableList<EditListItem>): EditFocusChange {
+    override fun undo(
+        editableTextProvider: EditableTextProvider,
+        listItems: MutableList<EditListItem>
+    ): EditFocusChange {
         (listItems[itemPos] as EditTextItem).text.replace(start, start + newText.length, oldText)
         return EditFocusChange(itemPos, end, true)
     }
 
-    override fun redo(listItems: MutableList<EditListItem>): EditFocusChange {
+    override fun redo(
+        editableTextProvider: EditableTextProvider,
+        listItems: MutableList<EditListItem>
+    ): EditFocusChange {
         (listItems[itemPos] as EditTextItem).text.replace(start, end, newText)
         return EditFocusChange(itemPos, start + newText.length, true)
     }

@@ -17,6 +17,7 @@
 package com.maltaisn.notes.ui.edit.undo
 
 import com.maltaisn.notes.ui.edit.EditFocusChange
+import com.maltaisn.notes.ui.edit.TestEditableTextProvider
 import com.maltaisn.notes.ui.edit.adapter.EditItemItem
 import com.maltaisn.notes.ui.edit.adapter.EditListItem
 import com.maltaisn.notes.ui.edit.adapter.EditTitleItem
@@ -25,6 +26,8 @@ import org.junit.Test
 import kotlin.test.assertEquals
 
 class ItemAddUndoActionTest {
+
+    private val editableTextProvider = TestEditableTextProvider()
 
     @Test
     fun `should redo and undo correctly`() {
@@ -60,10 +63,10 @@ class ItemAddUndoActionTest {
             }
         }
 
-        action.redo(listItems)
+        action.redo(editableTextProvider, listItems)
         assertEquals(listItemsAfter, listItems)
 
-        action.undo(listItems)
+        action.undo(editableTextProvider, listItems)
         assertEquals(listItemsBefore, listItems)
     }
 }

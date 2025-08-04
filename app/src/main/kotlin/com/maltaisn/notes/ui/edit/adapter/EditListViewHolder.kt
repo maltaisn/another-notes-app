@@ -23,7 +23,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import androidx.core.view.isInvisible
-import androidx.core.widget.doAfterTextChanged
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.chip.Chip
 import com.maltaisn.notes.R
@@ -41,6 +40,7 @@ import com.maltaisn.notes.model.entity.Reminder
 import com.maltaisn.notes.showKeyboard
 import com.maltaisn.notes.strikethroughText
 import com.maltaisn.notes.ui.edit.BulletTextWatcher
+import com.maltaisn.notes.ui.edit.DefaultEditableText
 import com.maltaisn.notes.utils.RelativeDateFormatter
 import java.text.DateFormat
 
@@ -70,11 +70,11 @@ sealed class EditFocusableViewHolder<T : EditTextItem>(root: View) :
         editText.onTextChangedForUndoListener = { start, end, oldText, newText ->
             callback.onTextChanged(bindingAdapterPosition, start, end, oldText, newText)
         }
-        editText.doAfterTextChanged { editable ->
-            if (editable != null && editable != item?.text?.text) {
-                item?.text = AndroidEditableText(editable)
+        editText.setEditableFactory(object : Editable.Factory() {
+            override fun newEditable(source: CharSequence?): Editable? {
+                return (item?.text as DefaultEditableText?)?.text ?: super.newEditable(source)
             }
-        }
+        })
         editText.onLinkClickListener = callback::onLinkClickedInNote
 
         editText.setAutoTextSize(callback.textSize)
@@ -256,20 +256,5 @@ class EditItemLabelsViewHolder(binding: ItemEditLabelsBinding, callback: EditAda
                 else -> error("Unknown chip type")
             }
         }
-    }
-}
-
-// Wrapper around Editable to allow transparent access to text content from ViewModel.
-// Editable items have a EditableText field which is set by a text watcher added to the
-// EditText and called when text is set when item is bound.
-// Note that the Editable instance can change during the EditText lifetime.
-private class AndroidEditableText(override val text: Editable) : EditableText {
-
-    override fun append(text: CharSequence) {
-        this.text.append(text)
-    }
-
-    override fun replace(start: Int, end: Int, text: CharSequence) {
-        this.text.replace(start, end, text)
     }
 }
