@@ -17,8 +17,6 @@
 package com.maltaisn.notes.ui.edit.undo
 
 import com.maltaisn.notes.ui.edit.EditFocusChange
-import com.maltaisn.notes.ui.edit.EditableTextProvider
-import com.maltaisn.notes.ui.edit.adapter.EditListItem
 
 /**
  * A sequence of undo actions that can be undone and redone as one.
@@ -34,26 +32,20 @@ data class BatchUndoAction(val actions: List<ItemUndoAction>) : ItemUndoAction {
         }
     }
 
-    override fun undo(
-        editableTextProvider: EditableTextProvider,
-        listItems: MutableList<EditListItem>
-    ): EditFocusChange? {
+    override fun undo(payload: UndoPayload): EditFocusChange? {
         // Undo all actions in reverse order, returns first focus change
         var focusChange: EditFocusChange? = null
         for (action in actions.asReversed()) {
-            focusChange = action.undo(editableTextProvider, listItems)
+            focusChange = action.undo(payload)
         }
         return focusChange
     }
 
-    override fun redo(
-        editableTextProvider: EditableTextProvider,
-        listItems: MutableList<EditListItem>
-    ): EditFocusChange? {
+    override fun redo(payload: UndoPayload): EditFocusChange? {
         // Redo all actions in order, returns last focus change
         var focusChange: EditFocusChange? = null
         for (action in actions) {
-            focusChange = action.redo(editableTextProvider, listItems)
+            focusChange = action.redo(payload)
         }
         return focusChange
     }

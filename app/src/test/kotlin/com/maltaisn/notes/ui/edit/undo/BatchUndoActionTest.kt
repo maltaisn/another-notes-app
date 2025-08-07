@@ -49,7 +49,7 @@ class BatchUndoActionTest {
     fun `should undo action`() {
         val item = EditContentItem("bc".e, true)
         val action = BatchUndoAction(listOf(ACTION0, ACTION1))
-        action.undo(editableTextProvider, mutableListOf(item))
+        action.undo(UndoPayload(editableTextProvider, mutableListOf(item)))
         assertEquals("ab", item.text.text.toString())
     }
 
@@ -57,7 +57,7 @@ class BatchUndoActionTest {
     fun `should redo action`() {
         val item = EditContentItem("ab".e, true)
         val action = BatchUndoAction(listOf(ACTION0, ACTION1))
-        action.redo(editableTextProvider, mutableListOf(item))
+        action.redo(UndoPayload(editableTextProvider, mutableListOf(item)))
         assertEquals("bc", item.text.text.toString())
     }
 

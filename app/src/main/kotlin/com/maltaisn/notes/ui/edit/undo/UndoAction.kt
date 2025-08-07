@@ -27,16 +27,22 @@ import com.maltaisn.notes.ui.edit.adapter.EditListItem
  */
 sealed interface UndoAction
 
+data class UndoPayload(
+    val editableTextProvider: EditableTextProvider,
+    val listItems: MutableList<EditListItem>,
+    val moveCheckedToBottom: Boolean = false,
+)
+
 /**
  * Interface for an undo action that operates on list items only.
  * The undo / redo callbacks take a list of items to be modified and can return a focus change event.
  */
 sealed interface ItemUndoAction : UndoAction {
     /** Undo this action on a list of items, return an optional focus change. */
-    fun undo(editableTextProvider: EditableTextProvider, listItems: MutableList<EditListItem>): EditFocusChange?
+    fun undo(payload: UndoPayload): EditFocusChange?
 
     /** Redo this action on a list of items, return an optional focus change. */
-    fun redo(editableTextProvider: EditableTextProvider, listItems: MutableList<EditListItem>): EditFocusChange?
+    fun redo(payload: UndoPayload): EditFocusChange?
 
     /** Merge this action with another that comes afterwards. Returns `null` if not mergeable. */
     fun mergeWith(action: ItemUndoAction): ItemUndoAction? = null

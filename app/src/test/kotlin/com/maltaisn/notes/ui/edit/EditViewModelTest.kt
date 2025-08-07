@@ -48,10 +48,13 @@ import com.maltaisn.notes.ui.edit.adapter.EditContentItem
 import com.maltaisn.notes.ui.edit.adapter.EditDateItem
 import com.maltaisn.notes.ui.edit.adapter.EditItemAddItem
 import com.maltaisn.notes.ui.edit.adapter.EditItemItem
+import com.maltaisn.notes.ui.edit.adapter.EditListItem
 import com.maltaisn.notes.ui.edit.adapter.EditTextItem
 import com.maltaisn.notes.ui.edit.adapter.EditTitleItem
+import com.maltaisn.notes.ui.edit.undo.copy
 import com.maltaisn.notes.ui.getOrAwaitValue
 import com.maltaisn.notes.ui.note.ShownDateField
+import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
@@ -230,12 +233,7 @@ class EditViewModelTest {
             copy = AVAILABLE,
         ), viewModel.editActionsAvailability.getOrAwaitValue())
 
-        assertEquals(listOf(
-            EditDateItem(dateFor("2018-01-01").time),
-            EditTitleItem("title".e, true),
-            EditContentItem("content".e, true),
-            EditChipsItem(listOf(labelsRepo.requireLabelById(1))),
-        ), viewModel.editItems.getOrAwaitValue())
+        assertEquals(NOTE1_ITEMS, viewModel.editItems.getOrAwaitValue())
     }
 
     @Test
@@ -261,21 +259,20 @@ class EditViewModelTest {
     }
 
     @Test
-    fun `should open existing text note in trash, not editable`() =
-        runTest {
-            viewModel.start(4)
+    fun `should open existing text note in trash, not editable`() = runTest {
+        viewModel.start(4)
 
-            assertEquals(EditActionsAvailability(
-                restore = AVAILABLE,
-                deleteForever = AVAILABLE,
-            ), viewModel.editActionsAvailability.getOrAwaitValue())
+        assertEquals(EditActionsAvailability(
+            restore = AVAILABLE,
+            deleteForever = AVAILABLE,
+        ), viewModel.editActionsAvailability.getOrAwaitValue())
 
-            assertEquals(listOf(
-                EditDateItem(dateFor("2020-03-30").time),
-                EditTitleItem("title".e, false),
-                EditContentItem("content".e, false)
-            ), viewModel.editItems.getOrAwaitValue())
-        }
+        assertEquals(listOf(
+            EditDateItem(dateFor("2020-03-30").time),
+            EditTitleItem("title".e, false),
+            EditContentItem("content".e, false)
+        ), viewModel.editItems.getOrAwaitValue())
+    }
 
     @Test
     fun `should open existing list note in trash, not editable`() = runTest {
@@ -378,13 +375,12 @@ class EditViewModelTest {
     }
 
     @Test
-    fun `should ask user to delete items before converting list note with checked items`() =
-        runTest {
-            viewModel.start(2)
-            viewModel.toggleNoteType()
+    fun `should ask user to delete items before converting list note with checked items`() = runTest {
+        viewModel.start(2)
+        viewModel.toggleNoteType()
 
-            assertLiveDataEventSent(viewModel.showRemoveCheckedConfirmEvent)
-        }
+        assertLiveDataEventSent(viewModel.showRemoveCheckedConfirmEvent)
+    }
 
     @Test
     fun `should convert list note to text note deleting checked items`() = runTest {
@@ -619,258 +615,187 @@ class EditViewModelTest {
     @Test
     fun `should uncheck all items in list note`() = runTest {
         viewModel.start(2)
-        viewModel.uncheckAllItems()
-
-        assertEquals(listOf(
+        doActionTest(listOf(
             EditDateItem(dateFor("2020-03-30").time),
             EditTitleItem("title".e, true),
             EditItemItem("item 1".e, checked = false, editable = true, 0),
             EditItemItem("item 2".e, checked = false, editable = true, 1),
             EditItemAddItem,
             EditChipsItem(listOf(labelsRepo.requireLabelById(1))),
-        ), viewModel.editItems.getOrAwaitValue())
+        )) {
+            viewModel.uncheckAllItems()
+        }
     }
 
     @Test
     fun `should delete checked items in list note`() = runTest {
         viewModel.start(2)
-        viewModel.deleteCheckedItems()
-
-        assertEquals(listOf(
+        doActionTest(listOf(
             EditDateItem(dateFor("2020-03-30").time),
             EditTitleItem("title".e, true),
             EditItemItem("item 2".e, checked = false, editable = true, 0),
             EditItemAddItem,
             EditChipsItem(listOf(labelsRepo.requireLabelById(1))),
-        ), viewModel.editItems.getOrAwaitValue())
+        )) {
+            viewModel.deleteCheckedItems()
+        }
     }
 
     @Test
     fun `should split list note item on new line (single)`() = runTest {
         viewModel.start(2)
-        itemAt<EditTextItem>(2).text.replace(6, 6, "\n")
-
-        val itemsAfter = listOf(
-            EditDateItem(dateFor("2020-03-30").time),
-            EditTitleItem("title".e, true),
-            EditItemItem("item 1".e, checked = true, editable = true, 0),
-            EditItemItem("".e, checked = false, editable = true, 1),
-            EditItemItem("item 2".e, checked = false, editable = true, 2),
-            EditItemAddItem,
-            EditChipsItem(listOf(labelsRepo.requireLabelById(1))),
-        )
-
-        assertUndoRedoStatus(canUndo = true)
-        assertEquals(itemsAfter, viewModel.editItems.getOrAwaitValue())
-        assertWasFocused(3, 0, false)
-
-        viewModel.undo()
-        assertUndoRedoStatus(canRedo = true)
-        assertEquals(NOTE2_ITEMS, viewModel.editItems.getOrAwaitValue())
-        assertWasFocused(2, 6, true)
-
-        viewModel.redo()
-        assertEquals(itemsAfter, viewModel.editItems.getOrAwaitValue())
+        doActionTest(
+            listOf(
+                EditDateItem(dateFor("2020-03-30").time),
+                EditTitleItem("title".e, true),
+                EditItemItem("item 1".e, checked = true, editable = true, 0),
+                EditItemItem("".e, checked = false, editable = true, 1),
+                EditItemItem("item 2".e, checked = false, editable = true, 2),
+                EditItemAddItem,
+                EditChipsItem(listOf(labelsRepo.requireLabelById(1))),
+            ),
+            redoFocus = EditFocusChange(3, 0, false),
+            undoFocus = EditFocusChange(2, 6, true)
+        ) {
+            itemAt<EditTextItem>(2).text.replace(6, 6, "\n")
+        }
     }
 
     @Test
     fun `should split list note item on new line (multiple)`() = runTest {
         viewModel.start(2)
-        itemAt<EditTextItem>(2).text.replace(2, 5, "\nnew item first\nnew item second")
-
-        val itemsAfter = listOf(
-            EditDateItem(dateFor("2020-03-30").time),
-            EditTitleItem("title".e, true),
-            EditItemItem("it".e, checked = true, editable = true, 0),
-            EditItemItem("new item first".e, checked = false, editable = true, 1),
-            EditItemItem("new item second1".e, checked = false, editable = true, 2),
-            EditItemItem("item 2".e, checked = false, editable = true, 3),
-            EditItemAddItem,
-            EditChipsItem(listOf(labelsRepo.requireLabelById(1))),
-        )
-
-        assertEquals(itemsAfter, viewModel.editItems.getOrAwaitValue())
-        assertWasFocused(4, 15, false)
-        assertUndoRedoStatus(canUndo = true)
-
-        viewModel.undo()
-        assertEquals(NOTE2_ITEMS, viewModel.editItems.getOrAwaitValue())
-        assertWasFocused(2, 2, true)
-        assertUndoRedoStatus(canRedo = true)
-
-        viewModel.redo()
-        assertEquals(itemsAfter, viewModel.editItems.getOrAwaitValue())
+        doActionTest(
+            listOf(
+                EditDateItem(dateFor("2020-03-30").time),
+                EditTitleItem("title".e, true),
+                EditItemItem("it".e, checked = true, editable = true, 0),
+                EditItemItem("new item first".e, checked = false, editable = true, 1),
+                EditItemItem("new item second1".e, checked = false, editable = true, 2),
+                EditItemItem("item 2".e, checked = false, editable = true, 3),
+                EditItemAddItem,
+                EditChipsItem(listOf(labelsRepo.requireLabelById(1))),
+            ),
+            redoFocus = EditFocusChange(4, 15, false),
+            undoFocus = EditFocusChange(2, 2, true)
+        ) {
+            itemAt<EditTextItem>(2).text.replace(2, 5, "\nnew item first\nnew item second")
+        }
     }
 
     @Test
     fun `should merge list note item with previous on backspace`() = runTest {
         viewModel.start(2)
-        viewModel.onNoteItemBackspacePressed(3)
-
-        val itemsAfter = listOf(
-            EditDateItem(dateFor("2020-03-30").time),
-            EditTitleItem("title".e, true),
-            EditItemItem("item 1item 2".e, checked = true, editable = true, 0),
-            EditItemAddItem,
-            EditChipsItem(listOf(labelsRepo.requireLabelById(1))),
-        )
-
-        assertEquals(itemsAfter, viewModel.editItems.getOrAwaitValue())
-        assertWasFocused(2, 6)
-        assertUndoRedoStatus(canUndo = true)
-
-        viewModel.undo()
-        assertEquals(NOTE2_ITEMS, viewModel.editItems.getOrAwaitValue())
-        assertWasFocused(3, 0, false)
-        assertUndoRedoStatus(canRedo = true)
-
-        viewModel.redo()
-        assertEquals(itemsAfter, viewModel.editItems.getOrAwaitValue())
+        doActionTest(
+            itemsAfter = listOf(
+                EditDateItem(dateFor("2020-03-30").time),
+                EditTitleItem("title".e, true),
+                EditItemItem("item 1item 2".e, checked = true, editable = true, 0),
+                EditItemAddItem,
+                EditChipsItem(listOf(labelsRepo.requireLabelById(1))),
+            ),
+            redoFocus = EditFocusChange(2, 6, true),
+            undoFocus = EditFocusChange(3, 0, false)
+        ) {
+            viewModel.onNoteItemBackspacePressed(3)
+        }
     }
 
     @Test
-    fun `should do nothing with note first item on backspace`() =
-        runTest {
-            viewModel.start(2)
-            viewModel.onNoteItemBackspacePressed(1)
+    fun `should focus title on backspace in content note (no date)`() = runTest {
+        whenever(prefs.shownDateField) doReturn ShownDateField.NONE
 
-            assertEquals(listOf(
-                EditDateItem(dateFor("2020-03-30").time),
-                EditTitleItem("title".e, true),
-                EditItemItem("item 1".e, checked = true, editable = true, 0),
-                EditItemItem("item 2".e, checked = false, editable = true, 1),
-                EditItemAddItem,
-                EditChipsItem(listOf(labelsRepo.requireLabelById(1))),
-            ), viewModel.editItems.getOrAwaitValue())
-        }
+        viewModel.start(1)
+        viewModel.onNoteItemBackspacePressed(1)
 
-    @Test
-    fun `should focus title on backspace in content note (no date)`() =
-        runTest {
-            whenever(prefs.shownDateField) doReturn ShownDateField.NONE
-
-            viewModel.start(1)
-            viewModel.onNoteItemBackspacePressed(1)
-
-            assertEquals(listOf(
-                EditTitleItem("title".e, true),
-                EditContentItem("content".e, editable = true),
-                EditChipsItem(listOf(labelsRepo.requireLabelById(1))),
-            ), viewModel.editItems.getOrAwaitValue())
-            assertWasFocused(0, 5)
-        }
+        assertEquals(listOf(
+            EditTitleItem("title".e, true),
+            EditContentItem("content".e, editable = true),
+            EditChipsItem(listOf(labelsRepo.requireLabelById(1))),
+        ), viewModel.editItems.getOrAwaitValue())
+        assertWasFocused(0, 5)
+    }
 
     @Test
-    fun `should focus title on backspace in content note (with date)`() =
-        runTest {
-            viewModel.start(1)
-            viewModel.onNoteItemBackspacePressed(2)
+    fun `should focus title on backspace in content note (with date)`() = runTest {
+        viewModel.start(1)
+        viewModel.onNoteItemBackspacePressed(2)
 
-            assertEquals(listOf(
-                EditDateItem(dateFor("2018-01-01").time),
-                EditTitleItem("title".e, true),
-                EditContentItem("content".e, editable = true),
-                EditChipsItem(listOf(labelsRepo.requireLabelById(1))),
-            ), viewModel.editItems.getOrAwaitValue())
-            assertWasFocused(1, 5)
-        }
+        assertEquals(NOTE1_ITEMS, viewModel.editItems.getOrAwaitValue())
+        assertWasFocused(1, 5)
+    }
 
     @Test
-    fun `should focus title on backspace in first list item`() =
-        runTest {
-            viewModel.start(2)
-            viewModel.onNoteItemBackspacePressed(2)
+    fun `should focus title on backspace in first list item`() = runTest {
+        viewModel.start(2)
+        viewModel.onNoteItemBackspacePressed(2)
 
-            assertEquals(listOf(
-                EditDateItem(dateFor("2020-03-30").time),
-                EditTitleItem("title".e, true),
-                EditItemItem("item 1".e, checked = true, editable = true, 0),
-                EditItemItem("item 2".e, checked = false, editable = true, 1),
-                EditItemAddItem,
-                EditChipsItem(listOf(labelsRepo.requireLabelById(1))),
-            ), viewModel.editItems.getOrAwaitValue())
-            assertWasFocused(1, 5)
-        }
+        assertEquals(NOTE2_ITEMS, viewModel.editItems.getOrAwaitValue())
+        assertWasFocused(1, 5)
+    }
 
     @Test
     fun `should delete list note item and focus previous`() = runTest {
         viewModel.start(2)
-        viewModel.onNoteItemDeleteClicked(3)
-
-        val itemsAfter = listOf(
-            EditDateItem(dateFor("2020-03-30").time),
-            EditTitleItem("title".e, true),
-            EditItemItem("item 1".e, checked = true, editable = true, 0),
-            EditItemAddItem,
-            EditChipsItem(listOf(labelsRepo.requireLabelById(1))),
-        )
-
-        assertEquals(itemsAfter, viewModel.editItems.getOrAwaitValue())
-        assertWasFocused(2, 6)
-        assertUndoRedoStatus(canUndo = true)
-
-        viewModel.undo()
-        assertEquals(NOTE2_ITEMS, viewModel.editItems.getOrAwaitValue())
-        assertWasFocused(3, 6, false)
-        assertUndoRedoStatus(canRedo = true)
-
-        viewModel.redo()
-        assertEquals(itemsAfter, viewModel.editItems.getOrAwaitValue())
+        doActionTest(
+            listOf(
+                EditDateItem(dateFor("2020-03-30").time),
+                EditTitleItem("title".e, true),
+                EditItemItem("item 1".e, checked = true, editable = true, 0),
+                EditItemAddItem,
+                EditChipsItem(listOf(labelsRepo.requireLabelById(1))),
+            ),
+            redoFocus = EditFocusChange(2, 6, true),
+            undoFocus = EditFocusChange(3, 6, false)
+        ) {
+            viewModel.onNoteItemDeleteClicked(3)
+        }
     }
 
     @Test
     fun `should delete list note item and focus next`() = runTest {
         viewModel.start(2)
-        viewModel.onNoteItemDeleteClicked(2)
-
-        assertEquals(listOf(
-            EditDateItem(dateFor("2020-03-30").time),
-            EditTitleItem("title".e, true),
-            EditItemItem("item 2".e, checked = false, editable = true, 0),
-            EditItemAddItem,
-            EditChipsItem(listOf(labelsRepo.requireLabelById(1))),
-        ), viewModel.editItems.getOrAwaitValue())
-        assertWasFocused(3, 6)
+        doActionTest(
+            listOf(
+                EditDateItem(dateFor("2020-03-30").time),
+                EditTitleItem("title".e, true),
+                EditItemItem("item 2".e, checked = false, editable = true, 0),
+                EditItemAddItem,
+                EditChipsItem(listOf(labelsRepo.requireLabelById(1))),
+            ),
+            redoFocus = EditFocusChange(3, 6, true),
+            undoFocus = EditFocusChange(2, 6, false),
+        ) {
+            viewModel.onNoteItemDeleteClicked(2)
+        }
     }
 
     @Test
     fun `should add blank list note item and focus it`() = runTest {
         viewModel.start(2)
-        viewModel.onNoteItemAddClicked()
-
-        val itemsAfter = listOf(
-            EditDateItem(dateFor("2020-03-30").time),
-            EditTitleItem("title".e, true),
-            EditItemItem("item 1".e, checked = true, editable = true, 0),
-            EditItemItem("item 2".e, checked = false, editable = true, 1),
-            EditItemItem("".e, checked = false, editable = true, 2),
-            EditItemAddItem,
-            EditChipsItem(listOf(labelsRepo.requireLabelById(1))),
-        )
-        val itemsBefore = itemsAfter.toMutableList().apply { removeAt(4) }
-
-        assertUndoRedoStatus(canUndo = true)
-        assertEquals(itemsAfter, viewModel.editItems.getOrAwaitValue())
-        assertWasFocused(4, 0, false)
-
-        viewModel.undo()
-        assertUndoRedoStatus(canRedo = true)
-        assertEquals(itemsBefore, viewModel.editItems.getOrAwaitValue())
-        assertWasFocused(3, 6, true)
-
-        viewModel.redo()
-        assertEquals(itemsAfter, viewModel.editItems.getOrAwaitValue())
-        assertWasFocused(4, 0, false)
+        doActionTest(
+            listOf(
+                EditDateItem(dateFor("2020-03-30").time),
+                EditTitleItem("title".e, true),
+                EditItemItem("item 1".e, checked = true, editable = true, 0),
+                EditItemItem("item 2".e, checked = false, editable = true, 1),
+                EditItemItem("".e, checked = false, editable = true, 2),
+                EditItemAddItem,
+                EditChipsItem(listOf(labelsRepo.requireLabelById(1))),
+            ),
+            redoFocus = EditFocusChange(4, 0, false),
+            undoFocus = EditFocusChange(3, 6, true),
+        ) {
+            viewModel.onNoteItemAddClicked()
+        }
     }
 
     @Test
-    fun `should show can't edit message on try to edit in trash`() =
-        runTest {
-            viewModel.start(5)
-            viewModel.onNoteClickedToEdit()
+    fun `should show can't edit message on try to edit in trash`() = runTest {
+        viewModel.start(5)
+        viewModel.onNoteClickedToEdit()
 
-            assertLiveDataEventSent(viewModel.messageEvent, EditMessage.CANT_EDIT_IN_TRASH)
-        }
+        assertLiveDataEventSent(viewModel.messageEvent, EditMessage.CANT_EDIT_IN_TRASH)
+    }
 
     @Test
     fun `should allow note drag`() = runTest {
@@ -893,25 +818,16 @@ class EditViewModelTest {
     @Test
     fun `should swap list items`() = runTest {
         viewModel.start(2)
-        viewModel.onNoteItemSwapped(3, 2)
-        viewModel.onNoteItemAddClicked()  // swap doesn't update live data, force it to update
-        viewModel.saveNote()
-
-        assertEquals(listOf(
+        doActionTest(listOf(
             EditDateItem(dateFor("2020-03-30").time),
             EditTitleItem("title".e, true),
             EditItemItem("item 2".e, checked = false, editable = true, 0),
             EditItemItem("item 1".e, checked = true, editable = true, 1),
-            EditItemItem("".e, checked = false, editable = true, 2),
             EditItemAddItem,
             EditChipsItem(listOf(labelsRepo.requireLabelById(1))),
-        ), viewModel.editItems.getOrAwaitValue())
-
-        assertEquals(listOf(
-            ListNoteItem("item 2", false),
-            ListNoteItem("item 1", true),
-            ListNoteItem("", false),
-        ), notesRepo.lastAddedNote!!.listItems)
+        )) {
+            viewModel.onNoteItemSwapped(3, 2)
+        }
     }
 
     @Test
@@ -960,18 +876,17 @@ class EditViewModelTest {
     }
 
     @Test
-    fun `should edit existing text note (modified date field)`() =
-        runTest {
-            whenever(prefs.shownDateField) doReturn ShownDateField.MODIFIED
-            viewModel.start(1)
+    fun `should edit existing text note (modified date field)`() = runTest {
+        whenever(prefs.shownDateField) doReturn ShownDateField.MODIFIED
+        viewModel.start(1)
 
-            assertEquals(listOf(
-                EditDateItem(dateFor("2019-01-01").time),
-                EditTitleItem("title".e, true),
-                EditContentItem("content".e, true),
-                EditChipsItem(listOf(labelsRepo.requireLabelById(1))),
-            ), viewModel.editItems.getOrAwaitValue())
-        }
+        assertEquals(listOf(
+            EditDateItem(dateFor("2019-01-01").time),
+            EditTitleItem("title".e, true),
+            EditContentItem("content".e, true),
+            EditChipsItem(listOf(labelsRepo.requireLabelById(1))),
+        ), viewModel.editItems.getOrAwaitValue())
+    }
 
     @Test
     fun `should edit existing text note (no date field)`() = runTest {
@@ -1035,31 +950,31 @@ class EditViewModelTest {
     fun `should remove checked group after deleting last checked item`() = runTest {
         whenever(prefs.moveCheckedToBottom) doReturn true
         viewModel.start(2)
-        viewModel.onNoteItemDeleteClicked(5)
-
-        assertEquals(listOf(
+        doActionTest(listOf(
             EditDateItem(dateFor("2020-03-30").time),
             EditTitleItem("title".e, true),
             EditItemItem("item 2".e, checked = false, editable = true, 0),
             EditItemAddItem,
             EditChipsItem(listOf(labelsRepo.requireLabelById(1))),
-        ), viewModel.editItems.getOrAwaitValue())
+        )) {
+            viewModel.onNoteItemDeleteClicked(5)
+        }
     }
 
     @Test
     fun `should remove checked group after unchecking last checked item`() = runTest {
         whenever(prefs.moveCheckedToBottom) doReturn true
         viewModel.start(2)
-        viewModel.onNoteItemCheckChanged(5, false)
-
-        assertEquals(listOf(
+        doActionTest(listOf(
             EditDateItem(dateFor("2020-03-30").time),
             EditTitleItem("title".e, true),
             EditItemItem("item 1".e, checked = false, editable = true, 0),
             EditItemItem("item 2".e, checked = false, editable = true, 1),
             EditItemAddItem,
             EditChipsItem(listOf(labelsRepo.requireLabelById(1))),
-        ), viewModel.editItems.getOrAwaitValue())
+        )) {
+            viewModel.onNoteItemCheckChanged(5, false)
+        }
     }
 
     @Test
@@ -1067,25 +982,25 @@ class EditViewModelTest {
         whenever(prefs.moveCheckedToBottom) doReturn true
         viewModel.start(5)
         viewModel.restoreNoteAndEdit()  // note 5 is in trash, we want to edit it
-        viewModel.onNoteItemCheckChanged(5, false)
 
-        assertEquals(listOf(
+        doActionTest(listOf(
             EditDateItem(dateFor("2020-03-30").time),
             EditTitleItem("title".e, true),
             EditItemItem("item 2".e, checked = false, editable = true, 1),
             EditItemAddItem,
             EditCheckedHeaderItem(1),
             EditItemItem("item 1".e, checked = true, editable = true, 0),
-        ), viewModel.editItems.getOrAwaitValue())
+        )) {
+            viewModel.onNoteItemCheckChanged(5, false)
+        }
     }
 
     @Test
     fun `should add checked group after checking first item`() = runTest {
         whenever(prefs.moveCheckedToBottom) doReturn true
         viewModel.start(3)
-        viewModel.onNoteItemCheckChanged(2, true)
 
-        assertEquals(listOf(
+        doActionTest(listOf(
             EditDateItem(dateFor("2020-03-30").time),
             EditTitleItem("title".e, true),
             EditItemItem("item 2".e, checked = false, editable = true, 1),
@@ -1094,16 +1009,17 @@ class EditViewModelTest {
             EditItemItem("item 1".e, checked = true, editable = true, 0),
             EditChipsItem(listOf(notesRepo.requireNoteById(3).reminder!!,
                 labelsRepo.requireLabelById(1), labelsRepo.requireLabelById(2))),
-        ), viewModel.editItems.getOrAwaitValue())
+        )) {
+            viewModel.onNoteItemCheckChanged(2, true)
+        }
     }
 
     @Test
     fun `should update existing checked group after checking item`() = runTest {
         whenever(prefs.moveCheckedToBottom) doReturn true
         viewModel.start(7)
-        viewModel.onNoteItemCheckChanged(2, true)
 
-        assertEquals(listOf(
+        doActionTest(listOf(
             EditDateItem(dateFor("2020-03-30").time),
             EditTitleItem("title".e, true),
             EditItemItem("item 3".e, checked = false, editable = true, 2),
@@ -1112,16 +1028,17 @@ class EditViewModelTest {
             EditItemItem("item 1".e, checked = true, editable = true, 0),
             EditItemItem("item 2".e, checked = true, editable = true, 1),
             EditItemItem("item 4".e, checked = true, editable = true, 3),
-        ), viewModel.editItems.getOrAwaitValue())
+        )) {
+            viewModel.onNoteItemCheckChanged(2, true)
+        }
     }
 
     @Test
     fun `should update existing checked group after unchecking item`() = runTest {
         whenever(prefs.moveCheckedToBottom) doReturn true
         viewModel.start(7)
-        viewModel.onNoteItemCheckChanged(7, false)
 
-        assertEquals(listOf(
+        doActionTest(listOf(
             EditDateItem(dateFor("2020-03-30").time),
             EditTitleItem("title".e, true),
             EditItemItem("item 1".e, checked = false, editable = true, 0),
@@ -1130,16 +1047,17 @@ class EditViewModelTest {
             EditItemAddItem,
             EditCheckedHeaderItem(1),
             EditItemItem("item 2".e, checked = true, editable = true, 1),
-        ), viewModel.editItems.getOrAwaitValue())
+        )) {
+            viewModel.onNoteItemCheckChanged(7, false)
+        }
     }
 
     @Test
     fun `should update existing checked group after deleting checked item`() = runTest {
         whenever(prefs.moveCheckedToBottom) doReturn true
         viewModel.start(7)
-        viewModel.onNoteItemDeleteClicked(7)
 
-        assertEquals(listOf(
+        doActionTest(listOf(
             EditDateItem(dateFor("2020-03-30").time),
             EditTitleItem("title".e, true),
             EditItemItem("item 1".e, checked = false, editable = true, 0),
@@ -1147,16 +1065,19 @@ class EditViewModelTest {
             EditItemAddItem,
             EditCheckedHeaderItem(1),
             EditItemItem("item 2".e, checked = true, editable = true, 1),
-        ), viewModel.editItems.getOrAwaitValue())
+        )) {
+            viewModel.onNoteItemDeleteClicked(7)
+        }
 
-        viewModel.onNoteItemDeleteClicked(6)
-        assertEquals(listOf(
+        doActionTest(listOf(
             EditDateItem(dateFor("2020-03-30").time),
             EditTitleItem("title".e, true),
             EditItemItem("item 1".e, checked = false, editable = true, 0),
             EditItemItem("item 3".e, checked = false, editable = true, 1),
             EditItemAddItem,
-        ), viewModel.editItems.getOrAwaitValue())
+        )) {
+            viewModel.onNoteItemDeleteClicked(6)
+        }
     }
 
     @Test
@@ -1165,10 +1086,11 @@ class EditViewModelTest {
         viewModel.start(7)
 
         // Check and uncheck a bunch of items at random
+        val rng = Random(0)
         repeat(20) {
             val items = viewModel.editItems.value!!
             val itemsPos = items.mapIndexedNotNull { i, item -> i.takeIf { item is EditItemItem } }
-            val checkPos = itemsPos[Random.nextInt(itemsPos.size)]
+            val checkPos = itemsPos[rng.nextInt(itemsPos.size)]
             val item = items[checkPos] as EditItemItem
             viewModel.onNoteItemCheckChanged(checkPos, !item.checked)
         }
@@ -1193,9 +1115,7 @@ class EditViewModelTest {
     fun `should add new items in unchecked section`() = runTest {
         whenever(prefs.moveCheckedToBottom) doReturn true
         viewModel.start(2)
-        viewModel.onNoteItemAddClicked()
-
-        assertEquals(listOf(
+        doActionTest(listOf(
             EditDateItem(dateFor("2020-03-30").time),
             EditTitleItem("title".e, true),
             EditItemItem("item 2".e, checked = false, editable = true, 1),
@@ -1204,40 +1124,46 @@ class EditViewModelTest {
             EditCheckedHeaderItem(1),
             EditItemItem("item 1".e, checked = true, editable = true, 0),
             EditChipsItem(listOf(labelsRepo.requireLabelById(1))),
-        ), viewModel.editItems.getOrAwaitValue())
+        )) {
+            viewModel.onNoteItemAddClicked()
+        }
     }
 
     @Test
     fun `should add new checked items if newlines inserted in checked section`() = runTest {
         whenever(prefs.moveCheckedToBottom) doReturn true
         viewModel.start(2)
-        itemAt<EditTextItem>(5).text.replace(6, 6, "\n")
-
-        assertEquals(listOf(
-            EditDateItem(dateFor("2020-03-30").time),
-            EditTitleItem("title".e, true),
-            EditItemItem("item 2".e, checked = false, editable = true, 2),
-            EditItemAddItem,
-            EditCheckedHeaderItem(2),
-            EditItemItem("item 1".e, checked = true, editable = true, 0),
-            EditItemItem("".e, checked = true, editable = true, 1),
-            EditChipsItem(listOf(labelsRepo.requireLabelById(1))),
-        ), viewModel.editItems.getOrAwaitValue())
+        doActionTest(
+            listOf(
+                EditDateItem(dateFor("2020-03-30").time),
+                EditTitleItem("title".e, true),
+                EditItemItem("item 2".e, checked = false, editable = true, 2),
+                EditItemAddItem,
+                EditCheckedHeaderItem(2),
+                EditItemItem("item 1".e, checked = true, editable = true, 0),
+                EditItemItem("".e, checked = true, editable = true, 1),
+                EditChipsItem(listOf(labelsRepo.requireLabelById(1))),
+            ),
+            redoFocus = EditFocusChange(6, 0, false),
+            undoFocus = EditFocusChange(5, 6, true)
+        ) {
+            itemAt<EditTextItem>(5).text.replace(6, 6, "\n")
+        }
     }
 
     @Test
     fun `should delete checked items in list note (move checked to bottom)`() = runTest {
         whenever(prefs.moveCheckedToBottom) doReturn true
         viewModel.start(7)
-        viewModel.deleteCheckedItems()
-
-        assertEquals(listOf(
+        doActionTest(listOf(
             EditDateItem(dateFor("2020-03-30").time),
             EditTitleItem("title".e, true),
             EditItemItem("item 1".e, checked = false, editable = true, 0),
             EditItemItem("item 3".e, checked = false, editable = true, 1),
             EditItemAddItem,
-        ), viewModel.editItems.getOrAwaitValue())
+        )) {
+            viewModel.deleteCheckedItems()
+        }
     }
 
     @Test
@@ -1252,10 +1178,7 @@ class EditViewModelTest {
 
         viewModel.start(10)
         itemAt<EditTextItem>(4).text.replaceAll(" Ev")
-
-        viewModel.sortItems()
-
-        assertEquals(listOf(
+        doActionTest(listOf(
             EditDateItem(dateFor("2020-03-30").time),
             EditTitleItem("title".e, true),
             EditItemItem("éponge".e, checked = true, editable = true, 0),
@@ -1263,7 +1186,9 @@ class EditViewModelTest {
             EditItemItem("xyz".e, checked = true, editable = true, 2),
             EditItemItem("xZ".e, checked = false, editable = true, 3),
             EditItemAddItem,
-        ), viewModel.editItems.getOrAwaitValue())
+        )) {
+            viewModel.sortItems()
+        }
     }
 
     @Test
@@ -1272,9 +1197,8 @@ class EditViewModelTest {
         viewModel.start(7)
         viewModel.onNoteItemSwapped(2, 3)
         viewModel.onNoteItemSwapped(6, 7)
-        viewModel.sortItems()
 
-        assertEquals(listOf(
+        doActionTest(listOf(
             EditDateItem(dateFor("2020-03-30").time),
             EditTitleItem("title".e, true),
             EditItemItem("item 1".e, checked = false, editable = true, 0),
@@ -1283,7 +1207,9 @@ class EditViewModelTest {
             EditCheckedHeaderItem(2),
             EditItemItem("item 2".e, checked = true, editable = true, 1),
             EditItemItem("item 4".e, checked = true, editable = true, 3),
-        ), viewModel.editItems.getOrAwaitValue())
+        )) {
+            viewModel.sortItems()
+        }
     }
 
     @Test
@@ -1342,31 +1268,26 @@ class EditViewModelTest {
         viewModel.onNoteItemDeleteClicked(2)
         viewModel.onNoteItemDeleteClicked(2)
 
-        viewModel.onNoteTitleEnterPressed()
-        assertWasFocused(2, 0, false)
-
-        assertEquals(listOf(
-            EditDateItem(dateFor("2020-03-30").time),
-            EditTitleItem("title".e, true),
-            EditItemItem("".e, checked = false, editable = true, 0),
-            EditItemAddItem,
-            EditChipsItem(listOf(labelsRepo.requireLabelById(1))),
-        ), viewModel.editItems.getOrAwaitValue())
+        doActionTest(
+            listOf(
+                EditDateItem(dateFor("2020-03-30").time),
+                EditTitleItem("title".e, true),
+                EditItemItem("".e, checked = false, editable = true, 0),
+                EditItemAddItem,
+                EditChipsItem(listOf(labelsRepo.requireLabelById(1))),
+            ),
+            redoFocus = EditFocusChange(2, 0, false),
+        ) {
+            viewModel.onNoteTitleEnterPressed()
+        }
     }
 
     @Test
     fun `should not add list item on enter in title if any exist`() = runTest {
         viewModel.start(2)
-        viewModel.onNoteItemDeleteClicked(2)
         viewModel.onNoteTitleEnterPressed()
 
-        assertEquals(listOf(
-            EditDateItem(dateFor("2020-03-30").time),
-            EditTitleItem("title".e, true),
-            EditItemItem("item 2".e, checked = false, editable = true, 0),
-            EditItemAddItem,
-            EditChipsItem(listOf(labelsRepo.requireLabelById(1))),
-        ), viewModel.editItems.getOrAwaitValue())
+        assertEquals(NOTE2_ITEMS, viewModel.editItems.getOrAwaitValue())
     }
 
     @Test
@@ -1374,12 +1295,7 @@ class EditViewModelTest {
         viewModel.start(1)
         viewModel.onNoteTitleEnterPressed()
 
-        assertEquals(listOf(
-            EditDateItem(dateFor("2018-01-01").time),
-            EditTitleItem("title".e, true),
-            EditContentItem("content".e, editable = true),
-            EditChipsItem(listOf(labelsRepo.requireLabelById(1))),
-        ), viewModel.editItems.getOrAwaitValue())
+        assertEquals(NOTE1_ITEMS, viewModel.editItems.getOrAwaitValue())
     }
 
     @Test
@@ -1419,8 +1335,42 @@ class EditViewModelTest {
         assertEquals("content", item.text.text.toString())
     }
 
+    private fun TestScope.doActionTest(
+        itemsAfter: List<EditListItem>,
+        redoFocus: EditFocusChange? = null,
+        undoFocus: EditFocusChange? = null,
+        action: TestScope.() -> Unit
+    ) {
+        val itemsBefore = viewModel.editItems.getOrAwaitValue().copy()
+        val canUndoBefore = viewModel.editActionsAvailability.getOrAwaitValue().undo == AVAILABLE
+
+        // Make sure next actions are not batched
+        advanceTimeBy(EditViewModel.UNDO_TEXT_DEBOUNCE_DELAY + 100.milliseconds)
+
+        action()
+        assertUndoRedoStatus(canUndo = true)
+        assertEquals(itemsAfter, viewModel.editItems.getOrAwaitValue())
+        if (redoFocus != null) {
+            assertLiveDataEventSent(viewModel.focusEvent, redoFocus)
+        }
+
+        viewModel.undo()
+        assertUndoRedoStatus(canRedo = true, canUndo = canUndoBefore)
+        assertEquals(itemsBefore, viewModel.editItems.getOrAwaitValue())
+        if (undoFocus != null) {
+            assertLiveDataEventSent(viewModel.focusEvent, undoFocus)
+        }
+
+        viewModel.redo()
+        assertUndoRedoStatus(canUndo = true)
+        assertEquals(itemsAfter, viewModel.editItems.getOrAwaitValue())
+        if (redoFocus != null) {
+            assertLiveDataEventSent(viewModel.focusEvent, redoFocus)
+        }
+    }
+
     private inline fun <reified T> itemAt(pos: Int): T {
-        val item = viewModel.editItems.getOrAwaitValue().getOrNull(pos)
+        val item = viewModel.editItems.value!!.getOrNull(pos)
         checkNotNull(item) { "No item at pos $pos" }
         return item as T
     }
@@ -1436,7 +1386,14 @@ class EditViewModelTest {
     }
 
     companion object {
-        val NOTE2_ITEMS = listOf(
+        private val NOTE1_ITEMS = listOf(
+            EditDateItem(dateFor("2018-01-01").time),
+            EditTitleItem("title".e, true),
+            EditContentItem("content".e, editable = true),
+            EditChipsItem(listOf(Label(1, "label1"))),
+        )
+
+        private val NOTE2_ITEMS = listOf(
             EditDateItem(dateFor("2020-03-30").time),
             EditTitleItem("title".e, true),
             EditItemItem("item 1".e, checked = true, editable = true, 0),

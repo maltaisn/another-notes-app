@@ -17,8 +17,6 @@
 package com.maltaisn.notes.ui.edit.undo
 
 import com.maltaisn.notes.ui.edit.EditFocusChange
-import com.maltaisn.notes.ui.edit.EditableTextProvider
-import com.maltaisn.notes.ui.edit.adapter.EditListItem
 
 /**
  * Change focus from [before] position to [after] position.
@@ -39,17 +37,11 @@ data class FocusChangeUndoAction(
         }
     }
 
-    override fun undo(
-        editableTextProvider: EditableTextProvider,
-        listItems: MutableList<EditListItem>
-    ): EditFocusChange? {
+    override fun undo(payload: UndoPayload): EditFocusChange? {
         return before
     }
 
-    override fun redo(
-        editableTextProvider: EditableTextProvider,
-        listItems: MutableList<EditListItem>
-    ): EditFocusChange? {
+    override fun redo(payload: UndoPayload): EditFocusChange? {
         return after
     }
 }

@@ -53,12 +53,17 @@ import com.maltaisn.notes.ui.edit.adapter.EditTitleItem
 import com.maltaisn.notes.ui.edit.undo.BatchUndoAction
 import com.maltaisn.notes.ui.edit.undo.FocusChangeUndoAction
 import com.maltaisn.notes.ui.edit.undo.ItemAddUndoAction
+import com.maltaisn.notes.ui.edit.undo.ItemChangeUndoActionItem
+import com.maltaisn.notes.ui.edit.undo.ItemCheckUndoAction
 import com.maltaisn.notes.ui.edit.undo.ItemRemoveUndoAction
+import com.maltaisn.notes.ui.edit.undo.ItemReorderUndoAction
+import com.maltaisn.notes.ui.edit.undo.ItemSwapUndoAction
 import com.maltaisn.notes.ui.edit.undo.ItemUndoAction
 import com.maltaisn.notes.ui.edit.undo.NoteUndoAction
 import com.maltaisn.notes.ui.edit.undo.TextUndoAction
 import com.maltaisn.notes.ui.edit.undo.UndoAction
 import com.maltaisn.notes.ui.edit.undo.UndoManager
+import com.maltaisn.notes.ui.edit.undo.UndoPayload
 import com.maltaisn.notes.ui.note.ShownDateField
 import com.maltaisn.notes.ui.send
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -136,7 +141,7 @@ class EditViewModel @Inject constructor(
      * of moving items, where the view model updates the list but the adapter already knows of the move.
      *
      * Note the in the case of list items, a specific item has no identity. Its position and its content
-     * can change at any time, so it can be associated with a stable ID. This is problematic for item diff callback
+     * can change at any time, so it can't be associated with a stable ID. This is problematic for item diff callback
      * and animations, which would rely on ID. Instead, the diff callback was made to rely on identity so that
      * add/remove animations take place correctly. The recycler view was also set up to not animate item appearance,
      * so that if the list is completely recreated, no animation will occur despite all items identity being lost.
@@ -151,6 +156,9 @@ class EditViewModel @Inject constructor(
      * Class used to manage the undo queue.
      */
     private val undoManager = UndoManager()
+
+    private val undoPayload: UndoPayload
+        get() = UndoPayload(editableTextProvider, listItems, prefs.moveCheckedToBottom)
 
     /** Flag used during undo or redo operation to ignore text change callbacks. */
     private var ignoreTextChanges = false
@@ -418,7 +426,7 @@ class EditViewModel @Inject constructor(
         doUndoRedo(undoManager.undo()) { action ->
             when (action) {
                 is ItemUndoAction -> {
-                    action.undo(editableTextProvider, listItems)
+                    action.undo(undoPayload)
                 }
                 is NoteUndoAction -> {
                     note = action.undo()
@@ -434,7 +442,7 @@ class EditViewModel @Inject constructor(
         doUndoRedo(undoManager.redo()) { action ->
             when (action) {
                 is ItemUndoAction -> {
-                    action.redo(editableTextProvider, listItems)
+                    action.redo(undoPayload)
                 }
                 is NoteUndoAction -> {
                     note = action.redo()
@@ -472,15 +480,15 @@ class EditViewModel @Inject constructor(
         updateEditActionsVisibility()
     }
 
-    private fun appendUndoActions(vararg actions: ItemUndoAction, batch: Boolean = true, apply: Boolean = false) {
+    private fun appendUndoActions(vararg actions: ItemUndoAction, batch: Boolean = true, apply: Boolean = true) {
         appendUndoAction(BatchUndoAction(listOf(*actions)), batch, apply)
     }
 
-    private fun appendUndoAction(action: UndoAction, batch: Boolean = true, apply: Boolean = false) {
+    private fun appendUndoAction(action: UndoAction, batch: Boolean = true, apply: Boolean = true) {
         if (apply) {
             val focusChange = when (action) {
                 is ItemUndoAction -> ignoringTextChanges {
-                    action.redo(editableTextProvider, listItems)
+                    action.redo(undoPayload)
                 }
                 is NoteUndoAction -> {
                     note = action.redo()
@@ -661,48 +669,37 @@ class EditViewModel @Inject constructor(
     }
 
     fun uncheckAllItems() {
-        for ((i, item) in listItems.withIndex()) {
-            if (item is EditItemItem && item.checked) {
-                // FIXME breaks animation
-                listItems[i] = item.copy(checked = false)
-            }
-        }
-        onListItemsChanged()
+        val pos = listItems.asSequence()
+            .filterIsInstance<EditItemItem>()
+            .filter { it.checked }
+            .map { it.actualPos }
+            .toList()
+        appendUndoAction(ItemCheckUndoAction(
+            actualPos = pos,
+            checked = false
+        ), batch = false)
+        updateListItems()
     }
 
     fun deleteCheckedItems() {
-        listItems.removeAll { it is EditItemItem && it.checked }
-
-        // Update actual pos of items by shifting down
-        val itemsByActualPos = listItems.asSequence()
+        val items = listItems.asSequence()
             .filterIsInstance<EditItemItem>()
-            .sortedBy { it.actualPos }
-        var lastActualPos = -1
-        for (item in itemsByActualPos) {
-            if (item.actualPos != lastActualPos + 1) {
-                item.actualPos = lastActualPos + 1
-            }
-            lastActualPos = item.actualPos
-        }
-
-        onListItemsChanged()
+            .filter { it.checked }
+            .toList()
+        // (items is guaranteed to be sorted by actual pos already)
+        appendUndoAction(ItemRemoveUndoAction(items.map {
+            ItemChangeUndoActionItem(it.actualPos, it.text.text.toString(), true)
+        }), batch = false)
+        updateListItems()
     }
 
     fun sortItems() {
         val collator = Collator.getInstance().apply { strength = Collator.TERTIARY }
-
-        // Remove all items, sort them, then add them back.
-        val firstPos = listItems.indexOfFirst { it is EditItemItem }
-        val sortedItems = listItems.asSequence().filterIsInstance<EditItemItem>().sortedWith { a, b ->
-            collator.compare(a.text.text.toString().trimStart(), b.text.text.toString().trimStart())
-        }.toList()
-
-        for ((i, item) in sortedItems.withIndex()) {
-            item.actualPos = i
-        }
-        listItems.removeAll { it is EditItemItem }
-        listItems.addAll(firstPos, sortedItems)
-        moveCheckedItemsToBottom()
+        val items = listItems.asSequence().filterIsInstance<EditItemItem>()
+            .sortedBy { it.actualPos }.map { it.text.text.toString() }.withIndex().toMutableList()
+        items.sortWith { a, b -> collator.compare(a.value, b.value) }
+        appendUndoAction(ItemReorderUndoAction(items.map { it.index }))
+        updateListItems()
     }
 
     fun focusNoteContent() {
@@ -892,6 +889,8 @@ class EditViewModel @Inject constructor(
             item.text.replaceAll(textBefore)
         }
 
+        // If this happens in the checked group when moving checked to the bottom, new items will be checked.
+        val newChecked = item.checked && prefs.moveCheckedToBottom
         appendUndoActions(
             FocusChangeUndoAction(before = EditFocusChange(pos, start, true)),
             // Note: this action may be empty, that's fine. It will handle the focus change on undo.
@@ -902,18 +901,12 @@ class EditViewModel @Inject constructor(
                 oldText = textBefore,
                 newText = lines.first()
             ),
-            ItemAddUndoAction(
-                itemPos = pos + 1,
-                text = lines.subList(1, lines.size),
-                // If this happens in the checked group when moving checked to the bottom, new items will be checked.
-                checked = item.checked && prefs.moveCheckedToBottom,
-                actualPos = item.actualPos + 1,
-            ),
+            ItemAddUndoAction((1..<lines.size).map { i ->
+                ItemChangeUndoActionItem(item.actualPos + i, lines[i], newChecked)
+            }),
             // Focus the last added item at the position where the text change ends.
             FocusChangeUndoAction(after = EditFocusChange(pos + lines.lastIndex, lastAddedLine.length, false)),
-            apply = true)
-
-        onListItemsChanged() // just to update checked count
+        )
         updateListItems()
     }
 
@@ -926,12 +919,12 @@ class EditViewModel @Inject constructor(
         val item = listItems.getOrNull(pos) ?: return
         val undoAction = TextUndoAction.create(pos, start, end, oldText, newText)
         when (item) {
-            is EditTitleItem, is EditContentItem -> appendUndoAction(undoAction)
+            is EditTitleItem, is EditContentItem -> appendUndoAction(undoAction, apply = false)
             is EditItemItem -> {
                 if ('\n' in newText) {
                     convertNewlinesToListItems(pos, start, oldText, newText)
                 } else {
-                    appendUndoAction(undoAction)
+                    appendUndoAction(undoAction, apply = false)
                 }
             }
             else -> {}
@@ -946,11 +939,11 @@ class EditViewModel @Inject constructor(
     }
 
     override fun onNoteItemCheckChanged(pos: Int, checked: Boolean) {
-        val item = listItems[pos] as EditItemItem
-        if (item.checked != checked) {
-            item.checked = checked
-            onListItemsChanged()
-        }
+        appendUndoAction(ItemCheckUndoAction(
+            actualPos = listOf((listItems[pos] as EditItemItem).actualPos),
+            checked = checked,
+        ))
+        updateListItems()
     }
 
     override fun onNoteTitleEnterPressed() {
@@ -983,17 +976,11 @@ class EditViewModel @Inject constructor(
                 oldText = prevText,
                 newText = prevText + text,
             ),
-            ItemRemoveUndoAction(
-                itemPos = pos,
-                text = listOf(text),
-                checked = item.checked,
-                actualPos = item.actualPos,
-            ),
+            ItemRemoveUndoAction(listOf(ItemChangeUndoActionItem.fromItem(item))),
             // Set focus on merge boundary.
             FocusChangeUndoAction(after = EditFocusChange(pos - 1, prevText.length, true)),
-            apply = true)
-        // Update checked/unchecked sections in cast this was the only checked item
-        onListItemsChanged()
+        )
+        updateListItems()
     }
 
     override fun onNoteItemBackspacePressed(pos: Int) {
@@ -1030,33 +1017,23 @@ class EditViewModel @Inject constructor(
 
         appendUndoActions(
             FocusChangeUndoAction(before = EditFocusChange(pos, item.text.text.length, false)),
-            ItemRemoveUndoAction(
-                itemPos = pos,
-                text = listOf(item.text.text.toString()),
-                checked = item.checked,
-                actualPos = item.actualPos,
-            ),
+            ItemRemoveUndoAction(listOf(ItemChangeUndoActionItem.fromItem(item))),
             FocusChangeUndoAction(after = focusAfter),
-            apply = true)
-        // Update checked/unchecked sections in cast this was the only checked item
-        onListItemsChanged()
+        )
+        updateListItems()
     }
 
     override fun onNoteItemAddClicked() {
         val pos = findItemPos<EditItemAddItem>()
         val previousItem = listItems[pos - 1] as EditTextItem  // Either title or list item
+        // The new item is added last, so the actual pos is the maximum plus one.
+        val actualPos = listItems.maxOf { (it as? EditItemItem)?.actualPos ?: -1 } + 1
         appendUndoActions(
             // We have no idea where focus was before. Use the end of last item.
             FocusChangeUndoAction(before = EditFocusChange(pos - 1, previousItem.text.text.length, true)),
-            ItemAddUndoAction(
-                itemPos = pos,
-                text = listOf(""),
-                checked = false,
-                // The new item is added last, so the actual pos is the maximum plus one.
-                actualPos = listItems.maxOf { (it as? EditItemItem)?.actualPos ?: -1 } + 1,
-            ),
+            ItemAddUndoAction(listOf(ItemChangeUndoActionItem(actualPos, "", false))),
             FocusChangeUndoAction(after = EditFocusChange(pos, 0, false)),
-            apply = true)
+        )
         updateListItems()
     }
 
@@ -1086,16 +1063,12 @@ class EditViewModel @Inject constructor(
         get() = !isNoteInTrash && listItems.count { it is EditItemItem } > 1
 
     override fun onNoteItemSwapped(from: Int, to: Int) {
-        // Swap items actual positions in list note
-        val fromItem = listItems[from] as EditItemItem
-        val toItem = listItems[to] as EditItemItem
-        val actualPosTemp = fromItem.actualPos
-        fromItem.actualPos = toItem.actualPos
-        toItem.actualPos = actualPosTemp
+        val fromActualPos = (listItems[from] as EditItemItem).actualPos
+        val toActualPos = (listItems[to] as EditItemItem).actualPos
+        appendUndoAction(ItemSwapUndoAction(fromActualPos, toActualPos))
 
         // Don't update live data, adapter was notified of the change already.
         // However the live data value must be updated!
-        Collections.swap(listItems, from, to)
         Collections.swap(_editItems.value!!, from, to)
     }
 
@@ -1110,52 +1083,6 @@ class EditViewModel @Inject constructor(
 
     private fun focusItemAt(pos: Int, textPos: Int, itemExists: Boolean) {
         _focusEvent.send(EditFocusChange(pos, textPos, itemExists))
-    }
-
-    private fun onListItemsChanged() {
-        moveCheckedItemsToBottom()
-        updateEditActionsVisibility()
-    }
-
-    /**
-     * If configured so, move checked items to a separate section at the bottom,
-     * and update the checked header count. If no items are checked, the section is removed.
-     * Always calls [updateListItems].
-     */
-    private fun moveCheckedItemsToBottom() {
-        if (prefs.moveCheckedToBottom) {
-            // Remove the whole checked group
-            val checkedItems = listItems.asSequence().filterIsInstance<EditItemItem>()
-                .filter { it.checked }.toMutableList()
-            listItems.removeAll(checkedItems)
-            listItems.removeAll { it is EditCheckedHeaderItem }
-            listItems.remove(EditItemAddItem)
-
-            // Sort unchecked items by actual pos
-            var lastUncheckedPos = listItems.indexOfLast { it is EditItemItem }
-            if (lastUncheckedPos != -1) {
-                lastUncheckedPos++
-                val firstUncheckedPos = listItems.indexOfFirst { it is EditItemItem }
-                listItems.subList(firstUncheckedPos, lastUncheckedPos).sortBy { (it as EditItemItem).actualPos }
-            } else {
-                lastUncheckedPos = findItemPos<EditTitleItem>() + 1
-            }
-
-            // Re-add the checked group if any checked items, items sorted by actual pos
-            var pos = lastUncheckedPos
-            listItems.add(pos, EditItemAddItem)
-            pos++
-            if (checkedItems.isNotEmpty()) {
-                listItems.add(pos, EditCheckedHeaderItem(checkedItems.size))
-                pos++
-                checkedItems.sortBy { it.actualPos }
-                for (item in checkedItems) {
-                    listItems.add(pos, item)
-                    pos++
-                }
-            }
-        }
-        updateListItems()
     }
 
     private inline fun <reified T : EditListItem> findItem(): T {

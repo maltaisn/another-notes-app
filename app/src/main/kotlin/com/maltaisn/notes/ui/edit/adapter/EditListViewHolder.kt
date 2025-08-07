@@ -150,14 +150,19 @@ class EditItemViewHolder(binding: ItemEditItemBinding, callback: EditAdapter.Cal
     val isChecked: Boolean
         get() = itemCheck.isChecked
 
+    private var ignoreChecks = false
+
     init {
         init(callback)
         itemCheck.setOnCheckedChangeListener { _, isChecked ->
-            editText.clearFocus()
-            editText.hideKeyboard()
             editText.strikethroughText = isChecked && callback.strikethroughCheckedItems
             editText.isActivated = !isChecked // Controls text color selector.
             dragImv.isInvisible = isChecked && callback.moveCheckedToBottom
+
+            if (ignoreChecks) return@setOnCheckedChangeListener
+
+            editText.clearFocus()
+            editText.hideKeyboard()
 
             val pos = bindingAdapterPosition
             if (pos != RecyclerView.NO_POSITION) {
@@ -180,9 +185,11 @@ class EditItemViewHolder(binding: ItemEditItemBinding, callback: EditAdapter.Cal
     override fun bind(item: EditItemItem) {
         super.bind(item)
 
-        editText.isActivated = !item.checked
-        itemCheck.isChecked = item.checked
         itemCheck.isEnabled = item.editable
+        editText.isActivated = !item.checked
+        ignoreChecks = true
+        itemCheck.isChecked = item.checked
+        ignoreChecks = false
     }
 
     fun clearFocus() {

@@ -114,22 +114,18 @@ class TextUndoActionTest {
             val newText = randomString(0..10, rng)
             val action = testAction(range, oldText, newText)
 
-            val focusChange = action.redo(editableTextProvider, mutableListOf(item))
+            val focusChange = action.redo(UndoPayload(editableTextProvider, mutableListOf(item)))
             assertNotNull(focusChange)
             assertContains(0..text.length, focusChange.pos)
             actions += action
         }
 
         for (action in actions.asReversed()) {
-            val focusChange = action.undo(editableTextProvider, mutableListOf(item))
+            val focusChange = action.undo(UndoPayload(editableTextProvider, mutableListOf(item)))
             assertNotNull(focusChange)
             assertContains(0..text.length, focusChange.pos)
         }
         assertEquals(initialText, item.text.text.toString())
-    }
-
-    private fun randomString(length: IntRange, random: Random): String {
-        return (0..length.random(random)).map { 'a' + (0..<26).random(random) }.joinToString("")
     }
 
     private fun randomTextRange(text: CharSequence, random: Random): IntRange {

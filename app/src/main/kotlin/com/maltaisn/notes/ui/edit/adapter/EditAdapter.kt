@@ -164,10 +164,10 @@ class EditAdapter(val context: Context, val callback: Callback) :
          */
         fun onNoteItemBackspacePressed(pos: Int)
 
-        /** Called when the delete button is clicked on an [EditItemItem].*/
+        /** Called when the delete button is clicked on an [EditItemItem]. */
         fun onNoteItemDeleteClicked(pos: Int)
 
-        /** Called when [EditItemAddItem] is clicked.*/
+        /** Called when [EditItemAddItem] is clicked. */
         fun onNoteItemAddClicked()
 
         /** Called when a chip in [EditChipsItem] is clicked. */
