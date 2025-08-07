@@ -71,14 +71,18 @@ class UndoManager {
     fun append(action: UndoAction) {
         if (isInBatchMode) {
             check(action is ItemUndoAction) { "Cannot do non-item actions in batch mode." }
-            if (batchActions.isNotEmpty()) {
+            if (action is BatchUndoAction) {
+                batchActions += action.actions
+            } else if (batchActions.isNotEmpty()) {
                 val mergedAction = batchActions.last().mergeWith(action)
                 if (mergedAction != null) {
                     batchActions[batchActions.size - 1] = mergedAction
-                    return
+                } else {
+                    batchActions += action
                 }
+            } else {
+                batchActions += action
             }
-            batchActions += action
             return
         }
 

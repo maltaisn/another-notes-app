@@ -106,6 +106,16 @@ class UndoManagerTest {
     }
 
     @Test
+    fun `should batch new actions (sub batch)`() {
+        undoManager.startBatch()
+        undoManager.append(ACTION0)
+        undoManager.append(BatchUndoAction(listOf(ACTION1, ACTION2)))
+        undoManager.endBatch()
+
+        assertEquals(BatchUndoAction(listOf(ACTION0, ACTION1, ACTION2)), undoManager.undo())
+    }
+
+    @Test
     fun `should not allow redo after action added to batch`() {
         undoManager.append(ACTION0)
         undoManager.undo()
