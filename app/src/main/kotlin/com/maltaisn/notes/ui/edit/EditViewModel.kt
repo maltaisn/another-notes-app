@@ -397,6 +397,7 @@ class EditViewModel @Inject constructor(
     private fun updateEditActionsVisibility() {
         val isList = note.type == NoteType.LIST
         val inTrash = isNoteInTrash
+        val moreThanOneItem = listItems.asSequence().filterIsInstance<EditItemItem>().count() > 1
         val anyChecked = listItems.asSequence().filterIsInstance<EditItemItem>().any { it.checked }
 
         val visibility = EditActionsAvailability(
@@ -417,7 +418,7 @@ class EditViewModel @Inject constructor(
             copy = EditActionAvailability.fromBoolean(!inTrash),
             uncheckAll = EditActionAvailability.fromBoolean(isList && anyChecked && !inTrash),
             deleteChecked = EditActionAvailability.fromBoolean(isList && anyChecked && !inTrash),
-            sortItems = EditActionAvailability.fromBoolean(isList && !inTrash),
+            sortItems = EditActionAvailability.fromBoolean(isList && moreThanOneItem && !inTrash),
         )
         if (visibility != editActionsAvailability.value) {
             _editActionsAvailability.value = visibility

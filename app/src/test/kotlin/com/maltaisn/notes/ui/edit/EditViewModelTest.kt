@@ -1189,6 +1189,15 @@ class EditViewModelTest {
     }
 
     @Test
+    fun `should not allow sorting if not enough items`() = runTest {
+        viewModel.start(2)
+        repeat(2) {
+            viewModel.onNoteItemDeleteClicked(2)
+            assertEquals(HIDDEN, viewModel.editActionsAvailability.getOrAwaitValue().sortItems)
+        }
+    }
+
+    @Test
     fun `should sort items in list note`() = runTest {
         notesRepo.addNote(listNote(listOf(
             ListNoteItem("xZ", false),
