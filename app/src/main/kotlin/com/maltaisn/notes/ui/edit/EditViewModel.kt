@@ -155,7 +155,9 @@ class EditViewModel @Inject constructor(
     /**
      * Class used to manage the undo queue.
      */
-    private val undoManager = UndoManager()
+    private val undoManager = UndoManager().apply {
+        maxActions = MAX_UNDO_ACTIONS
+    }
 
     private val undoPayload: UndoPayload
         get() = UndoPayload(editableTextProvider, listItems, prefs.moveCheckedToBottom)
@@ -1109,5 +1111,8 @@ class EditViewModel @Inject constructor(
         private const val KEY_LINK_URL = "linkUrl"
 
         val UNDO_TEXT_DEBOUNCE_DELAY = 500.milliseconds
+
+        // Should be more than enough
+        const val MAX_UNDO_ACTIONS = 2048
     }
 }
