@@ -624,6 +624,7 @@ class EditViewModelTest {
             EditChipsItem(listOf(labelsRepo.requireLabelById(1))),
         )) {
             viewModel.uncheckAllItems()
+            assertTrue(itemAt<EditItemItem>(2).shouldUpdate())
         }
     }
 
@@ -974,7 +975,10 @@ class EditViewModelTest {
             EditChipsItem(listOf(labelsRepo.requireLabelById(1))),
         )) {
             viewModel.onNoteItemCheckChanged(5, false)
+            assertFalse(itemAt<EditItemItem>(2).shouldUpdate())
         }
+
+        assertTrue(itemAt<EditItemItem>(2).shouldUpdate())
     }
 
     @Test
@@ -1082,33 +1086,35 @@ class EditViewModelTest {
 
     @Test
     fun `should keep actual pos order when checking and unchecking`() = runTest {
-        whenever(prefs.moveCheckedToBottom) doReturn true
-        viewModel.start(7)
+        for (moveCheckedToBottom in listOf(false, true)) {
+            whenever(prefs.moveCheckedToBottom) doReturn moveCheckedToBottom
+            viewModel.start(7)
 
-        // Check and uncheck a bunch of items at random
-        val rng = Random(0)
-        repeat(20) {
-            val items = viewModel.editItems.value!!
-            val itemsPos = items.mapIndexedNotNull { i, item -> i.takeIf { item is EditItemItem } }
-            val checkPos = itemsPos[rng.nextInt(itemsPos.size)]
-            val item = items[checkPos] as EditItemItem
-            viewModel.onNoteItemCheckChanged(checkPos, !item.checked)
-        }
-
-        // finally uncheck all
-        for ((i, item) in viewModel.editItems.value!!.withIndex()) {
-            if (item is EditItemItem && item.checked) {
-                viewModel.onNoteItemCheckChanged(i, false)
+            // Check and uncheck a bunch of items at random
+            val rng = Random(0)
+            repeat(20) {
+                val items = viewModel.editItems.value!!
+                val itemsPos = items.mapIndexedNotNull { i, item -> i.takeIf { item is EditItemItem } }
+                val checkPos = itemsPos[rng.nextInt(itemsPos.size)]
+                val item = items[checkPos] as EditItemItem
+                viewModel.onNoteItemCheckChanged(checkPos, !item.checked)
             }
-        }
 
-        viewModel.saveNote()
-        assertEquals(listOf(
-            ListNoteItem("item 1", false),
-            ListNoteItem("item 2", false),
-            ListNoteItem("item 3", false),
-            ListNoteItem("item 4", false),
-        ), notesRepo.lastAddedNote!!.listItems)
+            // finally uncheck all
+            for ((i, item) in viewModel.editItems.value!!.withIndex()) {
+                if (item is EditItemItem && item.checked) {
+                    viewModel.onNoteItemCheckChanged(i, false)
+                }
+            }
+
+            viewModel.saveNote()
+            assertEquals(listOf(
+                ListNoteItem("item 1", false),
+                ListNoteItem("item 2", false),
+                ListNoteItem("item 3", false),
+                ListNoteItem("item 4", false),
+            ), notesRepo.lastAddedNote!!.listItems)
+        }
     }
 
     @Test

@@ -75,15 +75,16 @@ data class ItemRemoveUndoAction(
 data class ItemCheckUndoAction(
     val actualPos: List<Int>,
     val checked: Boolean,
+    val checkedByUser: Boolean,
 ) : ItemUndoAction {
 
     override fun undo(payload: UndoPayload): EditFocusChange? {
-        checkItems(payload, actualPos, !checked)
+        checkItems(payload, actualPos, !checked, checkedByUser)
         return null
     }
 
     override fun redo(payload: UndoPayload): EditFocusChange? {
-        checkItems(payload, actualPos, checked)
+        checkItems(payload, actualPos, checked, checkedByUser)
         return null
     }
 }
@@ -143,11 +144,13 @@ data class ItemSwapUndoAction(
     }
 }
 
-private fun checkItems(payload: UndoPayload, actualPos: List<Int>, checked: Boolean) {
+private fun checkItems(payload: UndoPayload, actualPos: List<Int>, checked: Boolean, checkedByUser: Boolean) {
     changeListItemsSortedByActualPos(payload) { items ->
         for (pos in actualPos) {
-            // TODO this break animation because the item identity changes. Use an ID for all items instead!
-            items[pos] = items[pos].copy(checked = checked)
+            items[pos].checked = checked
+            if (!checkedByUser) {
+                items[pos].requestUpdate()
+            }
         }
     }
 }

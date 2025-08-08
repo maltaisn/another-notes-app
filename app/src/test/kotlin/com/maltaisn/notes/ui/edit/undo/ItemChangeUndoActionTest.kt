@@ -75,6 +75,7 @@ class ItemChangeUndoActionTest {
         val action = ItemCheckUndoAction(
             actualPos = listOf(0, 2),
             checked = true,
+            checkedByUser = true,
         )
 
         val listItemsBefore = ITEMS0
@@ -210,7 +211,7 @@ class ItemChangeUndoActionTest {
                     items = items.filter { it.checked != checked }
                     items = items.shuffled(rng).take((0..items.size).random(rng))
                     val actualPos = items.map { it.actualPos }
-                    ItemCheckUndoAction(actualPos, checked)
+                    ItemCheckUndoAction(actualPos, checked, true)
                 }
                 1 -> {
                     val count = (0..5).random(rng)

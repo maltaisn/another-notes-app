@@ -676,7 +676,8 @@ class EditViewModel @Inject constructor(
             .toList()
         appendUndoAction(ItemCheckUndoAction(
             actualPos = pos,
-            checked = false
+            checked = false,
+            checkedByUser = false,
         ), batch = false)
         updateListItems()
     }
@@ -939,11 +940,17 @@ class EditViewModel @Inject constructor(
     }
 
     override fun onNoteItemCheckChanged(pos: Int, checked: Boolean) {
-        appendUndoAction(ItemCheckUndoAction(
+        // First apply action with "checked by user", then add it to undo queue without that flag,
+        // because it won't be the case when the action is being undone or redone.
+        val action = ItemCheckUndoAction(
             actualPos = listOf((listItems[pos] as EditItemItem).actualPos),
             checked = checked,
-        ))
+            checkedByUser = true,
+        )
+        action.redo(undoPayload)
         updateListItems()
+
+        appendUndoAction(action.copy(checkedByUser = false), apply = false)
     }
 
     override fun onNoteTitleEnterPressed() {

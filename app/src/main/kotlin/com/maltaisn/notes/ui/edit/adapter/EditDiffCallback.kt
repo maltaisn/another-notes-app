@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Nicolas Maltais
+ * Copyright 2025 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,9 @@ class EditDiffCallback : DiffUtil.ItemCallback<EditListItem>() {
 
     override fun areContentsTheSame(old: EditListItem, new: EditListItem) = when {
         old is EditCheckedHeaderItem && new is EditCheckedHeaderItem -> old.count == new.count
+        // We'll assume areContentsTheSame is called exactly once per item,
+        // otherwise this fails because it clears the flag.
+        old is EditItemItem && new is EditItemItem -> !old.shouldUpdate()
         // If this is called, then old === new, so content is necessarily the same.
         else -> true
     }

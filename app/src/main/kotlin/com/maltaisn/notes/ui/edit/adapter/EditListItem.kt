@@ -58,6 +58,25 @@ data class EditItemItem(
     var actualPos: Int,
 ) : EditListItem(), EditTextItem {
 
+    // This flag is used to indicate that the item's content has changed, to trigger a rebinding.
+    // It's used specifically for check: user can toggle the checkbox, which doesn't require an update because
+    // the checkbox already has the correct state. Not only that, but if the list is updated, an annoying animation
+    // is shown even though nothing changed. If, however, the view model unchecks the item, it must be updated.
+    private var dirty: Boolean = false
+
+    fun shouldUpdate(): Boolean {
+        return if (dirty) {
+            dirty = false
+            true
+        } else {
+            false
+        }
+    }
+
+    fun requestUpdate() {
+        dirty = true
+    }
+
     override val type get() = ViewType.ITEM
 }
 
