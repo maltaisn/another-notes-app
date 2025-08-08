@@ -16,7 +16,6 @@
 
 package com.maltaisn.notes.ui.edit.undo
 
-import com.maltaisn.notes.ui.edit.EditFocusChange
 import com.maltaisn.notes.ui.edit.adapter.EditCheckedHeaderItem
 import com.maltaisn.notes.ui.edit.adapter.EditItemAddItem
 import com.maltaisn.notes.ui.edit.adapter.EditItemItem
@@ -40,12 +39,12 @@ data class ItemChangeUndoActionItem(
  */
 data class ItemAddUndoAction(val items: List<ItemChangeUndoActionItem>) : ItemUndoAction {
 
-    override fun undo(payload: UndoPayload): EditFocusChange? {
+    override fun undo(payload: UndoPayload): UndoFocusChange? {
         removeItems(payload, items)
         return null
     }
 
-    override fun redo(payload: UndoPayload): EditFocusChange? {
+    override fun redo(payload: UndoPayload): UndoFocusChange? {
         addItems(payload, items)
         return null
     }
@@ -58,12 +57,12 @@ data class ItemRemoveUndoAction(
     val items: List<ItemChangeUndoActionItem>
 ) : ItemUndoAction {
 
-    override fun undo(payload: UndoPayload): EditFocusChange? {
+    override fun undo(payload: UndoPayload): UndoFocusChange? {
         addItems(payload, items)
         return null
     }
 
-    override fun redo(payload: UndoPayload): EditFocusChange? {
+    override fun redo(payload: UndoPayload): UndoFocusChange? {
         removeItems(payload, items)
         return null
     }
@@ -78,12 +77,12 @@ data class ItemCheckUndoAction(
     val checkedByUser: Boolean,
 ) : ItemUndoAction {
 
-    override fun undo(payload: UndoPayload): EditFocusChange? {
+    override fun undo(payload: UndoPayload): UndoFocusChange? {
         checkItems(payload, actualPos, !checked, checkedByUser)
         return null
     }
 
-    override fun redo(payload: UndoPayload): EditFocusChange? {
+    override fun redo(payload: UndoPayload): UndoFocusChange? {
         checkItems(payload, actualPos, checked, checkedByUser)
         return null
     }
@@ -105,13 +104,13 @@ data class ItemReorderUndoAction(
         }
     }
 
-    override fun undo(payload: UndoPayload): EditFocusChange? {
+    override fun undo(payload: UndoPayload): UndoFocusChange? {
         val oldOrder = newOrder.withIndex().sortedBy { it.value }.map { it.index }
         changeItemsOrder(payload, oldOrder)
         return null
     }
 
-    override fun redo(payload: UndoPayload): EditFocusChange? {
+    override fun redo(payload: UndoPayload): UndoFocusChange? {
         changeItemsOrder(payload, newOrder)
         return null
     }
@@ -126,11 +125,11 @@ data class ItemSwapUndoAction(
     val to: Int
 ) : ItemUndoAction {
 
-    override fun undo(payload: UndoPayload): EditFocusChange? {
+    override fun undo(payload: UndoPayload): UndoFocusChange? {
         return redo(payload)
     }
 
-    override fun redo(payload: UndoPayload): EditFocusChange? {
+    override fun redo(payload: UndoPayload): UndoFocusChange? {
         val items = payload.listItems
 
         val fromIndex = items.indexOfFirst { it is EditItemItem && it.actualPos == from }

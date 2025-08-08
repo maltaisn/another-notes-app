@@ -181,9 +181,9 @@ class UndoManagerTest {
     }
 
     companion object {
-        private val ACTION0 = TextUndoAction.create(0, 0, 1, "a", "b")
-        private val ACTION1 = TextUndoAction.create(0, 1, 2, "b", "c")
-        private val ACTION01 = TextUndoAction.create(0, 0, 2, "ab", "bc")
-        private val ACTION2 = TextUndoAction.create(1, 0, 1, "b", "c")
+        private val ACTION0 = TextUndoAction.create(UndoActionLocation.Title, 0, 1, "a", "b")
+        private val ACTION1 = TextUndoAction.create(UndoActionLocation.Title, 1, 2, "b", "c")
+        private val ACTION01 = TextUndoAction.create(UndoActionLocation.Title, 0, 2, "ab", "bc")
+        private val ACTION2 = TextUndoAction.create(UndoActionLocation.Content, 0, 1, "b", "c")
     }
 }

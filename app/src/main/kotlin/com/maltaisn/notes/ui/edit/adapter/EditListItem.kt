@@ -23,7 +23,7 @@ sealed class EditListItem {
     abstract val type: ViewType
 }
 
-interface EditTextItem {
+sealed interface EditTextItem {
     var text: EditableText
     val editable: Boolean
 }

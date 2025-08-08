@@ -16,8 +16,6 @@
 
 package com.maltaisn.notes.ui.edit.undo
 
-import com.maltaisn.notes.ui.edit.EditFocusChange
-
 /**
  * Change focus from [before] position to [after] position.
  * If the undo action is combined with other in a [BatchUndoAction],
@@ -25,8 +23,8 @@ import com.maltaisn.notes.ui.edit.EditFocusChange
  * The item may or may not exist in the view at the time the focus change is requested.
  */
 data class FocusChangeUndoAction(
-    val before: EditFocusChange? = null,
-    val after: EditFocusChange? = null,
+    val before: UndoFocusChange? = null,
+    val after: UndoFocusChange? = null,
 ) : ItemUndoAction {
 
     override fun mergeWith(action: ItemUndoAction): FocusChangeUndoAction? {
@@ -37,11 +35,11 @@ data class FocusChangeUndoAction(
         }
     }
 
-    override fun undo(payload: UndoPayload): EditFocusChange? {
+    override fun undo(payload: UndoPayload): UndoFocusChange? {
         return before
     }
 
-    override fun redo(payload: UndoPayload): EditFocusChange? {
+    override fun redo(payload: UndoPayload): UndoFocusChange? {
         return after
     }
 }

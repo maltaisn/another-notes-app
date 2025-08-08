@@ -17,7 +17,7 @@
 package com.maltaisn.notes.ui.edit.undo
 
 import com.maltaisn.notes.ui.edit.TestEditableTextProvider
-import com.maltaisn.notes.ui.edit.adapter.EditContentItem
+import com.maltaisn.notes.ui.edit.adapter.EditTitleItem
 import com.maltaisn.notes.ui.edit.e
 import org.junit.Test
 import kotlin.random.Random
@@ -93,8 +93,8 @@ class TextUndoActionTest {
 
     @Test
     fun `should not merge actions with different item position`() {
-        val action0 = TextUndoAction.create(0, 0, 0, "a", "b")
-        val action1 = TextUndoAction.create(1, 0, 0, "b", "c")
+        val action0 = TextUndoAction.create(UndoActionLocation.Title, 0, 0, "a", "b")
+        val action1 = TextUndoAction.create(UndoActionLocation.Content, 0, 0, "b", "c")
         assertNull(action0.mergeWith(action1))
     }
 
@@ -103,7 +103,7 @@ class TextUndoActionTest {
         // Randomly edit text using the redo action, and then undo back to the original.
         val initialText = "original"
 
-        val item = EditContentItem(initialText.e, true)
+        val item = EditTitleItem(initialText.e, true)
         val text = item.text.text
         val actions = mutableListOf<TextUndoAction>()
 
@@ -143,5 +143,5 @@ class TextUndoActionTest {
     }
 
     private fun testAction(range: IntRange, old: String, new: String) =
-        TextUndoAction.create(0, range.first, range.last + 1, old, new)
+        TextUndoAction.create(UndoActionLocation.Title, range.first, range.last + 1, old, new)
 }

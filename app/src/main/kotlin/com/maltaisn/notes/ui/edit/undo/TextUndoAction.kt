@@ -16,18 +16,16 @@
 
 package com.maltaisn.notes.ui.edit.undo
 
-import com.maltaisn.notes.ui.edit.EditFocusChange
-import com.maltaisn.notes.ui.edit.adapter.EditTextItem
-
 /**
- * Text in range [start] to [end] (exclusive) changed from [oldText] to [newText].
+ * Text in range [start] to [end] (exclusive) changed from [oldText] to [newText],
+ * in an item at [location].
  *
  * The need for merging [TextUndoAction] arises from the fact that the text watcher on EditText
  * is called for every character changed, which would create lots of objects each were stored.
  */
 @ConsistentCopyVisibility
 data class TextUndoAction private constructor(
-    val itemPos: Int,
+    val location: UndoActionLocation,
     val start: Int,
     val end: Int,
     val oldText: String,
@@ -35,7 +33,7 @@ data class TextUndoAction private constructor(
 ) : ItemUndoAction {
 
     override fun mergeWith(action: ItemUndoAction): TextUndoAction? {
-        return if (action is TextUndoAction && itemPos == action.itemPos) {
+        return if (action is TextUndoAction && location == action.location) {
             // There are five possible cases when merging actions, four of which can be merged,
             // depending on the location of the new action relative to the old action.
             // This is a nightmare, surely it could be done more simply?
@@ -80,20 +78,20 @@ data class TextUndoAction private constructor(
                     return null
                 }
             }
-            create(itemPos, mergeStart, mergeEnd, mergeOldText, mergeNewText)
+            create(location, mergeStart, mergeEnd, mergeOldText, mergeNewText)
         } else {
             null
         }
     }
 
-    override fun undo(payload: UndoPayload): EditFocusChange {
-        (payload.listItems[itemPos] as EditTextItem).text.replace(start, start + newText.length, oldText)
-        return EditFocusChange(itemPos, end, true)
+    override fun undo(payload: UndoPayload): UndoFocusChange {
+        location.findItemIn(payload.listItems).text.replace(start, start + newText.length, oldText)
+        return UndoFocusChange(location, end, true)
     }
 
-    override fun redo(payload: UndoPayload): EditFocusChange {
-        (payload.listItems[itemPos] as EditTextItem).text.replace(start, end, newText)
-        return EditFocusChange(itemPos, start + newText.length, true)
+    override fun redo(payload: UndoPayload): UndoFocusChange {
+        location.findItemIn(payload.listItems).text.replace(start, end, newText)
+        return UndoFocusChange(location, start + newText.length, true)
     }
 
     companion object {
@@ -102,7 +100,7 @@ data class TextUndoAction private constructor(
          * This is needed for merge to work correctly later on.
          */
         fun create(
-            itemPos: Int,
+            location: UndoActionLocation,
             start: Int,
             end: Int,
             oldText: String,
@@ -118,7 +116,7 @@ data class TextUndoAction private constructor(
             ) {
                 e++
             }
-            return TextUndoAction(itemPos, start + s, end - e,
+            return TextUndoAction(location, start + s, end - e,
                 oldText.substring(s, oldText.length - e), newText.substring(s, newText.length - e))
         }
     }

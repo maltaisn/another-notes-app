@@ -17,7 +17,7 @@
 package com.maltaisn.notes.ui.edit.undo
 
 import com.maltaisn.notes.ui.edit.TestEditableTextProvider
-import com.maltaisn.notes.ui.edit.adapter.EditContentItem
+import com.maltaisn.notes.ui.edit.adapter.EditTitleItem
 import com.maltaisn.notes.ui.edit.e
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -47,7 +47,7 @@ class BatchUndoActionTest {
 
     @Test
     fun `should undo action`() {
-        val item = EditContentItem("bc".e, true)
+        val item = EditTitleItem("bc".e, true)
         val action = BatchUndoAction(listOf(ACTION0, ACTION1))
         action.undo(UndoPayload(editableTextProvider, mutableListOf(item)))
         assertEquals("ab", item.text.text.toString())
@@ -55,15 +55,15 @@ class BatchUndoActionTest {
 
     @Test
     fun `should redo action`() {
-        val item = EditContentItem("ab".e, true)
+        val item = EditTitleItem("ab".e, true)
         val action = BatchUndoAction(listOf(ACTION0, ACTION1))
         action.redo(UndoPayload(editableTextProvider, mutableListOf(item)))
         assertEquals("bc", item.text.text.toString())
     }
 
     companion object {
-        private val ACTION0 = TextUndoAction.create(0, 0, 1, "a", "b")
-        private val ACTION1 = TextUndoAction.create(0, 1, 2, "b", "c")
-        private val ACTION2 = TextUndoAction.create(1, 0, 1, "b", "c")
+        private val ACTION0 = TextUndoAction.create(UndoActionLocation.Title, 0, 1, "a", "b")
+        private val ACTION1 = TextUndoAction.create(UndoActionLocation.Title, 1, 2, "b", "c")
+        private val ACTION2 = TextUndoAction.create(UndoActionLocation.Content, 0, 1, "b", "c")
     }
 }

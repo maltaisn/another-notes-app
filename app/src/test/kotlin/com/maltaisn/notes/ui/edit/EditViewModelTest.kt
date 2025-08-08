@@ -779,7 +779,7 @@ class EditViewModelTest {
                 EditItemAddItem,
                 EditChipsItem(listOf(labelsRepo.requireLabelById(1))),
             ),
-            redoFocus = EditFocusChange(3, 6, true),
+            redoFocus = EditFocusChange(2, 6, true),
             undoFocus = EditFocusChange(2, 6, false),
         ) {
             viewModel.onNoteItemDeleteClicked(2)

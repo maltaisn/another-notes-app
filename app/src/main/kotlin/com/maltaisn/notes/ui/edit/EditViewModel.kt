@@ -62,6 +62,8 @@ import com.maltaisn.notes.ui.edit.undo.ItemUndoAction
 import com.maltaisn.notes.ui.edit.undo.NoteConversionUndoAction
 import com.maltaisn.notes.ui.edit.undo.TextUndoAction
 import com.maltaisn.notes.ui.edit.undo.UndoAction
+import com.maltaisn.notes.ui.edit.undo.UndoActionLocation
+import com.maltaisn.notes.ui.edit.undo.UndoFocusChange
 import com.maltaisn.notes.ui.edit.undo.UndoManager
 import com.maltaisn.notes.ui.edit.undo.UndoPayload
 import com.maltaisn.notes.ui.note.ShownDateField
@@ -454,7 +456,7 @@ class EditViewModel @Inject constructor(
         }
     }
 
-    private fun doUndoRedo(action: UndoAction?, work: (UndoAction) -> EditFocusChange?) {
+    private fun doUndoRedo(action: UndoAction?, work: (UndoAction) -> UndoFocusChange?) {
         if (action == null) {
             // Shouldn't happen because buttons are not enabled when not available.
             return
@@ -476,7 +478,7 @@ class EditViewModel @Inject constructor(
         }
 
         if (focusChange != null) {
-            _focusEvent.send(focusChange)
+            _focusEvent.send(focusChange.toEditFocusChange(listItems))
         }
 
         updateEditActionsVisibility()
@@ -499,7 +501,7 @@ class EditViewModel @Inject constructor(
             }
             // Note updateListItems is not called, it's the responsability of caller.
             if (focusChange != null) {
-                _focusEvent.send(focusChange)
+                _focusEvent.send(focusChange.toEditFocusChange(listItems))
             }
         }
 
@@ -906,11 +908,12 @@ class EditViewModel @Inject constructor(
 
         // If this happens in the checked group when moving checked to the bottom, new items will be checked.
         val newChecked = item.checked && prefs.moveCheckedToBottom
+        val location = UndoActionLocation.fromItem(item)
         appendUndoActions(
-            FocusChangeUndoAction(before = EditFocusChange(pos, start, true)),
+            FocusChangeUndoAction(before = UndoFocusChange(location, start, true)),
             // Note: this action may be empty, that's fine. It will handle the focus change on undo.
             TextUndoAction.create(
-                itemPos = pos,
+                location = location,
                 start = 0,
                 end = textBefore.length,
                 oldText = textBefore,
@@ -920,7 +923,9 @@ class EditViewModel @Inject constructor(
                 ItemChangeUndoActionItem(item.actualPos + i, lines[i], newChecked)
             }),
             // Focus the last added item at the position where the text change ends.
-            FocusChangeUndoAction(after = EditFocusChange(pos + lines.lastIndex, lastAddedLine.length, false)),
+            FocusChangeUndoAction(after = UndoFocusChange(
+                UndoActionLocation.Item(item.actualPos + lines.lastIndex),
+                lastAddedLine.length, false)),
         )
         updateListItems()
     }
@@ -931,8 +936,8 @@ class EditViewModel @Inject constructor(
             return
         }
 
-        val item = listItems.getOrNull(pos) ?: return
-        val undoAction = TextUndoAction.create(pos, start, end, oldText, newText)
+        val item = listItems.getOrNull(pos) as? EditTextItem ?: return
+        val undoAction = TextUndoAction.create(UndoActionLocation.fromItem(item), start, end, oldText, newText)
         when (item) {
             is EditTitleItem, is EditContentItem -> appendUndoAction(undoAction, apply = false)
             is EditItemItem -> {
@@ -942,7 +947,6 @@ class EditViewModel @Inject constructor(
                     appendUndoAction(undoAction, apply = false)
                 }
             }
-            else -> {}
         }
     }
 
@@ -989,9 +993,9 @@ class EditViewModel @Inject constructor(
         val prevText = prevItem.text.text.toString()
 
         appendUndoActions(
-            FocusChangeUndoAction(before = EditFocusChange(pos, 0, false)),
+            FocusChangeUndoAction(before = UndoFocusChange.atStartOfItem(item, false)),
             TextUndoAction.create(
-                itemPos = pos - 1,
+                location = UndoActionLocation.fromItem(prevItem),
                 start = 0,
                 end = prevText.length,
                 oldText = prevText,
@@ -999,7 +1003,7 @@ class EditViewModel @Inject constructor(
             ),
             ItemRemoveUndoAction(listOf(ItemChangeUndoActionItem.fromItem(item))),
             // Set focus on merge boundary.
-            FocusChangeUndoAction(after = EditFocusChange(pos - 1, prevText.length, true)),
+            FocusChangeUndoAction(after = UndoFocusChange.atEndOfItem(prevItem, true)),
         )
         updateListItems()
     }
@@ -1022,22 +1026,16 @@ class EditViewModel @Inject constructor(
     override fun onNoteItemDeleteClicked(pos: Int) {
         val item = listItems[pos] as? EditItemItem ?: return
 
-        val prevItem = listItems[pos - 1]
-        val focusAfter = if (prevItem is EditItemItem) {
-            // Set focus at the end of previous item.
-            EditFocusChange(pos - 1, prevItem.text.text.length, true)
-        } else {
-            val nextItem = listItems.getOrNull(pos + 1)
-            if (nextItem is EditItemItem) {
-                // Set focus at the end of next item.
-                EditFocusChange(pos + 1, nextItem.text.text.length, true)
-            } else {
-                null
-            }
+        val prevItem = listItems[pos - 1] as? EditItemItem
+        val nextItem = listItems.getOrNull(pos + 1) as? EditItemItem
+        val focusAfter = (prevItem ?: nextItem)?.let {
+            // Account for the fact the deleting the item may shift the focused item actual position.
+            val actualPos = if (it.actualPos < item.actualPos) it.actualPos else it.actualPos - 1
+            UndoFocusChange(UndoActionLocation.Item(actualPos), it.text.text.length, true)
         }
 
         appendUndoActions(
-            FocusChangeUndoAction(before = EditFocusChange(pos, item.text.text.length, false)),
+            FocusChangeUndoAction(before = UndoFocusChange.atEndOfItem(item)),
             ItemRemoveUndoAction(listOf(ItemChangeUndoActionItem.fromItem(item))),
             FocusChangeUndoAction(after = focusAfter),
         )
@@ -1046,14 +1044,14 @@ class EditViewModel @Inject constructor(
 
     override fun onNoteItemAddClicked() {
         val pos = findItemPos<EditItemAddItem>()
-        val previousItem = listItems[pos - 1] as EditTextItem  // Either title or list item
+        val prevItem = listItems[pos - 1] as EditTextItem  // Either title or list item
         // The new item is added last, so the actual pos is the maximum plus one.
         val actualPos = listItems.maxOf { (it as? EditItemItem)?.actualPos ?: -1 } + 1
         appendUndoActions(
             // We have no idea where focus was before. Use the end of last item.
-            FocusChangeUndoAction(before = EditFocusChange(pos - 1, previousItem.text.text.length, true)),
+            FocusChangeUndoAction(before = UndoFocusChange.atEndOfItem(prevItem, true)),
             ItemAddUndoAction(listOf(ItemChangeUndoActionItem(actualPos, "", false))),
-            FocusChangeUndoAction(after = EditFocusChange(pos, 0, false)),
+            FocusChangeUndoAction(after = UndoFocusChange(UndoActionLocation.Item(actualPos), 0, false)),
         )
         updateListItems()
     }
