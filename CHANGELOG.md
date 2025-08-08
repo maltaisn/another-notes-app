@@ -1,4 +1,5 @@
-## v1.5.5 (WIP)
+## v1.6.0 (WIP)
+- Added undo/redo support (#26).
 - Added Vietnamese translation (#146, @ngocanhtve) & updated other languages.
 - Allow adjusting the text size in the editor (#22).
 - Added a setting for initially focusing on the content when a new note is created (#116).

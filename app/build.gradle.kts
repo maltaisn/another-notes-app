@@ -43,8 +43,8 @@ android {
         compileSdk = 36
         buildToolsVersion = "35.0.0"
         targetSdk = 36
-        versionCode = 10505
-        versionName = "1.5.5"
+        versionCode = 10600
+        versionName = "1.6.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
