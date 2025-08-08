@@ -425,6 +425,10 @@ class EditViewModel @Inject constructor(
         }
     }
 
+    fun setMaxUndoActions(count: Int) {
+        undoManager.maxActions = count
+    }
+
     fun undo() {
         undoAppendJob?.cancel()
         undoAppendJob = null

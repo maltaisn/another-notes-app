@@ -89,7 +89,7 @@ data class EditCheckedHeaderItem(
     var count: Int
 ) : EditListItem() {
 
-    override val type get() = ViewType.ITEM_CHECKED_HEADER
+    override val type get() = ViewType.CHECKED_HEADER
 }
 
 data class EditChipsItem(
@@ -97,6 +97,6 @@ data class EditChipsItem(
     val chips: List<Any>
 ) : EditListItem() {
 
-    override val type get() = ViewType.ITEM_CHIPS
+    override val type get() = ViewType.CHIPS
 }
 

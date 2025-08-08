@@ -17,16 +17,15 @@
 package com.maltaisn.notes.ui.edit.undo
 
 import com.maltaisn.notes.ui.edit.TestEditableTextProvider
-import com.maltaisn.notes.ui.edit.adapter.EditCheckedHeaderItem
 import com.maltaisn.notes.ui.edit.adapter.EditItemAddItem
 import com.maltaisn.notes.ui.edit.adapter.EditItemItem
 import com.maltaisn.notes.ui.edit.adapter.EditListItem
 import com.maltaisn.notes.ui.edit.adapter.EditTitleItem
+import com.maltaisn.notes.ui.edit.checkIfListItemsAreCorrect
 import com.maltaisn.notes.ui.edit.e
 import org.junit.Test
 import kotlin.random.Random
 import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
 
 class ItemChangeUndoActionTest {
 
@@ -140,52 +139,6 @@ class ItemChangeUndoActionTest {
 
         action.undo(payload)
         assertEquals(listItemsBefore, listItems)
-    }
-
-    private fun checkIfListItemsAreCorrect(listItems: List<EditListItem>, moveCheckedToBottom: Boolean = false) {
-        var checkedHeader: EditCheckedHeaderItem? = null
-        var foundAddItem = false
-        var foundCheckedItems = false
-        var checkedCount = 0
-        var lastActualPos = -1
-        for ((i, item) in listItems.withIndex()) {
-            when (item) {
-                is EditTitleItem -> {
-                    assert(i == 0)
-                }
-                is EditItemItem -> {
-                    if (moveCheckedToBottom) {
-                        assert(item.actualPos > lastActualPos)
-                    } else {
-                        assert(item.actualPos == lastActualPos + 1)
-                        assert(!foundAddItem)
-                    }
-                    lastActualPos = item.actualPos
-                    if (item.checked) {
-                        if (moveCheckedToBottom) {
-                            assert(foundAddItem)
-                            assertNotNull(checkedHeader)
-                        }
-                        checkedCount++
-                        foundCheckedItems = true
-                    }
-                }
-                is EditItemAddItem -> {
-                    assert(!moveCheckedToBottom || !foundCheckedItems)
-                    foundAddItem = true
-                }
-                is EditCheckedHeaderItem -> {
-                    assert(moveCheckedToBottom)
-                    assert(!foundCheckedItems)
-                    checkedHeader = item
-                    lastActualPos = -1
-                }
-                else -> error("")
-            }
-        }
-        if (checkedCount > 0 && moveCheckedToBottom) {
-            assert(checkedHeader!!.count == checkedCount)
-        }
     }
 
     private fun randomTest(moveCheckedToBottom: Boolean) {

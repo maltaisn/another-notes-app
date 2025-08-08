@@ -74,9 +74,9 @@ class EditAdapter(val context: Context, val callback: Callback) :
                 .inflate(inflater, parent, false), callback)
             ViewType.ITEM_ADD.ordinal -> EditItemAddViewHolder(ItemEditItemAddBinding
                 .inflate(inflater, parent, false), callback)
-            ViewType.ITEM_CHECKED_HEADER.ordinal -> EditHeaderViewHolder(ItemEditHeaderBinding
+            ViewType.CHECKED_HEADER.ordinal -> EditHeaderViewHolder(ItemEditHeaderBinding
                 .inflate(inflater, parent, false))
-            ViewType.ITEM_CHIPS.ordinal -> EditItemLabelsViewHolder(ItemEditLabelsBinding
+            ViewType.CHIPS.ordinal -> EditItemLabelsViewHolder(ItemEditLabelsBinding
                 .inflate(inflater, parent, false), callback)
             ViewType.ITEM.ordinal -> {
                 val viewHolder = EditItemViewHolder(ItemEditItemBinding
@@ -140,8 +140,8 @@ class EditAdapter(val context: Context, val callback: Callback) :
         CONTENT,
         ITEM,
         ITEM_ADD,
-        ITEM_CHECKED_HEADER,
-        ITEM_CHIPS,
+        CHECKED_HEADER,
+        CHIPS,
     }
 
     interface Callback {

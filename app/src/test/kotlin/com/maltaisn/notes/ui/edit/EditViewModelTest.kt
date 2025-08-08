@@ -197,7 +197,7 @@ class EditViewModelTest {
         viewModel.start()  // new blank note
         val note = notesRepo.lastAddedNote!!
         viewModel.start()
-        assertEquals(note, notesRepo.lastAddedNote!!)  // assert note new note added
+        assertEquals(note, notesRepo.lastAddedNote!!)  // assert no new note added
     }
 
     @Test

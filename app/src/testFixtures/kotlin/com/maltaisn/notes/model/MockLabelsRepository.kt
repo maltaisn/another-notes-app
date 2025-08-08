@@ -16,8 +16,6 @@
 
 package com.maltaisn.notes.model
 
-import com.maltaisn.notes.model.DefaultLabelsRepository
-import com.maltaisn.notes.model.LabelsRepository
 import com.maltaisn.notes.model.entity.Label
 import com.maltaisn.notes.model.entity.LabelRef
 import com.maltaisn.notes.model.entity.Note
@@ -40,6 +38,11 @@ class MockLabelsRepository : LabelsRepository {
     private val inverseLabelRefs = mutableMapOf<Long, MutableSet<Long>>()
 
     private var lastLabelId = 0L
+    /**
+     * Number of labels in database.
+     */
+    val labelsCount: Int
+        get() = labels.size
 
     val changeFlow = MutableSharedFlow<Unit>(replay = 1)
     val refsChangeFlow = MutableSharedFlow<Unit>(replay = 1)

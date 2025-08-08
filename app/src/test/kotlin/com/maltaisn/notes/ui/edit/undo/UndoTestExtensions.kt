@@ -26,8 +26,10 @@ import com.maltaisn.notes.ui.edit.adapter.EditListItem
 import com.maltaisn.notes.ui.edit.adapter.EditTitleItem
 import kotlin.random.Random
 
-fun randomString(length: IntRange, random: Random): String {
-    return (0..length.random(random)).map { 'a' + (0..<26).random(random) }.joinToString("")
+fun randomString(length: IntRange, random: Random, chars: String? = null): String {
+    return (0..length.random(random)).map {
+        chars?.random(random) ?: ('a' + (0..<26).random(random))
+    }.joinToString("")
 }
 
 fun List<EditListItem>.copy() = mapTo(mutableListOf()) {
