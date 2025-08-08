@@ -18,7 +18,6 @@ package com.maltaisn.notes.ui.edit.undo
 
 import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.ui.edit.EditFocusChange
-import com.maltaisn.notes.ui.edit.EditViewModel
 import com.maltaisn.notes.ui.edit.EditableTextProvider
 import com.maltaisn.notes.ui.edit.adapter.EditListItem
 
@@ -50,14 +49,13 @@ sealed interface ItemUndoAction : UndoAction {
 
 /**
  * Interface for an undo action that changes the whole note.
- * The undo / redo callback return the new note to use.
- * A focus change is always made to the first focusable item in note.
+ * The undo / redo callback return the new note to use based on the current one.
+ * Following this action the list items are completely recreated and
+ * a focus change is made to the first focusable item in the note.
  *
- * Note: for now this only supports changing the note type. If further support is needed, the `doUndoRedo`
- * method will need to be changed in [EditViewModel] to update the live data for other attributes.
+ * The note status cannot be changed with this action.
  */
 sealed interface NoteUndoAction : UndoAction {
-    /** Undo this action on a list of items, return the old note. */
-    fun undo(): Note
-    fun redo(): Note
+    fun undo(note: Note): Note
+    fun redo(note: Note): Note
 }

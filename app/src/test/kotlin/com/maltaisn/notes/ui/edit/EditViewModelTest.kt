@@ -345,33 +345,37 @@ class EditViewModelTest {
     @Test
     fun `should convert text note to list note`() = runTest {
         viewModel.start(1)
-        viewModel.toggleNoteType()
-
-        assertEquals(listOf(
-            EditDateItem(dateFor("2018-01-01").time),
-            EditTitleItem("title".e, true),
-            EditItemItem("content".e, checked = false, editable = true, 0),
-            EditItemAddItem,
-            EditChipsItem(listOf(labelsRepo.requireLabelById(1))),
-        ), viewModel.editItems.getOrAwaitValue())
-
-        assertWasFocused(2, 7, false)
+        doActionTest(
+            listOf(
+                EditDateItem(dateFor("2018-01-01").time),
+                EditTitleItem("title".e, true),
+                EditItemItem("content".e, checked = false, editable = true, 0),
+                EditItemAddItem,
+                EditChipsItem(listOf(labelsRepo.requireLabelById(1))),
+            ),
+            redoFocus = EditFocusChange(2, 7, false),
+            undoFocus = EditFocusChange(2, 7, false),
+        ) {
+            viewModel.toggleNoteType()
+        }
     }
 
     @Test
     fun `should convert list note without checked items to text note`() = runTest {
         viewModel.start(3)
-        viewModel.toggleNoteType()
-
-        assertEquals(listOf(
-            EditDateItem(dateFor("2020-03-30").time),
-            EditTitleItem("title".e, true),
-            EditContentItem("item 1\nitem 2".e, true),
-            EditChipsItem(listOf(notesRepo.requireNoteById(3).reminder!!,
-                labelsRepo.requireLabelById(1), labelsRepo.requireLabelById(2)))
-        ), viewModel.editItems.getOrAwaitValue())
-
-        assertWasFocused(2, 13, false)
+        doActionTest(
+            listOf(
+                EditDateItem(dateFor("2020-03-30").time),
+                EditTitleItem("title".e, true),
+                EditContentItem("item 1\nitem 2".e, true),
+                EditChipsItem(listOf(notesRepo.requireNoteById(3).reminder!!,
+                    labelsRepo.requireLabelById(1), labelsRepo.requireLabelById(2)))
+            ),
+            redoFocus = EditFocusChange(2, 13, false),
+            undoFocus = EditFocusChange(3, 6, false),
+        ) {
+            viewModel.toggleNoteType()
+        }
     }
 
     @Test
@@ -385,27 +389,35 @@ class EditViewModelTest {
     @Test
     fun `should convert list note to text note deleting checked items`() = runTest {
         viewModel.start(2)
-        viewModel.convertToText(false)
-
-        assertEquals(listOf(
-            EditDateItem(dateFor("2020-03-30").time),
-            EditTitleItem("title".e, true),
-            EditContentItem("item 2".e, true),
-            EditChipsItem(listOf(labelsRepo.requireLabelById(1))),
-        ), viewModel.editItems.getOrAwaitValue())
+        doActionTest(
+            listOf(
+                EditDateItem(dateFor("2020-03-30").time),
+                EditTitleItem("title".e, true),
+                EditContentItem("item 2".e, true),
+                EditChipsItem(listOf(labelsRepo.requireLabelById(1))),
+            ),
+            redoFocus = EditFocusChange(2, 6, false),
+            undoFocus = EditFocusChange(3, 6, false),
+        ) {
+            viewModel.convertToText(false)
+        }
     }
 
     @Test
     fun `should convert list note to text note keeping checked items`() = runTest {
         viewModel.start(2)
-        viewModel.convertToText(true)
-
-        assertEquals(listOf(
-            EditDateItem(dateFor("2020-03-30").time),
-            EditTitleItem("title".e, true),
-            EditContentItem("item 1\nitem 2".e, true),
-            EditChipsItem(listOf(labelsRepo.requireLabelById(1))),
-        ), viewModel.editItems.getOrAwaitValue())
+        doActionTest(
+            listOf(
+                EditDateItem(dateFor("2020-03-30").time),
+                EditTitleItem("title".e, true),
+                EditContentItem("item 1\nitem 2".e, true),
+                EditChipsItem(listOf(labelsRepo.requireLabelById(1))),
+            ),
+            redoFocus = EditFocusChange(2, 13, false),
+            undoFocus = EditFocusChange(3, 6, false),
+        ) {
+            viewModel.convertToText(true)
+        }
     }
 
     @Test

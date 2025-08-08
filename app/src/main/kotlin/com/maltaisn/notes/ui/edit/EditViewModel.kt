@@ -59,7 +59,7 @@ import com.maltaisn.notes.ui.edit.undo.ItemRemoveUndoAction
 import com.maltaisn.notes.ui.edit.undo.ItemReorderUndoAction
 import com.maltaisn.notes.ui.edit.undo.ItemSwapUndoAction
 import com.maltaisn.notes.ui.edit.undo.ItemUndoAction
-import com.maltaisn.notes.ui.edit.undo.NoteUndoAction
+import com.maltaisn.notes.ui.edit.undo.NoteConversionUndoAction
 import com.maltaisn.notes.ui.edit.undo.TextUndoAction
 import com.maltaisn.notes.ui.edit.undo.UndoAction
 import com.maltaisn.notes.ui.edit.undo.UndoManager
@@ -430,8 +430,8 @@ class EditViewModel @Inject constructor(
                 is ItemUndoAction -> {
                     action.undo(undoPayload)
                 }
-                is NoteUndoAction -> {
-                    note = action.undo()
+                is NoteConversionUndoAction -> {
+                    note = action.undo(note)
                     null
                 }
             }
@@ -446,8 +446,8 @@ class EditViewModel @Inject constructor(
                 is ItemUndoAction -> {
                     action.redo(undoPayload)
                 }
-                is NoteUndoAction -> {
-                    note = action.redo()
+                is NoteConversionUndoAction -> {
+                    note = action.redo(note)
                     null
                 }
             }
@@ -469,7 +469,7 @@ class EditViewModel @Inject constructor(
             is ItemUndoAction -> {
                 updateListItems()
             }
-            is NoteUndoAction -> {
+            is NoteConversionUndoAction -> {
                 recreateListItems()
                 focusFirstItem()
             }
@@ -492,8 +492,8 @@ class EditViewModel @Inject constructor(
                 is ItemUndoAction -> ignoringTextChanges {
                     action.redo(undoPayload)
                 }
-                is NoteUndoAction -> {
-                    note = action.redo()
+                is NoteConversionUndoAction -> {
+                    note = action.redo(note)
                     null
                 }
             }
@@ -525,18 +525,21 @@ class EditViewModel @Inject constructor(
     fun toggleNoteType() {
         updateNote()
 
-        // Convert note type
-        note = when (note.type) {
-            NoteType.TEXT -> note.asListNote()
-            NoteType.LIST -> {
-                if ((note.metadata as ListNoteMetadata).checked.any { it }) {
-                    _showRemoveCheckedConfirmEvent.send()
-                    return
-                } else {
-                    note.asTextNote(true)
+        appendUndoAction(NoteConversionUndoAction(
+            oldNote = note,
+            newNote = when (note.type) {
+                // Convert note type
+                NoteType.TEXT -> note.asListNote()
+                NoteType.LIST -> {
+                    if ((note.metadata as ListNoteMetadata).checked.any { it }) {
+                        _showRemoveCheckedConfirmEvent.send()
+                        return
+                    } else {
+                        note.asTextNote(true)
+                    }
                 }
-            }
-        }
+            },
+        ), batch = false)
         updateEditActionsVisibility()
 
         // Update list items
@@ -555,7 +558,7 @@ class EditViewModel @Inject constructor(
             NoteType.LIST -> {
                 val lastItemPos = listItems.indexOfLast { it is EditItemItem }
                 if (lastItemPos != -1) {
-                    // Focus end of first item
+                    // Focus end of last item
                     focusItemAt(lastItemPos, (listItems[lastItemPos] as EditItemItem).text.text.length, false)
                 }
             }
@@ -589,11 +592,15 @@ class EditViewModel @Inject constructor(
     }
 
     fun convertToText(keepCheckedItems: Boolean) {
-        note = note.asTextNote(keepCheckedItems)
+        appendUndoAction(NoteConversionUndoAction(
+            oldNote = note,
+            newNote = note.asTextNote(keepCheckedItems),
+        ), batch = false)
         updateEditActionsVisibility()
 
         // Update list items (updateNote previously called in toggleNoteType)
         recreateListItems()
+        focusFirstItem()
     }
 
     fun moveNoteAndExit() {
