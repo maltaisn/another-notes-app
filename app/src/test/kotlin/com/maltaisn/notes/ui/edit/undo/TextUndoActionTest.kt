@@ -116,14 +116,14 @@ class TextUndoActionTest {
 
             val focusChange = action.redo(UndoPayload(editableTextProvider, mutableListOf(item)))
             assertNotNull(focusChange)
-            assertContains(0..text.length, focusChange.pos)
+            assertContains(0..text.length, focusChange.textPos)
             actions += action
         }
 
         for (action in actions.asReversed()) {
             val focusChange = action.undo(UndoPayload(editableTextProvider, mutableListOf(item)))
             assertNotNull(focusChange)
-            assertContains(0..text.length, focusChange.pos)
+            assertContains(0..text.length, focusChange.textPos)
         }
         assertEquals(initialText, item.text.text.toString())
     }

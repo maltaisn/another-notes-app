@@ -336,8 +336,8 @@ class EditViewModel @Inject constructor(
             if (isFirstStart && isNewNote) {
                 // Focus on title or content initially.
                 focusItemAt(when (prefs.editInitialFocus) {
-                    EditInitialFocus.TITLE -> findItemPos<EditTitleItem>()
-                    EditInitialFocus.CONTENT -> findItemPos<EditContentItem>()
+                    EditInitialFocus.TITLE -> findItemIndex<EditTitleItem>()
+                    EditInitialFocus.CONTENT -> findItemIndex<EditContentItem>()
                 }, 0, false)
 
                 if (changeReminder) {
@@ -554,8 +554,8 @@ class EditViewModel @Inject constructor(
         when (note.type) {
             NoteType.TEXT -> {
                 // Focus end of content
-                val contentPos = listItems.indexOfLast { it is EditContentItem }
-                focusItemAt(contentPos, (listItems[contentPos] as EditContentItem).text.text.length, false)
+                val (index, item) = findItemWithIndex<EditContentItem>()
+                focusItemAt(index, item.text.text.length, false)
             }
             NoteType.LIST -> {
                 val lastItemPos = listItems.indexOfLast { it is EditItemItem }
@@ -655,7 +655,7 @@ class EditViewModel @Inject constructor(
             ignoringTextChanges {
                 findItem<EditTitleItem>().text.replaceAll(newTitle)
             }
-            focusItemAt(findItemPos<EditTitleItem>(), newTitle.length, true)
+            focusItemAt(findItemIndex<EditTitleItem>(), newTitle.length, true)
 
             undoManager.clear()
             updateEditActionsVisibility()
@@ -685,13 +685,13 @@ class EditViewModel @Inject constructor(
     }
 
     fun uncheckAllItems() {
-        val pos = listItems.asSequence()
+        val allActualPos = listItems.asSequence()
             .filterIsInstance<EditItemItem>()
             .filter { it.checked }
             .map { it.actualPos }
             .toList()
         appendUndoAction(ItemCheckUndoAction(
-            actualPos = pos,
+            actualPos = allActualPos,
             checked = false,
             checkedByUser = false,
         ), batch = false)
@@ -721,9 +721,8 @@ class EditViewModel @Inject constructor(
 
     fun focusNoteContent() {
         if (note.type == NoteType.TEXT) {
-            val contentItemPos = findItemPos<EditContentItem>()
-            val contentItem = listItems[contentItemPos] as EditContentItem
-            focusItemAt(contentItemPos, contentItem.text.text.length, true)
+            val (index, item) = findItemWithIndex<EditContentItem>()
+            focusItemAt(index, item.text.text.length, true)
         }
     }
 
@@ -894,10 +893,10 @@ class EditViewModel @Inject constructor(
         _editItems.value = listItems.toMutableList()
     }
 
-    private fun convertNewlinesToListItems(pos: Int, start: Int, oldText: String, newText: String) {
+    private fun convertNewlinesToListItems(index: Int, start: Int, oldText: String, newText: String) {
         // User inserted line breaks in list items, split it into multiple items.
-        // The item at pos will keep the first line of text.
-        val item = listItems[pos] as EditItemItem
+        // The item at index will keep the first line of text.
+        val item = listItems[index] as EditItemItem
         val itemText = item.text.text
         val textBefore = itemText.substring(0, start) + oldText + itemText.substring(start + newText.length)
         val lines = itemText.split("\n")
@@ -930,19 +929,19 @@ class EditViewModel @Inject constructor(
         updateListItems()
     }
 
-    override fun onTextChanged(pos: Int, start: Int, end: Int, oldText: String, newText: String) {
+    override fun onTextChanged(index: Int, start: Int, end: Int, oldText: String, newText: String) {
         if (ignoreTextChanges) {
             // Currently undoing or redoing something, ignore text changes.
             return
         }
 
-        val item = listItems.getOrNull(pos) as? EditTextItem ?: return
+        val item = listItems.getOrNull(index) as? EditTextItem ?: return
         val undoAction = TextUndoAction.create(UndoActionLocation.fromItem(item), start, end, oldText, newText)
         when (item) {
             is EditTitleItem, is EditContentItem -> appendUndoAction(undoAction, apply = false)
             is EditItemItem -> {
                 if ('\n' in newText) {
-                    convertNewlinesToListItems(pos, start, oldText, newText)
+                    convertNewlinesToListItems(index, start, oldText, newText)
                 } else {
                     appendUndoAction(undoAction, apply = false)
                 }
@@ -957,11 +956,11 @@ class EditViewModel @Inject constructor(
         return result
     }
 
-    override fun onNoteItemCheckChanged(pos: Int, checked: Boolean) {
+    override fun onNoteItemCheckChanged(index: Int, checked: Boolean) {
         // First apply action with "checked by user", then add it to undo queue without that flag,
         // because it won't be the case when the action is being undone or redone.
         val action = ItemCheckUndoAction(
-            actualPos = listOf((listItems[pos] as EditItemItem).actualPos),
+            actualPos = listOf((listItems[index] as EditItemItem).actualPos),
             checked = checked,
             checkedByUser = true,
         )
@@ -980,16 +979,15 @@ class EditViewModel @Inject constructor(
 
     private fun focusEndOfTitle() {
         // Backspace in the content, focus the end of the title.
-        val titlePos = findItemPos<EditTitleItem>()
-        val titleLength = (listItems[titlePos] as EditTitleItem).text.text.length
-        focusItemAt(titlePos, titleLength, true)
+        val (index, item) = findItemWithIndex<EditTitleItem>()
+        focusItemAt(index, item.text.text.length, true)
     }
 
-    private fun joinListItemsOnBackspace(pos: Int) {
-        val item = listItems[pos] as EditItemItem
+    private fun joinListItemsOnBackspace(index: Int) {
+        val item = listItems[index] as EditItemItem
         val text = item.text.text.toString()
 
-        val prevItem = listItems[pos - 1] as EditItemItem
+        val prevItem = listItems[index - 1] as EditItemItem
         val prevText = prevItem.text.text.toString()
 
         appendUndoActions(
@@ -1008,13 +1006,13 @@ class EditViewModel @Inject constructor(
         updateListItems()
     }
 
-    override fun onNoteItemBackspacePressed(pos: Int) {
-        when (listItems[pos]) {
+    override fun onNoteItemBackspacePressed(index: Int) {
+        when (listItems[index]) {
             is EditContentItem -> focusEndOfTitle()
             is EditItemItem -> {
-                val prevItem = listItems[pos - 1]
+                val prevItem = listItems[index - 1]
                 when (prevItem) {
-                    is EditItemItem -> joinListItemsOnBackspace(pos)
+                    is EditItemItem -> joinListItemsOnBackspace(index)
                     is EditTitleItem -> focusEndOfTitle()
                     else -> {}
                 }
@@ -1023,11 +1021,11 @@ class EditViewModel @Inject constructor(
         }
     }
 
-    override fun onNoteItemDeleteClicked(pos: Int) {
-        val item = listItems[pos] as? EditItemItem ?: return
+    override fun onNoteItemDeleteClicked(index: Int) {
+        val item = listItems[index] as? EditItemItem ?: return
 
-        val prevItem = listItems[pos - 1] as? EditItemItem
-        val nextItem = listItems.getOrNull(pos + 1) as? EditItemItem
+        val prevItem = listItems[index - 1] as? EditItemItem
+        val nextItem = listItems.getOrNull(index + 1) as? EditItemItem
         val focusAfter = (prevItem ?: nextItem)?.let {
             // Account for the fact the deleting the item may shift the focused item actual position.
             val actualPos = if (it.actualPos < item.actualPos) it.actualPos else it.actualPos - 1
@@ -1043,8 +1041,8 @@ class EditViewModel @Inject constructor(
     }
 
     override fun onNoteItemAddClicked() {
-        val pos = findItemPos<EditItemAddItem>()
-        val prevItem = listItems[pos - 1] as EditTextItem  // Either title or list item
+        val index = findItemIndex<EditItemAddItem>()
+        val prevItem = listItems[index - 1] as EditTextItem  // Either title or list item
         // The new item is added last, so the actual pos is the maximum plus one.
         val actualPos = listItems.maxOf { (it as? EditItemItem)?.actualPos ?: -1 } + 1
         appendUndoActions(
@@ -1100,16 +1098,18 @@ class EditViewModel @Inject constructor(
     override val textSize: Float
         get() = prefs.textSize.toFloat()
 
-    private fun focusItemAt(pos: Int, textPos: Int, itemExists: Boolean) {
-        _focusEvent.send(EditFocusChange(pos, textPos, itemExists))
+    private fun focusItemAt(index: Int, textPos: Int, itemExists: Boolean) {
+        _focusEvent.send(EditFocusChange(index, textPos, itemExists))
     }
 
-    private inline fun <reified T : EditListItem> findItem(): T {
-        return (listItems.find { it is T } ?: error("List item not found")) as T
-    }
+    private inline fun <reified T : EditListItem> findItem() =
+        (listItems.find { it is T } ?: error("List item not found")) as T
 
-    private inline fun <reified T : EditListItem> findItemPos(): Int {
-        return listItems.indexOfFirst { it is T }
+    private inline fun <reified T : EditListItem> findItemIndex() = listItems.indexOfFirst { it is T }
+
+    private inline fun <reified T : EditListItem> findItemWithIndex(): Pair<Int, T> {
+        val index = findItemIndex<T>()
+        return index to (listItems[index] as T)
     }
 
     companion object {

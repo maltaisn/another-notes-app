@@ -1110,10 +1110,10 @@ class EditViewModelTest {
             val rng = Random(0)
             repeat(20) {
                 val items = viewModel.editItems.value!!
-                val itemsPos = items.mapIndexedNotNull { i, item -> i.takeIf { item is EditItemItem } }
-                val checkPos = itemsPos[rng.nextInt(itemsPos.size)]
-                val item = items[checkPos] as EditItemItem
-                viewModel.onNoteItemCheckChanged(checkPos, !item.checked)
+                val itemsIndices = items.mapIndexedNotNull { i, item -> i.takeIf { item is EditItemItem } }
+                val checkIndex = itemsIndices[rng.nextInt(itemsIndices.size)]
+                val item = items[checkIndex] as EditItemItem
+                viewModel.onNoteItemCheckChanged(checkIndex, !item.checked)
             }
 
             // finally uncheck all
@@ -1391,14 +1391,14 @@ class EditViewModelTest {
         }
     }
 
-    private inline fun <reified T> itemAt(pos: Int): T {
-        val item = viewModel.editItems.value!!.getOrNull(pos)
-        checkNotNull(item) { "No item at pos $pos" }
+    private inline fun <reified T> itemAt(index: Int): T {
+        val item = viewModel.editItems.value!!.getOrNull(index)
+        checkNotNull(item) { "No item at index $index" }
         return item as T
     }
 
-    private fun assertWasFocused(itemPos: Int, pos: Int, itemExists: Boolean = true) {
-        assertLiveDataEventSent(viewModel.focusEvent, EditFocusChange(itemPos, pos, itemExists))
+    private fun assertWasFocused(index: Int, textPos: Int, itemExists: Boolean = true) {
+        assertLiveDataEventSent(viewModel.focusEvent, EditFocusChange(index, textPos, itemExists))
     }
 
     private fun assertUndoRedoStatus(canUndo: Boolean = false, canRedo: Boolean = false) {

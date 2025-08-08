@@ -31,9 +31,9 @@ class TestEditableText(
 
         if (viewModel != null) {
             // Notify the view model that the text changed, if the item exists.
-            val pos = viewModel.editItems.getOrAwaitValue().indexOfFirst { (it as? EditTextItem)?.text === this }
-            if (pos != -1) {
-                viewModel.onTextChanged(pos, start, end, oldText, text.toString())
+            val index = viewModel.editItems.getOrAwaitValue().indexOfFirst { (it as? EditTextItem)?.text === this }
+            if (index != -1) {
+                viewModel.onTextChanged(index, start, end, oldText, text.toString())
             }
         }
     }

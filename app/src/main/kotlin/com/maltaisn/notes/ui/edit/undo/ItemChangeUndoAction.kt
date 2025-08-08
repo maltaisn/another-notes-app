@@ -192,26 +192,29 @@ private fun addItems(payload: UndoPayload, items: List<ItemChangeUndoActionItem>
     }
 }
 
+/**
+ * Extract list items, sort them by actual position.
+ * When [action] is called, the actual position is equal to the index.
+ * The action must leave the items sorted by actual position.
+ * The list is rebuilt according to the checked state of the items changed by the action.
+ */
 private fun changeListItemsSortedByActualPos(payload: UndoPayload, action: (MutableList<EditItemItem>) -> Unit) {
-    // Extract list items, sort them by actual position
-    // When extracted & sorted, the actual position is equal to the index.
     val items = payload.listItems
-    val afterTitlePos = items.indexOfFirst { it is EditTitleItem } + 1
+    val afterTitleIndex = items.indexOfFirst { it is EditTitleItem } + 1
     val itemsByActualPos: MutableList<EditItemItem>
     if (payload.moveCheckedToBottom) {
         itemsByActualPos = items.asSequence().filterIsInstance<EditItemItem>().toMutableList()
         itemsByActualPos.sortBy { it.actualPos }
     } else {
-        var afterLastPos = items.indexOfLast { it is EditItemItem } + 1
-        if (afterLastPos == 0) {
-            afterLastPos = afterTitlePos
+        var afterLastIndex = items.indexOfLast { it is EditItemItem } + 1
+        if (afterLastIndex == 0) {
+            afterLastIndex = afterTitleIndex
         }
         @Suppress("UNCHECKED_CAST")
-        itemsByActualPos = items.subList(afterTitlePos, afterLastPos) as MutableList<EditItemItem>
+        itemsByActualPos = items.subList(afterTitleIndex, afterLastIndex) as MutableList<EditItemItem>
     }
 
     // Do whatever on the list items
-    // We assume that the caller keep the list sorted
     action(itemsByActualPos)
 
     if (!payload.moveCheckedToBottom) {
@@ -233,14 +236,14 @@ private fun changeListItemsSortedByActualPos(payload: UndoPayload, action: (Muta
     items.removeAll { it is EditItemItem || it is EditCheckedHeaderItem || it is EditItemAddItem }
 
     // Add them back in correct order
-    var pos = afterTitlePos
-    items.addAll(pos, itemsByActualPos)
-    pos += itemsByActualPos.size
-    items.add(pos, EditItemAddItem)
-    pos++
+    var index = afterTitleIndex
+    items.addAll(index, itemsByActualPos)
+    index += itemsByActualPos.size
+    items.add(index, EditItemAddItem)
+    index++
     if (checkedItems.isNotEmpty()) {
-        items.add(pos, EditCheckedHeaderItem(checkedItems.size))
-        pos++
-        items.addAll(pos, checkedItems)
+        items.add(index, EditCheckedHeaderItem(checkedItems.size))
+        index++
+        items.addAll(index, checkedItems)
     }
 }

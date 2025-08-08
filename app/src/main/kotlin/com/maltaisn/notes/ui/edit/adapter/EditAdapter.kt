@@ -106,9 +106,9 @@ class EditAdapter(val context: Context, val callback: Callback) :
             is EditHeaderViewHolder -> holder.bind(item as EditCheckedHeaderItem)
             is EditItemLabelsViewHolder -> holder.bind(item as EditChipsItem)
         }
-        if (holder is EditFocusableViewHolder<*> && position == pendingFocusChange?.itemPos) {
+        if (holder is EditFocusableViewHolder<*> && position == pendingFocusChange?.index) {
             // Apply pending focus change event.
-            holder.setFocus(pendingFocusChange!!.pos)
+            holder.setFocus(pendingFocusChange!!.textPos)
             pendingFocusChange = null
         }
     }
@@ -124,9 +124,9 @@ class EditAdapter(val context: Context, val callback: Callback) :
             return
         }
 
-        val viewHolder = rcv.findViewHolderForAdapterPosition(focus.itemPos)
+        val viewHolder = rcv.findViewHolderForAdapterPosition(focus.index)
         if (viewHolder is EditFocusableViewHolder<*>) {
-            viewHolder.setFocus(focus.pos)
+            viewHolder.setFocus(focus.textPos)
         } else {
             // No item view holder for that position.
             // Not supposed to happen, but if it does, just save it for later.
@@ -148,10 +148,10 @@ class EditAdapter(val context: Context, val callback: Callback) :
         /**
          * Called when the title or text content is edited.
          */
-        fun onTextChanged(pos: Int, start: Int, end: Int, oldText: String, newText: String)
+        fun onTextChanged(index: Int, start: Int, end: Int, oldText: String, newText: String)
 
-        /** Called when an [EditItemItem] at [pos] is checked or unchecked by user. */
-        fun onNoteItemCheckChanged(pos: Int, checked: Boolean)
+        /** Called when an [EditItemItem] at [index] is checked or unchecked by user. */
+        fun onNoteItemCheckChanged(index: Int, checked: Boolean)
 
         /**
          * Called when enter is pressed in a title item.
@@ -160,12 +160,12 @@ class EditAdapter(val context: Context, val callback: Callback) :
 
         /**
          * Called when backspace is pressed when EditText selection
-         * is a position 0 in an [EditItemItem] at [pos].
+         * is a position 0 in an [EditItemItem] at [index].
          */
-        fun onNoteItemBackspacePressed(pos: Int)
+        fun onNoteItemBackspacePressed(index: Int)
 
         /** Called when the delete button is clicked on an [EditItemItem]. */
-        fun onNoteItemDeleteClicked(pos: Int)
+        fun onNoteItemDeleteClicked(index: Int)
 
         /** Called when [EditItemAddItem] is clicked. */
         fun onNoteItemAddClicked()
@@ -183,7 +183,7 @@ class EditAdapter(val context: Context, val callback: Callback) :
         /** Whether to enabled the dragging of [EditItemItem].*/
         val isNoteDragEnabled: Boolean
 
-        /** Called after an [EditItemItem] was dragged [from] a position [to] another. */
+        /** Called after an [EditItemItem] was dragged [from] an index [to] another. */
         fun onNoteItemSwapped(from: Int, to: Int)
 
         /** Whether strikethrough should be added to checked items or not. */

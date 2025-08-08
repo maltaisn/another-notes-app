@@ -22,16 +22,16 @@ import com.maltaisn.notes.ui.edit.adapter.EditTextItem
 
 data class UndoFocusChange(
     val location: UndoActionLocation,
-    val pos: Int,
+    val textPos: Int,
     val itemExists: Boolean = false,
 ) {
 
     fun toEditFocusChange(listItems: List<EditListItem>) =
-        EditFocusChange(location.findIndexIn(listItems), pos, itemExists)
+        EditFocusChange(location.findIndexIn(listItems), textPos, itemExists)
 
     companion object {
-        fun atPosOfItem(item: EditTextItem, pos: Int, itemExists: Boolean = false) =
-            UndoFocusChange(UndoActionLocation.fromItem(item), pos, itemExists)
+        fun atPosOfItem(item: EditTextItem, textPos: Int, itemExists: Boolean = false) =
+            UndoFocusChange(UndoActionLocation.fromItem(item), textPos, itemExists)
 
         fun atStartOfItem(item: EditTextItem, itemExists: Boolean = false) =
             atPosOfItem(item, 0, itemExists)

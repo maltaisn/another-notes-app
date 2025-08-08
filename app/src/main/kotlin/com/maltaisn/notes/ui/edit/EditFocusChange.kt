@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Nicolas Maltais
+ * Copyright 2025 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +16,15 @@
 
 package com.maltaisn.notes.ui.edit
 
+import com.maltaisn.notes.ui.edit.adapter.EditTextItem
+
 /**
- * Defines a focus change event in [EditFragment].
- * The focus is changed to a item at [itemPos], to a text [pos].
+ * Defines a focus change event in [EditFragment] for a [EditTextItem].
+ * The focus is changed to a item at [index], to a text position [textPos].
  * The focus change may have to be delayed if item doesn't exist yet ([itemExists]).
  */
 data class EditFocusChange(
-    val itemPos: Int,
-    val pos: Int,
+    val index: Int,
+    val textPos: Int,
     val itemExists: Boolean
 )
