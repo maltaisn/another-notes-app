@@ -527,27 +527,31 @@ class EditViewModelTest {
     @Test
     fun `should copy note`() = runTest {
         viewModel.start(3)
+        itemAt<EditTextItem>(1).text.replaceAll("new title")
+        assertUndoRedoStatus(canUndo = true)
+
         viewModel.copyNote("untitled", "Copy")
+        assertUndoRedoStatus(canUndo = false)
 
         // should copy labels but not reminder
         val noteCopy = notesRepo.lastAddedNote!!
         assertNoteEquals(listNote(listOf(
             ListNoteItem("item 1", false),
             ListNoteItem("item 2", false)
-        ), id = 3, title = "title - Copy", status = NoteStatus.ACTIVE, pinned = PinnedStatus.PINNED,
+        ), id = 3, title = "new title - Copy", status = NoteStatus.ACTIVE, pinned = PinnedStatus.PINNED,
             added = Date(), modified = Date()), noteCopy)
         assertEquals(listOf(1L, 2L), labelsRepo.getLabelIdsForNote(noteCopy.id))
 
         assertEquals(listOf(
             EditDateItem(dateFor("2020-03-30").time),
-            EditTitleItem("title - Copy".e, true),
+            EditTitleItem("new title - Copy".e, true),
             EditItemItem("item 1".e, checked = false, editable = true, 0),
             EditItemItem("item 2".e, checked = false, editable = true, 1),
             EditItemAddItem,
             EditChipsItem(listOf(notesRepo.requireNoteById(3).reminder!!,
                 labelsRepo.requireLabelById(1), labelsRepo.requireLabelById(2))),
         ), viewModel.editItems.getOrAwaitValue())
-        assertWasFocused(1, 12)
+        assertWasFocused(1, 16)
 
         assertNull(alarmCallback.alarms[noteCopy.id])
     }

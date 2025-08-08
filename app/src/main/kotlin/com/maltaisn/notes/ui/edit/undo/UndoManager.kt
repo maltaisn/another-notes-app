@@ -41,6 +41,16 @@ class UndoManager {
         get() = position < queue.lastIndex && batchActions.isEmpty()
 
     /**
+     * Clear all actions in the manager and stops the batch mode if started.
+     */
+    fun clear() {
+        isInBatchMode = false
+        queue.clear()
+        position = POSITION_NONE
+        batchActions.clear()
+    }
+
+    /**
      * Moves the undo head back and returns the action to undo, or `null` if there's nothing to undo.
      */
     fun undo(): UndoAction? {

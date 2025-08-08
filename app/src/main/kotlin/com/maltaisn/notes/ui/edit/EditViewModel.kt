@@ -650,8 +650,13 @@ class EditViewModel @Inject constructor(
             }
 
             // Update title item
-            findItem<EditTitleItem>().text.replaceAll(newTitle)
+            ignoringTextChanges {
+                findItem<EditTitleItem>().text.replaceAll(newTitle)
+            }
             focusItemAt(findItemPos<EditTitleItem>(), newTitle.length, true)
+
+            undoManager.clear()
+            updateEditActionsVisibility()
         }
     }
 

@@ -168,6 +168,18 @@ class UndoManagerTest {
         assertFalse(undoManager.canUndo)
     }
 
+    @Test
+    fun `should clear all actions`() {
+        undoManager.append(ACTION0)
+        undoManager.startBatch()
+        undoManager.append(ACTION1)
+
+        undoManager.clear()
+        assertFalse(undoManager.canUndo)
+        assertFalse(undoManager.canRedo)
+        assertFalse(undoManager.isInBatchMode)
+    }
+
     companion object {
         private val ACTION0 = TextUndoAction.create(0, 0, 1, "a", "b")
         private val ACTION1 = TextUndoAction.create(0, 1, 2, "b", "c")
