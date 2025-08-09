@@ -25,6 +25,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.view.ActionMode
+import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.SharedElementCallback
 import androidx.core.view.OneShotPreDrawListener
 import androidx.core.view.ViewCompat
@@ -269,6 +270,7 @@ abstract class NoteFragment : Fragment(), ActionMode.Callback, ConfirmDialog.Cal
         }
         sharedViewModel.statusChangeEvent.observeEvent(viewLifecycleOwner) { statusChange ->
             showMessageForStatusChange(statusChange)
+            cancelNotificationForStatusChange(statusChange)
         }
         sharedViewModel.currentHomeDestinationChangeEvent.observeEvent(viewLifecycleOwner) {
             currentHomeDestinationChanged = true
@@ -409,6 +411,14 @@ abstract class NoteFragment : Fragment(), ActionMode.Callback, ConfirmDialog.Cal
             }
             .setGestureInsetBottomIgnored(true)
             .show()
+    }
+
+    private fun cancelNotificationForStatusChange(statusChange: StatusChange) {
+        if (statusChange.newStatus == NoteStatus.DELETED) {
+            for (note in statusChange.oldNotes) {
+                NotificationManagerCompat.from(requireContext()).cancel(note.id.toInt())
+            }
+        }
     }
 
     override fun onDestroyView() {
