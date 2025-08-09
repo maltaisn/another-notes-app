@@ -85,7 +85,7 @@ class SettingsFragment : PreferenceFragmentCompat(), ConfirmDialog.Callback, Exp
                     null
                 }
                 if (output != null) {
-                    viewModel.exportData(output)
+                    viewModel.exportData(output, getString(R.string.edit_copy_untitled_name))
                 } else {
                     showMessage(R.string.export_fail)
                 }
@@ -160,6 +160,13 @@ class SettingsFragment : PreferenceFragmentCompat(), ConfirmDialog.Callback, Exp
         viewModel.lastAutoExport.observe(viewLifecycleOwner) { date ->
             updateAutoExportSummary(autoExportPref.isChecked, date)
         }
+        viewModel.exportData.observeEvent(viewLifecycleOwner) { extension ->
+            val intent = Intent(Intent.ACTION_CREATE_DOCUMENT)
+                .setType("application/$extension").addCategory(Intent.CATEGORY_OPENABLE).apply {
+                    putExtra(Intent.EXTRA_TITLE, "notes.$extension")
+                }
+            exportDataLauncher?.launch(intent)
+        }
         viewModel.releasePersistableUriEvent.observeEvent(viewLifecycleOwner) { uri ->
             try {
                 requireContext().contentResolver.releasePersistableUriPermission(uri.toUri(),
@@ -213,11 +220,7 @@ class SettingsFragment : PreferenceFragmentCompat(), ConfirmDialog.Callback, Exp
         }
 
         requirePreference<Preference>(DefaultPrefsManager.EXPORT_DATA).setOnPreferenceClickListener {
-            val intent = Intent(Intent.ACTION_CREATE_DOCUMENT)
-                .setType("application/json").addCategory(Intent.CATEGORY_OPENABLE).apply {
-                    putExtra(Intent.EXTRA_TITLE, "notes.json")
-                }
-            exportDataLauncher?.launch(intent)
+            viewModel.onExportJsonRequested()
             true
         }
 
@@ -259,6 +262,11 @@ class SettingsFragment : PreferenceFragmentCompat(), ConfirmDialog.Callback, Exp
             true
         }
 
+        requirePreference<Preference>(DefaultPrefsManager.EXPORT_ARCHIVE).setOnPreferenceClickListener {
+            viewModel.onExportZipRequested()
+            true
+        }
+
         requirePreference<Preference>(DefaultPrefsManager.CLEAR_DATA).setOnPreferenceClickListener {
             ConfirmDialog.newInstance(
                 title = R.string.pref_data_clear,
@@ -284,7 +292,6 @@ class SettingsFragment : PreferenceFragmentCompat(), ConfirmDialog.Callback, Exp
     private fun showMessage(@StringRes messageId: Int) {
         val snackbar = Snackbar.make(requireView(), messageId, Snackbar.LENGTH_SHORT)
             .setGestureInsetBottomIgnored(true)
-        @Suppress("RemoveRedundantQualifierName")
         snackbar.view.findViewById<TextView>(com.google.android.material.R.id.snackbar_text).maxLines = 5
         snackbar.show()
     }

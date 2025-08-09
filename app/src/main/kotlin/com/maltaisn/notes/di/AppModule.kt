@@ -19,6 +19,8 @@ package com.maltaisn.notes.di
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.preference.PreferenceManager
+import com.maltaisn.notes.model.ArchiveExporter
+import com.maltaisn.notes.model.DefaultArchiveExporter
 import com.maltaisn.notes.model.DefaultJsonManager
 import com.maltaisn.notes.model.DefaultLabelsRepository
 import com.maltaisn.notes.model.DefaultNotesRepository
@@ -62,6 +64,9 @@ abstract class AppModule {
 
     @Binds
     abstract fun bindJsonManager(b: DefaultJsonManager): JsonManager
+
+    @Binds
+    abstract fun bindArchiveExporter(b: DefaultArchiveExporter): ArchiveExporter
 
     @Binds
     abstract fun bindAlarmCallback(b: ReceiverAlarmCallback): ReminderAlarmCallback

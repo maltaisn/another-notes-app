@@ -236,6 +236,8 @@
     <string name="pref_data_auto_export_date">(Last exported on %s)</string>
     <string name="pref_data_import">Import data</string>
     <string name="pref_data_import_summary">Import previously exported JSON data, merging with existing data.</string>
+    <string name="pref_data_export_archive">Export notes archive</string>
+    <string name="pref_data_export_archive_summary">Export notes as compressed ZIP archive (not automatic nor encrypted).</string>
     <string name="pref_data_clear">Clear all data</string>
     <string name="pref_data_clear_confirm_message">All notes data will be cleared permanently!
         This cannot be undone.</string>

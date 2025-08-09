@@ -27,6 +27,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.maltaisn.notes.R
+import com.maltaisn.notes.model.ArchiveExporter
 import com.maltaisn.notes.model.JsonManager
 import com.maltaisn.notes.model.JsonManager.ImportResult
 import com.maltaisn.notes.model.LabelsRepository
@@ -55,6 +56,7 @@ class SettingsViewModel @Inject constructor(
     private val labelsRepository: LabelsRepository,
     private val prefsManager: PrefsManager,
     private val jsonManager: JsonManager,
+    private val archiveExporter: ArchiveExporter,
     private val reminderAlarmManager: ReminderAlarmManager,
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
@@ -66,6 +68,10 @@ class SettingsViewModel @Inject constructor(
     private val _lastAutoExport = MutableLiveData<Long>()
     val lastAutoExport: LiveData<Long>
         get() = _lastAutoExport
+
+    private val _exportData = MutableLiveData<Event<String>>()
+    val exportData: LiveData<Event<String>>
+        get() = _exportData
 
     private val _releasePersistableUriEvent = MutableLiveData<Event<String>>()
     val releasePersistableUriEvent: LiveData<Event<String>>
@@ -89,29 +95,64 @@ class SettingsViewModel @Inject constructor(
             savedStateHandle[KEY_IMPORTED_JSON_DATA] = value
         }
 
+    private var exportType = savedStateHandle[KEY_EXPORT_TYPE] ?: ""
+        set(value) {
+            field = value
+            savedStateHandle[KEY_EXPORT_TYPE] = value
+        }
+
     init {
         _lastAutoExport.value = prefsManager.lastAutoExportTime
     }
 
-    fun exportData(output: OutputStream) {
-        viewModelScope.launch(Dispatchers.IO) {
-            val jsonData = try {
-                jsonManager.exportJsonData()
-            } catch (_: Exception) {
-                showMessage(R.string.export_serialization_fail)
-                return@launch
-            }
+    private suspend fun tryExport(action: suspend () -> Unit) {
+        try {
+            action()
+            showMessage(R.string.export_success)
+        } catch (_: Exception) {
+            showMessage(R.string.export_fail)
+        }
+    }
 
-            try {
-                output.use {
-                    // bufferedWriter().write fails here for some reason...
-                    output.write(jsonData.toByteArray())
-                }
-                showMessage(R.string.export_success)
-            } catch (_: Exception) {
-                showMessage(R.string.export_fail)
+    private suspend fun exportZipData(output: OutputStream, untitledName: String) {
+        tryExport {
+            archiveExporter.exportArchive(output, untitledName)
+        }
+    }
+
+    private suspend fun exportJsonData(output: OutputStream) {
+        val jsonData = try {
+            jsonManager.exportJsonData()
+        } catch (_: Exception) {
+            showMessage(R.string.export_serialization_fail)
+            return
+        }
+
+        tryExport {
+            output.use {
+                // bufferedWriter().write fails here for some reason...
+                output.write(jsonData.toByteArray())
             }
         }
+    }
+
+    fun exportData(output: OutputStream, untitledName: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            when (exportType) {
+                EXPORT_TYPE_JSON -> exportJsonData(output)
+                EXPORT_TYPE_ZIP -> exportZipData(output, untitledName)
+            }
+        }
+    }
+
+    fun onExportJsonRequested() {
+        exportType = EXPORT_TYPE_JSON
+        _exportData.send(exportType)
+    }
+
+    fun onExportZipRequested() {
+        exportType = EXPORT_TYPE_ZIP
+        _exportData.send(exportType)
     }
 
     fun setupAutoExport(output: OutputStream, uri: String) {
@@ -263,6 +304,11 @@ class SettingsViewModel @Inject constructor(
 
     companion object {
         private const val KEY_IMPORTED_JSON_DATA = "importedJsonData"
+        private const val KEY_EXPORT_TYPE = "exportType"
+
+        private const val EXPORT_TYPE_JSON = "json"
+        private const val EXPORT_TYPE_ZIP = "zip"
+
         private const val ANDROID_KEYSTORE = "AndroidKeyStore"
         private const val BASE64_FLAGS = Base64.NO_WRAP or Base64.NO_PADDING
         private const val EXPORT_ENCRYPTION_KEY_ALIAS = "export_key"

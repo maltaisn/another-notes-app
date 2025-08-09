@@ -160,6 +160,12 @@
             />
 
         <Preference
+            app:key="export_archive"
+            app:summary="@string/pref_data_export_archive_summary"
+            app:title="@string/pref_data_export_archive"
+            />
+
+        <Preference
             app:key="clear_data"
             app:title="@string/pref_data_clear"
             />
