@@ -18,77 +18,84 @@ package com.maltaisn.notes.ui.sort
 
 import android.app.Dialog
 import android.os.Bundle
-import androidx.fragment.app.DialogFragment
+import androidx.annotation.StringRes
+import androidx.core.view.isInvisible
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.maltaisn.notes.R
 import com.maltaisn.notes.databinding.DialogSortBinding
+import com.maltaisn.notes.databinding.ItemBottomSheetActionBinding
 import com.maltaisn.notes.debugCheck
 import com.maltaisn.notes.model.SortDirection
 import com.maltaisn.notes.model.SortField
-import com.maltaisn.notes.model.SortSettings
 import com.maltaisn.notes.ui.SharedViewModel
 import com.maltaisn.notes.ui.observeEvent
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class SortDialog : DialogFragment() {
+class SortDialog : BottomSheetDialogFragment() {
 
     private val sharedViewModel: SharedViewModel by activityViewModels()
     private val viewModel: SortViewModel by viewModels()
 
+    private var _binding: DialogSortBinding? = null
+    private val binding get() = _binding!!
+
+    private val actionItems = mutableMapOf<SortField, ItemBottomSheetActionBinding>()
+
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val context = requireContext()
-        val binding = DialogSortBinding.inflate(layoutInflater, null, false)
+        val dialog = BottomSheetDialog(context)
 
-        // Create dialog
-        val dialog = MaterialAlertDialogBuilder(context)
-            .setView(binding.root)
-            .setTitle(R.string.sort_title)
-            .setPositiveButton(R.string.action_ok) { _, _ ->
-                val field = when (binding.sortFieldRadioGroup.checkedRadioButtonId) {
-                    R.id.sort_field_added_radio -> SortField.ADDED_DATE
-                    R.id.sort_field_modified_radio -> SortField.MODIFIED_DATE
-                    R.id.sort_field_title_radio -> SortField.TITLE
-                    else -> SortField.MODIFIED_DATE  // should not happen
-                }
-                val direction = when (binding.sortDirectionRadioGroup.checkedRadioButtonId) {
-                    R.id.sort_direction_asc_radio -> SortDirection.ASCENDING
-                    R.id.sort_direction_desc_radio -> SortDirection.DESCENDING
-                    else -> SortDirection.DESCENDING  // should not happen
-                }
-                sharedViewModel.changeSortSettings(SortSettings(field, direction))
-            }
-            .setNegativeButton(R.string.action_cancel, null)
-            .create()
+        // Fully expand the sheet by default
+        val behavior = dialog.behavior
+        behavior.skipCollapsed = true
+        behavior.state = BottomSheetBehavior.STATE_EXPANDED
 
-        setupViewModelObservers(binding)
+        _binding = DialogSortBinding.inflate(layoutInflater, null, false)
+        dialog.setContentView(binding.root)
 
-        if (savedInstanceState == null) {
-            viewModel.start()
-        }
+        createActionItem(SortField.TITLE, R.string.sort_field_title)
+        createActionItem(SortField.ADDED_DATE, R.string.sort_field_created)
+        createActionItem(SortField.MODIFIED_DATE, R.string.sort_field_modified)
 
+        setupViewModelObservers()
+
+        viewModel.start()
         return dialog
     }
 
-    private fun setupViewModelObservers(binding: DialogSortBinding) {
-        // Using `this` as lifecycle owner, cannot show dialog twice with same instance to avoid double observation.
-        debugCheck(!viewModel.sortField.hasObservers()) { "Dialog was shown twice with same instance." }
+    private fun createActionItem(field: SortField, @StringRes title: Int) {
+        val itemBinding = ItemBottomSheetActionBinding.inflate(layoutInflater, binding.contentLayout, true)
+        itemBinding.titleTxv.setText(title)
+        itemBinding.root.setOnClickListener {
+            viewModel.changeSortField(field)
+        }
+        actionItems[field] = itemBinding
+    }
 
-        viewModel.sortField.observeEvent(this) { field ->
-            when (field) {
-                SortField.ADDED_DATE -> binding.sortFieldAddedRadio
-                SortField.MODIFIED_DATE -> binding.sortFieldModifiedRadio
-                SortField.TITLE -> binding.sortFieldTitleRadio
-            }.isChecked = true
+    private fun setupViewModelObservers() {
+        // Using `this` as lifecycle owner, cannot show dialog twice with same instance to avoid double observation.
+        debugCheck(!viewModel.sortSettings.hasObservers()) { "Dialog was shown twice with same instance." }
+
+        viewModel.sortSettings.observe(this) { settings ->
+            for ((field, binding) in actionItems) {
+                val selected = field == settings.field
+                binding.root.isActivated = selected
+                binding.iconImv.isInvisible = !selected
+                binding.iconImv.setImageResource(when (settings.direction) {
+                    SortDirection.ASCENDING -> R.drawable.ic_arrow_up
+                    SortDirection.DESCENDING -> R.drawable.ic_arrow_down
+                })
+            }
         }
 
-        viewModel.sortDirection.observeEvent(this) { direction ->
-            when (direction) {
-                SortDirection.ASCENDING -> binding.sortDirectionAscRadio
-                SortDirection.DESCENDING -> binding.sortDirectionDescRadio
-            }.isChecked = true
+        viewModel.sortSettingsChange.observeEvent(this) { settings ->
+            dismiss()
+            sharedViewModel.changeSortSettings(settings)
         }
     }
 }

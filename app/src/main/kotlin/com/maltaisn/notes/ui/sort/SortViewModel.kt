@@ -22,6 +22,7 @@ import androidx.lifecycle.ViewModel
 import com.maltaisn.notes.model.PrefsManager
 import com.maltaisn.notes.model.SortDirection
 import com.maltaisn.notes.model.SortField
+import com.maltaisn.notes.model.SortSettings
 import com.maltaisn.notes.ui.Event
 import com.maltaisn.notes.ui.send
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -32,16 +33,34 @@ class SortViewModel @Inject constructor(
     private val prefs: PrefsManager,
 ) : ViewModel() {
 
-    private val _sortField = MutableLiveData<Event<SortField>>()
-    val sortField: LiveData<Event<SortField>>
-        get() = _sortField
+    private val _sortSettings = MutableLiveData<SortSettings>()
+    val sortSettings: LiveData<SortSettings>
+        get() = _sortSettings
 
-    private val _sortDirection = MutableLiveData<Event<SortDirection>>()
-    val sortDirection: LiveData<Event<SortDirection>>
-        get() = _sortDirection
+    private val _sortSettingsChange = MutableLiveData<Event<SortSettings>>()
+    val sortSettingsChange: LiveData<Event<SortSettings>>
+        get() = _sortSettingsChange
 
     fun start() {
-        _sortField.send(prefs.sortField)
-        _sortDirection.send(prefs.sortDirection)
+        _sortSettings.value = prefs.sortSettings
+    }
+
+    fun changeSortField(field: SortField) {
+        val settings = prefs.sortSettings
+
+        val direction: SortDirection
+        if (settings.field == field) {
+            // Field selected again, reverse sort direction
+            direction = when (settings.direction) {
+                SortDirection.ASCENDING -> SortDirection.DESCENDING
+                SortDirection.DESCENDING -> SortDirection.ASCENDING
+            }
+        } else {
+            direction = SortDirection.ASCENDING
+        }
+
+        val newSettings = SortSettings(field, direction)
+        _sortSettings.value = newSettings
+        _sortSettingsChange.send(newSettings)
     }
 }

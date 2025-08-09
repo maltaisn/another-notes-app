@@ -106,8 +106,6 @@
 
     <string name="sort_title">Sort options</string>
     <string name="sort_direction">Sort direction</string>
-    <string name="sort_direction_ascending">Ascending</string>
-    <string name="sort_direction_descending">Descending</string>
     <string name="sort_field">Sort by</string>
     <string name="sort_field_created">Date created</string>
     <string name="sort_field_modified">Date modified</string>

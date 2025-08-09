@@ -18,14 +18,13 @@ package com.maltaisn.notes.ui.edit.actions
 
 import android.app.Dialog
 import android.os.Bundle
-import android.view.LayoutInflater
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.maltaisn.notes.R
 import com.maltaisn.notes.databinding.DialogEditActionsBinding
-import com.maltaisn.notes.databinding.ItemEditActionBinding
+import com.maltaisn.notes.databinding.ItemBottomSheetActionBinding
 import com.maltaisn.notes.ui.edit.EditViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -48,8 +47,7 @@ class EditActionsDialog : BottomSheetDialogFragment() {
         behavior.skipCollapsed = true
         behavior.state = BottomSheetBehavior.STATE_EXPANDED
 
-        val inflater = LayoutInflater.from(context)
-        _binding = DialogEditActionsBinding.inflate(inflater, null, false)
+        _binding = DialogEditActionsBinding.inflate(layoutInflater, null, false)
         dialog.setContentView(binding.root)
 
         setupViewModelObservers()
@@ -76,7 +74,7 @@ class EditActionsDialog : BottomSheetDialogFragment() {
     }
 
     private fun createActionItem(action: EditAction) {
-        val itemBinding = ItemEditActionBinding.inflate(requireActivity().layoutInflater, binding.contentLayout, true)
+        val itemBinding = ItemBottomSheetActionBinding.inflate(layoutInflater, binding.contentLayout, true)
         itemBinding.titleTxv.setText(action.title)
         itemBinding.iconImv.setImageResource(action.icon)
         itemBinding.root.setOnClickListener {
