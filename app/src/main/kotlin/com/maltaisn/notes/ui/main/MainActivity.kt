@@ -92,6 +92,7 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
 //        Debug.waitForDebugger()
 
         // For triggering process death during debug
+        // Note that the notification permission must be given for venom to work!
 //        val venom = Venom.createInstance(this)
 //        venom.initialize()
 //        venom.start()
