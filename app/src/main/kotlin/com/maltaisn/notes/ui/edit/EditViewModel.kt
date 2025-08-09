@@ -538,7 +538,7 @@ class EditViewModel @Inject constructor(
                         _showRemoveCheckedConfirmEvent.send()
                         return
                     } else {
-                        note.asTextNote(true)
+                        note.asTextNote(keepCheckedItems = true, addBullets = false)
                     }
                 }
             },
@@ -597,7 +597,7 @@ class EditViewModel @Inject constructor(
     fun convertToText(keepCheckedItems: Boolean) {
         appendUndoAction(NoteConversionUndoAction(
             oldNote = note,
-            newNote = note.asTextNote(keepCheckedItems),
+            newNote = note.asTextNote(keepCheckedItems, addBullets = false),
         ), batch = false)
         updateEditActionsVisibility()
 

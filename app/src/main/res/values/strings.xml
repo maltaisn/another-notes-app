@@ -172,9 +172,9 @@
     <string name="reminder_alarm_permission_denied">The reminder permission has been denied.
     Reminder alarms will not work until enabled.</string>
     <string name="toast_notification_permission_denied">Notification permission denied, reminders
-        won\'t work! Tap any reminder to setup</string>
+        won\'t work! Tap any reminder to setup.</string>
     <string name="toast_alarm_permission_denied">Alarm permission denied, reminders won\'t work!
-        Tap any reminder to setup</string>
+        Tap any reminder to setup.</string>
 
     <!-- Labels -->
     <string name="label_create">Create new label</string>

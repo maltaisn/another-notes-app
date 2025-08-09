@@ -155,11 +155,11 @@ data class Note(
     /**
      * Returns conversion of this note to a text note if it's not already one.
      * If all items were blank, resulting list note is empty. Otherwise, each item
-     * becomes a text line. Checked state is always lost.
+     * because a text line with a bullet point at the start. Checked state is always lost.
      *
      * @param keepCheckedItems Whether to keep checked items or delete them.
      */
-    fun asTextNote(keepCheckedItems: Boolean): Note = when (type) {
+    fun asTextNote(keepCheckedItems: Boolean = true, addBullets: Boolean = true): Note = when (type) {
         NoteType.TEXT -> this
         NoteType.LIST -> {
             val items = listItems
@@ -171,6 +171,10 @@ data class Note(
                 buildString {
                     for (item in items) {
                         if (keepCheckedItems || !item.checked) {
+                            if (addBullets) {
+                                append(DEFAULT_BULLET_CHAR)
+                                append(' ')
+                            }
                             appendLine(item.content)
                         }
                     }
@@ -214,8 +218,8 @@ data class Note(
     /**
      * Convert this note to text, including both the title and the content.
      */
-    fun asText(includeTitle: Boolean = true): String {
-        val textNote = asTextNote(true)
+    fun asText(includeTitle: Boolean = true, addBullets: Boolean = true): String {
+        val textNote = asTextNote(keepCheckedItems = true, addBullets)
         return buildString {
             if (includeTitle && title.isNotBlank()) {
                 appendLine(textNote.title)

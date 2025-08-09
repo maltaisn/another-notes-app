@@ -49,6 +49,9 @@ class AlarmReceiver : BroadcastReceiver() {
     lateinit var reminderAlarmManager: ReminderAlarmManager
 
     @Inject
+    lateinit var contentProvider: NotificationContentProvider
+
+    @Inject
     lateinit var notesRepository: NotesRepository
 
     override fun onReceive(context: Context?, intent: Intent) {
@@ -79,14 +82,14 @@ class AlarmReceiver : BroadcastReceiver() {
             pendingIntentBaseFlags = pendingIntentBaseFlags or PendingIntent.FLAG_IMMUTABLE
         }
 
-        val noteText = note.asText(includeTitle = false).ifBlank { null }
         val builder = NotificationCompat.Builder(context, App.NOTIFICATION_CHANNEL_ID)
             .setPriority(NotificationCompat.PRIORITY_MAX)
             .setSmallIcon(R.drawable.ic_app_icon)
             .setGroup(NOTIFICATION_GROUP)
             .setContentTitle(note.title.ifBlank { null })
-            .setContentText(noteText)
-            .setStyle(NotificationCompat.BigTextStyle().bigText(noteText))
+            .setContentText(contentProvider.getContent(note, maxListItems = 3))
+            .setCustomContentView(null)
+            .setStyle(NotificationCompat.BigTextStyle().bigText(contentProvider.getContent(note)))
             .setAutoCancel(true)
 
         // Edit/view main action
