@@ -32,6 +32,7 @@ import org.junit.Test
 import org.mockito.kotlin.mock
 import java.util.Date
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 
 class SharedViewModelTest {
 
@@ -84,5 +85,19 @@ class SharedViewModelTest {
         alarmCallback.removeAlarm(3)  // usually done by NoteViewModel or EditViewModel
         viewModel.undoStatusChange()
         assertEquals(10, alarmCallback.alarms[3])
+    }
+
+    @Test
+    fun `should undo status change and not set reminder alarm back if done`() = runTest {
+        var note = notesRepo.requireNoteById(3)
+        note = note.copy(reminder = note.reminder?.markAsDone())
+        notesRepo.updateNote(note)
+
+        alarmCallback.addAlarm(3, 10)
+        viewModel.onStatusChange(StatusChange(listOf(note),
+            NoteStatus.ARCHIVED, NoteStatus.DELETED))
+        alarmCallback.removeAlarm(3)  // usually done by NoteViewModel or EditViewModel
+        viewModel.undoStatusChange()
+        assertFalse(3 in alarmCallback.alarms)
     }
 }

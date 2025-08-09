@@ -110,7 +110,7 @@ class SharedViewModel @Inject constructor(
         if (change.newStatus == NoteStatus.DELETED) {
             // Notes were deleted, removing any reminder alarm that had been set. Set them back.
             for (note in change.oldNotes) {
-                if (note.reminder != null) {
+                if (note.reminder != null && !note.reminder.done) {
                     reminderAlarmManager.setNoteReminderAlarm(note)
                 }
             }
