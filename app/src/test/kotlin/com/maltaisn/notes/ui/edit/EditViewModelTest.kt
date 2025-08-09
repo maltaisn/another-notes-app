@@ -1314,6 +1314,28 @@ class EditViewModelTest {
     }
 
     @Test
+    fun `should add list item on enter in title if none unchecked`() = runTest {
+        whenever(prefs.moveCheckedToBottom) doReturn true
+        viewModel.start(2)
+        viewModel.onNoteItemDeleteClicked(2)
+
+        doActionTest(
+            listOf(
+                EditDateItem(dateFor("2020-03-30").time),
+                EditTitleItem("title".e, true),
+                EditItemItem("".e, checked = false, editable = true, 1),
+                EditItemAddItem,
+                EditCheckedHeaderItem(1),
+                EditItemItem("item 1".e, checked = true, editable = true, 0),
+                EditChipsItem(listOf(labelsRepo.requireLabelById(1))),
+            ),
+            redoFocus = EditFocusChange(2, 0, false),
+        ) {
+            viewModel.onNoteTitleEnterPressed()
+        }
+    }
+
+    @Test
     fun `should not add list item on enter in title if any exist`() = runTest {
         viewModel.start(2)
         viewModel.onNoteTitleEnterPressed()

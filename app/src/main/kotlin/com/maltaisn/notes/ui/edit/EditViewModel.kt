@@ -972,7 +972,13 @@ class EditViewModel @Inject constructor(
     }
 
     override fun onNoteTitleEnterPressed() {
-        if (note.type == NoteType.LIST && listItems.none { it is EditItemItem }) {
+        if (note.type != NoteType.LIST) {
+            return
+        }
+
+        val noItems = listItems.none { it is EditItemItem }
+        val noUncheckedItems = listItems.none { it is EditItemItem && !it.checked }
+        if (noItems || prefs.moveCheckedToBottom && noUncheckedItems) {
             // No list items, add one.
             onNoteItemAddClicked()
         }
