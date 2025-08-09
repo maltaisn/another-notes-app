@@ -86,8 +86,8 @@
 
         <DropDownPreference
             app:defaultValue="archive"
-            app:entries="@array/pref_swipe_action_entries"
-            app:entryValues="@array/pref_swipe_action_values"
+            app:entries="@array/pref_status_change_action_entries"
+            app:entryValues="@array/pref_status_change_action_values"
             app:key="swipe_action_left"
             app:title="@string/pref_behavior_swipe_action_left"
             app:useSimpleSummaryProvider="true"
@@ -95,10 +95,19 @@
 
         <DropDownPreference
             app:defaultValue="archive"
-            app:entries="@array/pref_swipe_action_entries"
-            app:entryValues="@array/pref_swipe_action_values"
+            app:entries="@array/pref_status_change_action_entries"
+            app:entryValues="@array/pref_status_change_action_values"
             app:key="swipe_action_right"
             app:title="@string/pref_behavior_swipe_action_right"
+            app:useSimpleSummaryProvider="true"
+            />
+
+        <DropDownPreference
+            app:defaultValue="none"
+            app:entries="@array/pref_status_change_action_entries"
+            app:entryValues="@array/pref_status_change_action_values"
+            app:key="mark_as_done_action"
+            app:title="@string/pref_behavior_mark_as_done_action"
             app:useSimpleSummaryProvider="true"
             />
 
@@ -116,7 +125,7 @@
             app:entries="@array/pref_edit_initial_focus_entries"
             app:entryValues="@array/pref_edit_initial_focus_values"
             app:key="edit_initial_focus"
-            app:title="@string/pref_edit_initial_focus"
+            app:title="@string/pref_behavior_edit_initial_focus"
             app:useSimpleSummaryProvider="true"
             />
 

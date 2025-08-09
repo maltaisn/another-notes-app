@@ -34,7 +34,7 @@ import com.maltaisn.notes.ui.getOrAwaitValue
 import com.maltaisn.notes.ui.navigation.HomeDestination
 import com.maltaisn.notes.ui.note.NoteItemFactory
 import com.maltaisn.notes.ui.note.NoteViewModel
-import com.maltaisn.notes.ui.note.SwipeAction
+import com.maltaisn.notes.ui.note.StatusChangeAction
 import com.maltaisn.notes.ui.note.adapter.NoteAdapter
 import com.maltaisn.notes.ui.note.adapter.NoteItem
 import com.maltaisn.notes.ui.note.adapter.NoteListLayoutMode
@@ -96,7 +96,7 @@ class HomeViewModelLabelsTest {
         itemFactory = NoteItemFactory(prefs)
 
         viewModel = HomeViewModel(SavedStateHandle(), notesRepo, labelsRepo, prefs,
-            DefaultReminderAlarmManager(notesRepo, MockAlarmCallback()), itemFactory, mock())
+            DefaultReminderAlarmManager(notesRepo, prefs, MockAlarmCallback()), itemFactory, mock())
     }
 
     @Test
@@ -179,8 +179,8 @@ class HomeViewModelLabelsTest {
     @Test
     fun `should not allow swipe actions`() = runTest {
         viewModel.setDestination(HomeDestination.Labels(labelsRepo.requireLabelById(3)))
-        assertEquals(SwipeAction.NONE, viewModel.getNoteSwipeAction(NoteAdapter.SwipeDirection.LEFT))
-        assertEquals(SwipeAction.NONE, viewModel.getNoteSwipeAction(NoteAdapter.SwipeDirection.RIGHT))
+        assertEquals(StatusChangeAction.NONE, viewModel.getNoteSwipeAction(NoteAdapter.SwipeDirection.LEFT))
+        assertEquals(StatusChangeAction.NONE, viewModel.getNoteSwipeAction(NoteAdapter.SwipeDirection.RIGHT))
     }
 
     // the rest is already tested in NoteViewModelTest

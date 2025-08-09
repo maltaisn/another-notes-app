@@ -32,7 +32,7 @@ import com.maltaisn.notes.databinding.ItemNoteListBinding
 import com.maltaisn.notes.databinding.ItemNoteListItemBinding
 import com.maltaisn.notes.databinding.ItemNoteTextBinding
 import com.maltaisn.notes.model.PrefsManager
-import com.maltaisn.notes.ui.note.SwipeAction
+import com.maltaisn.notes.ui.note.StatusChangeAction
 
 class NoteAdapter(
     val context: Context,
@@ -170,7 +170,7 @@ class NoteAdapter(
         fun onNoteActionButtonClicked(item: NoteItem, pos: Int)
 
         /** Returns the action for the given swipe direction. */
-        fun getNoteSwipeAction(direction: SwipeDirection): SwipeAction
+        fun getNoteSwipeAction(direction: SwipeDirection): StatusChangeAction
 
         /** Called when a [NoteItem] at [pos] is swiped. */
         fun onNoteSwiped(pos: Int, direction: SwipeDirection)

@@ -24,16 +24,20 @@ import com.maltaisn.notes.dateFor
 import com.maltaisn.notes.model.DefaultReminderAlarmManager
 import com.maltaisn.notes.model.MockLabelsRepository
 import com.maltaisn.notes.model.MockNotesRepository
+import com.maltaisn.notes.model.PrefsManager
 import com.maltaisn.notes.model.entity.Reminder
 import com.maltaisn.notes.testNote
 import com.maltaisn.notes.ui.MockAlarmCallback
 import com.maltaisn.notes.ui.assertLiveDataEventSent
 import com.maltaisn.notes.ui.getOrAwaitValue
+import com.maltaisn.notes.ui.note.StatusChangeAction
 import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import kotlin.test.assertEquals
@@ -43,6 +47,7 @@ class NotificationViewModelTest {
     private lateinit var viewModel: NotificationViewModel
 
     private lateinit var notesRepo: MockNotesRepository
+    private lateinit var prefs: PrefsManager
     private lateinit var alarmCallback: MockAlarmCallback
 
     @get:Rule
@@ -62,10 +67,14 @@ class NotificationViewModelTest {
             dateFor("2100-01-23T21:38:00.000"), null,
             dateFor("2100-01-23T21:38:00.000"), 1, false)))
 
+        prefs = mock {
+            on { markAsDoneAction } doReturn StatusChangeAction.NONE
+        }
+
         alarmCallback = MockAlarmCallback()
 
         viewModel = NotificationViewModel(SavedStateHandle(), notesRepo,
-            DefaultReminderAlarmManager(notesRepo, alarmCallback))
+            DefaultReminderAlarmManager(notesRepo, prefs, alarmCallback))
     }
 
     @Test

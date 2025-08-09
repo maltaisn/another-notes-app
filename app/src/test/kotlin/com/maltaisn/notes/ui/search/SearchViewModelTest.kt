@@ -80,7 +80,7 @@ class SearchViewModelTest {
         itemFactory = NoteItemFactory(prefs)
 
         viewModel = SearchViewModel(SavedStateHandle(), notesRepo, labelsRepo, prefs,
-            DefaultReminderAlarmManager(notesRepo, MockAlarmCallback()), itemFactory)
+            DefaultReminderAlarmManager(notesRepo, prefs, MockAlarmCallback()), itemFactory)
     }
 
     @Test

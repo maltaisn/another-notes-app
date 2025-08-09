@@ -17,6 +17,8 @@
 package com.maltaisn.notes.model
 
 import com.maltaisn.notes.model.entity.Note
+import com.maltaisn.notes.model.entity.NoteStatus
+import com.maltaisn.notes.model.entity.PinnedStatus
 import com.maltaisn.recurpicker.RecurrenceFinder
 import kotlinx.coroutines.flow.first
 import java.util.Date
@@ -24,6 +26,7 @@ import javax.inject.Inject
 
 class DefaultReminderAlarmManager @Inject constructor(
     private val notesRepository: NotesRepository,
+    private val prefs: PrefsManager,
     private val alarmCallback: ReminderAlarmCallback
 ) : ReminderAlarmManager {
 
@@ -84,9 +87,26 @@ class DefaultReminderAlarmManager @Inject constructor(
         }
     }
 
+    private suspend fun changeNoteStatus(note: Note, status: NoteStatus) {
+        // To archived or deleted, active not supported
+        val newNote = note.copy(status = status,
+            pinned = PinnedStatus.CANT_PIN,
+            reminder = note.reminder.takeIf { status != NoteStatus.DELETED },
+            lastModifiedDate = Date())
+        if (status == NoteStatus.DELETED && note.reminder != null) {
+            // Remove reminder alarm for deleted note.
+            removeAlarm(note.id)
+        }
+        notesRepository.updateNote(newNote)
+    }
+
     override suspend fun markReminderAsDone(noteId: Long) {
         val note = notesRepository.getNoteById(noteId) ?: return
-        notesRepository.updateNote(note.copy(reminder = note.reminder?.markAsDone()))
+        val doneNote = note.copy(reminder = note.reminder?.markAsDone())
+        notesRepository.updateNote(doneNote)
+
+        val status = prefs.markAsDoneAction.status ?: return
+        changeNoteStatus(doneNote, status)
     }
 
     override fun removeAlarm(noteId: Long) {

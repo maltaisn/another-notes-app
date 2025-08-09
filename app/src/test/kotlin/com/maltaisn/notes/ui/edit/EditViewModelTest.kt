@@ -153,7 +153,7 @@ class EditViewModelTest {
         }
 
         viewModel = EditViewModel(notesRepo, labelsRepo, prefs,
-            DefaultReminderAlarmManager(notesRepo, alarmCallback),
+            DefaultReminderAlarmManager(notesRepo, prefs, alarmCallback),
             editableTextProvider, SavedStateHandle())
     }
 

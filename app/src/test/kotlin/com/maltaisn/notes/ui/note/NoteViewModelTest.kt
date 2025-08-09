@@ -110,7 +110,7 @@ class NoteViewModelTest {
         alarmCallback = MockAlarmCallback()
 
         viewModel = TestNoteViewModel(notesRepo, labelsRepo, prefs,
-            DefaultReminderAlarmManager(notesRepo, alarmCallback), itemFactory)
+            DefaultReminderAlarmManager(notesRepo, prefs, alarmCallback), itemFactory)
     }
 
     @Test

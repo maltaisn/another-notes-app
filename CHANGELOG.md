@@ -4,6 +4,7 @@
 - Allow adjusting the text size in the editor (#22).
 - Allow exporting notes as a ZIP archive (#59).
 - Added a setting for initially focusing on the content when a new note is created (#116).
+- Added a setting to automatically archive or delete a note when reminder is marked as done (#130).
 - Focus title if backspace is pressed at the start of content in a text note (#157).
 - Add new list item if enter is pressed in title and no items exist.
 - Allow searching from deleted notes when search is started from trash (#159).

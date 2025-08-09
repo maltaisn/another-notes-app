@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Nicolas Maltais
+ * Copyright 2025 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -344,11 +344,9 @@ abstract class NoteViewModel(
                     pinned = if (newStatus == NoteStatus.ACTIVE) PinnedStatus.UNPINNED else PinnedStatus.CANT_PIN,
                     reminder = note.reminder.takeIf { newStatus != NoteStatus.DELETED },
                     lastModifiedDate = date)
-                if (newStatus == NoteStatus.DELETED) {
-                    if (note.reminder != null) {
-                        // Remove reminder alarm for deleted note.
-                        reminderAlarmManager.removeAlarm(note.id)
-                    }
+                if (newStatus == NoteStatus.DELETED && note.reminder != null) {
+                    // Remove reminder alarm for deleted note.
+                    reminderAlarmManager.removeAlarm(note.id)
                 }
             }
 
@@ -396,7 +394,7 @@ abstract class NoteViewModel(
         // Do nothing.
     }
 
-    override fun getNoteSwipeAction(direction: NoteAdapter.SwipeDirection) = SwipeAction.NONE
+    override fun getNoteSwipeAction(direction: NoteAdapter.SwipeDirection) = StatusChangeAction.NONE
 
     override fun onNoteSwiped(pos: Int, direction: NoteAdapter.SwipeDirection) {
         // Do nothing.

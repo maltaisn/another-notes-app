@@ -19,15 +19,20 @@ package com.maltaisn.notes.model
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.maltaisn.notes.MainCoroutineRule
 import com.maltaisn.notes.dateFor
+import com.maltaisn.notes.model.entity.NoteStatus
 import com.maltaisn.notes.model.entity.Reminder
 import com.maltaisn.notes.testNote
 import com.maltaisn.notes.ui.MockAlarmCallback
+import com.maltaisn.notes.ui.note.StatusChangeAction
 import com.maltaisn.recurpicker.Recurrence
 import com.maltaisn.recurpicker.RecurrenceFinder
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 import java.util.Calendar
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
@@ -38,6 +43,7 @@ class DefaultReminderAlarmManagerTest {
     private lateinit var alarmManager: ReminderAlarmManager
 
     private lateinit var notesRepo: MockNotesRepository
+    private lateinit var prefs: PrefsManager
     private lateinit var alarmCallback: MockAlarmCallback
 
     @get:Rule
@@ -68,9 +74,13 @@ class DefaultReminderAlarmManagerTest {
             reminder = Reminder.create(dateFor("2000-12-31T23:59:59.999"),
                 Recurrence(Recurrence.Period.YEARLY), recurFinder)))
 
+        prefs = mock {
+            on { markAsDoneAction } doReturn StatusChangeAction.NONE
+        }
+
         alarmCallback = MockAlarmCallback()
 
-        alarmManager = DefaultReminderAlarmManager(notesRepo, alarmCallback)
+        alarmManager = DefaultReminderAlarmManager(notesRepo, prefs, alarmCallback)
     }
 
     @Test
@@ -112,7 +122,30 @@ class DefaultReminderAlarmManagerTest {
     @Test
     fun `should mark reminder as done`() = runTest {
         alarmManager.markReminderAsDone(1)
-        assertTrue(notesRepo.requireNoteById(1).reminder!!.done)
+
+        val note = notesRepo.requireNoteById(1)
+        assertTrue(note.reminder!!.done)
+        assertEquals(NoteStatus.ACTIVE, note.status)
+    }
+
+    @Test
+    fun `should mark reminder as done and archive`() = runTest {
+        whenever(prefs.markAsDoneAction) doReturn StatusChangeAction.ARCHIVE
+        alarmManager.markReminderAsDone(1)
+
+        val note = notesRepo.requireNoteById(1)
+        assertEquals(NoteStatus.ARCHIVED, note.status)
+        assertTrue(note.reminder!!.done)
+    }
+
+    @Test
+    fun `should mark reminder as done and delete`() = runTest {
+        whenever(prefs.markAsDoneAction) doReturn StatusChangeAction.DELETE
+        alarmManager.markReminderAsDone(1)
+
+        val note = notesRepo.requireNoteById(1)
+        assertEquals(NoteStatus.DELETED, note.status)
+        assertNull(note.reminder)
     }
 
     @Test

@@ -38,7 +38,7 @@ import com.maltaisn.notes.ui.navigation.HomeDestination
 import com.maltaisn.notes.ui.note.NoteItemFactory
 import com.maltaisn.notes.ui.note.NoteViewModel
 import com.maltaisn.notes.ui.note.PlaceholderData
-import com.maltaisn.notes.ui.note.SwipeAction
+import com.maltaisn.notes.ui.note.StatusChangeAction
 import com.maltaisn.notes.ui.note.adapter.HeaderItem
 import com.maltaisn.notes.ui.note.adapter.MessageItem
 import com.maltaisn.notes.ui.note.adapter.NoteAdapter
@@ -223,32 +223,31 @@ class HomeViewModel @Inject constructor(
         changeListItems { it.removeAt(pos) }
     }
 
-    override fun getNoteSwipeAction(direction: NoteAdapter.SwipeDirection): SwipeAction {
+    override fun getNoteSwipeAction(direction: NoteAdapter.SwipeDirection): StatusChangeAction {
         return if (currentDestination == HomeDestination.Status(NoteStatus.ACTIVE) && selectedNotes.isEmpty()) {
             when (direction) {
                 NoteAdapter.SwipeDirection.LEFT -> prefs.swipeActionLeft
                 NoteAdapter.SwipeDirection.RIGHT -> prefs.swipeActionRight
             }
         } else {
-            SwipeAction.NONE
+            StatusChangeAction.NONE
         }
     }
 
     override fun onNoteSwiped(pos: Int, direction: NoteAdapter.SwipeDirection) {
         val note = (noteItems.value!![pos] as NoteItem).note
-        changeNotesStatus(setOf(note), when (getNoteSwipeAction(direction)) {
-            SwipeAction.ARCHIVE -> NoteStatus.ARCHIVED
-            SwipeAction.DELETE -> NoteStatus.DELETED
-            SwipeAction.NONE -> return  // should not happen
-        })
+        val status = getNoteSwipeAction(direction).status ?: return
+        changeNotesStatus(setOf(note), status)
     }
 
     override fun onNoteActionButtonClicked(item: NoteItem, pos: Int) {
         // Action button is only shown for "Mark as done" in Reminders screen.
         // So mark reminder as done.
         viewModelScope.launch {
-            val note = item.note
-            notesRepository.updateNote(note.copy(reminder = note.reminder?.markAsDone()))
+            val note = item.note.copy(reminder = item.note.reminder?.markAsDone())
+            notesRepository.updateNote(note)
+            val status = prefs.markAsDoneAction.status ?: return@launch
+            changeNotesStatus(setOf(note), status)
         }
     }
 

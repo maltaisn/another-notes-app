@@ -25,7 +25,7 @@ import com.maltaisn.notes.model.entity.NoteType
 import com.maltaisn.notes.ui.AppTheme
 import com.maltaisn.notes.ui.edit.EditInitialFocus
 import com.maltaisn.notes.ui.note.ShownDateField
-import com.maltaisn.notes.ui.note.SwipeAction
+import com.maltaisn.notes.ui.note.StatusChangeAction
 import com.maltaisn.notes.ui.note.TrashCleanDelay
 import com.maltaisn.notes.ui.note.adapter.NoteListLayoutMode
 import javax.inject.Inject
@@ -48,8 +48,9 @@ class DefaultPrefsManager @Inject constructor(
     override val textSize: Int by preference(TEXT_SIZE, 15)
     override var listLayoutMode: NoteListLayoutMode by enumPreference(LIST_LAYOUT_MODE,
         NoteListLayoutMode.LIST)
-    override val swipeActionLeft: SwipeAction by enumPreference(SWIPE_ACTION_LEFT, SwipeAction.ARCHIVE)
-    override val swipeActionRight: SwipeAction by enumPreference(SWIPE_ACTION_RIGHT, SwipeAction.ARCHIVE)
+    override val swipeActionLeft: StatusChangeAction by enumPreference(SWIPE_ACTION_LEFT, StatusChangeAction.ARCHIVE)
+    override val swipeActionRight: StatusChangeAction by enumPreference(SWIPE_ACTION_RIGHT, StatusChangeAction.ARCHIVE)
+    override val markAsDoneAction: StatusChangeAction by enumPreference(MARK_AS_DONE_ACTION, StatusChangeAction.NONE)
     override val editInitialFocus: EditInitialFocus by enumPreference(EDIT_INITIAL_FOCUS, EditInitialFocus.TITLE)
     override val shownDateField: ShownDateField by enumPreference(SHOWN_DATE, ShownDateField.NONE)
     override val maximumPreviewLabels: Int by preference(PREVIEW_LABELS, 0)
@@ -186,6 +187,7 @@ class DefaultPrefsManager @Inject constructor(
         const val SHOWN_DATE = "shown_date"
         const val SWIPE_ACTION_LEFT = "swipe_action_left"
         const val SWIPE_ACTION_RIGHT = "swipe_action_right"
+        const val MARK_AS_DONE_ACTION = "mark_as_done_action"
         const val EDIT_INITIAL_FOCUS = "edit_initial_focus"
         const val ENCRYPTED_EXPORT = "encrypted_export"
         const val EXPORT_DATA = "export_data"

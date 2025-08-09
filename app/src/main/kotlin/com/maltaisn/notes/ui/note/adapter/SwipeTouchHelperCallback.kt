@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Nicolas Maltais
+ * Copyright 2025 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat
 import com.maltaisn.notes.R
-import com.maltaisn.notes.ui.note.SwipeAction
+import com.maltaisn.notes.ui.note.StatusChangeAction
 import com.maltaisn.notes.ui.note.adapter.NoteAdapter.SwipeDirection
 import kotlin.math.absoluteValue
 import kotlin.math.sign
@@ -45,10 +45,10 @@ class SwipeTouchHelperCallback(private val callback: NoteAdapter.Callback) : Ite
         makeMovementFlags(0, if (viewHolder is NoteViewHolder<*>) {
             // Only allow swiping left and right
             var flags = 0
-            if (callback.getNoteSwipeAction(SwipeDirection.LEFT) != SwipeAction.NONE) {
+            if (callback.getNoteSwipeAction(SwipeDirection.LEFT) != StatusChangeAction.NONE) {
                 flags = flags or ItemTouchHelper.LEFT
             }
-            if (callback.getNoteSwipeAction(SwipeDirection.RIGHT) != SwipeAction.NONE) {
+            if (callback.getNoteSwipeAction(SwipeDirection.RIGHT) != StatusChangeAction.NONE) {
                 flags = flags or ItemTouchHelper.RIGHT
             }
             flags
@@ -80,7 +80,7 @@ class SwipeTouchHelperCallback(private val callback: NoteAdapter.Callback) : Ite
             .coerceAtLeast(ITEM_SWIPE_OPACITY_MIN)
         cardView.translationX = dist * dX.sign
 
-        viewHolder.swipeImv.isInvisible = if (dist == 0f || swipeAction == SwipeAction.NONE) {
+        viewHolder.swipeImv.isInvisible = if (dist == 0f || swipeAction == StatusChangeAction.NONE) {
             true
         } else {
             updateSwipeImage(viewHolder, direction)
@@ -101,8 +101,8 @@ class SwipeTouchHelperCallback(private val callback: NoteAdapter.Callback) : Ite
             swipeImv.requestLayout()
 
             viewHolder.swipeImv.setImageResource(when (callback.getNoteSwipeAction(direction)) {
-                SwipeAction.ARCHIVE -> R.drawable.avd_archive
-                SwipeAction.DELETE -> R.drawable.avd_delete
+                StatusChangeAction.ARCHIVE -> R.drawable.avd_archive
+                StatusChangeAction.DELETE -> R.drawable.avd_delete
                 else -> return // never happens
             })
 

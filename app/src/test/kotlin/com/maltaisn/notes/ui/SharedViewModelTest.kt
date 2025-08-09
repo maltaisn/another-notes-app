@@ -29,6 +29,7 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.mockito.kotlin.mock
 import java.util.Date
 import kotlin.test.assertEquals
 
@@ -56,7 +57,7 @@ class SharedViewModelTest {
 
         alarmCallback = MockAlarmCallback()
 
-        viewModel = SharedViewModel(notesRepo, DefaultReminderAlarmManager(notesRepo, alarmCallback))
+        viewModel = SharedViewModel(notesRepo, DefaultReminderAlarmManager(notesRepo, mock(), alarmCallback))
     }
 
     @Test

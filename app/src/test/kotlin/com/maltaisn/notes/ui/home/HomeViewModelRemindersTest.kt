@@ -19,6 +19,7 @@ package com.maltaisn.notes.ui.home
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.SavedStateHandle
 import com.maltaisn.notes.MainCoroutineRule
+import com.maltaisn.notes.assertNoteEquals
 import com.maltaisn.notes.dateFor
 import com.maltaisn.notes.model.DefaultReminderAlarmManager
 import com.maltaisn.notes.model.MockLabelsRepository
@@ -32,11 +33,13 @@ import com.maltaisn.notes.model.entity.PinnedStatus
 import com.maltaisn.notes.model.entity.Reminder
 import com.maltaisn.notes.testNote
 import com.maltaisn.notes.ui.MockAlarmCallback
+import com.maltaisn.notes.ui.StatusChange
+import com.maltaisn.notes.ui.assertLiveDataEventSent
 import com.maltaisn.notes.ui.getOrAwaitValue
 import com.maltaisn.notes.ui.navigation.HomeDestination
 import com.maltaisn.notes.ui.note.NoteItemFactory
 import com.maltaisn.notes.ui.note.NoteViewModel
-import com.maltaisn.notes.ui.note.SwipeAction
+import com.maltaisn.notes.ui.note.StatusChangeAction
 import com.maltaisn.notes.ui.note.adapter.NoteAdapter
 import com.maltaisn.notes.ui.note.adapter.NoteItem
 import com.maltaisn.notes.ui.note.adapter.NoteListLayoutMode
@@ -47,6 +50,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 import java.util.Date
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -96,6 +100,7 @@ class HomeViewModelRemindersTest {
 
         prefs = mock {
             on { listLayoutMode } doReturn NoteListLayoutMode.LIST
+            on { markAsDoneAction } doReturn StatusChangeAction.NONE
         }
         notesRepo.sortField = SortField.TITLE
         notesRepo.sortDirection = SortDirection.ASCENDING
@@ -103,7 +108,7 @@ class HomeViewModelRemindersTest {
         itemFactory = NoteItemFactory(prefs)
 
         viewModel = HomeViewModel(SavedStateHandle(), notesRepo, labelsRepo, prefs,
-            DefaultReminderAlarmManager(notesRepo, MockAlarmCallback()), itemFactory, mock())
+            DefaultReminderAlarmManager(notesRepo, prefs, MockAlarmCallback()), itemFactory, mock())
         viewModel.setDestination(HomeDestination.Reminders)
     }
 
@@ -128,6 +133,36 @@ class HomeViewModelRemindersTest {
         viewModel.onNoteActionButtonClicked(noteItem(note), 2)
         assertEquals(note.copy(reminder = note.reminder?.markAsDone()),
             notesRepo.requireNoteById(4))
+    }
+
+    @Test
+    fun `should mark reminder as done on action button click and archive`() = runTest {
+        whenever(prefs.markAsDoneAction) doReturn StatusChangeAction.ARCHIVE
+
+        val note = notesRepo.requireNoteById(1)
+        viewModel.onNoteActionButtonClicked(noteItem(note), 3)
+
+        val doneNote = note.copy(reminder = note.reminder?.markAsDone())
+        assertLiveDataEventSent(viewModel.statusChangeEvent, StatusChange(
+            listOf(doneNote), NoteStatus.ACTIVE, NoteStatus.ARCHIVED))
+
+        val newNote = doneNote.copy(status = NoteStatus.ARCHIVED, pinned = PinnedStatus.CANT_PIN)
+        assertNoteEquals(newNote, notesRepo.requireNoteById(1))
+    }
+
+    @Test
+    fun `should mark reminder as done on action button click and delete`() = runTest {
+        whenever(prefs.markAsDoneAction) doReturn StatusChangeAction.DELETE
+
+        val note = notesRepo.requireNoteById(3)
+        viewModel.onNoteActionButtonClicked(noteItem(note), 2)
+
+        val doneNote = note.copy(reminder = note.reminder?.markAsDone())
+        assertLiveDataEventSent(viewModel.statusChangeEvent, StatusChange(
+            listOf(doneNote), NoteStatus.ARCHIVED, NoteStatus.DELETED))
+
+        val newNote = doneNote.copy(status = NoteStatus.DELETED, reminder = null)
+        assertNoteEquals(newNote, notesRepo.requireNoteById(3))
     }
 
     @Test
@@ -174,8 +209,8 @@ class HomeViewModelRemindersTest {
 
     @Test
     fun `should not allow swipe actions`() = runTest {
-        assertEquals(SwipeAction.NONE, viewModel.getNoteSwipeAction(NoteAdapter.SwipeDirection.LEFT))
-        assertEquals(SwipeAction.NONE, viewModel.getNoteSwipeAction(NoteAdapter.SwipeDirection.RIGHT))
+        assertEquals(StatusChangeAction.NONE, viewModel.getNoteSwipeAction(NoteAdapter.SwipeDirection.LEFT))
+        assertEquals(StatusChangeAction.NONE, viewModel.getNoteSwipeAction(NoteAdapter.SwipeDirection.RIGHT))
     }
 
     // the rest is already tested in NoteViewModelTest

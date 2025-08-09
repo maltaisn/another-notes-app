@@ -94,7 +94,7 @@ class EditViewModelRandomTest {
         }
 
         viewModel = EditViewModel(notesRepo, labelsRepo, prefs,
-            DefaultReminderAlarmManager(notesRepo, MockAlarmCallback()),
+            DefaultReminderAlarmManager(notesRepo, prefs, MockAlarmCallback()),
             editableTextProvider, SavedStateHandle())
         viewModel.setMaxUndoActions(UndoManager.NO_MAX_ACTIONS)
     }

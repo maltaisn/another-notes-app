@@ -34,6 +34,7 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.mockito.kotlin.mock
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -73,7 +74,7 @@ class ReminderViewModelTest {
         alarmCallback.alarms[2] = dateFor("2020-08-15T00:00:00.000").time
 
         viewModel = ReminderViewModel(SavedStateHandle(), notesRepo,
-            DefaultReminderAlarmManager(notesRepo, alarmCallback))
+            DefaultReminderAlarmManager(notesRepo, mock(), alarmCallback))
     }
 
     @Test

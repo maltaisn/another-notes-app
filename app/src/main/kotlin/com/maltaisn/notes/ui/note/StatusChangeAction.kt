@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Nicolas Maltais
+ * Copyright 2025 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,18 +18,26 @@ package com.maltaisn.notes.ui.note
 
 import com.maltaisn.notes.R
 import com.maltaisn.notes.model.ValueEnum
+import com.maltaisn.notes.model.entity.NoteStatus
 import com.maltaisn.notes.model.findValueEnum
 
 /**
  * Enum for different swipe action.
- * [value] is from [R.array.pref_swipe_action_values].
+ * [value] is from [R.array.pref_status_change_action_values].
  */
-enum class SwipeAction(override val value: String) : ValueEnum<String> {
+enum class StatusChangeAction(override val value: String) : ValueEnum<String> {
     ARCHIVE("archive"),
     DELETE("delete"),
     NONE("none");
 
+    val status: NoteStatus?
+        get() = when (this) {
+            ARCHIVE -> NoteStatus.ARCHIVED
+            DELETE -> NoteStatus.DELETED
+            NONE -> null
+        }
+
     companion object {
-        fun fromValue(value: String): SwipeAction = findValueEnum(value)
+        fun fromValue(value: String): StatusChangeAction = findValueEnum(value)
     }
 }

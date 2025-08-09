@@ -21,7 +21,7 @@ import com.maltaisn.notes.model.entity.NoteType
 import com.maltaisn.notes.ui.AppTheme
 import com.maltaisn.notes.ui.edit.EditInitialFocus
 import com.maltaisn.notes.ui.note.ShownDateField
-import com.maltaisn.notes.ui.note.SwipeAction
+import com.maltaisn.notes.ui.note.StatusChangeAction
 import com.maltaisn.notes.ui.note.TrashCleanDelay
 import com.maltaisn.notes.ui.note.adapter.NoteListLayoutMode
 import org.jetbrains.annotations.TestOnly
@@ -38,8 +38,9 @@ interface PrefsManager {
     val moveCheckedToBottom: Boolean
     val textSize: Int
     var listLayoutMode: NoteListLayoutMode
-    val swipeActionLeft: SwipeAction
-    val swipeActionRight: SwipeAction
+    val swipeActionLeft: StatusChangeAction
+    val swipeActionRight: StatusChangeAction
+    val markAsDoneAction: StatusChangeAction
     val editInitialFocus: EditInitialFocus
     val shownDateField: ShownDateField
     val maximumPreviewLabels: Int

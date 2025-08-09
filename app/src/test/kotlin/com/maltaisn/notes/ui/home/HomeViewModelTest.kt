@@ -41,7 +41,7 @@ import com.maltaisn.notes.ui.getOrAwaitValue
 import com.maltaisn.notes.ui.navigation.HomeDestination
 import com.maltaisn.notes.ui.note.NoteItemFactory
 import com.maltaisn.notes.ui.note.NoteViewModel
-import com.maltaisn.notes.ui.note.SwipeAction
+import com.maltaisn.notes.ui.note.StatusChangeAction
 import com.maltaisn.notes.ui.note.TrashCleanDelay
 import com.maltaisn.notes.ui.note.adapter.MessageItem
 import com.maltaisn.notes.ui.note.adapter.NoteAdapter
@@ -96,15 +96,15 @@ class HomeViewModelTest {
         prefs = mock {
             on { listLayoutMode } doReturn NoteListLayoutMode.LIST
             on { lastTrashReminderTime } doReturn 0
-            on { swipeActionLeft } doReturn SwipeAction.DELETE
-            on { swipeActionRight } doReturn SwipeAction.ARCHIVE
+            on { swipeActionLeft } doReturn StatusChangeAction.DELETE
+            on { swipeActionRight } doReturn StatusChangeAction.ARCHIVE
             on { trashCleanDelay } doReturn TrashCleanDelay.WEEK
         }
 
         itemFactory = NoteItemFactory(prefs)
 
         viewModel = HomeViewModel(SavedStateHandle(), notesRepo, labelsRepo, prefs,
-            DefaultReminderAlarmManager(notesRepo, MockAlarmCallback()), itemFactory, buildTypeBehavior)
+            DefaultReminderAlarmManager(notesRepo, prefs, MockAlarmCallback()), itemFactory, buildTypeBehavior)
     }
 
     @Test
@@ -200,25 +200,25 @@ class HomeViewModelTest {
     @Test
     fun `should only allow note swipe in active notes`() = runTest {
         viewModel.setDestination(HomeDestination.Status(NoteStatus.ACTIVE))
-        assertEquals(SwipeAction.DELETE, viewModel.getNoteSwipeAction(NoteAdapter.SwipeDirection.LEFT))
-        assertEquals(SwipeAction.ARCHIVE, viewModel.getNoteSwipeAction(NoteAdapter.SwipeDirection.RIGHT))
+        assertEquals(StatusChangeAction.DELETE, viewModel.getNoteSwipeAction(NoteAdapter.SwipeDirection.LEFT))
+        assertEquals(StatusChangeAction.ARCHIVE, viewModel.getNoteSwipeAction(NoteAdapter.SwipeDirection.RIGHT))
 
         viewModel.setDestination(HomeDestination.Status(NoteStatus.ARCHIVED))
-        assertEquals(SwipeAction.NONE, viewModel.getNoteSwipeAction(NoteAdapter.SwipeDirection.LEFT))
-        assertEquals(SwipeAction.NONE, viewModel.getNoteSwipeAction(NoteAdapter.SwipeDirection.RIGHT))
+        assertEquals(StatusChangeAction.NONE, viewModel.getNoteSwipeAction(NoteAdapter.SwipeDirection.LEFT))
+        assertEquals(StatusChangeAction.NONE, viewModel.getNoteSwipeAction(NoteAdapter.SwipeDirection.RIGHT))
 
         viewModel.setDestination(HomeDestination.Status(NoteStatus.DELETED))
-        assertEquals(SwipeAction.NONE, viewModel.getNoteSwipeAction(NoteAdapter.SwipeDirection.LEFT))
-        assertEquals(SwipeAction.NONE, viewModel.getNoteSwipeAction(NoteAdapter.SwipeDirection.RIGHT))
+        assertEquals(StatusChangeAction.NONE, viewModel.getNoteSwipeAction(NoteAdapter.SwipeDirection.LEFT))
+        assertEquals(StatusChangeAction.NONE, viewModel.getNoteSwipeAction(NoteAdapter.SwipeDirection.RIGHT))
     }
 
     @Test
     fun `should not allow swiping if no action set`() = runTest {
         viewModel.setDestination(HomeDestination.Status(NoteStatus.ACTIVE))
-        whenever(prefs.swipeActionLeft) doReturn SwipeAction.NONE
-        whenever(prefs.swipeActionRight) doReturn SwipeAction.NONE
-        assertEquals(SwipeAction.NONE, viewModel.getNoteSwipeAction(NoteAdapter.SwipeDirection.LEFT))
-        assertEquals(SwipeAction.NONE, viewModel.getNoteSwipeAction(NoteAdapter.SwipeDirection.RIGHT))
+        whenever(prefs.swipeActionLeft) doReturn StatusChangeAction.NONE
+        whenever(prefs.swipeActionRight) doReturn StatusChangeAction.NONE
+        assertEquals(StatusChangeAction.NONE, viewModel.getNoteSwipeAction(NoteAdapter.SwipeDirection.LEFT))
+        assertEquals(StatusChangeAction.NONE, viewModel.getNoteSwipeAction(NoteAdapter.SwipeDirection.RIGHT))
     }
 
     @Test

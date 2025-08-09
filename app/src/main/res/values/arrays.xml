@@ -28,13 +28,13 @@
         <item>system</item>
     </string-array>
 
-    <!-- Associated with `SwipeAction` enum -->
-    <string-array name="pref_swipe_action_entries">
+    <!-- Associated with `StatusChangeAction` enum -->
+    <string-array name="pref_status_change_action_entries">
         <item>@string/action_archive</item>
         <item>@string/action_delete</item>
         <item>@string/action_none</item>
     </string-array>
-    <string-array name="pref_swipe_action_values">
+    <string-array name="pref_status_change_action_values">
         <item>archive</item>
         <item>delete</item>
         <item>none</item>
