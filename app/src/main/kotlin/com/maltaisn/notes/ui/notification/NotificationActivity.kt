@@ -19,6 +19,7 @@ package com.maltaisn.notes.ui.notification
 import android.content.Intent
 import android.os.Bundle
 import android.text.format.DateFormat
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationManagerCompat
 import com.google.android.material.datepicker.CalendarConstraints
@@ -29,7 +30,6 @@ import com.google.android.material.timepicker.TimeFormat
 import com.maltaisn.notes.R
 import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.receiver.AlarmReceiver
-import com.maltaisn.notes.ui.hiltNavGraphViewModels
 import com.maltaisn.notes.ui.observeEvent
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.Calendar
@@ -38,7 +38,7 @@ import java.util.TimeZone
 @AndroidEntryPoint
 class NotificationActivity : AppCompatActivity() {
 
-    private val viewModel: NotificationViewModel by hiltNavGraphViewModels(R.id.nav_graph_notification)
+    private val viewModel: NotificationViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

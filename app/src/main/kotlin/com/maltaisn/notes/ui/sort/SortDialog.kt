@@ -19,8 +19,8 @@ package com.maltaisn.notes.ui.sort
 import android.app.Dialog
 import android.os.Bundle
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
-import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.maltaisn.notes.R
 import com.maltaisn.notes.databinding.DialogSortBinding
@@ -35,7 +35,7 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class SortDialog : DialogFragment() {
 
-    private val sharedViewModel: SharedViewModel by hiltNavGraphViewModels(R.id.nav_graph_main)
+    private val sharedViewModel: SharedViewModel by activityViewModels()
     private val viewModel: SortViewModel by viewModels()
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {

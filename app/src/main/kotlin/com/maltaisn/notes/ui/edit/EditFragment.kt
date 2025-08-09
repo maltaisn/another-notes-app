@@ -35,6 +35,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.get
 import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
@@ -65,7 +66,7 @@ import com.google.android.material.R as RMaterial
 class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener, ConfirmDialog.Callback {
 
     val viewModel: EditViewModel by hiltNavGraphViewModels(R.id.fragment_edit)
-    val sharedViewModel: SharedViewModel by hiltNavGraphViewModels(R.id.nav_graph_main)
+    val sharedViewModel: SharedViewModel by activityViewModels()
 
     private val args: EditFragmentArgs by navArgs()
 

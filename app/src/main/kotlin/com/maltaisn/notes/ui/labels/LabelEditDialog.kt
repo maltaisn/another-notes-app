@@ -22,8 +22,8 @@ import android.os.Bundle
 import android.view.WindowManager
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
-import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.navArgs
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.maltaisn.notes.R
@@ -40,7 +40,7 @@ import dagger.hilt.android.AndroidEntryPoint
 class LabelEditDialog : DialogFragment() {
 
     val viewModel: LabelEditViewModel by viewModels()
-    private val sharedViewModel: SharedViewModel by hiltNavGraphViewModels(R.id.nav_graph_main)
+    private val sharedViewModel: SharedViewModel by activityViewModels()
 
     private val args: LabelEditDialogArgs by navArgs()
 

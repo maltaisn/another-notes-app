@@ -34,7 +34,7 @@ import androidx.core.view.isVisible
 import androidx.core.view.updatePadding
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
-import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.fragment.FragmentNavigatorExtras
@@ -72,7 +72,7 @@ import com.google.android.material.R as RMaterial
 abstract class NoteFragment : Fragment(), ActionMode.Callback, ConfirmDialog.Callback,
     NavController.OnDestinationChangedListener {
 
-    val sharedViewModel: SharedViewModel by hiltNavGraphViewModels(R.id.nav_graph_main)
+    val sharedViewModel: SharedViewModel by activityViewModels()
 
     @Inject
     lateinit var prefsManager: PrefsManager

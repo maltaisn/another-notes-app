@@ -27,8 +27,8 @@ import androidx.appcompat.view.ActionMode
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.isVisible
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
-import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -61,7 +61,7 @@ class LabelFragment : DialogFragment(), Toolbar.OnMenuItemClickListener,
     ActionMode.Callback, ConfirmDialog.Callback {
 
     val viewModel: LabelViewModel by viewModels()
-    private val sharedViewModel: SharedViewModel by hiltNavGraphViewModels(R.id.nav_graph_main)
+    private val sharedViewModel: SharedViewModel by activityViewModels()
 
     private val args: LabelFragmentArgs by navArgs()
 

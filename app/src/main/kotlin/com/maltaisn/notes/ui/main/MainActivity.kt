@@ -56,7 +56,6 @@ import com.maltaisn.notes.model.entity.NoteType
 import com.maltaisn.notes.navigateSafe
 import com.maltaisn.notes.receiver.AlarmReceiver
 import com.maltaisn.notes.ui.SharedViewModel
-import com.maltaisn.notes.ui.hiltNavGraphViewModels
 import com.maltaisn.notes.ui.main.MainViewModel.NewNoteData
 import com.maltaisn.notes.ui.navigation.HomeDestination
 import com.maltaisn.notes.ui.observeEvent
@@ -68,7 +67,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedListener {
 
-    private val sharedViewModel: SharedViewModel by hiltNavGraphViewModels(R.id.nav_graph_main)
+    private val sharedViewModel: SharedViewModel by viewModels()
     private val viewModel: MainViewModel by viewModels()
 
     @Inject
