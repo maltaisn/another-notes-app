@@ -207,14 +207,14 @@ class MockNotesRepository(private val labelsRepository: MockLabelsRepository) : 
     }
 
     override suspend fun emptyTrash() {
-        notes.entries.removeIf { (_, note) ->
+        notes.entries.removeAll { (_, note) ->
             note.status == NoteStatus.DELETED
         }
         changeFlow.emit(Unit)
     }
 
     override suspend fun deleteOldNotesInTrash() {
-        notes.entries.removeIf { (_, note) ->
+        notes.entries.removeAll { (_, note) ->
             note.status == NoteStatus.DELETED &&
                     (System.currentTimeMillis() - note.lastModifiedDate.time) > 7  // Actually this is now a setting...
         }
