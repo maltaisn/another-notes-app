@@ -27,8 +27,11 @@ import com.maltaisn.notes.model.LabelsRepository
 import com.maltaisn.notes.model.NotesRepository
 import com.maltaisn.notes.model.PrefsManager
 import com.maltaisn.notes.model.ReminderAlarmManager
+import com.maltaisn.notes.model.SortField
 import com.maltaisn.notes.model.SortSettings
+import com.maltaisn.notes.model.entity.FractionalIndex
 import com.maltaisn.notes.model.entity.Label
+import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.model.entity.NoteStatus
 import com.maltaisn.notes.model.entity.NoteWithLabels
 import com.maltaisn.notes.model.entity.PinnedStatus
@@ -48,6 +51,7 @@ import com.maltaisn.notes.ui.send
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import java.util.Calendar
+import java.util.Collections
 import javax.inject.Inject
 
 @HiltViewModel
@@ -68,6 +72,10 @@ class HomeViewModel @Inject constructor(
     private var batteryRestricted = false
     private var notificationsRestricted = false
     private var remindersRestricted = false
+
+    private var draggedNote: Note? = null
+    private var dragStartPos: Int = -1
+    private var dragLastPos: Int = -1
 
     private val _fabShown = MutableLiveData<Boolean>()
     val fabShown: LiveData<Boolean>
@@ -110,6 +118,7 @@ class HomeViewModel @Inject constructor(
                             NoteStatus.ARCHIVED -> createArchivedListItems(notes)
                             NoteStatus.DELETED -> createDeletedListItems(notes)
                         }
+                        makeNoteRankIsUniqueInTheirSection()
                     }
                 }
 
@@ -234,10 +243,89 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    override fun onNoteSwiped(pos: Int, direction: NoteAdapter.SwipeDirection) {
-        val note = (noteItems.value!![pos] as NoteItem).note
+    override fun onNoteSwiped(item: NoteItem, pos: Int, direction: NoteAdapter.SwipeDirection) {
         val status = getNoteSwipeAction(direction).status ?: return
-        changeNotesStatus(setOf(note), status)
+        changeNotesStatus(setOf(item.note), status)
+    }
+
+    override fun onNoteSwapped(item: NoteItem, from: Int, to: Int) {
+        if (draggedNote == null) {
+            draggedNote = item.note
+            dragStartPos = from
+        }
+        dragLastPos = to
+
+        // Make sure the backing list is consistent with the adapter, in which the move was notified.
+        Collections.swap(listItems, from, to)
+    }
+
+    override fun onNoteDragStart() {
+        // If we get here, it's because there's exactly one note selected. Unselect it.
+        // Like before (in NoteViewModel.onNoteItemLongClicked), don't update the list, just the item,
+        // so that the view holder doesn't change and drag can continue.
+        val selectedNoteId = selectedNotes.first().id
+        for (item in listItems) {
+            if (item is NoteItem && item.note.id == selectedNoteId) {
+                item.checked = false
+                break
+            }
+        }
+        onListItemsChanged()
+    }
+
+    override fun onNoteDragEnd() {
+        if (draggedNote == null) {
+            return
+        }
+        viewModelScope.launch {
+            // can be null if at the start or end of the list, or if there's a header there (if any pinned).
+            val noteBefore = (listItems.getOrNull(dragLastPos - 1) as? NoteItem)?.note
+            val noteAfter = (listItems.getOrNull(dragLastPos + 1) as? NoteItem)?.note
+            val note = draggedNote!!.copy(rank = FractionalIndex.insert(noteBefore?.rank, noteAfter?.rank))
+            notesRepository.updateNote(note)
+
+            draggedNote = null
+        }
+    }
+
+    override fun canDrag(item: NoteItem): Boolean {
+        return currentDestination == HomeDestination.Status(NoteStatus.ACTIVE) &&
+                prefs.sortField == SortField.CUSTOM && item.note.id == selectedNotes.firstOrNull()?.id
+    }
+
+    private suspend fun makeNoteRankIsUniqueInTheirSection() {
+        // There are several ways rank can become duplicated.
+        // 1. Dragging a note at the start of the unpinned section, maybe giving it the same rank as a pinned note.
+        // 2. Archive a note, reordering notes/adding notes, unarchive the note.
+        // etc.
+        // Rather than handling all these cases (tedious and error prone), just make sure the ranks are unique
+        // in their section when updating the list. This should be rare enough that the reordering is not annoying.
+        val duplicate = mutableListOf<Note>()
+        val sectionRanks = mutableSetOf<FractionalIndex>()
+        var lastItemWasNote = false
+        for (item in listItems) {
+            if (item is NoteItem) {
+                val rank = item.note.rank
+                if (rank in sectionRanks) {
+                    duplicate += item.note
+                } else {
+                    sectionRanks += rank
+                }
+                lastItemWasNote = true
+            } else if (lastItemWasNote) {
+                sectionRanks.clear()
+                lastItemWasNote = false
+            }
+        }
+
+        if (duplicate.isNotEmpty()) {
+            var newRank = notesRepository.getNewNoteRank()
+            notesRepository.updateNotes(duplicate.map {
+                val newNote = it.copy(rank = newRank)
+                newRank = newRank.prepend()
+                newNote
+            })
+        }
     }
 
     override fun onNoteActionButtonClicked(item: NoteItem, pos: Int) {
@@ -274,7 +362,7 @@ class HomeViewModel @Inject constructor(
             }
             addNoteItem(note)
         }
-    }
+    }.toMutableList()
 
     private fun createArchivedListItems(notes: List<NoteWithLabels>) = buildList {
         for (note in notes) {
@@ -395,10 +483,8 @@ class HomeViewModel @Inject constructor(
         is HomeDestination.Status -> when (destination.status) {
             NoteStatus.ACTIVE -> PlaceholderData(R.drawable.ic_list,
                 R.string.note_placeholder_active)
-
             NoteStatus.ARCHIVED -> PlaceholderData(R.drawable.ic_archive,
                 R.string.note_placeholder_archived)
-
             NoteStatus.DELETED -> PlaceholderData(R.drawable.ic_delete,
                 R.string.note_placeholder_deleted)
         }

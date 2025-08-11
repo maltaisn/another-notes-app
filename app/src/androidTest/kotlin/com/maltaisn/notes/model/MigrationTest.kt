@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Nicolas Maltais
+ * Copyright 2025 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,12 +24,16 @@ import androidx.room.testing.MigrationTestHelper
 import androidx.sqlite.db.framework.FrameworkSQLiteOpenHelperFactory
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
+import com.maltaisn.notes.model.entity.FractionalIndex
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.io.IOException
+import kotlin.random.Random
+import kotlin.random.nextLong
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 @RunWith(AndroidJUnit4::class)
 class MigrationTest {
@@ -94,6 +98,44 @@ class MigrationTest {
         cursor.close()
 
         db.close()
+    }
+
+    @Test
+    @Throws(IOException::class)
+    fun migrate4To5() {
+        // Test that the rank column is created and default values are correct.
+        val rng = Random(0)
+        for (count in listOf(0, 1, 256, 257)) {
+            val db = helper.createDatabase(DB_NAME, 4)
+            val notes = mutableListOf<Pair<Int, Long>>()
+            repeat(count) { id ->
+                val modifiedDate = rng.nextLong(0L..10000L)
+                db.execSQL("""
+                    INSERT INTO notes (id, type, title, content, metadata, added_date, modified_date, status, pinned, 
+                                       reminder_start, reminder_recurrence, reminder_next, reminder_count, reminder_done) 
+                    VALUES ($id, 0, "", "", "", 0, $modifiedDate, 0, 0, NULL, NULL, NULL, NULL, NULL);
+                """.trimIndent())
+                notes += id to modifiedDate
+            }
+            notes.sortWith(compareByDescending<Pair<Int, Long>> { it.second }.thenBy { it.first })
+
+            helper.runMigrationsAndValidate(DB_NAME, 5, true, NotesDatabase.MIGRATION_4_5)
+
+            val cursor = db.query("""SELECT id, rank FROM notes ORDER BY rank ASC, id ASC""")
+            cursor.moveToFirst()
+            var rankIndex = FractionalIndex.INITIAL
+            for ((id, _) in notes) {
+                assertEquals(id, cursor.getInt(0))
+                val rankBlob = cursor.getBlob(1)
+                assertTrue(rankBlob.isNotEmpty())
+                assertEquals(rankIndex, FractionalIndex.fromBytes(rankBlob))
+                cursor.moveToNext()
+                rankIndex = rankIndex.append()
+            }
+            cursor.close()
+
+            db.close()
+        }
     }
 
     @Test

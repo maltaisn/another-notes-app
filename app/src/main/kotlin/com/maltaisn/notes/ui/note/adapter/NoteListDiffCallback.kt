@@ -45,16 +45,20 @@ class NoteListDiffCallback : DiffUtil.ItemCallback<NoteListItem>() {
             }
             is NoteItem -> {
                 // Only check the attributes that have an influence on the
-                // visual representation of the note item.
+                // visual representation or behavior of the note item.
+                // For example, "pinned" isn't visually different but affects behavior of selected note.
                 old as NoteItem
                 val oldNote = old.note
                 val newNote = new.note
                 var same = new.checked == old.checked &&
                         newNote.type == oldNote.type &&
                         newNote.status == oldNote.status &&
+                        newNote.pinned == oldNote.pinned &&
                         new.title == old.title &&
                         newNote.metadata == oldNote.metadata &&
                         newNote.reminder == oldNote.reminder &&
+                        newNote.addedDate == oldNote.addedDate &&
+                        newNote.lastModifiedDate == oldNote.lastModifiedDate &&
                         new.labels == old.labels &&
                         new.showMarkAsDone == old.showMarkAsDone &&
                         // At this point only content can differ

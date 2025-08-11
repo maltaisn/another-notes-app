@@ -75,4 +75,13 @@ class SortViewModelTest {
         assertLiveDataEventSent(viewModel.sortSettingsChange, newSettings)
         assertEquals(newSettings, viewModel.sortSettings.value)
     }
+
+    @Test
+    fun `keep custom field and not change direction`() = runTest {
+        viewModel.start()
+        viewModel.changeSortField(SortField.CUSTOM)
+        val newSettings = SortSettings(SortField.CUSTOM, SortDirection.ASCENDING)
+        assertLiveDataEventSent(viewModel.sortSettingsChange, newSettings)
+        assertEquals(newSettings, viewModel.sortSettings.value)
+    }
 }

@@ -16,6 +16,8 @@
 
 package com.maltaisn.notes.model
 
+import com.maltaisn.notes.NO_RANK
+import com.maltaisn.notes.model.entity.FractionalIndex
 import com.maltaisn.notes.model.entity.LabelRef
 import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.model.entity.NoteStatus
@@ -78,6 +80,7 @@ class MockNotesRepository(private val labelsRepository: MockLabelsRepository) : 
                 SortField.ADDED_DATE -> Note::addedDate
                 SortField.MODIFIED_DATE -> Note::lastModifiedDate
                 SortField.TITLE -> { note -> note.title.lowercase() }
+                SortField.CUSTOM -> Note::rank
             }
             return when (sortDirection) {
                 SortDirection.ASCENDING -> compareBy(noteField)
@@ -85,19 +88,25 @@ class MockNotesRepository(private val labelsRepository: MockLabelsRepository) : 
             }
         }
 
+    private val newNoteRank: FractionalIndex
+        get() = FractionalIndex.insert(null, notes.values.minOfOrNull { it.rank })
+
     private fun addNoteInternal(note: Note): Long {
-        val id = if (note.id != Note.NO_ID) {
-            notes[note.id] = note
-            if (note.id > lastNoteId) {
-                lastNoteId = note.id
-            }
-            note.id
-        } else {
+        var newNote = note
+        if (newNote.id == Note.NO_ID) {
             lastNoteId++
-            notes[lastNoteId] = note.copy(id = lastNoteId)
-            lastNoteId
+            newNote = newNote.copy(id = lastNoteId)
         }
-        lastAddedNote = notes[id]
+        if (newNote.rank == NO_RANK) {
+            newNote = newNote.copy(rank = newNoteRank)
+        }
+
+        val id = newNote.id
+        if (id > lastNoteId) {
+            lastNoteId = id
+        }
+        lastAddedNote = newNote
+        notes[id] = newNote
         return id
     }
 
@@ -156,6 +165,8 @@ class MockNotesRepository(private val labelsRepository: MockLabelsRepository) : 
     }
 
     override suspend fun getLastCreatedNote() = notes.values.maxByOrNull { it.addedDate }
+
+    override suspend fun getNewNoteRank() = newNoteRank
 
     override fun getNotesWithReminder() = changeFlow.map {
         notes.values.asSequence()

@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Nicolas Maltais
+ * Copyright 2025 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,8 @@ data class SortSettings(val field: SortField, val direction: SortDirection)
 enum class SortField(override val value: String) : ValueEnum<String> {
     ADDED_DATE("added_date"),
     MODIFIED_DATE("modified_date"),
-    TITLE("title");
+    TITLE("title"),
+    CUSTOM("custom");
 
     companion object {
         fun fromValue(value: String): SortField = findValueEnum(value)

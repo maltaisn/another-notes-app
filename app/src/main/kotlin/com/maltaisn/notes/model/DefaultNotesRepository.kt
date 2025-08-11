@@ -17,6 +17,7 @@
 package com.maltaisn.notes.model
 
 import android.text.format.DateUtils
+import com.maltaisn.notes.model.entity.FractionalIndex
 import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.model.entity.NoteStatus
 import kotlinx.coroutines.NonCancellable
@@ -57,6 +58,8 @@ class DefaultNotesRepository @Inject constructor(
     override suspend fun getNoteByIdWithLabels(id: Long) = notesDao.getByIdWithLabels(id)
 
     override suspend fun getLastCreatedNote() = notesDao.getLastCreatedNote()
+
+    override suspend fun getNewNoteRank() = FractionalIndex.insert(null, notesDao.getLowestNoteRank())
 
     override fun getNotesByStatus(status: NoteStatus) = notesDao.getByStatus(status, prefs.sortSettings)
 

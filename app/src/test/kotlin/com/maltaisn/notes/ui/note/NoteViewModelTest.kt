@@ -30,6 +30,7 @@ import com.maltaisn.notes.model.ReminderAlarmManager
 import com.maltaisn.notes.model.entity.Label
 import com.maltaisn.notes.model.entity.LabelRef
 import com.maltaisn.notes.model.entity.ListNoteItem
+import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.model.entity.NoteStatus
 import com.maltaisn.notes.model.entity.PinnedStatus
 import com.maltaisn.notes.model.entity.Reminder
@@ -254,8 +255,29 @@ class NoteViewModelTest {
         viewModel.togglePin()
         assertEquals(oldNote.copy(pinned = PinnedStatus.PINNED), notesRepo.requireNoteById(1))
 
+        // Ranked on top after unpinning
+        val newRank = notesRepo.getNewNoteRank()
         viewModel.togglePin()
-        assertEquals(oldNote, notesRepo.requireNoteById(1))
+        assertEquals(oldNote.copy(rank = newRank), notesRepo.requireNoteById(1))
+    }
+
+    @Test
+    fun `should unpin multiple notes and rank them correctly`() = runTest {
+        val togglePos = listOf(0, 3, 4)
+        for (pos in togglePos) {
+            viewModel.onNoteItemLongClicked(viewModel.getNoteItemAt(pos), pos)
+        }
+        viewModel.togglePin()
+        viewModel.togglePin()
+
+        var lastNote: Note? = null
+        for (pos in togglePos) {
+            val note = viewModel.getNoteItemAt(pos).note
+            if (lastNote != null) {
+                assertTrue(note.rank < lastNote.rank)
+            }
+            lastNote = note
+        }
     }
 
     @Test
@@ -278,13 +300,14 @@ class NoteViewModelTest {
 
     @Test
     fun `should copy selected note`() = runTest {
+        val newRank = notesRepo.getNewNoteRank()
         viewModel.onNoteItemLongClicked(viewModel.getNoteItemAt(4), 4)
         viewModel.copySelectedNote("untitled", "Copy")
 
         // should not copy reminder but should copy labels
         assertEquals(listOf(1L, 2L), labelsRepo.getLabelIdsForNote(notesRepo.lastNoteId))
         assertNoteEquals(listNote(listOf(ListNoteItem("item", false)), id = 5,
-            status = NoteStatus.ACTIVE, title = "note - Copy",
+            rank = newRank, status = NoteStatus.ACTIVE, title = "note - Copy",
             added = Date(10), modified = Date(10)),
             notesRepo.lastAddedNote!!)
     }
@@ -396,7 +419,7 @@ class NoteViewModelTest {
         init {
             viewModelScope.launch {
                 notesRepo.getAllNotesWithLabels().collect { notes ->
-                    listItems = notes.map { noteWithLabels ->
+                    listItems = notes.sortedBy { it.note.id }.map { noteWithLabels ->
                         val note = noteWithLabels.note
                         noteItemFactory.createItem(note, noteWithLabels.labels, isNoteSelected(note))
                     }

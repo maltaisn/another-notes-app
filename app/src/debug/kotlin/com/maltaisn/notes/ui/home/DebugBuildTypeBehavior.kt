@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Nicolas Maltais
+ * Copyright 2025 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,21 +34,10 @@ class DebugBuildTypeBehavior @Inject constructor(
         val destination = viewModel.currentDestination
         if (destination is HomeDestination.Status) {
             repeat(3) {
-                notesRepository.insertNote(DebugUtils.getRandomNote(destination.status))
+                val note = DebugUtils.getRandomNote(destination.status)
+                val rank = notesRepository.getNewNoteRank()
+                notesRepository.insertNote(note.copy(rank = rank))
             }
-
-            // For performance testing
-//            val labels = (1L..100L).map { Label(it, UUID.randomUUID().toString().substring(0, 9)) }
-//            for (label in labels) {
-//                labelsRepository.insertLabel(label)
-//            }
-//            for (status in NoteStatus.values()) {
-//                repeat(300) {
-//                    val id = notesRepository.insertNote(DebugUtils.getRandomNote(status))
-//                    val noteLabels = labels.shuffled().subList(0, Random.nextInt(10))
-//                    labelsRepository.insertLabelRefs(noteLabels.map { LabelRef(id, it.id) })
-//                }
-//            }
         } else if (destination is HomeDestination.Labels) {
             repeat(3) {
                 val id = notesRepository.insertNote(DebugUtils.getRandomNote(NoteStatus.ACTIVE))

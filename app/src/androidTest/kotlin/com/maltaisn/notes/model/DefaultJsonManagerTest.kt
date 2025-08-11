@@ -26,6 +26,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.maltaisn.notes.dateFor
 import com.maltaisn.notes.model.JsonManager.ImportResult
 import com.maltaisn.notes.model.entity.BlankNoteMetadata
+import com.maltaisn.notes.model.entity.FractionalIndex
 import com.maltaisn.notes.model.entity.Label
 import com.maltaisn.notes.model.entity.LabelRef
 import com.maltaisn.notes.model.entity.ListNoteMetadata
@@ -115,6 +116,7 @@ class DefaultJsonManagerTest {
             metadata = BlankNoteMetadata,
             addedDate = dateFor("2020-01-01Z"),
             lastModifiedDate = dateFor("2020-02-01Z"),
+            rank = FractionalIndex.INITIAL,
             status = NoteStatus.ACTIVE,
             pinned = PinnedStatus.PINNED,
             reminder = Reminder(dateFor("2020-03-01Z"), Recurrence(Recurrence.Period.DAILY),
@@ -127,6 +129,7 @@ class DefaultJsonManagerTest {
             metadata = ListNoteMetadata(listOf(false, true)),
             addedDate = dateFor("2019-01-01Z"),
             lastModifiedDate = dateFor("2019-02-01Z"),
+            rank = FractionalIndex.INITIAL.prepend(),
             status = NoteStatus.ARCHIVED,
             pinned = PinnedStatus.CANT_PIN,
             reminder = null
@@ -141,13 +144,14 @@ class DefaultJsonManagerTest {
         ))
 
         val jsonData = jsonManager.exportJsonData()
+        println(jsonData)
         assertEquals("""
-{"version":4,"notes":{"1":{"type":0,"title":"note","content":"content","metadata":"{\"type\":\"blank\"}",
-"added":"2020-01-01T00:00:00.000Z","modified":"2020-02-01T00:00:00.000Z","status":0,"pinned":2,
+{"version":5,"notes":{"1":{"type":0,"title":"note","content":"content","metadata":"{\"type\":\"blank\"}",
+"added":"2020-01-01T00:00:00.000Z","modified":"2020-02-01T00:00:00.000Z","rank":"gA","status":0,"pinned":2,
 "reminder":{"start":"2020-03-01T00:00:00.000Z","recurrence":"RRULE:FREQ=DAILY",
 "next":"2020-03-02T00:00:00.000Z","count":1,"done":false},"labels":[1,10]},"9":{"type":1,
 "title":"list","content":"item 1\nitem 2","metadata":"{\"type\":\"list\",\"checked\":[false,true]}",
-"added":"2019-01-01T00:00:00.000Z","modified":"2019-02-01T00:00:00.000Z","status":1,"pinned":0}},
+"added":"2019-01-01T00:00:00.000Z","modified":"2019-02-01T00:00:00.000Z","rank":"f/8","status":1,"pinned":0}},
 "labels":{"1":{"name":"label0"},"10":{"name":"label2","hidden":true}}}
         """.trim().replace("\n", ""), jsonData)
     }
@@ -155,7 +159,7 @@ class DefaultJsonManagerTest {
     @Test
     fun testUnencryptedJsonImportClean() = runBlocking {
         @Language("JSON") val jsonData = """{
-    "version": 3,
+    "version": 4,
     "notes": {
       "1": {
         "type": 0,
@@ -210,6 +214,7 @@ class DefaultJsonManagerTest {
                 metadata = BlankNoteMetadata,
                 addedDate = dateFor("2020-01-01Z"),
                 lastModifiedDate = dateFor("2020-02-01Z"),
+                rank = FractionalIndex.nth(0),
                 status = NoteStatus.ACTIVE,
                 pinned = PinnedStatus.PINNED,
                 reminder = Reminder(dateFor("2020-03-01Z"), Recurrence(Recurrence.Period.DAILY),
@@ -222,6 +227,7 @@ class DefaultJsonManagerTest {
                 metadata = ListNoteMetadata(listOf(false, true)),
                 addedDate = dateFor("2019-01-01Z"),
                 lastModifiedDate = dateFor("2019-02-01Z"),
+                rank = FractionalIndex.nth(-1),
                 status = NoteStatus.ARCHIVED,
                 pinned = PinnedStatus.CANT_PIN,
                 reminder = null
@@ -237,11 +243,11 @@ class DefaultJsonManagerTest {
         val label10 = Label(10, "label10")
         notesDao.insertAll(listOf(
             // merge case: same ID, no reminder on old, labels merge.
-            testNote(id = 1, added = dateFor("2020-01-01Z")),
+            testNote(id = 1, added = dateFor("2020-01-01Z"), rank = FractionalIndex.nth(-2)),
             // merge case: different dates, ID clash.
-            testNote(id = 9, added = dateFor("2021-01-01Z")),
+            testNote(id = 9, added = dateFor("2021-01-01Z"), rank = FractionalIndex.nth(-3)),
             // merge case: different reminders
-            testNote(id = 12, added = dateFor("2021-01-01Z"),
+            testNote(id = 12, added = dateFor("2021-01-01Z"), rank = FractionalIndex.nth(-4),
                 reminder = Reminder(dateFor("2021-01-02Z"), null, dateFor("2021-01-03Z"), 1, true)),
         ))
         labelsDao.insert(label1)
@@ -250,7 +256,7 @@ class DefaultJsonManagerTest {
         labelsDao.insertRefs(listOf(LabelRef(1, 1), LabelRef(1, 3)))
 
         @Language("JSON") val jsonData = """{
-    "version": 3,
+    "version": 5,
     "notes": {
       "1": {
         "type": 0,
@@ -259,6 +265,7 @@ class DefaultJsonManagerTest {
         "metadata": "{\"type\":\"blank\"}",
         "added": "2020-01-01T00:00:00.000Z",
         "modified": "2020-01-01T00:00:00.000Z",
+        "rank": "gA",
         "status": 0,
         "pinned": 2,
         "reminder": {
@@ -277,6 +284,7 @@ class DefaultJsonManagerTest {
         "metadata": "{\"type\":\"list\",\"checked\":[false,true]}",
         "added": "2019-01-01T00:00:00.000Z",
         "modified": "2019-02-01T00:00:00.000Z",
+        "rank": "f/8",
         "status": 1,
         "pinned": 0,
         "reminder": null,
@@ -292,6 +300,7 @@ class DefaultJsonManagerTest {
         "metadata": "{\"type\":\"blank\"}",
         "added": "2021-01-01T00:00:00.000Z",
         "modified": "2021-01-01T00:00:00.000Z",
+        "rank": "f/4",
         "status": 0,
         "pinned": 1,
         "reminder": {
@@ -324,17 +333,18 @@ class DefaultJsonManagerTest {
                 metadata = BlankNoteMetadata,
                 addedDate = dateFor("2020-01-01Z"),
                 lastModifiedDate = dateFor("2020-01-01Z"),
+                rank = FractionalIndex.nth(0),
                 status = NoteStatus.ACTIVE,
                 pinned = PinnedStatus.PINNED,
                 reminder = Reminder(dateFor("2020-03-01Z"), Recurrence(Recurrence.Period.DAILY),
                     dateFor("2020-03-02Z"), 1, false)
             ), listOf(label1, label3, label9, label11)),
             NoteWithLabels(
-                testNote(id = 9, added = dateFor("2021-01-01Z")),
+                testNote(id = 9, added = dateFor("2021-01-01Z"), rank = FractionalIndex.nth(-3)),
                 emptyList()
             ),
             NoteWithLabels(
-                testNote(id = 12, added = dateFor("2021-01-01Z"),
+                testNote(id = 12, added = dateFor("2021-01-01Z"), rank = FractionalIndex.nth(-4),
                     reminder = Reminder(dateFor("2021-01-02Z"), null, dateFor("2021-01-03Z"), 1, true)),
                 emptyList()
             ),
@@ -345,12 +355,13 @@ class DefaultJsonManagerTest {
                 metadata = ListNoteMetadata(listOf(false, true)),
                 addedDate = dateFor("2019-01-01Z"),
                 lastModifiedDate = dateFor("2019-02-01Z"),
+                rank = FractionalIndex.nth(-1),
                 status = NoteStatus.ARCHIVED,
                 pinned = PinnedStatus.CANT_PIN,
                 reminder = null
             ), listOf(label1, label9)),
             NoteWithLabels(
-                testNote(id = 14, added = dateFor("2021-01-01Z"),
+                testNote(id = 14, added = dateFor("2021-01-01Z"), rank = FractionalIndex.nth(-5),
                     reminder = Reminder(dateFor("2021-01-03Z"), null, dateFor("2022-01-03Z"), 1, false)),
                 emptyList()
             ),
@@ -406,6 +417,7 @@ class DefaultJsonManagerTest {
             metadata = BlankNoteMetadata,
             addedDate = dateFor("2020-01-01Z"),
             lastModifiedDate = dateFor("2020-02-01Z"),
+            rank = FractionalIndex.INITIAL,
             status = NoteStatus.ACTIVE,
             pinned = PinnedStatus.PINNED,
             reminder = Reminder(dateFor("2020-03-01Z"), Recurrence(Recurrence.Period.DAILY),
@@ -418,6 +430,7 @@ class DefaultJsonManagerTest {
             metadata = ListNoteMetadata(listOf(false, true)),
             addedDate = dateFor("2019-01-01Z"),
             lastModifiedDate = dateFor("2019-02-01Z"),
+            rank = FractionalIndex.INITIAL,
             status = NoteStatus.ARCHIVED,
             pinned = PinnedStatus.CANT_PIN,
             reminder = null
@@ -449,6 +462,7 @@ class DefaultJsonManagerTest {
                 metadata = BlankNoteMetadata,
                 addedDate = dateFor("2020-01-01Z"),
                 lastModifiedDate = dateFor("2020-02-01Z"),
+                rank = FractionalIndex.INITIAL,
                 status = NoteStatus.ACTIVE,
                 pinned = PinnedStatus.PINNED,
                 reminder = Reminder(dateFor("2020-03-01Z"), Recurrence(Recurrence.Period.DAILY),
@@ -461,6 +475,7 @@ class DefaultJsonManagerTest {
                 metadata = ListNoteMetadata(listOf(false, true)),
                 addedDate = dateFor("2019-01-01Z"),
                 lastModifiedDate = dateFor("2019-02-01Z"),
+                rank = FractionalIndex.INITIAL,
                 status = NoteStatus.ARCHIVED,
                 pinned = PinnedStatus.CANT_PIN,
                 reminder = null
@@ -498,6 +513,7 @@ class DefaultJsonManagerTest {
                 metadata = BlankNoteMetadata,
                 addedDate = dateFor("2020-01-01Z"),
                 lastModifiedDate = dateFor("2020-02-01Z"),
+                rank = FractionalIndex.nth(0),
                 status = NoteStatus.ACTIVE,
                 pinned = PinnedStatus.PINNED,
                 reminder = Reminder(dateFor("2020-03-01Z"), Recurrence(Recurrence.Period.DAILY),
@@ -510,6 +526,7 @@ class DefaultJsonManagerTest {
                 metadata = ListNoteMetadata(listOf(false, true)),
                 addedDate = dateFor("2019-01-01Z"),
                 lastModifiedDate = dateFor("2019-02-01Z"),
+                rank = FractionalIndex.nth(-1),
                 status = NoteStatus.ARCHIVED,
                 pinned = PinnedStatus.CANT_PIN,
                 reminder = null

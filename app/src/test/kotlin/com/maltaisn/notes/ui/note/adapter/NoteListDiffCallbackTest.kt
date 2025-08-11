@@ -18,10 +18,10 @@ package com.maltaisn.notes.ui.note.adapter
 
 import com.maltaisn.notes.listNote
 import com.maltaisn.notes.model.PrefsManager
+import com.maltaisn.notes.model.entity.FractionalIndex
 import com.maltaisn.notes.model.entity.Label
 import com.maltaisn.notes.model.entity.ListNoteItem
 import com.maltaisn.notes.model.entity.NoteStatus
-import com.maltaisn.notes.model.entity.PinnedStatus
 import com.maltaisn.notes.model.entity.Reminder
 import com.maltaisn.notes.testNote
 import com.maltaisn.notes.ui.note.NoteItemFactory
@@ -103,9 +103,9 @@ class NoteListDiffCallbackTest {
     }
 
     @Test
-    fun `should return true for visually same note`() {
-        val note0 = testNote(id = 0, pinned = PinnedStatus.PINNED, modified = Date(1), added = Date(0))
-        val note1 = testNote(id = 1, pinned = PinnedStatus.UNPINNED, modified = Date(2), added = Date(1))
+    fun `should return true for different note (rank)`() {
+        val note0 = testNote(id = 1, rank = FractionalIndex.INITIAL)
+        val note1 = note0.copy(id = 2, rank = note0.rank.append())
         val item0 = factory.createItem(note0, emptyList(), false)
         val item1 = factory.createItem(note1, emptyList(), false)
         assertTrue(callback.areContentsTheSame(item0, item1))
@@ -176,6 +176,24 @@ class NoteListDiffCallbackTest {
         factory.query = "a"
         val item0 = factory.createItem(note0, emptyList(), false)
         factory.query = "b"
+        val item1 = factory.createItem(note1, emptyList(), false)
+        assertFalse(callback.areContentsTheSame(item0, item1))
+    }
+
+    @Test
+    fun `should return false for different note (added date)`() {
+        val note0 = testNote(added = Date(1000), modified = Date(2000))
+        val note1 = testNote(added = Date(2000), modified = Date(2000))
+        val item0 = factory.createItem(note0, emptyList(), false)
+        val item1 = factory.createItem(note1, emptyList(), false)
+        assertFalse(callback.areContentsTheSame(item0, item1))
+    }
+
+    @Test
+    fun `should return false for different note (modified date)`() {
+        val note0 = testNote(added = Date(0), modified = Date(1000))
+        val note1 = testNote(added = Date(0), modified = Date(2000))
+        val item0 = factory.createItem(note0, emptyList(), false)
         val item1 = factory.createItem(note1, emptyList(), false)
         assertFalse(callback.areContentsTheSame(item0, item1))
     }

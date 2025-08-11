@@ -110,6 +110,7 @@
     <string name="sort_field_created">Date created</string>
     <string name="sort_field_modified">Date modified</string>
     <string name="sort_field_title">Title</string>
+    <string name="sort_field_custom">Custom</string>
 
     <!-- Edit -->
     <string name="edit_add_title">Create note</string>

@@ -93,13 +93,6 @@ sealed class NoteViewHolder<T : NoteItem>(itemView: View) :
                 adapter.callback.onNoteItemClicked(item, bindingAdapterPosition)
             }
         }
-        cardView.setOnLongClickListener {
-            val pos = bindingAdapterPosition
-            if (pos != RecyclerView.NO_POSITION) {
-                adapter.callback.onNoteItemLongClicked(item, bindingAdapterPosition)
-            }
-            true
-        }
     }
 
     private fun bindTitle(adapter: NoteAdapter, item: NoteItem) {

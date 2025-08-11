@@ -16,6 +16,8 @@
 
 <resources>
 
+    <dimen name="note_drag_min_distance">24dp</dimen>
+
     <dimen name="edit_dragged_item_elevation">2dp</dimen>
 
     <integer name="note_list_layout_span_count">1</integer>

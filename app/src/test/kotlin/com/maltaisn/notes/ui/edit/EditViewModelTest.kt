@@ -159,9 +159,10 @@ class EditViewModelTest {
 
     @Test
     fun `should create new blank note`() = runTest {
+        val rank = notesRepo.getNewNoteRank()
         viewModel.start()
 
-        assertNoteEquals(testNote(title = "", content = ""), notesRepo.lastAddedNote!!)
+        assertNoteEquals(testNote(title = "", content = "", rank = rank), notesRepo.lastAddedNote!!)
 
         assertEquals(EditActionsAvailability(
             undo = UNAVAILABLE,
@@ -300,7 +301,7 @@ class EditViewModelTest {
         viewModel.saveNote()
 
         assertNoteEquals(testNote(id = 1, title = "modified", content = "content",
-            added = oldNote.addedDate, modified = Date()), notesRepo.lastAddedNote!!)
+            rank = oldNote.rank, added = oldNote.addedDate, modified = Date()), notesRepo.lastAddedNote!!)
     }
 
     @Test
@@ -318,7 +319,7 @@ class EditViewModelTest {
         assertNoteEquals(listNote(listOf(
             ListNoteItem("modified item", false),
             ListNoteItem("item 2", false),
-        ), title = "title", status = NoteStatus.ACTIVE,
+        ), title = "title", rank = oldNote.rank, status = NoteStatus.ACTIVE,
             added = oldNote.addedDate, modified = Date()), notesRepo.lastAddedNote!!)
     }
 
@@ -530,6 +531,7 @@ class EditViewModelTest {
         itemAt<EditTextItem>(1).text.replaceAll("new title")
         assertUndoRedoStatus(canUndo = true)
 
+        val newRank = notesRepo.getNewNoteRank()
         viewModel.copyNote("untitled", "Copy")
         assertUndoRedoStatus(canUndo = false)
 
@@ -538,7 +540,8 @@ class EditViewModelTest {
         assertNoteEquals(listNote(listOf(
             ListNoteItem("item 1", false),
             ListNoteItem("item 2", false)
-        ), id = 3, title = "new title - Copy", status = NoteStatus.ACTIVE, pinned = PinnedStatus.PINNED,
+        ), id = 3, title = "new title - Copy", rank = newRank,
+            status = NoteStatus.ACTIVE, pinned = PinnedStatus.PINNED,
             added = Date(), modified = Date()), noteCopy)
         assertEquals(listOf(1L, 2L), labelsRepo.getLabelIdsForNote(noteCopy.id))
 

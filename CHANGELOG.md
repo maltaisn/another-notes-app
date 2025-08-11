@@ -1,5 +1,6 @@
 ## v1.6.0 (WIP)
 - Added undo/redo support (#26).
+- Added "custom" sort order to manually drag the notes (#44).
 - Added Vietnamese translation (#146, @ngocanhtve) & updated other languages.
 - Allow adjusting the text size in the editor (#22).
 - Allow exporting notes as a ZIP archive (#59).

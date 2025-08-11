@@ -29,7 +29,7 @@ sealed interface NoteListItem {
 }
 
 sealed interface NoteItem : NoteListItem {
-    val note: Note
+    var note: Note
     val labels: List<Label>
     var checked: Boolean
     val title: Highlighted
@@ -40,7 +40,7 @@ sealed interface NoteItem : NoteListItem {
 
 data class NoteItemText(
     override val id: Long,
-    override val note: Note,
+    override var note: Note,
     override val labels: List<Label>,
     override var checked: Boolean,
     override val title: Highlighted,
@@ -56,7 +56,7 @@ data class NoteItemText(
 
 data class NoteItemList(
     override val id: Long,
-    override val note: Note,
+    override var note: Note,
     override val labels: List<Label>,
     override var checked: Boolean,
     override val title: Highlighted,

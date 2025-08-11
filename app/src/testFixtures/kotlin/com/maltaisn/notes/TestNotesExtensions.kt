@@ -15,10 +15,12 @@
  */
 
 @file:Suppress("LongParameterList")
+@file:OptIn(ExperimentalUnsignedTypes::class)
 
 package com.maltaisn.notes
 
 import com.maltaisn.notes.model.entity.BlankNoteMetadata
+import com.maltaisn.notes.model.entity.FractionalIndex
 import com.maltaisn.notes.model.entity.ListNoteItem
 import com.maltaisn.notes.model.entity.ListNoteMetadata
 import com.maltaisn.notes.model.entity.Note
@@ -39,10 +41,11 @@ fun testNote(
     metadata: NoteMetadata = BlankNoteMetadata,
     added: Date = Date(),
     modified: Date = added,
+    rank: FractionalIndex = NO_RANK,
     status: NoteStatus = NoteStatus.ACTIVE,
     pinned: PinnedStatus = defaultPinnedStatusForStatus(status),
     reminder: Reminder? = null
-) = Note(id, type, title, content, metadata, added, modified, status, pinned, reminder)
+) = Note(id, type, title, content, metadata, added, modified, rank, status, pinned, reminder)
 
 fun listNote(
     items: List<ListNoteItem>,
@@ -50,6 +53,7 @@ fun listNote(
     title: String = "note",
     added: Date = Date(),
     modified: Date = added,
+    rank: FractionalIndex = NO_RANK,
     status: NoteStatus = NoteStatus.ACTIVE,
     pinned: PinnedStatus = defaultPinnedStatusForStatus(status),
     reminder: Reminder? = null
@@ -58,7 +62,7 @@ fun listNote(
         require('\n' !in it.content)
         it.content
     },
-    ListNoteMetadata(items.map { it.checked }), added, modified, status, pinned, reminder)
+    ListNoteMetadata(items.map { it.checked }), added, modified, rank, status, pinned, reminder)
 
 fun assertNoteEquals(
     expected: Note,
@@ -75,6 +79,8 @@ fun assertNoteEquals(
         addedDate = expected.addedDate,
         lastModifiedDate = expected.lastModifiedDate))
 }
+
+val NO_RANK = FractionalIndex.fromBytes(ubyteArrayOf(0x83u, 0xdeu, 0xadu, 0xbeu, 0xefu).asByteArray())
 
 private fun defaultPinnedStatusForStatus(status: NoteStatus) =
     if (status == NoteStatus.ACTIVE) PinnedStatus.UNPINNED else PinnedStatus.CANT_PIN

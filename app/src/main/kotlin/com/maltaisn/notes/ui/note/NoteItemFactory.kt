@@ -228,6 +228,6 @@ class NoteItemFactory @Inject constructor(
         private const val START_ELLIPSIS_THRESHOLD_CONTENT_FIRST = 5  // for first line of preview
         private const val START_ELLIPSIS_DISTANCE_CONTENT = 20
 
-        val DEBUG_TITLE_FIELDS = listOf(Note::id)
+        val DEBUG_TITLE_FIELDS = listOf(Note::id, Note::rank)
     }
 }

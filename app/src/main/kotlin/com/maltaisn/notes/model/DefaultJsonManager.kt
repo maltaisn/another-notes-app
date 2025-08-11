@@ -20,13 +20,13 @@
 package com.maltaisn.notes.model
 
 import android.util.Base64
-import androidx.room.ColumnInfo
 import com.maltaisn.notes.model.JsonManager.ImportResult
 import com.maltaisn.notes.model.converter.DateTimeConverter
 import com.maltaisn.notes.model.converter.NoteMetadataConverter
 import com.maltaisn.notes.model.converter.NoteStatusConverter
 import com.maltaisn.notes.model.converter.NoteTypeConverter
 import com.maltaisn.notes.model.converter.PinnedStatusConverter
+import com.maltaisn.notes.model.entity.FractionalIndex
 import com.maltaisn.notes.model.entity.Label
 import com.maltaisn.notes.model.entity.LabelRef
 import com.maltaisn.notes.model.entity.Note
@@ -64,8 +64,9 @@ class DefaultJsonManager @Inject constructor(
         for (noteWithLabels in notesList) {
             val note = noteWithLabels.note
             notesMap[note.id] = NoteSurrogate(note.type, note.title, note.content,
-                note.metadata, note.addedDate, note.lastModifiedDate, note.status, note.pinned,
-                note.reminder, noteWithLabels.labels.map { it.id })
+                note.metadata, note.addedDate, note.lastModifiedDate,
+                note.rank, note.status, note.pinned, note.reminder,
+                noteWithLabels.labels.map { it.id })
         }
 
         // Map labels by ID
@@ -209,11 +210,20 @@ class DefaultJsonManager @Inject constructor(
 
     private suspend fun importNotes(notesData: NotesData, newLabelsMap: Map<Long, Long>) {
         val existingNotes = notesDao.getAll().associateBy { it.note.id }
+        val allRanks = existingNotes.values.asSequence().map { it.note.rank }.toMutableSet()
         val labelRefs = mutableListOf<LabelRef>()
+
         for ((id, ns) in notesData.notes) {
             var noteId = id
+
+            var rank = ns.rank
+            if (rank == null || rank in allRanks) {
+                rank = FractionalIndex.insert(null, notesDao.getLowestNoteRank())
+                allRanks += rank
+            }
+
             val newNote = Note(id, ns.type, ns.title, ns.content, ns.metadata, ns.addedDate,
-                ns.lastModifiedDate, ns.status, ns.pinned, ns.reminder)
+                ns.lastModifiedDate, rank, ns.status, ns.pinned, ns.reminder)
             val oldNote = existingNotes[noteId]
 
             // Remap labels appropriately and discard unresolved label IDs.
@@ -265,10 +275,19 @@ class DefaultJsonManager @Inject constructor(
         old.start == new.start && old.recurrence == new.recurrence
 
     companion object {
-        private const val VERSION = 4
+        /**
+         * Try to keep the version number in sync with the database version.
+         * Version history:
+         * - 3: initial version
+         * - 4: added "hidden" attribute on label
+         * - 5: added "rank" attribute on note
+         */
+        private const val VERSION = 5
         private const val FIRST_VERSION = 3
+
         private const val EXPORT_ENCRYPTION_ALGORITHM = "AES/GCM/NoPadding"
         private const val EXPORT_ENCRYPTION_KEY_ALIAS = "export_key"
+
         private const val BASE64_FLAGS = Base64.NO_WRAP or Base64.NO_PADDING
     }
 }
@@ -291,9 +310,10 @@ private data class NoteSurrogate(
     val addedDate: Date,
     @SerialName("modified")
     val lastModifiedDate: Date,
+    @SerialName("rank")
+    val rank: FractionalIndex? = null,
     @SerialName("status")
     val status: NoteStatus,
-    @ColumnInfo(name = "pinned")
     @SerialName("pinned")
     val pinned: PinnedStatus,
     @SerialName("reminder")

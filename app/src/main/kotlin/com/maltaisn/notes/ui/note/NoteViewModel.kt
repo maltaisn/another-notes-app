@@ -26,6 +26,7 @@ import com.maltaisn.notes.model.LabelsRepository
 import com.maltaisn.notes.model.NotesRepository
 import com.maltaisn.notes.model.PrefsManager
 import com.maltaisn.notes.model.ReminderAlarmManager
+import com.maltaisn.notes.model.entity.FractionalIndex
 import com.maltaisn.notes.model.entity.LabelRef
 import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.model.entity.NoteStatus
@@ -59,28 +60,7 @@ abstract class NoteViewModel(
         set(value) {
             field = value
             _noteItems.value = value
-
-            _placeholderData.value = if (value.isEmpty()) {
-                updatePlaceholder()
-            } else {
-                null
-            }
-
-            // Update selected notes.
-            val selectedBefore = selectedNotes.size
-            _selectedNotes.clear()
-            selectedNoteIds.clear()
-            for (item in value) {
-                if (item is NoteItem && item.checked) {
-                    _selectedNotes += item.note
-                    selectedNoteIds += item.note.id
-                }
-            }
-
-            updateNoteSelection()
-            if (selectedNotes.size != selectedBefore) {
-                saveNoteSelectionState()
-            }
+            onListItemsChanged()
         }
 
     private val _selectedNotes = mutableSetOf<Note>()
@@ -196,9 +176,19 @@ abstract class NoteViewModel(
             } else {
                 PinnedStatus.UNPINNED
             }
-            val newNotes = selectedNotes.mapNotNull { note ->
+            var lowestUnpinnedRank = listItems.filterIsInstance<NoteItem>()
+                .filter { it.note.pinned == PinnedStatus.UNPINNED }
+                .minOfOrNull { it.note.rank } ?: FractionalIndex.INITIAL
+            val newNotes = selectedNotes.sortedByDescending { it.rank }.mapNotNull { note ->
                 if (note.pinned != PinnedStatus.CANT_PIN && note.pinned != newPinned) {
-                    note.copy(pinned = newPinned)
+                    val rank = if (newPinned == PinnedStatus.UNPINNED) {
+                        // Place unpinned all the others
+                        lowestUnpinnedRank = lowestUnpinnedRank.prepend()
+                        lowestUnpinnedRank
+                    } else {
+                        note.rank
+                    }
+                    note.copy(pinned = newPinned, rank = rank)
                 } else {
                     null
                 }
@@ -267,6 +257,7 @@ abstract class NoteViewModel(
                 title = Note.getCopiedNoteTitle(note.title, untitledName, copySuffix),
                 addedDate = date,
                 lastModifiedDate = date,
+                rank = notesRepository.getNewNoteRank(),
                 reminder = null)
             val id = notesRepository.insertNote(copy)
 
@@ -376,7 +367,15 @@ abstract class NoteViewModel(
     }
 
     override fun onNoteItemLongClicked(item: NoteItem, pos: Int) {
-        toggleItemChecked(item, pos)
+        if (selectedNotes.isEmpty()) {
+            // This is a hack used so that the list isn't updated. Otherwise, ItemTouchHelper.startDrag(viewHolder)
+            // called on long click would stop working because the viewHolder changes when the list is updated.
+            // Instead, we check the existing item and call everything else as if we had updated the list.
+            item.checked = true
+            onListItemsChanged()
+        } else {
+            toggleItemChecked(item, pos)
+        }
     }
 
     private fun toggleItemChecked(item: NoteItem, pos: Int) {
@@ -396,8 +395,24 @@ abstract class NoteViewModel(
 
     override fun getNoteSwipeAction(direction: NoteAdapter.SwipeDirection) = StatusChangeAction.NONE
 
-    override fun onNoteSwiped(pos: Int, direction: NoteAdapter.SwipeDirection) {
+    override fun onNoteSwiped(item: NoteItem, pos: Int, direction: NoteAdapter.SwipeDirection) {
         // Do nothing.
+    }
+
+    override fun onNoteSwapped(item: NoteItem, from: Int, to: Int) {
+        // Do nothing.
+    }
+
+    override fun onNoteDragStart() {
+        // Do nothing.
+    }
+
+    override fun onNoteDragEnd() {
+        // Do nothing.
+    }
+
+    override fun canDrag(item: NoteItem): Boolean {
+        return false
     }
 
     override val strikethroughCheckedItems: Boolean
@@ -407,6 +422,30 @@ abstract class NoteViewModel(
         val newList = listItems.toMutableList()
         change(newList)
         listItems = newList
+    }
+
+    protected fun onListItemsChanged() {
+        _placeholderData.value = if (listItems.isEmpty()) {
+            updatePlaceholder()
+        } else {
+            null
+        }
+
+        // Update selected notes.
+        val selectedBefore = selectedNotes.size
+        _selectedNotes.clear()
+        selectedNoteIds.clear()
+        for (item in listItems) {
+            if (item is NoteItem && item.checked) {
+                _selectedNotes += item.note
+                selectedNoteIds += item.note.id
+            }
+        }
+
+        updateNoteSelection()
+        if (selectedNotes.size != selectedBefore) {
+            saveNoteSelectionState()
+        }
     }
 
     data class NoteSelection(

@@ -49,7 +49,7 @@ class SortViewModel @Inject constructor(
         val settings = prefs.sortSettings
 
         val direction: SortDirection
-        if (settings.field == field) {
+        if (settings.field == field && field != SortField.CUSTOM) {
             // Field selected again, reverse sort direction
             direction = when (settings.direction) {
                 SortDirection.ASCENDING -> SortDirection.DESCENDING

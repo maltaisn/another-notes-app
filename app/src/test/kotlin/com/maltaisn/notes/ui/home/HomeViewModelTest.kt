@@ -53,10 +53,12 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import java.util.Collections
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
@@ -99,6 +101,8 @@ class HomeViewModelTest {
             on { swipeActionLeft } doReturn StatusChangeAction.DELETE
             on { swipeActionRight } doReturn StatusChangeAction.ARCHIVE
             on { trashCleanDelay } doReturn TrashCleanDelay.WEEK
+            on { sortField } doAnswer { notesRepo.sortField }
+            on { sortDirection } doAnswer { notesRepo.sortDirection }
         }
 
         itemFactory = NoteItemFactory(prefs)
@@ -173,14 +177,13 @@ class HomeViewModelTest {
         viewModel.setDestination(HomeDestination.Status(NoteStatus.ACTIVE))
 
         notesRepo.insertNote(testNote(status = NoteStatus.ACTIVE))
-        val newNote = notesRepo.getNoteById(notesRepo.lastNoteId)!!
 
         assertEquals(listOf(
             HomeViewModel.PINNED_HEADER_ITEM,
             noteItem(notesRepo.requireNoteById(1)),
             HomeViewModel.NOT_PINNED_HEADER_ITEM,
             noteItem(notesRepo.requireNoteById(2)),
-            noteItem(newNote),
+            noteItem(notesRepo.lastAddedNote!!),
             noteItem(notesRepo.requireNoteById(5)),
         ), viewModel.noteItems.getOrAwaitValue())
     }
@@ -259,7 +262,7 @@ class HomeViewModelTest {
     fun `should archive note on swipe`() = runTest {
         val note = notesRepo.requireNoteById(1)
         viewModel.setDestination(HomeDestination.Status(NoteStatus.ACTIVE))
-        viewModel.onNoteSwiped(1, NoteAdapter.SwipeDirection.RIGHT)
+        viewModel.onNoteSwiped(getNoteItemAt(1), 1, NoteAdapter.SwipeDirection.RIGHT)
 
         assertEquals(NoteStatus.ARCHIVED, notesRepo.requireNoteById(1).status)
         assertLiveDataEventSent(viewModel.statusChangeEvent, StatusChange(
@@ -270,7 +273,7 @@ class HomeViewModelTest {
     fun `should delete note on swipe`() = runTest {
         val note = notesRepo.requireNoteById(1)
         viewModel.setDestination(HomeDestination.Status(NoteStatus.ACTIVE))
-        viewModel.onNoteSwiped(1, NoteAdapter.SwipeDirection.LEFT)
+        viewModel.onNoteSwiped(getNoteItemAt(1), 1, NoteAdapter.SwipeDirection.LEFT)
 
         assertEquals(NoteStatus.DELETED, notesRepo.requireNoteById(1).status)
         assertLiveDataEventSent(viewModel.statusChangeEvent, StatusChange(
@@ -307,10 +310,7 @@ class HomeViewModelTest {
     @Test
     fun `should update list when sort settings are changed`() = runTest {
         viewModel.setDestination(HomeDestination.Status(NoteStatus.ACTIVE))
-
-        notesRepo.sortField = SortField.TITLE
-        notesRepo.sortDirection = SortDirection.ASCENDING
-        viewModel.changeSort(SortSettings(notesRepo.sortField, notesRepo.sortDirection))
+        changeSortSettings(SortField.TITLE, SortDirection.ASCENDING)
 
         assertEquals(listOf(
             HomeViewModel.PINNED_HEADER_ITEM,
@@ -319,6 +319,90 @@ class HomeViewModelTest {
             noteItem(notesRepo.requireNoteById(5)),
             noteItem(notesRepo.requireNoteById(2)),
         ), viewModel.noteItems.getOrAwaitValue())
+    }
+
+    private suspend fun doDragTest(from: Int, to: Int) {
+        notesRepo.insertNote(testNote(status = NoteStatus.ACTIVE))  // id == 6
+        viewModel.setDestination(HomeDestination.Status(NoteStatus.ACTIVE))
+        changeSortSettings(SortField.CUSTOM)
+
+        val expectedIds = viewModel.noteItems.getOrAwaitValue().mapTo(mutableListOf()) { it.id }
+
+        val checkCanDrag = { predicate: (NoteItem) -> Boolean ->
+            for (item in viewModel.noteItems.getOrAwaitValue().filterIsInstance<NoteItem>()) {
+                assertEquals(predicate(item), viewModel.canDrag(item))
+            }
+        }
+        checkCanDrag { false }
+
+        // The identity of this item shouldn't change! It's part of the test.
+        val item = getNoteItemAt(from)
+        viewModel.onNoteItemLongClicked(item, from)
+        checkCanDrag { it.id == item.id }
+
+        viewModel.onNoteDragStart()
+        assertEquals(0, viewModel.currentSelection.getOrAwaitValue().count)
+        assertFalse(item.checked)
+        for ((start, end) in (if (from < to) from..to else from downTo to).windowed(2)) {
+            // Swap two consecutive items at a time like would happen with the UI.
+            Collections.swap(expectedIds, start, end)
+            viewModel.onNoteSwapped(item, start, end)
+        }
+        viewModel.onNoteDragEnd()
+
+        checkCanDrag { false }
+        assertEquals(expectedIds, viewModel.noteItems.getOrAwaitValue().map { it.id })
+    }
+
+    @Test
+    fun `should not drag note`() = runTest {
+        doDragTest(3, 3)
+    }
+
+    @Test
+    fun `should insert dragged note between others`() = runTest {
+        doDragTest(3, 4)
+    }
+
+    @Test
+    fun `should insert dragged note at the start of section`() = runTest {
+        doDragTest(5, 3)
+    }
+
+    @Test
+    fun `should insert dragged note at the end of list`() = runTest {
+        doDragTest(4, 5)
+    }
+
+    @Test
+    fun `should insert dragged note at the end of section`() = runTest {
+        notesRepo.updateNote(notesRepo.requireNoteById(2).copy(pinned = PinnedStatus.PINNED))
+        doDragTest(1, 2)
+    }
+
+    @Test
+    fun `should not have same rank after unarchiving`() = runTest {
+        viewModel.setDestination(HomeDestination.Status(NoteStatus.ACTIVE))
+        changeSortSettings(SortField.CUSTOM)
+
+        assertTrue(notesRepo.requireNoteById(5).rank.prepend() == notesRepo.requireNoteById(3).rank)
+        // Dragging note 2 before note 5 should give it a rank equal to archived note 3
+        viewModel.onNoteItemLongClicked(getNoteItemAt(4), 4)
+        viewModel.onNoteDragStart()
+        viewModel.onNoteSwapped(getNoteItemAt(4), 4, 3)
+        viewModel.onNoteDragEnd()
+
+        notesRepo.updateNote(notesRepo.requireNoteById(3)
+            .copy(status = NoteStatus.ACTIVE, pinned = PinnedStatus.UNPINNED))
+
+        val allRank = viewModel.noteItems.getOrAwaitValue().filterIsInstance<NoteItem>().map { it.note.rank }
+        assertTrue(allRank.distinct().size == allRank.size)
+    }
+
+    private fun changeSortSettings(field: SortField, direction: SortDirection = SortDirection.ASCENDING) {
+        notesRepo.sortField = field
+        notesRepo.sortDirection = direction
+        viewModel.changeSort(SortSettings(field, direction))
     }
 
     private fun getNoteItemAt(pos: Int) = viewModel.noteItems.getOrAwaitValue()[pos] as NoteItem

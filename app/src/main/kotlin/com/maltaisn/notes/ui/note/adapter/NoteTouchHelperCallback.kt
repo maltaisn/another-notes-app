@@ -32,29 +32,52 @@ import kotlin.math.absoluteValue
 import kotlin.math.sign
 
 /**
- * Item touch helper callback for swiping items.
+ * Item touch helper callback for swiping and dragging note items.
  */
-class SwipeTouchHelperCallback(private val callback: NoteAdapter.Callback) : ItemTouchHelper.Callback() {
+class NoteTouchHelperCallback(
+    private val callback: NoteAdapter.Callback,
+    private val onSwipe: (viewHolder: RecyclerView.ViewHolder, pos: Int, direction: Int) -> Unit,
+    private val onDrag: (viewHolder: RecyclerView.ViewHolder, from: Int, to: Int) -> Unit,
+    private val canDropOver: (current: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder) -> Boolean,
+) : ItemTouchHelper.Callback() {
 
     override fun isLongPressDragEnabled() = false
     override fun isItemViewSwipeEnabled() = true
 
     override fun getSwipeThreshold(viewHolder: RecyclerView.ViewHolder) = ITEM_SWIPE_THRESHOLD
 
+    private val dragMovementFlags: Int
+        get() = ItemTouchHelper.UP or ItemTouchHelper.DOWN or ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT
+
+    private val swipeMovementFlags: Int
+        get() {
+            val swipeLeftFlags = if (callback.getNoteSwipeAction(SwipeDirection.LEFT) != StatusChangeAction.NONE) {
+                ItemTouchHelper.LEFT
+            } else {
+                0
+            }
+            val swipeRightFlags = if (callback.getNoteSwipeAction(SwipeDirection.RIGHT) != StatusChangeAction.NONE) {
+                ItemTouchHelper.RIGHT
+            } else {
+                0
+            }
+            return swipeLeftFlags or swipeRightFlags
+        }
+
     override fun getMovementFlags(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder) =
-        makeMovementFlags(0, if (viewHolder is NoteViewHolder<*>) {
-            // Only allow swiping left and right
-            var flags = 0
-            if (callback.getNoteSwipeAction(SwipeDirection.LEFT) != StatusChangeAction.NONE) {
-                flags = flags or ItemTouchHelper.LEFT
-            }
-            if (callback.getNoteSwipeAction(SwipeDirection.RIGHT) != StatusChangeAction.NONE) {
-                flags = flags or ItemTouchHelper.RIGHT
-            }
-            flags
+        if (viewHolder is NoteViewHolder<*>) {
+            makeMovementFlags(dragMovementFlags, swipeMovementFlags)
         } else {
             0
-        })
+        }
+
+    override fun canDropOver(
+        recyclerView: RecyclerView,
+        current: RecyclerView.ViewHolder,
+        target: RecyclerView.ViewHolder
+    ): Boolean {
+        return canDropOver(current, target)
+    }
 
     override fun onChildDraw(
         c: Canvas,
@@ -65,26 +88,33 @@ class SwipeTouchHelperCallback(private val callback: NoteAdapter.Callback) : Ite
         actionState: Int,
         isCurrentlyActive: Boolean
     ) {
-        viewHolder as NoteViewHolder<*>
-        val cardView = viewHolder.cardView
+        when (actionState) {
+            ItemTouchHelper.ACTION_STATE_DRAG -> {
+                super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
+            }
+            ItemTouchHelper.ACTION_STATE_SWIPE -> {
+                viewHolder as NoteViewHolder<*>
+                val cardView = viewHolder.cardView
 
-        val direction = if (dX < 0) SwipeDirection.LEFT else SwipeDirection.RIGHT
-        val swipeAction = callback.getNoteSwipeAction(direction)
-        var dist = dX.absoluteValue
-        if (dist < cardView.width * ITEM_SWIPE_LOCK) {
-            dist = 0f
-        }
+                val direction = if (dX < 0) SwipeDirection.LEFT else SwipeDirection.RIGHT
+                val swipeAction = callback.getNoteSwipeAction(direction)
+                var dist = dX.absoluteValue
+                if (dist < cardView.width * ITEM_SWIPE_LOCK) {
+                    dist = 0f
+                }
 
-        // Make the card progressively more transparent the farther it is dragged.
-        cardView.alpha = (1 - dist / cardView.width * ITEM_SWIPE_OPACITY_FACTOR)
-            .coerceAtLeast(ITEM_SWIPE_OPACITY_MIN)
-        cardView.translationX = dist * dX.sign
+                // Make the card progressively more transparent the farther it is dragged.
+                cardView.alpha = (1 - dist / cardView.width * ITEM_SWIPE_OPACITY_FACTOR)
+                    .coerceAtLeast(ITEM_SWIPE_OPACITY_MIN)
+                cardView.translationX = dist * dX.sign
 
-        viewHolder.swipeImv.isInvisible = if (dist == 0f || swipeAction == StatusChangeAction.NONE) {
-            true
-        } else {
-            updateSwipeImage(viewHolder, direction)
-            false
+                viewHolder.swipeImv.isInvisible = if (dist == 0f || swipeAction == StatusChangeAction.NONE) {
+                    true
+                } else {
+                    updateSwipeImage(viewHolder, direction)
+                    false
+                }
+            }
         }
     }
 
@@ -115,10 +145,8 @@ class SwipeTouchHelperCallback(private val callback: NoteAdapter.Callback) : Ite
     }
 
     override fun clearView(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder) {
-        clearView(viewHolder)
-    }
+        super.clearView(recyclerView, viewHolder)
 
-    private fun clearView(viewHolder: RecyclerView.ViewHolder) {
         viewHolder as NoteViewHolder<*>
         val cardView = viewHolder.cardView
         cardView.alpha = 1f
@@ -130,11 +158,13 @@ class SwipeTouchHelperCallback(private val callback: NoteAdapter.Callback) : Ite
         recyclerView: RecyclerView,
         viewHolder: RecyclerView.ViewHolder,
         target: RecyclerView.ViewHolder
-    ) = false
+    ): Boolean {
+        onDrag(viewHolder, viewHolder.bindingAdapterPosition, target.bindingAdapterPosition)
+        return true
+    }
 
     override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-        callback.onNoteSwiped(viewHolder.bindingAdapterPosition,
-            if (direction == ItemTouchHelper.LEFT) SwipeDirection.LEFT else SwipeDirection.RIGHT)
+        onSwipe(viewHolder, viewHolder.bindingAdapterPosition, direction)
     }
 
     companion object {

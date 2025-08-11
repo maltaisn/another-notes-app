@@ -27,6 +27,7 @@ import androidx.room.Update
 import androidx.sqlite.db.SimpleSQLiteQuery
 import androidx.sqlite.db.SupportSQLiteQuery
 import com.maltaisn.notes.model.converter.NoteStatusConverter
+import com.maltaisn.notes.model.entity.FractionalIndex
 import com.maltaisn.notes.model.entity.Label
 import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.model.entity.NoteStatus
@@ -88,6 +89,9 @@ interface NotesDao {
     @Query("SELECT * FROM notes ORDER BY added_date DESC LIMIT 1")
     suspend fun getLastCreatedNote(): Note?
 
+    @Query("SELECT MIN(rank) FROM notes")
+    suspend fun getLowestNoteRank(): FractionalIndex?
+
     /**
      * Get all notes with a [status], sorted by last modified date, with pinned notes first.
      * Exclude notes with a label marked as hidden, except if the note is deleted.
@@ -148,6 +152,7 @@ interface NotesDao {
                 SortField.MODIFIED_DATE -> "notes.modified_date"
                 SortField.ADDED_DATE -> "notes.added_date"
                 SortField.TITLE -> "LOWER(notes.title)"
+                SortField.CUSTOM -> "notes.rank"
             })
             append(" ")
             append(when (sort.direction) {

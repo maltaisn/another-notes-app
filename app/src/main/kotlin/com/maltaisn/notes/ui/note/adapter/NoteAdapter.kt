@@ -19,6 +19,8 @@ package com.maltaisn.notes.ui.note.adapter
 import android.annotation.SuppressLint
 import android.content.Context
 import android.view.LayoutInflater
+import android.view.MotionEvent
+import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -33,6 +35,7 @@ import com.maltaisn.notes.databinding.ItemNoteListItemBinding
 import com.maltaisn.notes.databinding.ItemNoteTextBinding
 import com.maltaisn.notes.model.PrefsManager
 import com.maltaisn.notes.ui.note.StatusChangeAction
+import kotlin.math.hypot
 
 class NoteAdapter(
     val context: Context,
@@ -56,7 +59,31 @@ class NoteAdapter(
      */
     private val labelViewHolderPool = ArrayDeque<LabelChipViewHolder>()
 
-    private val itemTouchHelper = ItemTouchHelper(SwipeTouchHelperCallback(callback))
+    private val itemTouchHelper = ItemTouchHelper(NoteTouchHelperCallback(callback,
+        onSwipe = { viewHolder, pos, direction ->
+            val item = getItem(pos) as NoteItem
+            val swipeDir = if (direction == ItemTouchHelper.LEFT) SwipeDirection.LEFT else SwipeDirection.RIGHT
+            callback.onNoteSwiped(item, pos, swipeDir)
+        },
+        onDrag = { viewHolder, from, to ->
+            val item = getItem(from) as NoteItem
+            // We could update the note in the database for each individual swap but this would result in a
+            // very unresponsive design. Instead, adapter and dataset are updated manually until drag ends.
+            notifyItemMoved(from, to)
+            callback.onNoteSwapped(item, from, to)
+        },
+        canDropOver = { current, target ->
+            if (target is NoteViewHolder<*>) {
+                val currentItem = getItem(current.bindingAdapterPosition) as NoteItem
+                val targetItem = getItem(target.bindingAdapterPosition) as NoteItem
+                currentItem.note.pinned == targetItem.note.pinned
+            } else {
+                false
+            }
+        }))
+
+    private var dragStarted = false
+    private var dragStartPos: Int = RecyclerView.NO_POSITION
 
     // Used by view holders with highlighted text.
     val highlightBackgroundColor = ContextCompat.getColor(context, R.color.color_highlight)
@@ -66,8 +93,58 @@ class NoteAdapter(
         setHasStableIds(true)
     }
 
+    private fun startDragging(recyclerView: RecyclerView) {
+        if (!dragStarted) {
+            dragStarted = true
+            callback.onNoteDragStart()
+
+            // Just as with long click, rebind manually the view holder to prevent it from being changed.
+            val viewHolder = recyclerView.findViewHolderForAdapterPosition(dragStartPos) as? NoteViewHolder<*> ?: return
+            onBindViewHolder(viewHolder, dragStartPos)
+        }
+    }
+
+    private fun stopDragging() {
+        if (dragStarted) {
+            callback.onNoteDragEnd()
+            dragStarted = false
+        }
+        dragStartPos = RecyclerView.NO_POSITION
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
         itemTouchHelper.attachToRecyclerView(recyclerView)
+        recyclerView.setOnTouchListener(object : View.OnTouchListener {
+            private var downX: Float? = null
+            private var downY: Float? = null
+
+            override fun onTouch(v: View, event: MotionEvent): Boolean {
+                when (event.action) {
+                    MotionEvent.ACTION_MOVE -> {
+                        if (downX == null || downY == null) {
+                            // ACTION_DOWN events are not received, they must be consumed by the note card view.
+                            // So take the first move point as the reference for drag distance.
+                            downX = event.x
+                            downY = event.y
+                        } else if (!dragStarted && dragStartPos != RecyclerView.NO_POSITION) {
+                            val item = getItem(dragStartPos) as NoteItem
+                            val dragDistance = hypot(downX!! - event.x, downY!! - event.y)
+                            val minDragDistance = v.resources.getDimensionPixelSize(R.dimen.note_drag_min_distance)
+                            if (callback.canDrag(item) && dragDistance >= minDragDistance) {
+                                startDragging(recyclerView)
+                            }
+                        }
+                    }
+                    MotionEvent.ACTION_UP -> {
+                        stopDragging()
+                        downX = null
+                        downY = null
+                    }
+                }
+                return false
+            }
+        })
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -77,11 +154,39 @@ class NoteAdapter(
                 .inflate(inflater, parent, false))
             ViewType.HEADER.ordinal -> HeaderViewHolder(ItemHeaderBinding
                 .inflate(inflater, parent, false))
-            ViewType.TEXT_NOTE.ordinal -> TextNoteViewHolder(ItemNoteTextBinding
-                .inflate(inflater, parent, false))
-            ViewType.LIST_NOTE.ordinal -> ListNoteViewHolder(ItemNoteListBinding
-                .inflate(inflater, parent, false))
+            ViewType.TEXT_NOTE.ordinal -> {
+                val viewHolder = TextNoteViewHolder(ItemNoteTextBinding
+                    .inflate(inflater, parent, false))
+                attachLongClickListener(viewHolder)
+                viewHolder
+            }
+            ViewType.LIST_NOTE.ordinal -> {
+                val viewHolder = ListNoteViewHolder(ItemNoteListBinding
+                    .inflate(inflater, parent, false))
+                attachLongClickListener(viewHolder)
+                viewHolder
+            }
             else -> error("Unknown view type")
+        }
+    }
+
+    private fun attachLongClickListener(viewHolder: NoteViewHolder<*>) {
+        viewHolder.cardView.setOnLongClickListener {
+            val pos = viewHolder.bindingAdapterPosition
+            if (pos != RecyclerView.NO_POSITION) {
+                val item = getItem(pos) as NoteItem
+                callback.onNoteItemLongClicked(item, pos)
+                // Rebind manually the view holder to prevent it from being changed.
+                // We start drag here, and if the view holder changed just after it wouldn't work.
+                // Note: if drag is started then a note is unarchived by undo for example, the list will
+                // be updated and the view holder might
+                onBindViewHolder(viewHolder, pos)
+                if (dragStartPos == RecyclerView.NO_POSITION && callback.canDrag(item)) {
+                    dragStartPos = pos
+                    itemTouchHelper.startDrag(viewHolder)
+                }
+            }
+            true
         }
     }
 
@@ -173,7 +278,19 @@ class NoteAdapter(
         fun getNoteSwipeAction(direction: SwipeDirection): StatusChangeAction
 
         /** Called when a [NoteItem] at [pos] is swiped. */
-        fun onNoteSwiped(pos: Int, direction: SwipeDirection)
+        fun onNoteSwiped(item: NoteItem, pos: Int, direction: SwipeDirection)
+
+        /** Called when a note is dragged [from] a position [to] another. */
+        fun onNoteSwapped(item: NoteItem, from: Int, to: Int)
+
+        /** Called when note dragging ends. */
+        fun onNoteDragStart()
+
+        /** Called when note dragging ends. */
+        fun onNoteDragEnd()
+
+        /** Whether a note item can be dragged or not. */
+        fun canDrag(item: NoteItem): Boolean
 
         /** Whether strikethrough should be added to checked items or not. */
         val strikethroughCheckedItems: Boolean

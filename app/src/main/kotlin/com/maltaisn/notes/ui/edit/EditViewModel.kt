@@ -26,6 +26,7 @@ import com.maltaisn.notes.model.NotesRepository
 import com.maltaisn.notes.model.PrefsManager
 import com.maltaisn.notes.model.ReminderAlarmManager
 import com.maltaisn.notes.model.entity.BlankNoteMetadata
+import com.maltaisn.notes.model.entity.FractionalIndex
 import com.maltaisn.notes.model.entity.Label
 import com.maltaisn.notes.model.entity.LabelRef
 import com.maltaisn.notes.model.entity.ListNoteMetadata
@@ -298,7 +299,9 @@ class EditViewModel @Inject constructor(
                 // Note doesn't exist, create new blank note of the corresponding type.
                 // This is the expected path for creating a new note (by passing Note.NO_ID)
                 val date = Date()
-                note = BLANK_NOTE.copy(addedDate = date, lastModifiedDate = date, title = title, content = content)
+                val rank = notesRepository.getNewNoteRank()
+                note = BLANK_NOTE.copy(addedDate = date, lastModifiedDate = date, rank = rank,
+                    title = title, content = content)
                 if (type == NoteType.LIST) {
                     note = note.asListNote()
                 }
@@ -640,6 +643,7 @@ class EditViewModel @Inject constructor(
                 val copy = note.copy(
                     id = Note.NO_ID,
                     title = newTitle,
+                    rank = notesRepository.getNewNoteRank(),
                     addedDate = date,
                     lastModifiedDate = date,
                     reminder = null)
@@ -1121,7 +1125,8 @@ class EditViewModel @Inject constructor(
 
     companion object {
         private val BLANK_NOTE = Note(Note.NO_ID, NoteType.TEXT, "", "",
-            BlankNoteMetadata, Date(0), Date(0), NoteStatus.ACTIVE, PinnedStatus.UNPINNED, null)
+            BlankNoteMetadata, Date(0), Date(0), FractionalIndex.INITIAL,
+            NoteStatus.ACTIVE, PinnedStatus.UNPINNED, null)
 
         private const val KEY_NOTE_ID = "noteId"
         private const val KEY_IS_NEW_NOTE = "isNewNote"

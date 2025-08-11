@@ -17,6 +17,7 @@
 package com.maltaisn.notes
 
 import com.maltaisn.notes.model.entity.BlankNoteMetadata
+import com.maltaisn.notes.model.entity.FractionalIndex
 import com.maltaisn.notes.model.entity.ListNoteMetadata
 import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.model.entity.NoteMetadata
@@ -57,9 +58,10 @@ object DebugUtils {
 
         val added = getRandomDate()
         val modified = getRandomDate(added)
+        val pinned = if (status == NoteStatus.ACTIVE) PinnedStatus.UNPINNED else PinnedStatus.CANT_PIN
 
-        return Note(0, type, title, content, metadata, added, modified, status,
-            if (status == NoteStatus.ACTIVE) PinnedStatus.UNPINNED else PinnedStatus.CANT_PIN, null)
+        return Note(0, type, title, content, metadata, added, modified,
+            FractionalIndex.INITIAL, status, pinned, null)
     }
 
     private fun getRandomString(size: IntRange): String {

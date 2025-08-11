@@ -243,11 +243,13 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
     }
 
     override fun onDestinationChanged(controller: NavController, destination: NavDestination, arguments: Bundle?) {
-        drawerLayout.setDrawerLockMode(if (destination.id == R.id.fragment_home) {
-            DrawerLayout.LOCK_MODE_UNLOCKED
+        if (destination.id == R.id.fragment_home) {
+            drawerLayout.requestDisallowInterceptTouchEvent(false)
+            drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
         } else {
-            DrawerLayout.LOCK_MODE_LOCKED_CLOSED
-        })
+            drawerLayout.requestDisallowInterceptTouchEvent(true)
+            drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
+        }
     }
 
     override fun onStart() {

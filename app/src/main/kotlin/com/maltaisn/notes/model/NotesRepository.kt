@@ -16,6 +16,7 @@
 
 package com.maltaisn.notes.model
 
+import com.maltaisn.notes.model.entity.FractionalIndex
 import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.model.entity.NoteStatus
 import com.maltaisn.notes.model.entity.NoteWithLabels
@@ -35,6 +36,8 @@ interface NotesRepository {
     suspend fun getNoteByIdWithLabels(id: Long): NoteWithLabels?
 
     suspend fun getLastCreatedNote(): Note?
+
+    suspend fun getNewNoteRank(): FractionalIndex
 
     fun getNotesByStatus(status: NoteStatus): Flow<List<NoteWithLabels>>
     fun getNotesByLabel(labelId: Long): Flow<List<NoteWithLabels>>

@@ -131,6 +131,7 @@ class HomeFragment : NoteFragment(), Toolbar.OnMenuItemClickListener {
         viewModel.currentSelection.observe(viewLifecycleOwner) { selection ->
             if (selection.count != 0) {
                 // Lock drawer when user just selected a first note.
+                drawerLayout.requestDisallowInterceptTouchEvent(true)
                 drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
             }
         }
@@ -221,6 +222,7 @@ class HomeFragment : NoteFragment(), Toolbar.OnMenuItemClickListener {
 
     override fun onDestroyActionMode(mode: ActionMode) {
         super.onDestroyActionMode(mode)
+        drawerLayout.requestDisallowInterceptTouchEvent(false)
         drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
     }
 

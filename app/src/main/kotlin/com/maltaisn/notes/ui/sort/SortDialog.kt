@@ -58,6 +58,7 @@ class SortDialog : BottomSheetDialogFragment() {
         _binding = DialogSortBinding.inflate(layoutInflater, null, false)
         dialog.setContentView(binding.root)
 
+        createActionItem(SortField.CUSTOM, R.string.sort_field_custom)
         createActionItem(SortField.TITLE, R.string.sort_field_title)
         createActionItem(SortField.ADDED_DATE, R.string.sort_field_created)
         createActionItem(SortField.MODIFIED_DATE, R.string.sort_field_modified)
@@ -86,7 +87,9 @@ class SortDialog : BottomSheetDialogFragment() {
                 val selected = field == settings.field
                 binding.root.isActivated = selected
                 binding.iconImv.isInvisible = !selected
-                binding.iconImv.setImageResource(when (settings.direction) {
+                binding.iconImv.setImageResource(if (settings.field == SortField.CUSTOM)
+                    R.drawable.ic_check
+                else when (settings.direction) {
                     SortDirection.ASCENDING -> R.drawable.ic_arrow_up
                     SortDirection.DESCENDING -> R.drawable.ic_arrow_down
                 })

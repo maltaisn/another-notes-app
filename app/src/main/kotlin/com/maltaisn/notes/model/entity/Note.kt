@@ -79,6 +79,12 @@ data class Note(
     val lastModifiedDate: Date,
 
     /**
+     * Note rank for manual sort order.
+     */
+    @ColumnInfo(name = "rank")
+    val rank: FractionalIndex,
+
+    /**
      * Status of the note, i.e. its location in the user interface.
      */
     @ColumnInfo(name = "status")

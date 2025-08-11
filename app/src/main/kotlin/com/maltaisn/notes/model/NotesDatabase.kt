@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Nicolas Maltais
+ * Copyright 2025 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,11 +22,13 @@ import androidx.room.TypeConverters
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.maltaisn.notes.model.converter.DateTimeConverter
+import com.maltaisn.notes.model.converter.FractionalIndexConverter
 import com.maltaisn.notes.model.converter.NoteMetadataConverter
 import com.maltaisn.notes.model.converter.NoteStatusConverter
 import com.maltaisn.notes.model.converter.NoteTypeConverter
 import com.maltaisn.notes.model.converter.PinnedStatusConverter
 import com.maltaisn.notes.model.converter.RecurrenceConverter
+import com.maltaisn.notes.model.entity.FractionalIndex
 import com.maltaisn.notes.model.entity.Label
 import com.maltaisn.notes.model.entity.LabelRef
 import com.maltaisn.notes.model.entity.Note
@@ -47,6 +49,7 @@ import com.maltaisn.notes.model.entity.NoteFts
     NoteMetadataConverter::class,
     PinnedStatusConverter::class,
     RecurrenceConverter::class,
+    FractionalIndexConverter::class,
 )
 abstract class NotesDatabase : RoomDatabase() {
 
@@ -56,7 +59,7 @@ abstract class NotesDatabase : RoomDatabase() {
 
     @Suppress("MagicNumber")
     companion object {
-        const val VERSION = 4
+        const val VERSION = 5
 
         val MIGRATION_1_2 = object : Migration(1, 2) {
             override fun migrate(db: SupportSQLiteDatabase) {
@@ -114,10 +117,29 @@ abstract class NotesDatabase : RoomDatabase() {
             }
         }
 
+        val MIGRATION_4_5 = object : Migration(4, 5) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.apply {
+                    // Add rank column to notes table, with values chosen to match order by last modified date.
+                    execSQL("ALTER TABLE notes ADD COLUMN rank BLOB NOT NULL DEFAULT x'';")
+                    val cursor = query("SELECT id FROM notes ORDER BY modified_date DESC")
+                    var rank = FractionalIndex.INITIAL
+                    while (cursor.moveToNext()) {
+                        val id = cursor.getInt(0)
+                        execSQL("UPDATE notes SET rank = x'${rank.bytes.toHexString()}' WHERE notes.id = $id")
+                        rank = rank.append()
+                    }
+                }
+            }
+        }
+
+        // All SQL used in migrations must be compatible with min SDK version, API 21,
+        // which uses SQLite 3.8.6! See https://stackoverflow.com/a/4377116/5288316
         val ALL_MIGRATIONS = arrayOf(
             MIGRATION_1_2,
             MIGRATION_2_3,
             MIGRATION_3_4,
+            MIGRATION_4_5,
         )
     }
 }
