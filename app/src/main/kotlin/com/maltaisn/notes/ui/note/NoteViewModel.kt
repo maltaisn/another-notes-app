@@ -141,7 +141,7 @@ abstract class NoteViewModel(
         _listLayoutMode.value = prefs.listLayoutMode
 
         if (BuildConfig.ENABLE_DEBUG_FEATURES) {
-            noteItemFactory.appendIdToTitle = true
+            noteItemFactory.enableDebug = true
         }
     }
 

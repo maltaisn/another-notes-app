@@ -16,12 +16,18 @@
 
 package com.maltaisn.notes.ui.note.adapter
 
+import android.annotation.SuppressLint
 import androidx.recyclerview.widget.DiffUtil
+import com.maltaisn.notes.BuildConfig
+import com.maltaisn.notes.ui.note.NoteItemFactory
 
 class NoteListDiffCallback : DiffUtil.ItemCallback<NoteListItem>() {
 
+    var enableDebug = BuildConfig.ENABLE_DEBUG_FEATURES
+
     override fun areItemsTheSame(old: NoteListItem, new: NoteListItem) = old.id == new.id
 
+    @SuppressLint("DiffUtilEquals")
     override fun areContentsTheSame(old: NoteListItem, new: NoteListItem): Boolean {
         if (new.type != old.type) {
             // Should never happen since items of different types can't have the same ID.
@@ -43,7 +49,7 @@ class NoteListDiffCallback : DiffUtil.ItemCallback<NoteListItem>() {
                 old as NoteItem
                 val oldNote = old.note
                 val newNote = new.note
-                new.checked == old.checked &&
+                var same = new.checked == old.checked &&
                         newNote.type == oldNote.type &&
                         newNote.status == oldNote.status &&
                         new.title == old.title &&
@@ -62,6 +68,13 @@ class NoteListDiffCallback : DiffUtil.ItemCallback<NoteListItem>() {
                                 new.items == old.items
                             }
                         }
+                if (enableDebug) {
+                    // Extra fields are shown in the title in debug, also check these.
+                    for (field in NoteItemFactory.DEBUG_TITLE_FIELDS) {
+                        same = same and (field(oldNote) == field(newNote))
+                    }
+                }
+                same
             }
         }
     }

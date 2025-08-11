@@ -47,6 +47,7 @@ class NoteListDiffCallbackTest {
             on { moveCheckedToBottom } doReturn false
         }
         callback = NoteListDiffCallback()
+        callback.enableDebug = false
         factory = NoteItemFactory(prefs)
     }
 

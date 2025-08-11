@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Nicolas Maltais
+ * Copyright 2025 Nicolas Maltais
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,9 +41,9 @@ class NoteItemFactory @Inject constructor(
     var query: String? = null
 
     /**
-     * Whether to append note ID to title, for debugging.
+     * Whether to append note debug fields to title, for debugging.
      */
-    var appendIdToTitle: Boolean = false
+    var enableDebug = false
 
     fun createItem(
         note: Note,
@@ -187,8 +187,8 @@ class NoteItemFactory @Inject constructor(
 
     private fun createTitle(note: Note): Highlighted {
         var title = note.title.trim()
-        if (appendIdToTitle) {
-            title += " (${note.id})"
+        if (enableDebug) {
+            title += " (${DEBUG_TITLE_FIELDS.map { it(note) }.joinToString()})"
         }
         return if (query == null) {
             Highlighted(title)
@@ -227,5 +227,7 @@ class NoteItemFactory @Inject constructor(
         private const val START_ELLIPSIS_THRESHOLD_CONTENT = 15  // per line of preview (-1)
         private const val START_ELLIPSIS_THRESHOLD_CONTENT_FIRST = 5  // for first line of preview
         private const val START_ELLIPSIS_DISTANCE_CONTENT = 20
+
+        val DEBUG_TITLE_FIELDS = listOf(Note::id)
     }
 }

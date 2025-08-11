@@ -16,15 +16,15 @@
 
 package com.maltaisn.notes.ui.note
 
+import com.maltaisn.notes.listNote
 import com.maltaisn.notes.model.PrefsManager
 import com.maltaisn.notes.model.entity.Label
 import com.maltaisn.notes.model.entity.ListNoteItem
 import com.maltaisn.notes.model.entity.NoteType
+import com.maltaisn.notes.testNote
 import com.maltaisn.notes.ui.note.adapter.NoteItemList
 import com.maltaisn.notes.ui.note.adapter.NoteItemText
 import com.maltaisn.notes.ui.note.adapter.NoteListLayoutMode
-import com.maltaisn.notes.listNote
-import com.maltaisn.notes.testNote
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
@@ -136,12 +136,13 @@ class NoteItemFactoryTest {
     }
 
     @Test
-    fun `should create text note, append note id to title`() {
+    fun `should create text note, append debug fields to title`() {
         val note = testNote(id = 27, title = "title", content = "content")
-        factory.appendIdToTitle = true
+        factory.enableDebug = true
         val item = factory.createItem(note, emptyList(), false)
+        val debug = NoteItemFactory.DEBUG_TITLE_FIELDS.joinToString { it(note).toString() }
         assertEquals(NoteItemText(27, note, emptyList(), false,
-            "title (27)".hl, "content".hl, false), item)
+            "title ($debug)".hl, "content".hl, false), item)
     }
 
     @Test
