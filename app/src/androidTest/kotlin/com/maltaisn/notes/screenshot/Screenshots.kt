@@ -68,9 +68,6 @@ import org.junit.runner.RunWith
 import java.util.Calendar
 import com.maltaisn.notes.test.R as RT
 
-/**
- * Screenshots should be taken with release build type, or debug features will appear.
- */
 @RunWith(AndroidJUnit4::class)
 @LargeTest
 @Ignore("not a test, comment this annotation to take screenshots")
@@ -115,7 +112,7 @@ class Screenshots {
             .putString(DefaultPrefsManager.SHOWN_DATE, ShownDateField.MODIFIED.value).apply()
         notesDao.insertAll(listOf(
             ScreenshotHelper.getNote(1).copy(addedDate = dateFor("2020-01-01"),
-                lastModifiedDate = dateFor("2021-03-23T17:34:00.000Z")),
+                lastModifiedDate = dateFor("2025-08-15T17:34:00.000Z")),
         ))
         labelsDao.insert(ScreenshotHelper.getLabel(1))
         labelsDao.insertRefs(listOf(

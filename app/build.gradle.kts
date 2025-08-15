@@ -91,7 +91,7 @@ android {
             // enable debug features only if not taking screenshots
             // androidTest can seemingly only be run in debug mode, hence why it's needed.
             buildConfigField("boolean", "ENABLE_DEBUG_FEATURES",
-                (System.getenv("taking_screenshots")?.toBoolean() ?: true).toString())
+                (!(System.getenv("taking_screenshots")?.toBoolean() ?: false)).toString())
         }
         getByName("release") {
             // Using legacy package name 'com.maltaisn.notes.sync' which was used at the time where
@@ -189,6 +189,8 @@ if (file("publishing.gradle").exists()) {
     apply(from = "publishing.gradle")
 }
 
+// To take screenshots, use an emulator device on API <33, with "Medium phone" layout.
+// Changing locale is broken on newer APIs.
 tasks.register<Exec>("takeScreenshots") {
     commandLine("./screenshots.sh")
 }
