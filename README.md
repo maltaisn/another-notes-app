@@ -2,7 +2,7 @@
 
 ![App icon](app/src/main/res/mipmap-xxhdpi/ic_launcher_round.png)
 
-*The app is not actively developed since I have deviated from Android development in recent years.
+*The app is not actively developed because I have moved away from Android development in recent years.
 I'll fix critical bugs, but features may not be implemented before a very long time, if ever. 
 Expect one release per year. I will accept and review pull requests though.*
 
@@ -20,6 +20,8 @@ components. Download is available on:
 - Labeled notes.
 - Reminders (including recurring).
 - Searching notes.
+- Undo & redo.
+- Drag notes to reorder.
 - Light and dark theme support.
 - Basic import and export.
 - Somewhat customizable interface.

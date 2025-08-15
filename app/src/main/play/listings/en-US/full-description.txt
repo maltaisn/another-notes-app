@@ -9,6 +9,8 @@ Features:
 - Labeled notes.
 - Reminders, including recurring reminders.
 - Search text across all notes.
+- Undo & redo.
+- Drag notes to reoder.
 - Basic import and export.
 - Light and dark theme support.
 - Customizable interface.
