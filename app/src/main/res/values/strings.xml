@@ -105,7 +105,6 @@
     <string name="search_empty_placeholder">No notes found for your query.</string>
 
     <string name="sort_title">Sort options</string>
-    <string name="sort_direction">Sort direction</string>
     <string name="sort_field">Sort by</string>
     <string name="sort_field_created">Date created</string>
     <string name="sort_field_modified">Date modified</string>
