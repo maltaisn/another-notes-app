@@ -16,6 +16,9 @@
 
 package com.maltaisn.notes.ui.edit.undo
 
+import com.maltaisn.notes.ui.edit.EditFocusChange
+import com.maltaisn.notes.ui.edit.EditFocusLocation
+
 /**
  * Text in range [start] to [end] (exclusive) changed from [oldText] to [newText],
  * in an item at [location].
@@ -25,7 +28,7 @@ package com.maltaisn.notes.ui.edit.undo
  */
 @ConsistentCopyVisibility
 data class TextUndoAction private constructor(
-    val location: UndoActionLocation,
+    val location: EditFocusLocation,
     val start: Int,
     val end: Int,
     val oldText: String,
@@ -84,14 +87,14 @@ data class TextUndoAction private constructor(
         }
     }
 
-    override fun undo(payload: UndoPayload): UndoFocusChange {
+    override fun undo(payload: UndoPayload): EditFocusChange {
         location.findItemIn(payload.listItems).text.replace(start, start + newText.length, oldText)
-        return UndoFocusChange(location, end, true)
+        return EditFocusChange(location, end, true)
     }
 
-    override fun redo(payload: UndoPayload): UndoFocusChange {
+    override fun redo(payload: UndoPayload): EditFocusChange {
         location.findItemIn(payload.listItems).text.replace(start, end, newText)
-        return UndoFocusChange(location, start + newText.length, true)
+        return EditFocusChange(location, start + newText.length, true)
     }
 
     companion object {
@@ -100,7 +103,7 @@ data class TextUndoAction private constructor(
          * This is needed for merge to work correctly later on.
          */
         fun create(
-            location: UndoActionLocation,
+            location: EditFocusLocation,
             start: Int,
             end: Int,
             oldText: String,

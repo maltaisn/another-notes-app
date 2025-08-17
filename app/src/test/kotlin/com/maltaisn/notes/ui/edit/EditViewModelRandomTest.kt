@@ -109,8 +109,9 @@ class EditViewModelRandomTest {
         val listItems = viewModel.editItems.getOrAwaitValue()
         // We don't care about whether item exists, in the test the item should always exist.
         // Focus should be in a text item and in a valid position in the text.
-        assertTrue(focusChange.index in listItems.indices)
-        val item = listItems[focusChange.index]
+        val index = focusChange.location.findIndexIn(listItems)
+        assertTrue(index != -1)
+        val item = listItems[index]
         assertTrue(item is EditTextItem)
         assertTrue(focusChange.textPos in 0..item.text.text.length)
     }

@@ -16,6 +16,7 @@
 
 package com.maltaisn.notes.ui.edit.undo
 
+import com.maltaisn.notes.ui.edit.EditFocusLocation
 import com.maltaisn.notes.ui.edit.TestEditableTextProvider
 import com.maltaisn.notes.ui.edit.adapter.EditTitleItem
 import com.maltaisn.notes.ui.edit.e
@@ -62,8 +63,8 @@ class BatchUndoActionTest {
     }
 
     companion object {
-        private val ACTION0 = TextUndoAction.create(UndoActionLocation.Title, 0, 1, "a", "b")
-        private val ACTION1 = TextUndoAction.create(UndoActionLocation.Title, 1, 2, "b", "c")
-        private val ACTION2 = TextUndoAction.create(UndoActionLocation.Content, 0, 1, "b", "c")
+        private val ACTION0 = TextUndoAction.create(EditFocusLocation.Title, 0, 1, "a", "b")
+        private val ACTION1 = TextUndoAction.create(EditFocusLocation.Title, 1, 2, "b", "c")
+        private val ACTION2 = TextUndoAction.create(EditFocusLocation.Content, 0, 1, "b", "c")
     }
 }

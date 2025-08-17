@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.maltaisn.notes.ui.edit.undo
+package com.maltaisn.notes.ui.edit
 
 import com.maltaisn.notes.ui.edit.adapter.EditContentItem
 import com.maltaisn.notes.ui.edit.adapter.EditItemItem
@@ -23,27 +23,27 @@ import com.maltaisn.notes.ui.edit.adapter.EditTextItem
 import com.maltaisn.notes.ui.edit.adapter.EditTitleItem
 
 /**
- * Undo actions operate on item with a location described by this class.
- * However, some actions that only operate on [EditItemItem] will only store the actual position instead.
+ * Location of a focusable text item in the edit list.
+ * The item index can be found from this.
  */
-sealed interface UndoActionLocation {
+sealed interface EditFocusLocation {
 
     fun findItemIn(items: List<EditListItem>): EditTextItem =
         items[findIndexIn(items)] as EditTextItem
 
     fun findIndexIn(items: List<EditListItem>): Int
 
-    object Title : UndoActionLocation {
+    object Title : EditFocusLocation {
         override fun findIndexIn(items: List<EditListItem>) =
             items.indexOfFirst { it is EditTitleItem }
     }
 
-    object Content : UndoActionLocation {
+    object Content : EditFocusLocation {
         override fun findIndexIn(items: List<EditListItem>) =
             items.indexOfFirst { it is EditContentItem }
     }
 
-    data class Item(val actualPos: Int) : UndoActionLocation {
+    data class Item(val actualPos: Int) : EditFocusLocation {
         override fun findIndexIn(items: List<EditListItem>) =
             items.indexOfFirst { it is EditItemItem && it.actualPos == actualPos }
     }

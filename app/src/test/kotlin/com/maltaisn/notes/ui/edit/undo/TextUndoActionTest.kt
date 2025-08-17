@@ -16,6 +16,7 @@
 
 package com.maltaisn.notes.ui.edit.undo
 
+import com.maltaisn.notes.ui.edit.EditFocusLocation
 import com.maltaisn.notes.ui.edit.TestEditableTextProvider
 import com.maltaisn.notes.ui.edit.adapter.EditTitleItem
 import com.maltaisn.notes.ui.edit.e
@@ -93,8 +94,8 @@ class TextUndoActionTest {
 
     @Test
     fun `should not merge actions with different item position`() {
-        val action0 = TextUndoAction.create(UndoActionLocation.Title, 0, 0, "a", "b")
-        val action1 = TextUndoAction.create(UndoActionLocation.Content, 0, 0, "b", "c")
+        val action0 = TextUndoAction.create(EditFocusLocation.Title, 0, 0, "a", "b")
+        val action1 = TextUndoAction.create(EditFocusLocation.Content, 0, 0, "b", "c")
         assertNull(action0.mergeWith(action1))
     }
 
@@ -143,5 +144,5 @@ class TextUndoActionTest {
     }
 
     private fun testAction(range: IntRange, old: String, new: String) =
-        TextUndoAction.create(UndoActionLocation.Title, range.first, range.last + 1, old, new)
+        TextUndoAction.create(EditFocusLocation.Title, range.first, range.last + 1, old, new)
 }

@@ -52,6 +52,7 @@ class EditAdapter(val context: Context, val callback: Callback) :
      * by RecyclerView, or `null` if none is pending.
      */
     private var pendingFocusChange: EditFocusChange? = null
+    private var pendingFocusChangeIndex: Int? = RecyclerView.NO_POSITION
 
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
         this.recyclerView = recyclerView
@@ -96,6 +97,13 @@ class EditAdapter(val context: Context, val callback: Callback) :
         }
     }
 
+    override fun submitList(list: List<EditListItem>?) {
+        if (list != null) {
+            pendingFocusChangeIndex = pendingFocusChange?.location?.findIndexIn(list)
+        }
+        super.submitList(list)
+    }
+
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val item = getItem(position)
         when (holder) {
@@ -106,10 +114,11 @@ class EditAdapter(val context: Context, val callback: Callback) :
             is EditHeaderViewHolder -> holder.bind(item as EditCheckedHeaderItem)
             is EditItemLabelsViewHolder -> holder.bind(item as EditChipsItem)
         }
-        if (holder is EditFocusableViewHolder<*> && position == pendingFocusChange?.index) {
+        if (holder is EditFocusableViewHolder<*> && position == pendingFocusChangeIndex) {
             // Apply pending focus change event.
             holder.setFocus(pendingFocusChange!!.textPos)
             pendingFocusChange = null
+            pendingFocusChangeIndex = null
         }
     }
 
@@ -124,7 +133,8 @@ class EditAdapter(val context: Context, val callback: Callback) :
             return
         }
 
-        val viewHolder = rcv.findViewHolderForAdapterPosition(focus.index)
+        val index = focus.location.findIndexIn(currentList)
+        val viewHolder = rcv.findViewHolderForAdapterPosition(index)
         if (viewHolder is EditFocusableViewHolder<*>) {
             viewHolder.setFocus(focus.textPos)
         } else {

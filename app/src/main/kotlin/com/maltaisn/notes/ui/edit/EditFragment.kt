@@ -292,10 +292,10 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener, ConfirmDialog.
         }
 
         sharedViewModel.undoRedoEvent.observeEvent(viewLifecycleOwner) { action ->
-           when (action)  {
-               SharedViewModel.UndoRedoAction.UNDO -> viewModel.undo()
-               SharedViewModel.UndoRedoAction.REDO -> viewModel.redo()
-           }
+            when (action) {
+                SharedViewModel.UndoRedoAction.UNDO -> viewModel.undo()
+                SharedViewModel.UndoRedoAction.REDO -> viewModel.redo()
+            }
         }
     }
 
@@ -389,17 +389,12 @@ fun updateToolbarItemsForEditActions(
     var overflow = false
     for ((i, action) in editActions.withIndex()) {
         if (action.available != EditActionAvailability.HIDDEN) {
-            if (action.showInToolbar) {
-                if (inToolbarCount < maxCountInToolbar) {
-                    callback(i, true, action.available == EditActionAvailability.AVAILABLE)
-                    inToolbarCount++
-                    continue
-                } else {
-                    overflow = true
-                }
-            } else {
-                overflow = true
+            if (action.showInToolbar && inToolbarCount < maxCountInToolbar) {
+                callback(i, true, action.available == EditActionAvailability.AVAILABLE)
+                inToolbarCount++
+                continue
             }
+            overflow = true
         }
         callback(i, false, false)
     }

@@ -17,6 +17,7 @@
 package com.maltaisn.notes.ui.edit.undo
 
 import com.maltaisn.notes.model.entity.Note
+import com.maltaisn.notes.ui.edit.EditFocusChange
 import com.maltaisn.notes.ui.edit.EditableTextProvider
 import com.maltaisn.notes.ui.edit.adapter.EditListItem
 
@@ -37,10 +38,10 @@ data class UndoPayload(
  */
 sealed interface ItemUndoAction : UndoAction {
     /** Undo this action on a list of items, return an optional focus change. */
-    fun undo(payload: UndoPayload): UndoFocusChange?
+    fun undo(payload: UndoPayload): EditFocusChange?
 
     /** Redo this action on a list of items, return an optional focus change. */
-    fun redo(payload: UndoPayload): UndoFocusChange?
+    fun redo(payload: UndoPayload): EditFocusChange?
 
     /** Merge this action with another that comes afterwards. Returns `null` if not mergeable. */
     fun mergeWith(action: ItemUndoAction): ItemUndoAction? = null

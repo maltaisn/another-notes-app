@@ -16,6 +16,7 @@
 
 package com.maltaisn.notes.ui.edit.undo
 
+import com.maltaisn.notes.ui.edit.EditFocusLocation
 import junit.framework.TestCase.assertTrue
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -181,9 +182,9 @@ class UndoManagerTest {
     }
 
     companion object {
-        private val ACTION0 = TextUndoAction.create(UndoActionLocation.Title, 0, 1, "a", "b")
-        private val ACTION1 = TextUndoAction.create(UndoActionLocation.Title, 1, 2, "b", "c")
-        private val ACTION01 = TextUndoAction.create(UndoActionLocation.Title, 0, 2, "ab", "bc")
-        private val ACTION2 = TextUndoAction.create(UndoActionLocation.Content, 0, 1, "b", "c")
+        private val ACTION0 = TextUndoAction.create(EditFocusLocation.Title, 0, 1, "a", "b")
+        private val ACTION1 = TextUndoAction.create(EditFocusLocation.Title, 1, 2, "b", "c")
+        private val ACTION01 = TextUndoAction.create(EditFocusLocation.Title, 0, 2, "ab", "bc")
+        private val ACTION2 = TextUndoAction.create(EditFocusLocation.Content, 0, 1, "b", "c")
     }
 }

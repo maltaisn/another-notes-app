@@ -181,7 +181,7 @@ class EditViewModelTest {
             EditContentItem("".e, true)
         ), viewModel.editItems.getOrAwaitValue())
 
-        assertWasFocused(0, 0, false)
+        assertWasFocused(EditFocusLocation.Title, 0, false)
     }
 
     @Test
@@ -190,7 +190,7 @@ class EditViewModelTest {
 
         viewModel.start()
 
-        assertWasFocused(1, 0, false)
+        assertWasFocused(EditFocusLocation.Content, 0, false)
     }
 
     @Test
@@ -354,8 +354,8 @@ class EditViewModelTest {
                 EditItemAddItem,
                 EditChipsItem(listOf(labelsRepo.requireLabelById(1))),
             ),
-            redoFocus = EditFocusChange(2, 7, false),
-            undoFocus = EditFocusChange(2, 7, false),
+            redoFocus = EditFocusChange(EditFocusLocation.Item(0), 7, false),
+            undoFocus = EditFocusChange(EditFocusLocation.Content, 7, false),
         ) {
             viewModel.toggleNoteType()
         }
@@ -372,8 +372,8 @@ class EditViewModelTest {
                 EditChipsItem(listOf(notesRepo.requireNoteById(3).reminder!!,
                     labelsRepo.requireLabelById(1), labelsRepo.requireLabelById(2)))
             ),
-            redoFocus = EditFocusChange(2, 13, false),
-            undoFocus = EditFocusChange(3, 6, false),
+            redoFocus = EditFocusChange(EditFocusLocation.Content, 13, false),
+            undoFocus = EditFocusChange(EditFocusLocation.Item(1), 6, false),
         ) {
             viewModel.toggleNoteType()
         }
@@ -397,8 +397,8 @@ class EditViewModelTest {
                 EditContentItem("item 2".e, true),
                 EditChipsItem(listOf(labelsRepo.requireLabelById(1))),
             ),
-            redoFocus = EditFocusChange(2, 6, false),
-            undoFocus = EditFocusChange(3, 6, false),
+            redoFocus = EditFocusChange(EditFocusLocation.Content, 6, false),
+            undoFocus = EditFocusChange(EditFocusLocation.Item(1), 6, false),
         ) {
             viewModel.convertToText(false)
         }
@@ -414,8 +414,8 @@ class EditViewModelTest {
                 EditContentItem("item 1\nitem 2".e, true),
                 EditChipsItem(listOf(labelsRepo.requireLabelById(1))),
             ),
-            redoFocus = EditFocusChange(2, 13, false),
-            undoFocus = EditFocusChange(3, 6, false),
+            redoFocus = EditFocusChange(EditFocusLocation.Content, 13, false),
+            undoFocus = EditFocusChange(EditFocusLocation.Item(1), 6, false),
         ) {
             viewModel.convertToText(true)
         }
@@ -554,7 +554,7 @@ class EditViewModelTest {
             EditChipsItem(listOf(notesRepo.requireNoteById(3).reminder!!,
                 labelsRepo.requireLabelById(1), labelsRepo.requireLabelById(2))),
         ), viewModel.editItems.getOrAwaitValue())
-        assertWasFocused(1, 16)
+        assertWasFocused(EditFocusLocation.Title, 16)
 
         assertNull(alarmCallback.alarms[noteCopy.id])
     }
@@ -571,7 +571,7 @@ class EditViewModelTest {
             EditTitleItem("untitled - Copy".e, true),
             EditContentItem("".e, true)
         ), viewModel.editItems.getOrAwaitValue())
-        assertWasFocused(0, 15)
+        assertWasFocused(EditFocusLocation.Title, 15)
     }
 
     @Test
@@ -674,8 +674,8 @@ class EditViewModelTest {
                 EditItemAddItem,
                 EditChipsItem(listOf(labelsRepo.requireLabelById(1))),
             ),
-            redoFocus = EditFocusChange(3, 0, false),
-            undoFocus = EditFocusChange(2, 6, true)
+            redoFocus = EditFocusChange(EditFocusLocation.Item(1), 0, false),
+            undoFocus = EditFocusChange(EditFocusLocation.Item(0), 6, true)
         ) {
             itemAt<EditTextItem>(2).text.replace(6, 6, "\n")
         }
@@ -695,8 +695,8 @@ class EditViewModelTest {
                 EditItemAddItem,
                 EditChipsItem(listOf(labelsRepo.requireLabelById(1))),
             ),
-            redoFocus = EditFocusChange(4, 15, false),
-            undoFocus = EditFocusChange(2, 2, true)
+            redoFocus = EditFocusChange(EditFocusLocation.Item(2), 15, false),
+            undoFocus = EditFocusChange(EditFocusLocation.Item(0), 2, true)
         ) {
             itemAt<EditTextItem>(2).text.replace(2, 5, "\nnew item first\nnew item second")
         }
@@ -713,8 +713,8 @@ class EditViewModelTest {
                 EditItemAddItem,
                 EditChipsItem(listOf(labelsRepo.requireLabelById(1))),
             ),
-            redoFocus = EditFocusChange(2, 6, true),
-            undoFocus = EditFocusChange(3, 0, false)
+            redoFocus = EditFocusChange(EditFocusLocation.Item(0), 6, true),
+            undoFocus = EditFocusChange(EditFocusLocation.Item(1), 0, false)
         ) {
             viewModel.onNoteItemBackspacePressed(3)
         }
@@ -732,7 +732,7 @@ class EditViewModelTest {
             EditContentItem("content".e, editable = true),
             EditChipsItem(listOf(labelsRepo.requireLabelById(1))),
         ), viewModel.editItems.getOrAwaitValue())
-        assertWasFocused(0, 5)
+        assertWasFocused(EditFocusLocation.Title, 5)
     }
 
     @Test
@@ -741,7 +741,7 @@ class EditViewModelTest {
         viewModel.onNoteItemBackspacePressed(2)
 
         assertEquals(NOTE1_ITEMS, viewModel.editItems.getOrAwaitValue())
-        assertWasFocused(1, 5)
+        assertWasFocused(EditFocusLocation.Title, 5)
     }
 
     @Test
@@ -750,7 +750,7 @@ class EditViewModelTest {
         viewModel.onNoteItemBackspacePressed(2)
 
         assertEquals(NOTE2_ITEMS, viewModel.editItems.getOrAwaitValue())
-        assertWasFocused(1, 5)
+        assertWasFocused(EditFocusLocation.Title, 5)
     }
 
     @Test
@@ -764,8 +764,8 @@ class EditViewModelTest {
                 EditItemAddItem,
                 EditChipsItem(listOf(labelsRepo.requireLabelById(1))),
             ),
-            redoFocus = EditFocusChange(2, 6, true),
-            undoFocus = EditFocusChange(3, 6, false)
+            redoFocus = EditFocusChange(EditFocusLocation.Item(0), 6, true),
+            undoFocus = EditFocusChange(EditFocusLocation.Item(1), 6, false)
         ) {
             viewModel.onNoteItemDeleteClicked(3)
         }
@@ -782,8 +782,8 @@ class EditViewModelTest {
                 EditItemAddItem,
                 EditChipsItem(listOf(labelsRepo.requireLabelById(1))),
             ),
-            redoFocus = EditFocusChange(2, 6, true),
-            undoFocus = EditFocusChange(2, 6, false),
+            redoFocus = EditFocusChange(EditFocusLocation.Item(0), 6, true),
+            undoFocus = EditFocusChange(EditFocusLocation.Item(0), 6, false),
         ) {
             viewModel.onNoteItemDeleteClicked(2)
         }
@@ -802,8 +802,8 @@ class EditViewModelTest {
                 EditItemAddItem,
                 EditChipsItem(listOf(labelsRepo.requireLabelById(1))),
             ),
-            redoFocus = EditFocusChange(4, 0, false),
-            undoFocus = EditFocusChange(3, 6, true),
+            redoFocus = EditFocusChange(EditFocusLocation.Item(2), 0, false),
+            undoFocus = EditFocusChange(EditFocusLocation.Item(1), 6, true),
         ) {
             viewModel.onNoteItemAddClicked()
         }
@@ -1169,8 +1169,8 @@ class EditViewModelTest {
                 EditItemItem("".e, checked = true, editable = true, 1),
                 EditChipsItem(listOf(labelsRepo.requireLabelById(1))),
             ),
-            redoFocus = EditFocusChange(6, 0, false),
-            undoFocus = EditFocusChange(5, 6, true)
+            redoFocus = EditFocusChange(EditFocusLocation.Item(1), 0, false),
+            undoFocus = EditFocusChange(EditFocusLocation.Item(0), 6, true)
         ) {
             itemAt<EditTextItem>(5).text.replace(6, 6, "\n")
         }
@@ -1310,7 +1310,7 @@ class EditViewModelTest {
                 EditItemAddItem,
                 EditChipsItem(listOf(labelsRepo.requireLabelById(1))),
             ),
-            redoFocus = EditFocusChange(2, 0, false),
+            redoFocus = EditFocusChange(EditFocusLocation.Item(0), 0, false),
         ) {
             viewModel.onNoteTitleEnterPressed()
         }
@@ -1332,7 +1332,7 @@ class EditViewModelTest {
                 EditItemItem("item 1".e, checked = true, editable = true, 0),
                 EditChipsItem(listOf(labelsRepo.requireLabelById(1))),
             ),
-            redoFocus = EditFocusChange(2, 0, false),
+            redoFocus = EditFocusChange(EditFocusLocation.Item(1), 0, false),
         ) {
             viewModel.onNoteTitleEnterPressed()
         }
@@ -1363,12 +1363,12 @@ class EditViewModelTest {
         assertUndoRedoStatus(canUndo = true)
 
         viewModel.undo()
-        assertWasFocused(1, 4)
+        assertWasFocused(EditFocusLocation.Title, 4)
         assertEquals("title", item.text.text.toString())
         assertUndoRedoStatus(canRedo = true)
 
         viewModel.redo()
-        assertWasFocused(1, 15)
+        assertWasFocused(EditFocusLocation.Title, 15)
         assertEquals("tiananmen square", item.text.text.toString())
         assertUndoRedoStatus(canUndo = true)
     }
@@ -1384,10 +1384,10 @@ class EditViewModelTest {
         item.text.replace(2, 2, "c")
 
         viewModel.undo()
-        assertWasFocused(2, 2)
+        assertWasFocused(EditFocusLocation.Content, 2)
         assertEquals("ab", item.text.text.toString())
         viewModel.undo()
-        assertWasFocused(2, 7)
+        assertWasFocused(EditFocusLocation.Content, 7)
         assertEquals("content", item.text.text.toString())
     }
 
@@ -1431,8 +1431,8 @@ class EditViewModelTest {
         return item as T
     }
 
-    private fun assertWasFocused(index: Int, textPos: Int, itemExists: Boolean = true) {
-        assertLiveDataEventSent(viewModel.focusEvent, EditFocusChange(index, textPos, itemExists))
+    private fun assertWasFocused(location: EditFocusLocation, textPos: Int, itemExists: Boolean = true) {
+        assertLiveDataEventSent(viewModel.focusEvent, EditFocusChange(location, textPos, itemExists))
     }
 
     private fun assertUndoRedoStatus(canUndo: Boolean = false, canRedo: Boolean = false) {

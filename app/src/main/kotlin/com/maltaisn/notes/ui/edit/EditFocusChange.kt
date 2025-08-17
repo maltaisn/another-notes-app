@@ -19,12 +19,26 @@ package com.maltaisn.notes.ui.edit
 import com.maltaisn.notes.ui.edit.adapter.EditTextItem
 
 /**
- * Defines a focus change event in [EditFragment] for a [EditTextItem].
- * The focus is changed to a item at [index], to a text position [textPos].
- * The focus change may have to be delayed if item doesn't exist yet ([itemExists]).
+ * Represents a change of focus to a text item in the edit list.
+ *
+ * @param itemExists This should be `true` if the list currently seen by the adapter contains
+ * the item targeted by this focus change. Otherwise, the adapter will wait until the new item
+ * is bound to a view holder before changing the focus.
  */
 data class EditFocusChange(
-    val index: Int,
+    val location: EditFocusLocation,
     val textPos: Int,
-    val itemExists: Boolean
-)
+    val itemExists: Boolean = false,
+) {
+
+    companion object {
+        fun atPosOfItem(item: EditTextItem, textPos: Int, itemExists: Boolean = false) =
+            EditFocusChange(EditFocusLocation.fromItem(item), textPos, itemExists)
+
+        fun atStartOfItem(item: EditTextItem, itemExists: Boolean = false) =
+            atPosOfItem(item, 0, itemExists)
+
+        fun atEndOfItem(item: EditTextItem, itemExists: Boolean = false) =
+            atPosOfItem(item, item.text.text.length, itemExists)
+    }
+}
