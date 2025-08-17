@@ -40,7 +40,9 @@ class DebugBuildTypeBehavior @Inject constructor(
             }
         } else if (destination is HomeDestination.Labels) {
             repeat(3) {
-                val id = notesRepository.insertNote(DebugUtils.getRandomNote(NoteStatus.ACTIVE))
+                val note = DebugUtils.getRandomNote(NoteStatus.ACTIVE)
+                val rank = notesRepository.getNewNoteRank()
+                val id = notesRepository.insertNote(note.copy(rank = rank))
                 labelsRepository.insertLabelRefs(listOf(LabelRef(id, destination.label.id)))
             }
         }
