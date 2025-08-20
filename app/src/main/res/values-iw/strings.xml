@@ -1,0 +1,278 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+  Copyright 2023 Nicolas Maltais
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  -->
+<resources>
+
+    <!-- Do not translate the app name -->
+    <string name="app_name" translatable="false">Another Notes</string>
+
+    <!-- Can be translated to provided a sensible localized name for a "Notes" app -->
+    <string name="app_name_short">פתקים</string>
+
+    <string name="action_archive">העבר לארכיון</string>
+    <string name="action_cancel">ביטול</string>
+    <string name="action_clear">נקה</string>
+    <string name="action_convert_to_list">המר לרשימה</string>
+    <string name="action_convert_to_text">המר לטקסט</string>
+    <string name="action_copy">צור עותק</string>
+    <string name="action_delete">מחק</string>
+    <string name="action_delete_checked">מחק פריטים שסומנו</string>
+    <string name="action_delete_forever">מחק לצמיתות</string>
+    <string name="action_delete_selection">מחק את הבחירה</string>
+    <string name="action_delete_selection_forever">מחק את הבחירה לצמיתות</string>
+    <string name="action_empty_trash">רוקן את סל המחזור</string>
+    <string name="action_empty_trash_short">רוקן</string>
+    <string name="action_keep">שמור</string>
+    <string name="action_labels">שנה תוויות</string>
+    <string name="action_layout_grid">הצג כרשת</string>
+    <string name="action_layout_list">הצג כרשימה</string>
+    <string name="action_manage">נהל</string>
+    <string name="action_mark_as_done">סמן כהושלם</string>
+    <string name="action_none">ללא</string>
+    <string name="action_ok">אישור</string>
+    <string name="action_open">פתח</string>
+    <string name="action_pin">נעץ</string>
+    <string name="action_postpone">דחה</string>
+    <string name="action_reminder_add">הוסף תזכורת</string>
+    <string name="action_reminder_edit">ערוך תזכורת</string>
+    <string name="action_rename">שנה שם</string>
+    <string name="action_restore">שחזר</string>
+    <string name="action_search">חיפוש</string>
+    <string name="action_select_all">בחר הכל</string>
+    <string name="action_settings">הגדרות</string>
+    <string name="action_share">שתף</string>
+    <string name="action_unarchive">הוצא מהארכיון</string>
+    <string name="action_uncheck_all">בטל סימון הכל</string>
+    <string name="action_undo">בטל</string>
+    <string name="action_unpin">הסר נעיצה</string>
+
+    <!-- Shortcuts -->
+    <!-- Note: normal length is ideally 25 chars or less, short is 10 chars or less. -->
+    <string name="shortcut_text_note">פתק טקסט חדש</string>
+    <string name="shortcut_text_note_short">טקסט חדש</string>
+    <string name="shortcut_list_note">פתק רשימה חדש</string>
+    <string name="shortcut_list_note_short">רשימה חדשה</string>
+    <string name="shortcut_reminders">תזכורות</string>
+    <string name="shortcut_reminders_short">תזכורות</string>
+
+    <!-- Home -->
+    <string name="note_location_active">פתקים</string>
+    <string name="note_location_archived">ארכיון</string>
+    <string name="note_location_deleted">נמחקו</string>
+    <string name="note_location_labels">תוויות</string>
+
+    <string name="note_pinned">נעוצים</string>
+    <string name="note_not_pinned">אחרים</string>
+
+    <string name="note_placeholder_active">אין לך פתקים.
+לחץ על + כדי להוסיף.</string>
+    <string name="note_placeholder_archived">אין פתקים בארכיון</string>
+    <string name="note_placeholder_deleted">סל המחזור ריק</string>
+
+    <plurals name="note_list_item_info">
+        <item quantity="one">ועוד %d פריט ברשימה</item>
+        <item quantity="other">ועוד %d פריטים ברשימה</item>
+    </plurals>
+
+    <plurals name="note_list_item_info_checked">
+        <item quantity="one">ועוד %d פריט שסומן</item>
+        <item quantity="other">ועוד %d פריטים שסומנו</item>
+    </plurals>
+
+    <plurals name="trash_reminder_message">
+        <item quantity="one">הפתקים בסל המחזור יימחקו אוטומטית לאחר %d יום.</item>
+        <item quantity="other">הפתקים בסל המחזור יימחקו אוטומטית לאחר %d ימים.</item>
+    </plurals>
+    <string name="trash_delete_message">פתק זה יימחק לצמיתות.</string>
+    <string name="trash_delete_selected_message">הפתקים שנבחרו יימחקו לצמיתות.</string>
+    <string name="trash_empty_message">כל הפתקים בסל המחזור יימחקו לצמיתות.</string>
+
+
+    <string name="search_hint">חפש פתקים</string>
+    <string name="search_empty_placeholder">לא נמצאו פתקים עבור החיפוש שלך.</string>
+
+    <string name="sort_title">אפשרויות מיון</string>
+    <string name="sort_direction">כיוון המיון</string>
+    <string name="sort_direction_ascending">עולה</string>
+    <string name="sort_direction_descending">יורד</string>
+    <string name="sort_field">מיין לפי</string>
+    <string name="sort_field_created">תאריך יצירה</string>
+    <string name="sort_field_modified">תאריך עדכון</string>
+    <string name="sort_field_title">כותרת</string>
+
+    <!-- Edit -->
+    <string name="edit_add_title">צור פתק</string>
+    <string name="edit_change_title">ערוך פתק</string>
+    <string name="edit_hint_note_title">כותרת</string>
+    <string name="edit_hint_note_content">תוכן</string>
+    <string name="edit_hint_note_item">פריט רשימה</string>
+
+    <string name="edit_message_blank_note_discarded">פתק ריק לא נשמר.</string>
+    <plurals name="edit_move_archive_message">
+        <item quantity="one">הפתק הועבר לארכיון.</item>
+        <item quantity="other">הפתקים הועברו לארכיון.</item>
+    </plurals>
+    <plurals name="edit_message_move_delete">
+        <item quantity="one">הפתק הועבר לסל המחזור.</item>
+        <item quantity="other">הפתקים הועברו לסל המחזור.</item>
+    </plurals>
+    <plurals name="edit_message_move_restore">
+        <item quantity="one">הפתק שוחזר.</item>
+        <item quantity="other">הפתקים שוחזרו.</item>
+    </plurals>
+    <plurals name="edit_message_move_unarchive">
+        <item quantity="one">הפתק הוצא מארכיון.</item>
+        <item quantity="other">הפתקים הוצאו מארכיון.</item>
+    </plurals>
+    <string name="edit_in_trash_message">אי אפשר לערוך פתק שנמצא בסל המחזור.</string>
+
+    <string name="edit_copy_suffix">עותק</string>
+    <string name="edit_copy_untitled_name">ללא כותרת</string>
+
+    <string name="edit_convert_keep_checked">להסיר פריטים שסומנו?</string>
+
+    <plurals name="edit_checked_items">
+        <item quantity="one">%d פריט שסומן</item>
+        <item quantity="other">%d פריטים שסומנו</item>
+    </plurals>
+
+    <!-- Reminder -->
+    <string name="note_reminders">תזכורות</string>
+    <string name="reminder_upcoming">בקרוב</string>
+    <string name="reminder_today">היום</string>
+    <string name="reminder_overdue">מאוחר</string>
+    <string name="reminder_date">תאריך</string>
+    <string name="reminder_time">שעה</string>
+    <string name="reminder_invalid_time">הזמן הזה כבר עבר.</string>
+    <string name="reminder_notif_channel_title">תזכורות</string>
+    <string name="reminder_notif_channel_descr">תזכורות שנקבעו על פתקים</string>
+    <string name="reminder_empty_placeholder">לא הוגדרו תזכורות</string>
+    <string name="reminder_restricted_battery">התראות עלולות שלא לפעול כראוי מפני שהאפליקציה מוגבלת בחיסכון בסוללה. ניתן לשנות זאת בהגדרות האפליקציה.</string>
+    <string name="reminder_notif_permission">כדי לשלוח התראות, האפליקציה זקוקה להרשאה. לחץ על אישור כדי להציג בקשת הרשאה. לאחר מכן תוכל להגדיר תזכורת.</string>
+    <string name="reminder_alarm_permission">כדי לאפשר התראות החל מ-Android 14, האפליקציה זקוקה להרשאה נוספת. לחץ אישור כדי להציג בקשת הרשאה. לאחר מכן תוכל להגדיר תזכורת.</string>    <string name="reminder_notif_permission_denied">הרשאת התראות נדחתה. אזעקות התזכורות לא יעבדו עד שההרשאה תופעל.</string>
+    <string name="reminder_alarm_permission_denied">הרשאת התראות נדחתה. ההתראות לא יעבדו עד שההרשאה תופעל.</string>
+    <string name="toast_notification_permission_denied">הרשאת התראות נדחתה, תזכורות לא יעבדו! הקש על כל תזכורת כדי להגדיר אותה.</string>
+    <string name="toast_alarm_permission_denied">הרשאת התראות נדחתה, תזכורות לא יעבדו! הקש על כל תזכורת כדי להגדיר אותה.</string>
+
+    <!-- Labels -->
+    <string name="label_create">צור תווית חדשה</string>
+    <string name="label_edit">ערוך שם התווית</string>
+    <string name="label_manage">נהל תוויות</string>
+    <string name="label_select">בחר תוויות</string>
+    <string name="label_already_exists">תווית בשם זה כבר קיימת.</string>
+    <string name="label_hidden_option">הסתר פתקים עם תווית זו בפתקים ובארכיון</string>
+    <string name="label_empty_placeholder">לא נוצרו תוויות</string>
+    <string name="label_delete_message">תוויות נבחרות ימחקו, אך הפתקים המשויכים אליהן ישמרו.</string>
+    <string name="label_notes_empty_placeholder">אין פתקים המסומנים בתווית זו</string>
+
+    <!-- Settings -->
+    <string name="pref_group_appearance">מראה</string>
+    <string name="pref_theme">ערכת נושא</string>
+    <string name="pref_theme_light">בהיר</string>
+    <string name="pref_theme_dark">כהה</string>
+    <string name="pref_theme_system">עיצוב מערכת</string>
+    <string name="pref_dynamic_colors">השתמש בצבעים דינמיים</string>
+    <string name="pref_strikethrough_checked">קו חוצה לפריטים שסומנו</string>
+    <string name="pref_preview_labels">מספר מקסימלי של תוויות בתצוגה מקדימה</string>
+
+    <string name="pref_shown_date">תאריך המוצג עבור פתקים</string>
+    <string name="pref_shown_date_added">תאריך יצירה</string>
+    <string name="pref_shown_date_modified">תאריך עדכון</string>
+    <string name="pref_shown_date_none">ללא תצוגת תאריך</string>
+
+    <string name="pref_deleted_notes_timeout_title">השהיית מחיקה אוטומטית של סל המחזור</string>
+    <string name="pref_deleted_notes_timeout_day">24 שעות</string>
+    <string name="pref_deleted_notes_timeout_week">7 ימים</string>
+    <string name="pref_deleted_notes_timeout_month">30 ימים</string>
+    <string name="pref_deleted_notes_timeout_year">שנה</string>
+
+    <string name="pref_preview_lines">מספר שורות מקסימלי בתצוגה מקדימה</string>
+    <string name="pref_preview_lines_summary">הגדר כמה שורות ופריטים מוצגים בפתקים, עבור כל מצב תצוגה וסוג פתק</string>
+    <string name="pref_preview_lines_grid_layout">פריסת רשת</string>
+    <string name="pref_preview_lines_list_layout">פריסת רשימה</string>
+    <string name="pref_preview_lines_text">שורות בתצוגת פתק טקסט</string>
+    <string name="pref_preview_lines_list">פריטים בתצוגת פתק רשימה</string>
+
+    <string name="pref_group_behavior">התנהגות</string>
+    <string name="pref_behavior_swipe_action_left">פעולת החלקה שמאלה</string>
+    <string name="pref_behavior_swipe_action_right">פעולת החלקה ימינה</string>
+    <string name="pref_behavior_move_checked">העבר פריטים שסומנו לתחתית</string>
+    <string name="pref_deleted_notes_timeout">השהיית מחיקת פתקים שנמחקו</string>
+
+    <string name="pref_group_data">נתונים</string>
+    <string name="pref_data_export">ייצא נתונים</string>
+    <string name="pref_data_export_summary">ייצא נתוני פתקים כ-JSON</string>
+    <string name="pref_data_encrypted_export">ייצוא מוצפן</string>
+    <string name="pref_data_encrypted_export_summary">מייצא את הנתונים מוצפנים. אין גישה ללא הסיסמה הנכונה.</string>
+    <string name="pref_data_auto_export">ייצוא נתונים אוטומטי</string>
+    <string name="pref_data_auto_export_summary">ייצא את נתוני האפליקציה לקובץ אוטומטית, פעם ביום.</string>
+    <string name="pref_data_auto_export_date">(נשמר לאחרונה ב־%s)</string>
+    <string name="pref_data_import">ייבא נתונים</string>
+    <string name="pref_data_import_summary">ייבא נתוני JSON שיוצאו קודם, במיזוג עם הנתונים הקיימים.</string>
+    <string name="pref_data_clear">נקה את כל הנתונים</string>
+    <string name="pref_data_clear_confirm_message">כל נתוני הפתקים יימחקו לצמיתות! אין אפשרות לבטל.</string>
+    <string name="pref_data_clear_success_message">כל הנתונים נמחקו בהצלחה.</string>
+
+    <string name="pref_group_about">אודות</string>
+    <string name="pref_about_view_source">צפה ב-Github</string>
+    <string name="pref_about_view_licenses">רישיונות קוד פתוח</string>
+    <string name="pref_about_version">גרסה</string>
+
+    <string name="pref_restart_dialog_title">נדרש הפעלה מחדש!</string>
+    <string name="pref_restart_dialog_description">נדרשת הפעלה מחדש כדי ששינויים אלה יכנסו לתוקף. האם ברצונך להפעיל מחדש את האפליקציה כעת?</string>
+
+    <!-- Import/export data messages -->
+    <string name="export_success">הייצוא הסתיים.</string>
+    <string name="export_fail">אירעה שגיאה במהלך ייצוא הנתונים.</string>
+    <string name="export_serialization_fail">אירעה שגיאה במהלך ייצוא הנתונים. נסה להשבית הצפנה ונסה שוב.</string>
+    <string name="encrypted_export_dialog_title">הגדר סיסמה</string>
+    <string name="encrypted_export_password">סיסמה</string>
+    <string name="encrypted_export_repeat_password">אשר סיסמה</string>
+    <string name="encrypted_export_password_matching_error">הסיסמאות אינן תואמות</string>
+    <string name="encrypted_export_key_generation_successful">ההצפנה הופעלה בהצלחה!</string>
+    <string name="encrypted_export_key_deletion_successful">ההצפנה הושבתה בהצלחה!</string>
+    <string name="import_success">הנתונים יובאו בהצלחה!</string>
+    <string name="import_future_version">הנתונים יובאו בהצלחה! שים לב שחלק מהמידע עלול להשתבש מכיוון שהנתונים מקורם בגרסה מאוחרת יותר.</string>
+    <string name="import_bad_input">אירעה שגיאה בקריאת הקובץ הזה.</string>
+    <string name="import_bad_format">לא ניתן לייבא את הנתונים, פורמט JSON אינו תקין.</string>
+    <string name="import_bad_data">לא ניתן לייבא את הנתונים, חלק מהשדות מכילים ערכים לא תקינים. זה עלול לקרות כשמייבאים מגרסה מאוחרת יותר; נסה לעדכן את האפליקציה.</string>
+    <string name="encrypted_import_dialog_title">הזן סיסמה</string>
+    <string name="encrypted_import_key_error">אירעה שגיאה בפענוח קובץ זה. בדוק אם הסיסמה נכונה.</string>
+    <string name="encrypted_import_encryption_unsupported">לא ניתן לייבא נתונים, הצפנה אינה נתמכת בגרסה זו של Android.</string>
+    <string name="auto_export_message">כדי לאפשר יצוא אוטומטי, יש לבחור קובץ לשמירה. נתוני האפליקציה ייצאו פעם ביום בזמן שהאפליקציה פתוחה. לחץ אישור כדי להמשיך.</string>
+    <string name="auto_export_fail">הייצוא האוטומטי נכשל. ודא שמיקום הייצוא קיים ונגיש, ואז הגדר מחדש את הייצוא האוטומטי.</string>
+
+    <!-- Content description -->
+    <string name="content_descrp_open_drawer">פתח תפריט</string>
+    <string name="content_descrp_back">חזור</string>
+    <string name="content_descrp_label_hidden">פתקים עם תווית זו מוסתרים</string>
+
+    <!-- Relative date time format -->
+    <string name="date_rel_today">היום, %s</string>
+    <string name="date_rel_yesterday">אתמול, %s</string>
+    <string name="date_rel_tomorrow">מחר, %s</string>
+    <plurals name="date_rel_days_past">
+        <!-- used with quantity >= 2, format values: number of days, time -->
+        <item quantity="other">לפני %d ימים, %s</item>
+    </plurals>
+    <plurals name="date_rel_days_future">
+        <!-- used with quantity >= 2, format values: number of days, time -->
+        <item quantity="other">בעוד %d ימים, %s</item>
+    </plurals>
+    <!-- format values: date, time -->
+    <string name="date_rel_absolute">%1$s, %2$s</string>
+
+</resources>
