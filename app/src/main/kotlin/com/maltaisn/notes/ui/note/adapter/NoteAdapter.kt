@@ -73,7 +73,7 @@ class NoteAdapter(
             callback.onNoteSwapped(item, from, to)
         },
         canDropOver = { current, target ->
-            if (target is NoteViewHolder<*>) {
+            if (dragStartPos != RecyclerView.NO_POSITION && target is NoteViewHolder<*>) {
                 val currentItem = getItem(current.bindingAdapterPosition) as NoteItem
                 val targetItem = getItem(target.bindingAdapterPosition) as NoteItem
                 currentItem.note.pinned == targetItem.note.pinned
