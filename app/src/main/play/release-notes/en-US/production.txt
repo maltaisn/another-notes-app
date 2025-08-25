@@ -1,4 +1,5 @@
-- Configurable trash auto-delete delay.
-- Fix reminders crash on Android 14.
-- Add Japenese translation.
-- Other small fixes.
+- Added undo & redo while editing.
+- Added custom sort order allowing to reorder notes by dragging.
+- Added setting to change text size.
+- Added option to export notes ZIP archive.
+- Fixed several bugs & other minor improvements.

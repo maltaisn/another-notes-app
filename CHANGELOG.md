@@ -22,6 +22,8 @@
 - Fixed navigation bar fully transparent on API 27 & 28 (#117).
 - Fixed blink after splash screen on API 28 (#115).
 - Fixed title highlights not updated when search query changes.
+- Fixed crash when importing notes with reminders when alarm or notification permission were denied.
+- Added Hebrew translation (#162, @AshiVered).
 
 ## v1.5.4 (2023-12-28)
 - Ask for notification permission on Android 13 when importing data with reminders.

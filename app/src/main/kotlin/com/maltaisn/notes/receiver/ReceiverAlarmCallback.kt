@@ -23,7 +23,10 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
+import android.os.Handler
+import android.os.Looper
 import android.widget.Toast
+import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
 import com.maltaisn.notes.R
@@ -52,12 +55,12 @@ class ReceiverAlarmCallback @Inject constructor(
                 alarmManager.setExact(AlarmManager.RTC_WAKEUP, time, alarmIntent)
             }
         } catch (se: SecurityException) {
-            Toast.makeText(context, R.string.toast_alarm_permission_denied, Toast.LENGTH_LONG).show()
+            showMessage(R.string.toast_alarm_permission_denied)
         }
         if (ContextCompat.checkSelfPermission(context,
                 Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_DENIED
         ) {
-            Toast.makeText(context, R.string.toast_notification_permission_denied, Toast.LENGTH_LONG).show()
+            showMessage(R.string.toast_notification_permission_denied)
         }
     }
 
@@ -76,5 +79,12 @@ class ReceiverAlarmCallback @Inject constructor(
             flags = flags or PendingIntent.FLAG_IMMUTABLE
         }
         return PendingIntent.getBroadcast(context, noteId.toInt(), receiverIntent, flags)
+    }
+
+    private fun showMessage(@StringRes message: Int) {
+        val handler = Handler(Looper.getMainLooper())
+        handler.post {
+            Toast.makeText(context, message, Toast.LENGTH_LONG).show()
+        }
     }
 }
