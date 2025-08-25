@@ -36,8 +36,7 @@ import com.maltaisn.notes.ui.edit.adapter.EditItemItem
 import com.maltaisn.notes.ui.edit.adapter.EditListItem
 import com.maltaisn.notes.ui.edit.adapter.EditTextItem
 import com.maltaisn.notes.ui.edit.adapter.EditTitleItem
-import com.maltaisn.notes.ui.edit.undo.UndoManager
-import com.maltaisn.notes.ui.edit.undo.randomString
+import com.maltaisn.notes.ui.edit.event.randomString
 import com.maltaisn.notes.ui.getOrAwaitValue
 import com.maltaisn.notes.ui.note.ShownDateField
 import kotlinx.coroutines.flow.first
@@ -96,7 +95,7 @@ class EditViewModelRandomTest {
         viewModel = EditViewModel(notesRepo, labelsRepo, prefs,
             DefaultReminderAlarmManager(notesRepo, prefs, MockAlarmCallback()),
             editableTextProvider, SavedStateHandle())
-        viewModel.setMaxUndoActions(UndoManager.NO_MAX_ACTIONS)
+        viewModel.setMaxUndoEvents(EditUndoManager.NO_MAX_EVENTS)
     }
 
     private fun checkFocusChange() {

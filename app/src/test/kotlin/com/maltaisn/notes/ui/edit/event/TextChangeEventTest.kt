@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.maltaisn.notes.ui.edit.undo
+package com.maltaisn.notes.ui.edit.event
 
 import com.maltaisn.notes.ui.edit.EditFocusLocation
 import com.maltaisn.notes.ui.edit.TestEditableTextProvider
@@ -27,12 +27,12 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 
-class TextUndoActionTest {
+class TextChangeEventTest {
 
     private val editableTextProvider = TestEditableTextProvider()
 
     @Test
-    fun `should create action`() {
+    fun `should create event`() {
         for (i in 0..1000) {
             val rng = Random(i)
             val oldText = randomString(0..10, rng)
@@ -48,41 +48,41 @@ class TextUndoActionTest {
 
             val oldSub = oldText.substring(oldRange)
             val newSub = newText.substring(newRange)
-            val action = testAction(oldRange, oldSub, newSub)
+            val event = testEvent(oldRange, oldSub, newSub)
 
-            assertEquals(oldText.substring(action.start, action.end), action.oldText)
+            assertEquals(oldText.substring(event.start, event.end), event.oldText)
 
             // Old and new texts should have no common parts with original
-            assertEquals("", action.oldText.commonPrefixWith(action.newText))
-            assertEquals("", action.oldText.commonSuffixWith(action.newText))
+            assertEquals("", event.oldText.commonPrefixWith(event.newText))
+            assertEquals("", event.oldText.commonSuffixWith(event.newText))
 
-            // Action should produce expected text
-            val textApplied = action.applyOnText(oldText)
+            // event should produce expected text
+            val textApplied = event.applyOnText(oldText)
             assertEquals(newText, textApplied)
         }
     }
 
     @Test
-    fun `should merge action`() {
-        val randomAction = { text: String, rng: Random ->
+    fun `should merge event`() {
+        val randomEvent = { text: String, rng: Random ->
             val range = randomTextRange(text, rng)
             val newText = text.withReplacedRange(range, randomString(0..10, rng))
-            testAction(text.indices, text, newText)
+            testEvent(text.indices, text, newText)
         }
         for (i in 0..1000) {
             val rng = Random(i)
             val text = randomString(0..10, rng)
 
-            // Two actions apply sequentially
-            val action0 = randomAction(text, rng)
-            val textInter = action0.applyOnText(text)
-            val action1 = randomAction(textInter, rng)
-            val textSeq = action1.applyOnText(textInter)
+            // Two events apply sequentially
+            val event0 = randomEvent(text, rng)
+            val textInter = event0.applyOnText(text)
+            val event1 = randomEvent(textInter, rng)
+            val textSeq = event1.applyOnText(textInter)
 
-            // Should produce the same result as the merged action (if it exists)
-            val merged = action0.mergeWith(action1)
+            // Should produce the same result as the merged event (if it exists)
+            val merged = event0.mergeWith(event1)
 
-            if (action1.end < action0.start || action1.start > action0.start + action0.newText.length) {
+            if (event1.end < event0.start || event1.start > event0.start + event0.newText.length) {
                 assertNull(merged)
             } else {
                 assertNotNull(merged)
@@ -93,36 +93,36 @@ class TextUndoActionTest {
     }
 
     @Test
-    fun `should not merge actions with different item position`() {
-        val action0 = TextUndoAction.create(EditFocusLocation.Title, 0, 0, "a", "b")
-        val action1 = TextUndoAction.create(EditFocusLocation.Content, 0, 0, "b", "c")
-        assertNull(action0.mergeWith(action1))
+    fun `should not merge events with different item position`() {
+        val event0 = TextChangeEvent.create(EditFocusLocation.Title, 0, 0, "a", "b")
+        val event1 = TextChangeEvent.create(EditFocusLocation.Content, 0, 0, "b", "c")
+        assertNull(event0.mergeWith(event1))
     }
 
     @Test
     fun `should redo and undo correctly`() {
-        // Randomly edit text using the redo action, and then undo back to the original.
+        // Randomly edit text using the redo event, and then undo back to the original.
         val initialText = "original"
 
         val item = EditTitleItem(initialText.e, true)
         val text = item.text.text
-        val actions = mutableListOf<TextUndoAction>()
+        val events = mutableListOf<TextChangeEvent>()
 
         val rng = Random(1)
         repeat(1000) {
             val range = randomTextRange(text, rng)
             val oldText = text.substring(range)
             val newText = randomString(0..10, rng)
-            val action = testAction(range, oldText, newText)
+            val event = testEvent(range, oldText, newText)
 
-            val focusChange = action.redo(UndoPayload(editableTextProvider, mutableListOf(item)))
+            val focusChange = event.redo(EventPayload(editableTextProvider, mutableListOf(item)))
             assertNotNull(focusChange)
             assertContains(0..text.length, focusChange.textPos)
-            actions += action
+            events += event
         }
 
-        for (action in actions.asReversed()) {
-            val focusChange = action.undo(UndoPayload(editableTextProvider, mutableListOf(item)))
+        for (event in events.asReversed()) {
+            val focusChange = event.undo(EventPayload(editableTextProvider, mutableListOf(item)))
             assertNotNull(focusChange)
             assertContains(0..text.length, focusChange.textPos)
         }
@@ -139,10 +139,10 @@ class TextUndoActionTest {
         return substring(0, range.start) + replacement + substring(range.last + 1)
     }
 
-    private fun TextUndoAction.applyOnText(text: String): String {
+    private fun TextChangeEvent.applyOnText(text: String): String {
         return text.withReplacedRange(start..<end, newText)
     }
 
-    private fun testAction(range: IntRange, old: String, new: String) =
-        TextUndoAction.create(EditFocusLocation.Title, range.first, range.last + 1, old, new)
+    private fun testEvent(range: IntRange, old: String, new: String) =
+        TextChangeEvent.create(EditFocusLocation.Title, range.first, range.last + 1, old, new)
 }

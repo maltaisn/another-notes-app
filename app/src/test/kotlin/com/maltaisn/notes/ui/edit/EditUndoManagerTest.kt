@@ -14,18 +14,19 @@
  * limitations under the License.
  */
 
-package com.maltaisn.notes.ui.edit.undo
+package com.maltaisn.notes.ui.edit
 
-import com.maltaisn.notes.ui.edit.EditFocusLocation
-import junit.framework.TestCase.assertTrue
+import com.maltaisn.notes.ui.edit.event.BatchEvent
+import com.maltaisn.notes.ui.edit.event.TextChangeEvent
+import junit.framework.TestCase
 import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNull
 
-class UndoManagerTest {
+class EditUndoManagerTest {
 
-    private val undoManager = UndoManager()
+    private val undoManager = EditUndoManager()
 
     @Test
     fun `should undo and redo`() {
@@ -34,49 +35,49 @@ class UndoManagerTest {
         assertNull(undoManager.undo())
         assertNull(undoManager.redo())
 
-        undoManager.append(ACTION0)
-        assertTrue(undoManager.canUndo)
+        undoManager.append(EVENT0)
+        TestCase.assertTrue(undoManager.canUndo)
         assertFalse(undoManager.canRedo)
 
-        undoManager.append(ACTION1)
+        undoManager.append(EVENT1)
 
-        assertEquals(ACTION1, undoManager.undo())
-        assertTrue(undoManager.canUndo)
-        assertTrue(undoManager.canRedo)
+        assertEquals(EVENT1, undoManager.undo())
+        TestCase.assertTrue(undoManager.canUndo)
+        TestCase.assertTrue(undoManager.canRedo)
 
-        assertEquals(ACTION0, undoManager.undo())
+        assertEquals(EVENT0, undoManager.undo())
         assertFalse(undoManager.canUndo)
         assertNull(undoManager.undo())
 
-        assertEquals(ACTION0, undoManager.redo())
-        assertTrue(undoManager.canRedo)
+        assertEquals(EVENT0, undoManager.redo())
+        TestCase.assertTrue(undoManager.canRedo)
 
-        assertEquals(ACTION1, undoManager.redo())
+        assertEquals(EVENT1, undoManager.redo())
         assertFalse(undoManager.canRedo)
         assertNull(undoManager.redo())
     }
 
     @Test
-    fun `should clear actions if appended`() {
-        undoManager.append(ACTION0)
-        undoManager.append(ACTION1)
+    fun `should clear events if appended`() {
+        undoManager.append(EVENT0)
+        undoManager.append(EVENT1)
 
         undoManager.undo()
         undoManager.undo()
-        undoManager.append(ACTION2)
+        undoManager.append(EVENT2)
 
         assertFalse(undoManager.canRedo)
         assertNull(undoManager.redo())
-        assertTrue(undoManager.canUndo)
+        TestCase.assertTrue(undoManager.canUndo)
 
-        assertEquals(ACTION2, undoManager.undo())
+        assertEquals(EVENT2, undoManager.undo())
         assertFalse(undoManager.canUndo)
     }
 
     @Test
-    fun `should batch new actions (none)`() {
+    fun `should batch new events (none)`() {
         undoManager.startBatch()
-        assertTrue(undoManager.isInBatchMode)
+        TestCase.assertTrue(undoManager.isInBatchMode)
         assertFalse(undoManager.canUndo)
         undoManager.endBatch()
         assertFalse(undoManager.isInBatchMode)
@@ -84,47 +85,47 @@ class UndoManagerTest {
     }
 
     @Test
-    fun `should batch new actions (single merged)`() {
+    fun `should batch new events (single merged)`() {
         undoManager.startBatch()
 
-        undoManager.append(ACTION0)
-        assertTrue(undoManager.canUndo)
-        undoManager.append(ACTION1)
+        undoManager.append(EVENT0)
+        TestCase.assertTrue(undoManager.canUndo)
+        undoManager.append(EVENT1)
         undoManager.endBatch()
 
-        assertEquals(ACTION01, undoManager.undo())
+        assertEquals(EVENT01, undoManager.undo())
         assertFalse(undoManager.canUndo)
     }
 
     @Test
-    fun `should batch new actions (multiple)`() {
+    fun `should batch new events (multiple)`() {
         undoManager.startBatch()
-        undoManager.append(ACTION0)
-        undoManager.append(ACTION2)
+        undoManager.append(EVENT0)
+        undoManager.append(EVENT2)
         undoManager.endBatch()
 
-        assertEquals(BatchUndoAction(listOf(ACTION0, ACTION2)), undoManager.undo())
+        assertEquals(BatchEvent(listOf(EVENT0, EVENT2)), undoManager.undo())
     }
 
     @Test
-    fun `should batch new actions (sub batch)`() {
+    fun `should batch new events (sub batch)`() {
         undoManager.startBatch()
-        undoManager.append(ACTION0)
-        undoManager.append(BatchUndoAction(listOf(ACTION1, ACTION2)))
+        undoManager.append(EVENT0)
+        undoManager.append(BatchEvent(listOf(EVENT1, EVENT2)))
         undoManager.endBatch()
 
-        assertEquals(BatchUndoAction(listOf(ACTION0, ACTION1, ACTION2)), undoManager.undo())
+        assertEquals(BatchEvent(listOf(EVENT0, EVENT1, EVENT2)), undoManager.undo())
     }
 
     @Test
-    fun `should not allow redo after action added to batch`() {
-        undoManager.append(ACTION0)
+    fun `should not allow redo after event added to batch`() {
+        undoManager.append(EVENT0)
         undoManager.undo()
-        assertTrue(undoManager.canRedo)
+        TestCase.assertTrue(undoManager.canRedo)
 
         undoManager.startBatch()
-        assertTrue(undoManager.canRedo)
-        undoManager.append(ACTION1)
+        TestCase.assertTrue(undoManager.canRedo)
+        undoManager.append(EVENT1)
         assertFalse(undoManager.canRedo)
 
         undoManager.endBatch()
@@ -134,18 +135,18 @@ class UndoManagerTest {
     @Test
     fun `should end batch on undo`() {
         undoManager.startBatch()
-        undoManager.append(ACTION0)
-        assertEquals(ACTION0, undoManager.undo())
+        undoManager.append(EVENT0)
+        assertEquals(EVENT0, undoManager.undo())
         assertFalse(undoManager.isInBatchMode)
     }
 
     @Test
     fun `should end batch on redo`() {
-        undoManager.append(ACTION0)
+        undoManager.append(EVENT0)
         undoManager.undo()
 
         undoManager.startBatch()
-        assertEquals(ACTION0, undoManager.redo())
+        assertEquals(EVENT0, undoManager.redo())
         assertFalse(undoManager.isInBatchMode)
     }
 
@@ -158,11 +159,11 @@ class UndoManagerTest {
     }
 
     @Test
-    fun `should discard old actions if too many`() {
-        undoManager.maxActions = 2
-        undoManager.append(ACTION0)
-        undoManager.append(ACTION1)
-        undoManager.append(ACTION2)
+    fun `should discard old events if too many`() {
+        undoManager.maxEvents = 2
+        undoManager.append(EVENT0)
+        undoManager.append(EVENT1)
+        undoManager.append(EVENT2)
 
         undoManager.undo()
         undoManager.undo()
@@ -170,10 +171,10 @@ class UndoManagerTest {
     }
 
     @Test
-    fun `should clear all actions`() {
-        undoManager.append(ACTION0)
+    fun `should clear all events`() {
+        undoManager.append(EVENT0)
         undoManager.startBatch()
-        undoManager.append(ACTION1)
+        undoManager.append(EVENT1)
 
         undoManager.clear()
         assertFalse(undoManager.canUndo)
@@ -182,9 +183,9 @@ class UndoManagerTest {
     }
 
     companion object {
-        private val ACTION0 = TextUndoAction.create(EditFocusLocation.Title, 0, 1, "a", "b")
-        private val ACTION1 = TextUndoAction.create(EditFocusLocation.Title, 1, 2, "b", "c")
-        private val ACTION01 = TextUndoAction.create(EditFocusLocation.Title, 0, 2, "ab", "bc")
-        private val ACTION2 = TextUndoAction.create(EditFocusLocation.Content, 0, 1, "b", "c")
+        private val EVENT0 = TextChangeEvent.Companion.create(EditFocusLocation.Title, 0, 1, "a", "b")
+        private val EVENT1 = TextChangeEvent.Companion.create(EditFocusLocation.Title, 1, 2, "b", "c")
+        private val EVENT01 = TextChangeEvent.Companion.create(EditFocusLocation.Title, 0, 2, "ab", "bc")
+        private val EVENT2 = TextChangeEvent.Companion.create(EditFocusLocation.Content, 0, 1, "b", "c")
     }
 }

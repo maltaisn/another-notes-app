@@ -14,34 +14,33 @@
  * limitations under the License.
  */
 
-package com.maltaisn.notes.ui.edit.undo
+package com.maltaisn.notes.ui.edit.event
 
 import com.maltaisn.notes.ui.edit.EditFocusChange
 
 /**
  * Change focus from [before] position to [after] position.
- * If the undo action is combined with other in a [BatchUndoAction],
- * it makes sense for one of them to be `null`.
+ * If the event is combined with other in a [BatchEvent], it makes sense for one of them to be `null`.
  * The item may or may not exist in the view at the time the focus change is requested.
  */
-data class FocusChangeUndoAction(
+data class FocusChangeEvent(
     val before: EditFocusChange? = null,
     val after: EditFocusChange? = null,
-) : ItemUndoAction {
+) : ItemEditEvent {
 
-    override fun mergeWith(action: ItemUndoAction): FocusChangeUndoAction? {
-        return if (action is FocusChangeUndoAction) {
-            FocusChangeUndoAction(action.before, after)
+    override fun mergeWith(event: ItemEditEvent): FocusChangeEvent? {
+        return if (event is FocusChangeEvent) {
+            FocusChangeEvent(event.before, after)
         } else {
             null
         }
     }
 
-    override fun undo(payload: UndoPayload): EditFocusChange? {
+    override fun undo(payload: EventPayload): EditFocusChange? {
         return before
     }
 
-    override fun redo(payload: UndoPayload): EditFocusChange? {
+    override fun redo(payload: EventPayload): EditFocusChange? {
         return after
     }
 }

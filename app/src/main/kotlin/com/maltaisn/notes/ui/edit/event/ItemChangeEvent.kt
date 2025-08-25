@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.maltaisn.notes.ui.edit.undo
+package com.maltaisn.notes.ui.edit.event
 
 import com.maltaisn.notes.ui.edit.EditFocusChange
 import com.maltaisn.notes.ui.edit.adapter.EditCheckedHeaderItem
@@ -23,14 +23,14 @@ import com.maltaisn.notes.ui.edit.adapter.EditItemItem
 import com.maltaisn.notes.ui.edit.adapter.EditTitleItem
 import java.util.Collections
 
-data class ItemChangeUndoActionItem(
+data class ItemChangeEventItem(
     val actualPos: Int,
     val text: String,
     val checked: Boolean,
 ) {
     companion object {
-        fun fromItem(item: EditItemItem): ItemChangeUndoActionItem {
-            return ItemChangeUndoActionItem(item.actualPos, item.text.text.toString(), item.checked)
+        fun fromItem(item: EditItemItem): ItemChangeEventItem {
+            return ItemChangeEventItem(item.actualPos, item.text.text.toString(), item.checked)
         }
     }
 }
@@ -38,14 +38,14 @@ data class ItemChangeUndoActionItem(
 /**
  * Insert new list items. Items must be sorted by actual pos.
  */
-data class ItemAddUndoAction(val items: List<ItemChangeUndoActionItem>) : ItemUndoAction {
+data class ItemAddEvent(val items: List<ItemChangeEventItem>) : ItemEditEvent {
 
-    override fun undo(payload: UndoPayload): EditFocusChange? {
+    override fun undo(payload: EventPayload): EditFocusChange? {
         removeItems(payload, items)
         return null
     }
 
-    override fun redo(payload: UndoPayload): EditFocusChange? {
+    override fun redo(payload: EventPayload): EditFocusChange? {
         addItems(payload, items)
         return null
     }
@@ -54,16 +54,16 @@ data class ItemAddUndoAction(val items: List<ItemChangeUndoActionItem>) : ItemUn
 /**
  * Remove existing list items. Items must be sorted by actual pos.
  */
-data class ItemRemoveUndoAction(
-    val items: List<ItemChangeUndoActionItem>
-) : ItemUndoAction {
+data class ItemRemoveEvent(
+    val items: List<ItemChangeEventItem>
+) : ItemEditEvent {
 
-    override fun undo(payload: UndoPayload): EditFocusChange? {
+    override fun undo(payload: EventPayload): EditFocusChange? {
         addItems(payload, items)
         return null
     }
 
-    override fun redo(payload: UndoPayload): EditFocusChange? {
+    override fun redo(payload: EventPayload): EditFocusChange? {
         removeItems(payload, items)
         return null
     }
@@ -72,18 +72,18 @@ data class ItemRemoveUndoAction(
 /**
  * Change the check status of the items at [actualPos] to [checked].
  */
-data class ItemCheckUndoAction(
+data class ItemCheckEvent(
     val actualPos: List<Int>,
     val checked: Boolean,
     val checkedByUser: Boolean,
-) : ItemUndoAction {
+) : ItemEditEvent {
 
-    override fun undo(payload: UndoPayload): EditFocusChange? {
+    override fun undo(payload: EventPayload): EditFocusChange? {
         checkItems(payload, actualPos, !checked, checkedByUser)
         return null
     }
 
-    override fun redo(payload: UndoPayload): EditFocusChange? {
+    override fun redo(payload: EventPayload): EditFocusChange? {
         checkItems(payload, actualPos, checked, checkedByUser)
         return null
     }
@@ -92,11 +92,11 @@ data class ItemCheckUndoAction(
 /**
  * Re-order list items according to the [newOrder] index list (actual positions).
  */
-data class ItemReorderUndoAction(
+data class ItemReorderEvent(
     val newOrder: List<Int>,
-) : ItemUndoAction {
+) : ItemEditEvent {
 
-    private fun changeItemsOrder(payload: UndoPayload, order: List<Int>) {
+    private fun changeItemsOrder(payload: EventPayload, order: List<Int>) {
         changeListItemsSortedByActualPos(payload) { items ->
             val oldItems = items.toList()
             for (i in items.indices) {
@@ -105,13 +105,13 @@ data class ItemReorderUndoAction(
         }
     }
 
-    override fun undo(payload: UndoPayload): EditFocusChange? {
+    override fun undo(payload: EventPayload): EditFocusChange? {
         val oldOrder = newOrder.withIndex().sortedBy { it.value }.map { it.index }
         changeItemsOrder(payload, oldOrder)
         return null
     }
 
-    override fun redo(payload: UndoPayload): EditFocusChange? {
+    override fun redo(payload: EventPayload): EditFocusChange? {
         changeItemsOrder(payload, newOrder)
         return null
     }
@@ -121,16 +121,16 @@ data class ItemReorderUndoAction(
  * Swap list items [from] an actual position [to] another.
  * Items are either both checked or both unchecked.
  */
-data class ItemSwapUndoAction(
+data class ItemSwapEvent(
     val from: Int,
     val to: Int
-) : ItemUndoAction {
+) : ItemEditEvent {
 
-    override fun undo(payload: UndoPayload): EditFocusChange? {
+    override fun undo(payload: EventPayload): EditFocusChange? {
         return redo(payload)
     }
 
-    override fun redo(payload: UndoPayload): EditFocusChange? {
+    override fun redo(payload: EventPayload): EditFocusChange? {
         val items = payload.listItems
 
         val fromIndex = items.indexOfFirst { it is EditItemItem && it.actualPos == from }
@@ -144,7 +144,7 @@ data class ItemSwapUndoAction(
     }
 }
 
-private fun checkItems(payload: UndoPayload, actualPos: List<Int>, checked: Boolean, checkedByUser: Boolean) {
+private fun checkItems(payload: EventPayload, actualPos: List<Int>, checked: Boolean, checkedByUser: Boolean) {
     changeListItemsSortedByActualPos(payload) { items ->
         for (pos in actualPos) {
             items[pos].checked = checked
@@ -155,7 +155,7 @@ private fun checkItems(payload: UndoPayload, actualPos: List<Int>, checked: Bool
     }
 }
 
-private fun removeItems(payload: UndoPayload, items: List<ItemChangeUndoActionItem>) {
+private fun removeItems(payload: EventPayload, items: List<ItemChangeEventItem>) {
     changeListItemsSortedByActualPos(payload) { listItems ->
         var i = listItems.lastIndex
         var j = items.lastIndex
@@ -171,7 +171,7 @@ private fun removeItems(payload: UndoPayload, items: List<ItemChangeUndoActionIt
     }
 }
 
-private fun addItems(payload: UndoPayload, items: List<ItemChangeUndoActionItem>) {
+private fun addItems(payload: EventPayload, items: List<ItemChangeEventItem>) {
     changeListItemsSortedByActualPos(payload) { listItems ->
         var i = 0
         var j = 0
@@ -199,7 +199,7 @@ private fun addItems(payload: UndoPayload, items: List<ItemChangeUndoActionItem>
  * The action must leave the items sorted by actual position.
  * The list is rebuilt according to the checked state of the items changed by the action.
  */
-private fun changeListItemsSortedByActualPos(payload: UndoPayload, action: (MutableList<EditItemItem>) -> Unit) {
+private fun changeListItemsSortedByActualPos(payload: EventPayload, action: (MutableList<EditItemItem>) -> Unit) {
     val items = payload.listItems
     val afterTitleIndex = items.indexOfFirst { it is EditTitleItem } + 1
     val itemsByActualPos: MutableList<EditItemItem>

@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-package com.maltaisn.notes.ui.edit.undo
+package com.maltaisn.notes.ui.edit.event
 
 import com.maltaisn.notes.model.entity.Note
 
 /**
  * Convert from [oldNote] to [newNote].
- * Only the type, content and metadata are changed by the action.
+ * Only the type, content and metadata are changed by the event.
  */
-data class NoteConversionUndoAction(
+data class NoteConversionEvent(
     val oldNote: Note,
     val newNote: Note
-) : NoteUndoAction {
+) : NoteEditEvent {
 
     private fun updateNote(note: Note, other: Note) = note.copy(
         type = other.type,

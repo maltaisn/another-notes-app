@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.maltaisn.notes.ui.edit.undo
+package com.maltaisn.notes.ui.edit.event
 
 import com.maltaisn.notes.ui.edit.TestEditableTextProvider
 import com.maltaisn.notes.ui.edit.adapter.EditItemAddItem
@@ -27,51 +27,51 @@ import org.junit.Test
 import kotlin.random.Random
 import kotlin.test.assertEquals
 
-class ItemChangeUndoActionTest {
+class ItemChangeEventTest {
 
     private val editableTextProvider = TestEditableTextProvider()
 
     @Test
     fun `should redo and undo correctly (add)`() {
-        val action = ItemAddUndoAction(listOf(
-            ItemChangeUndoActionItem(1, "new item 1", true),
-            ItemChangeUndoActionItem(2, "new item 2", false),
+        val event = ItemAddEvent(listOf(
+            ItemChangeEventItem(1, "new item 1", true),
+            ItemChangeEventItem(2, "new item 2", false),
         ))
 
         val listItemsBefore = ITEMS0
         val listItemsAfter = ITEMS1
         val listItems = listItemsBefore.copy()
-        val payload = UndoPayload(editableTextProvider, listItems)
+        val payload = EventPayload(editableTextProvider, listItems)
 
-        action.redo(payload)
+        event.redo(payload)
         assertEquals(listItemsAfter, listItems)
 
-        action.undo(payload)
+        event.undo(payload)
         assertEquals(listItemsBefore, listItems)
     }
 
     @Test
     fun `should redo and undo correctly (remove)`() {
-        val action = ItemRemoveUndoAction(listOf(
-            ItemChangeUndoActionItem(1, "new item 1", true),
-            ItemChangeUndoActionItem(2, "new item 2", false),
+        val event = ItemRemoveEvent(listOf(
+            ItemChangeEventItem(1, "new item 1", true),
+            ItemChangeEventItem(2, "new item 2", false),
         ))
 
         val listItemsBefore = ITEMS1
         val listItemsAfter = ITEMS0
         val listItems = listItemsBefore.copy()
-        val payload = UndoPayload(editableTextProvider, listItems)
+        val payload = EventPayload(editableTextProvider, listItems)
 
-        action.redo(payload)
+        event.redo(payload)
         assertEquals(listItemsAfter, listItems)
 
-        action.undo(payload)
+        event.undo(payload)
         assertEquals(listItemsBefore, listItems)
     }
 
     @Test
     fun `should redo and undo correctly (check)`() {
-        val action = ItemCheckUndoAction(
+        val event = ItemCheckEvent(
             actualPos = listOf(0, 2),
             checked = true,
             checkedByUser = true,
@@ -86,18 +86,18 @@ class ItemChangeUndoActionTest {
         )
 
         val listItems = listItemsBefore.copy()
-        val payload = UndoPayload(editableTextProvider, listItems)
+        val payload = EventPayload(editableTextProvider, listItems)
 
-        action.redo(payload)
+        event.redo(payload)
         assertEquals(listItemsAfter, listItems)
 
-        action.undo(payload)
+        event.undo(payload)
         assertEquals(listItemsBefore, listItems)
     }
 
     @Test
     fun `should redo and undo correctly (reorder)`() {
-        val action = ItemReorderUndoAction(listOf(2, 1, 0, 4, 3))
+        val event = ItemReorderEvent(listOf(2, 1, 0, 4, 3))
 
         val listItemsBefore = ITEMS1
         val listItemsAfter = listOf<EditListItem>(
@@ -110,18 +110,18 @@ class ItemChangeUndoActionTest {
         )
 
         val listItems = listItemsBefore.copy()
-        val payload = UndoPayload(editableTextProvider, listItems)
+        val payload = EventPayload(editableTextProvider, listItems)
 
-        action.redo(payload)
+        event.redo(payload)
         assertEquals(listItemsAfter, listItems)
 
-        action.undo(payload)
+        event.undo(payload)
         assertEquals(listItemsBefore, listItems)
     }
 
     @Test
     fun `should redo and undo correctly (swap)`() {
-        val action = ItemSwapUndoAction(2, 0)
+        val event = ItemSwapEvent(2, 0)
 
         val listItemsBefore = ITEMS0
         val listItemsAfter = listOf<EditListItem>(
@@ -132,12 +132,12 @@ class ItemChangeUndoActionTest {
         )
 
         val listItems = listItemsBefore.copy()
-        val payload = UndoPayload(editableTextProvider, listItems)
+        val payload = EventPayload(editableTextProvider, listItems)
 
-        action.redo(payload)
+        event.redo(payload)
         assertEquals(listItemsAfter, listItems)
 
-        action.undo(payload)
+        event.undo(payload)
         assertEquals(listItemsBefore, listItems)
     }
 
@@ -149,13 +149,13 @@ class ItemChangeUndoActionTest {
             EditItemAddItem,
         )
         val listItems = initialItems.copy()
-        val payload = UndoPayload(editableTextProvider, listItems, moveCheckedToBottom)
+        val payload = EventPayload(editableTextProvider, listItems, moveCheckedToBottom)
 
         val rng = Random(0)
-        val actions = mutableListOf<ItemUndoAction>()
+        val events = mutableListOf<ItemEditEvent>()
         repeat(1000) {
             var items = listItems.filterIsInstance<EditItemItem>()
-            val action = when ((0..4).random(rng)) {
+            val event = when ((0..4).random(rng)) {
                 0 -> {
                     var checked = rng.nextBoolean()
                     if (items.all { it.checked == checked }) {
@@ -164,24 +164,24 @@ class ItemChangeUndoActionTest {
                     items = items.filter { it.checked != checked }
                     items = items.shuffled(rng).take((0..items.size).random(rng))
                     val actualPos = items.map { it.actualPos }
-                    ItemCheckUndoAction(actualPos, checked, true)
+                    ItemCheckEvent(actualPos, checked, true)
                 }
                 1 -> {
                     val count = (0..5).random(rng)
                     val indices = (0..(items.lastIndex + count)).shuffled(rng).take(count).sorted()
-                    ItemAddUndoAction(indices.map {
-                        ItemChangeUndoActionItem(it, randomString(0..10, rng), rng.nextBoolean())
+                    ItemAddEvent(indices.map {
+                        ItemChangeEventItem(it, randomString(0..10, rng), rng.nextBoolean())
                     })
                 }
                 2 -> {
                     val count = (0..minOf(5, items.size)).random(rng)
                     val items = items.shuffled(rng).take(count).sortedBy { it.actualPos }
-                    ItemRemoveUndoAction(items.map(ItemChangeUndoActionItem::fromItem))
+                    ItemRemoveEvent(items.map(ItemChangeEventItem::fromItem))
                 }
                 3 -> {
                     val actualPos = items.mapTo(mutableListOf()) { it.actualPos }
                     actualPos.shuffle(rng)
-                    ItemReorderUndoAction(actualPos)
+                    ItemReorderEvent(actualPos)
                 }
                 4 -> {
                     if (items.isEmpty()) {
@@ -194,19 +194,19 @@ class ItemChangeUndoActionTest {
                     val items = items.filter { it.checked == checked }.map { it.actualPos }
                     val from = items.random(rng)
                     val to = items.random(rng)
-                    ItemSwapUndoAction(from, to)
+                    ItemSwapEvent(from, to)
                 }
                 else -> error("")
             }
 
-            action.redo(payload)
-            actions += action
+            event.redo(payload)
+            events += event
 
             checkIfListItemsAreCorrect(listItems, moveCheckedToBottom)
         }
 
-        for (action in actions.asReversed()) {
-            action.undo(payload)
+        for (event in events.asReversed()) {
+            event.undo(payload)
         }
         assertEquals(initialItems, listItems)
     }

@@ -51,7 +51,7 @@ import com.maltaisn.notes.ui.edit.adapter.EditItemItem
 import com.maltaisn.notes.ui.edit.adapter.EditListItem
 import com.maltaisn.notes.ui.edit.adapter.EditTextItem
 import com.maltaisn.notes.ui.edit.adapter.EditTitleItem
-import com.maltaisn.notes.ui.edit.undo.copy
+import com.maltaisn.notes.ui.edit.event.copy
 import com.maltaisn.notes.ui.getOrAwaitValue
 import com.maltaisn.notes.ui.note.ShownDateField
 import kotlinx.coroutines.test.TestScope
@@ -346,7 +346,7 @@ class EditViewModelTest {
     @Test
     fun `should convert text note to list note`() = runTest {
         viewModel.start(1)
-        doActionTest(
+        doEventTest(
             listOf(
                 EditDateItem(dateFor("2018-01-01").time),
                 EditTitleItem("title".e, true),
@@ -364,7 +364,7 @@ class EditViewModelTest {
     @Test
     fun `should convert list note without checked items to text note`() = runTest {
         viewModel.start(3)
-        doActionTest(
+        doEventTest(
             listOf(
                 EditDateItem(dateFor("2020-03-30").time),
                 EditTitleItem("title".e, true),
@@ -390,7 +390,7 @@ class EditViewModelTest {
     @Test
     fun `should convert list note to text note deleting checked items`() = runTest {
         viewModel.start(2)
-        doActionTest(
+        doEventTest(
             listOf(
                 EditDateItem(dateFor("2020-03-30").time),
                 EditTitleItem("title".e, true),
@@ -407,7 +407,7 @@ class EditViewModelTest {
     @Test
     fun `should convert list note to text note keeping checked items`() = runTest {
         viewModel.start(2)
-        doActionTest(
+        doEventTest(
             listOf(
                 EditDateItem(dateFor("2020-03-30").time),
                 EditTitleItem("title".e, true),
@@ -634,7 +634,7 @@ class EditViewModelTest {
     @Test
     fun `should uncheck all items in list note`() = runTest {
         viewModel.start(2)
-        doActionTest(listOf(
+        doEventTest(listOf(
             EditDateItem(dateFor("2020-03-30").time),
             EditTitleItem("title".e, true),
             EditItemItem("item 1".e, checked = false, editable = true, 0),
@@ -650,7 +650,7 @@ class EditViewModelTest {
     @Test
     fun `should delete checked items in list note`() = runTest {
         viewModel.start(2)
-        doActionTest(listOf(
+        doEventTest(listOf(
             EditDateItem(dateFor("2020-03-30").time),
             EditTitleItem("title".e, true),
             EditItemItem("item 2".e, checked = false, editable = true, 0),
@@ -664,7 +664,7 @@ class EditViewModelTest {
     @Test
     fun `should split list note item on new line (single)`() = runTest {
         viewModel.start(2)
-        doActionTest(
+        doEventTest(
             listOf(
                 EditDateItem(dateFor("2020-03-30").time),
                 EditTitleItem("title".e, true),
@@ -684,7 +684,7 @@ class EditViewModelTest {
     @Test
     fun `should split list note item on new line (multiple)`() = runTest {
         viewModel.start(2)
-        doActionTest(
+        doEventTest(
             listOf(
                 EditDateItem(dateFor("2020-03-30").time),
                 EditTitleItem("title".e, true),
@@ -705,7 +705,7 @@ class EditViewModelTest {
     @Test
     fun `should merge list note item with previous on backspace`() = runTest {
         viewModel.start(2)
-        doActionTest(
+        doEventTest(
             itemsAfter = listOf(
                 EditDateItem(dateFor("2020-03-30").time),
                 EditTitleItem("title".e, true),
@@ -756,7 +756,7 @@ class EditViewModelTest {
     @Test
     fun `should delete list note item and focus previous`() = runTest {
         viewModel.start(2)
-        doActionTest(
+        doEventTest(
             listOf(
                 EditDateItem(dateFor("2020-03-30").time),
                 EditTitleItem("title".e, true),
@@ -774,7 +774,7 @@ class EditViewModelTest {
     @Test
     fun `should delete list note item and focus next`() = runTest {
         viewModel.start(2)
-        doActionTest(
+        doEventTest(
             listOf(
                 EditDateItem(dateFor("2020-03-30").time),
                 EditTitleItem("title".e, true),
@@ -792,7 +792,7 @@ class EditViewModelTest {
     @Test
     fun `should add blank list note item and focus it`() = runTest {
         viewModel.start(2)
-        doActionTest(
+        doEventTest(
             listOf(
                 EditDateItem(dateFor("2020-03-30").time),
                 EditTitleItem("title".e, true),
@@ -838,7 +838,7 @@ class EditViewModelTest {
     @Test
     fun `should swap list items`() = runTest {
         viewModel.start(2)
-        doActionTest(listOf(
+        doEventTest(listOf(
             EditDateItem(dateFor("2020-03-30").time),
             EditTitleItem("title".e, true),
             EditItemItem("item 2".e, checked = false, editable = true, 0),
@@ -970,7 +970,7 @@ class EditViewModelTest {
     fun `should remove checked group after deleting last checked item`() = runTest {
         whenever(prefs.moveCheckedToBottom) doReturn true
         viewModel.start(2)
-        doActionTest(listOf(
+        doEventTest(listOf(
             EditDateItem(dateFor("2020-03-30").time),
             EditTitleItem("title".e, true),
             EditItemItem("item 2".e, checked = false, editable = true, 0),
@@ -985,7 +985,7 @@ class EditViewModelTest {
     fun `should remove checked group after unchecking last checked item`() = runTest {
         whenever(prefs.moveCheckedToBottom) doReturn true
         viewModel.start(2)
-        doActionTest(listOf(
+        doEventTest(listOf(
             EditDateItem(dateFor("2020-03-30").time),
             EditTitleItem("title".e, true),
             EditItemItem("item 1".e, checked = false, editable = true, 0),
@@ -1006,7 +1006,7 @@ class EditViewModelTest {
         viewModel.start(5)
         viewModel.restoreNoteAndEdit()  // note 5 is in trash, we want to edit it
 
-        doActionTest(listOf(
+        doEventTest(listOf(
             EditDateItem(dateFor("2020-03-30").time),
             EditTitleItem("title".e, true),
             EditItemItem("item 2".e, checked = false, editable = true, 1),
@@ -1023,7 +1023,7 @@ class EditViewModelTest {
         whenever(prefs.moveCheckedToBottom) doReturn true
         viewModel.start(3)
 
-        doActionTest(listOf(
+        doEventTest(listOf(
             EditDateItem(dateFor("2020-03-30").time),
             EditTitleItem("title".e, true),
             EditItemItem("item 2".e, checked = false, editable = true, 1),
@@ -1042,7 +1042,7 @@ class EditViewModelTest {
         whenever(prefs.moveCheckedToBottom) doReturn true
         viewModel.start(7)
 
-        doActionTest(listOf(
+        doEventTest(listOf(
             EditDateItem(dateFor("2020-03-30").time),
             EditTitleItem("title".e, true),
             EditItemItem("item 3".e, checked = false, editable = true, 2),
@@ -1061,7 +1061,7 @@ class EditViewModelTest {
         whenever(prefs.moveCheckedToBottom) doReturn true
         viewModel.start(7)
 
-        doActionTest(listOf(
+        doEventTest(listOf(
             EditDateItem(dateFor("2020-03-30").time),
             EditTitleItem("title".e, true),
             EditItemItem("item 1".e, checked = false, editable = true, 0),
@@ -1080,7 +1080,7 @@ class EditViewModelTest {
         whenever(prefs.moveCheckedToBottom) doReturn true
         viewModel.start(7)
 
-        doActionTest(listOf(
+        doEventTest(listOf(
             EditDateItem(dateFor("2020-03-30").time),
             EditTitleItem("title".e, true),
             EditItemItem("item 1".e, checked = false, editable = true, 0),
@@ -1092,7 +1092,7 @@ class EditViewModelTest {
             viewModel.onNoteItemDeleteClicked(7)
         }
 
-        doActionTest(listOf(
+        doEventTest(listOf(
             EditDateItem(dateFor("2020-03-30").time),
             EditTitleItem("title".e, true),
             EditItemItem("item 1".e, checked = false, editable = true, 0),
@@ -1140,7 +1140,7 @@ class EditViewModelTest {
     fun `should add new items in unchecked section`() = runTest {
         whenever(prefs.moveCheckedToBottom) doReturn true
         viewModel.start(2)
-        doActionTest(listOf(
+        doEventTest(listOf(
             EditDateItem(dateFor("2020-03-30").time),
             EditTitleItem("title".e, true),
             EditItemItem("item 2".e, checked = false, editable = true, 1),
@@ -1158,7 +1158,7 @@ class EditViewModelTest {
     fun `should add new checked items if newlines inserted in checked section`() = runTest {
         whenever(prefs.moveCheckedToBottom) doReturn true
         viewModel.start(2)
-        doActionTest(
+        doEventTest(
             listOf(
                 EditDateItem(dateFor("2020-03-30").time),
                 EditTitleItem("title".e, true),
@@ -1180,7 +1180,7 @@ class EditViewModelTest {
     fun `should delete checked items in list note (move checked to bottom)`() = runTest {
         whenever(prefs.moveCheckedToBottom) doReturn true
         viewModel.start(7)
-        doActionTest(listOf(
+        doEventTest(listOf(
             EditDateItem(dateFor("2020-03-30").time),
             EditTitleItem("title".e, true),
             EditItemItem("item 1".e, checked = false, editable = true, 0),
@@ -1212,7 +1212,7 @@ class EditViewModelTest {
 
         viewModel.start(10)
         itemAt<EditTextItem>(4).text.replaceAll(" Ev")
-        doActionTest(listOf(
+        doEventTest(listOf(
             EditDateItem(dateFor("2020-03-30").time),
             EditTitleItem("title".e, true),
             EditItemItem("éponge".e, checked = true, editable = true, 0),
@@ -1232,7 +1232,7 @@ class EditViewModelTest {
         viewModel.onNoteItemSwapped(2, 3)
         viewModel.onNoteItemSwapped(6, 7)
 
-        doActionTest(listOf(
+        doEventTest(listOf(
             EditDateItem(dateFor("2020-03-30").time),
             EditTitleItem("title".e, true),
             EditItemItem("item 1".e, checked = false, editable = true, 0),
@@ -1302,7 +1302,7 @@ class EditViewModelTest {
         viewModel.onNoteItemDeleteClicked(2)
         viewModel.onNoteItemDeleteClicked(2)
 
-        doActionTest(
+        doEventTest(
             listOf(
                 EditDateItem(dateFor("2020-03-30").time),
                 EditTitleItem("title".e, true),
@@ -1322,7 +1322,7 @@ class EditViewModelTest {
         viewModel.start(2)
         viewModel.onNoteItemDeleteClicked(2)
 
-        doActionTest(
+        doEventTest(
             listOf(
                 EditDateItem(dateFor("2020-03-30").time),
                 EditTitleItem("title".e, true),
@@ -1374,7 +1374,7 @@ class EditViewModelTest {
     }
 
     @Test
-    fun `should batch undo actions`() = runTest {
+    fun `should batch undo events`() = runTest {
         viewModel.start(1)
 
         val item = itemAt<EditTextItem>(2)
@@ -1391,7 +1391,7 @@ class EditViewModelTest {
         assertEquals("content", item.text.text.toString())
     }
 
-    private fun TestScope.doActionTest(
+    private fun TestScope.doEventTest(
         itemsAfter: List<EditListItem>,
         redoFocus: EditFocusChange? = null,
         undoFocus: EditFocusChange? = null,
@@ -1400,7 +1400,7 @@ class EditViewModelTest {
         val itemsBefore = viewModel.editItems.getOrAwaitValue().copy()
         val canUndoBefore = viewModel.editActionsAvailability.getOrAwaitValue().undo == AVAILABLE
 
-        // Make sure next actions are not batched
+        // Make sure next events are not batched
         advanceTimeBy(EditViewModel.UNDO_TEXT_DEBOUNCE_DELAY + 100.milliseconds)
 
         action()

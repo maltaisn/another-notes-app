@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.maltaisn.notes.ui.edit.undo
+package com.maltaisn.notes.ui.edit.event
 
 import com.maltaisn.notes.model.entity.Note
 import com.maltaisn.notes.ui.edit.EditFocusChange
@@ -22,40 +22,37 @@ import com.maltaisn.notes.ui.edit.EditableTextProvider
 import com.maltaisn.notes.ui.edit.adapter.EditListItem
 
 /**
- * Interface marking an action that can be undone and redone.
+ * Interface marking an edit event that can be undone and done/redone.
  */
-sealed interface UndoAction
+sealed interface EditEvent
 
-data class UndoPayload(
+data class EventPayload(
     val editableTextProvider: EditableTextProvider,
     val listItems: MutableList<EditListItem>,
     val moveCheckedToBottom: Boolean = false,
 )
 
 /**
- * Interface for an undo action that operates on list items only.
+ * Interface for an edit event that operates on list items only.
  * The undo / redo callbacks take a list of items to be modified and can return a focus change event.
  */
-sealed interface ItemUndoAction : UndoAction {
-    /** Undo this action on a list of items, return an optional focus change. */
-    fun undo(payload: UndoPayload): EditFocusChange?
+sealed interface ItemEditEvent : EditEvent {
+    /** Undo this event on a list of items, return an optional focus change. */
+    fun undo(payload: EventPayload): EditFocusChange?
 
-    /** Redo this action on a list of items, return an optional focus change. */
-    fun redo(payload: UndoPayload): EditFocusChange?
+    /** Do/redo this event on a list of items, return an optional focus change. */
+    fun redo(payload: EventPayload): EditFocusChange?
 
-    /** Merge this action with another that comes afterwards. Returns `null` if not mergeable. */
-    fun mergeWith(action: ItemUndoAction): ItemUndoAction? = null
+    /** Merge this event with another that comes afterwards. Returns `null` if not mergeable. */
+    fun mergeWith(event: ItemEditEvent): ItemEditEvent? = null
 }
 
 /**
- * Interface for an undo action that changes the whole note.
- * The undo / redo callback return the new note to use based on the current one.
- * Following this action the list items are completely recreated and
- * a focus change is made to the first focusable item in the note.
- *
- * The note status cannot be changed with this action.
+ * Interface for an edit event that changes the whole note.
+ * The undo / redo methods return the new note to use based on the current one.
+ * The note status cannot be changed with such an event.
  */
-sealed interface NoteUndoAction : UndoAction {
+sealed interface NoteEditEvent : EditEvent {
     fun undo(note: Note): Note
     fun redo(note: Note): Note
 }
