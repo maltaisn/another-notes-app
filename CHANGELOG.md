@@ -1,4 +1,4 @@
-## v1.6.0 (WIP)
+## v1.6.0 (2025-08-24)
 - Added undo/redo support (#26).
 - Added "custom" sort order to manually drag the notes (#44).
 - Added Vietnamese translation (#146, @ngocanhtve) & updated other languages.
