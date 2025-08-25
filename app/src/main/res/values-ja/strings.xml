@@ -84,9 +84,6 @@
     <string name="search_hint">メモを検索する</string>
     <string name="search_empty_placeholder">お探しのメモは見つかりませんでした。</string>
     <string name="sort_title">並べ替え</string>
-    <string name="sort_direction">並べ替え方向</string>
-    <string name="sort_direction_ascending">昇順</string>
-    <string name="sort_direction_descending">降順 </string>
     <string name="sort_field">並べ替え</string>
     <string name="sort_field_created">作成日</string>
     <string name="sort_field_modified">更新日</string>

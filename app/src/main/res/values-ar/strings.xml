@@ -102,9 +102,6 @@
     <string name="search_hint">بحث الملاحظات</string>
     <string name="search_empty_placeholder">لا توجد ملاحظة متطابقة.</string>
     <string name="sort_title">خيارات الترتيب</string>
-    <string name="sort_direction">اتجاه الترتيب</string>
-    <string name="sort_direction_ascending">تصاعدي</string>
-    <string name="sort_direction_descending">تنازلي</string>
     <string name="sort_field">الترتيب حسب</string>
     <string name="sort_field_created">تاريخ الإنشاء</string>
     <string name="sort_field_modified">تاريخ التعديل</string>
@@ -210,7 +207,6 @@
     <string name="pref_shown_date_added">تاريخ الإنشاء</string>
     <string name="pref_shown_date_modified">تاريخ آخر تعديل</string>
     <string name="pref_shown_date_none">بدون عرض</string>
-    <string name="pref_deleted_notes_timeout">تأخير الحذف التلقائي من سلة المهملات</string>
     <string name="pref_deleted_notes_timeout_day">24 ساعة</string>
     <string name="pref_deleted_notes_timeout_week">7 أيام</string>
     <string name="pref_deleted_notes_timeout_month">30 يوماً</string>

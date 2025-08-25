@@ -85,9 +85,6 @@
     <string name="search_hint">Cerca note</string>
     <string name="search_empty_placeholder">Nessuna nota trovata per la tua ricerca.</string>
     <string name="sort_title">Ordinamento</string>
-    <string name="sort_direction">Ordine</string>
-    <string name="sort_direction_ascending">Crescente</string>
-    <string name="sort_direction_descending">Decrescente</string>
     <string name="sort_field">Ordina per</string>
     <string name="sort_field_created">Data creazione</string>
     <string name="sort_field_modified">Ultima modifica</string>

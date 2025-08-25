@@ -85,9 +85,6 @@
     <string name="search_hint">Søk i notater</string>
     <string name="search_empty_placeholder">Ingen notater funnet for dette søket.</string>
     <string name="sort_title">Sorteringsalternativer</string>
-    <string name="sort_direction">Sorteringsrekkefølge</string>
-    <string name="sort_direction_ascending">Stigende</string>
-    <string name="sort_direction_descending">Fallende</string>
     <string name="sort_field">Sorter etter</string>
     <string name="sort_field_created">Dato opprettet</string>
     <string name="sort_field_modified">Dato endret</string>
@@ -124,7 +121,7 @@
         <item quantity="other">%d avmerkede elementer</item>
     </plurals>
     <!-- Reminder -->
-    <string name="note_reminders" comment="note_reminders&#10;Reminder&#10;&#10;IMPORTANT: reminders can have a recurrence, which is selected using a dialog provided by another library which I maintain. For the app to be fully translated, this library needs to be translated too. The library can be translated at https://crowdin.com/translate/recurpickerlib">Påminnelser</string>
+    <string name="note_reminders">Påminnelser</string>
     <string name="reminder_upcoming">Kommende</string>
     <string name="reminder_today">I dag</string>
     <string name="reminder_overdue">Forfalt</string>

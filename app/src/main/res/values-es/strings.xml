@@ -51,6 +51,7 @@
     <string name="action_select_all">Seleccionar todo</string>
     <string name="action_settings">Ajustes</string>
     <string name="action_share">Compartir</string>
+    <string name="action_sort_items">Ordenar alfabéticamente</string>
     <string name="action_unarchive">Desarchivar</string>
     <string name="action_uncheck_all">Desmarcar todo</string>
     <string name="action_undo">Deshacer</string>
@@ -92,13 +93,11 @@
     <string name="search_hint">Buscar notas</string>
     <string name="search_empty_placeholder">No se han encontrado notas para tu búsqueda</string>
     <string name="sort_title">Opciones de ordenación</string>
-    <string name="sort_direction">Dirección del orden</string>
-    <string name="sort_direction_ascending">Ascendente</string>
-    <string name="sort_direction_descending">Descendente</string>
     <string name="sort_field">Ordenar por</string>
     <string name="sort_field_created">Fecha de creación</string>
     <string name="sort_field_modified">Fecha de modificación</string>
     <string name="sort_field_title">Título</string>
+    <string name="sort_field_custom">Personalizado</string>
     <!-- Edit -->
     <string name="edit_add_title">Crear nota</string>
     <string name="edit_change_title">Editar nota</string>
@@ -123,7 +122,7 @@
         <item quantity="other">Notas desarchivadas.</item>
     </plurals>
     <string name="edit_in_trash_message">No es posible editar una nota que está en la papelera.</string>
-    <string name="edit_copy_suffix">Copiar</string>
+    <string name="edit_copy_suffix">Copia</string>
     <string name="edit_copy_untitled_name">Sin título</string>
     <string name="edit_convert_keep_checked">¿Eliminar elementos marcados?</string>
     <plurals name="edit_checked_items">
@@ -173,12 +172,13 @@
     <string name="pref_theme_system">El mismo que el sistema</string>
     <string name="pref_dynamic_colors">Usar colores dinámicos</string>
     <string name="pref_strikethrough_checked">Tachar elementos marcados</string>
+    <string name="pref_text_size">Tamaño del texto para la edición</string>
     <string name="pref_preview_labels">Número máximo de etiquetas en la miniatura</string>
     <string name="pref_shown_date">Mostrar fecha en las notas</string>
     <string name="pref_shown_date_added">Fecha de creación</string>
     <string name="pref_shown_date_modified">Fecha de última modificación</string>
     <string name="pref_shown_date_none">No mostrar fecha</string>
-    <string name="pref_deleted_notes_timeout">Retraso de eliminación de la papelera</string>
+    <string name="pref_deleted_notes_timeout_title">Borrar notas de la papelera después de</string>
     <string name="pref_deleted_notes_timeout_day">24 horas</string>
     <string name="pref_deleted_notes_timeout_week">7 días</string>
     <string name="pref_deleted_notes_timeout_month">30 días</string>
@@ -192,6 +192,8 @@
     <string name="pref_group_behavior">Comportamiento</string>
     <string name="pref_behavior_swipe_action_left">Acción al deslizar a la izquierda</string>
     <string name="pref_behavior_swipe_action_right">Acción al deslizar a la derecha</string>
+    <string name="pref_behavior_mark_as_done_action">Acción para recordatorios terminados</string>
+    <string name="pref_behavior_edit_initial_focus">Enfoque inicial de nuevas notas</string>
     <string name="pref_behavior_move_checked">Mover los elementos marcados al final</string>
     <string name="pref_group_data">Datos</string>
     <string name="pref_data_export">Exportar datos</string>
@@ -204,6 +206,8 @@
     <string name="pref_data_auto_export_date">(Última exportación el %s)</string>
     <string name="pref_data_import">Importar datos</string>
     <string name="pref_data_import_summary">Importa datos previamente exportadora y los combina con los ya existentes</string>
+    <string name="pref_data_export_archive">Exportar archivo de notas</string>
+    <string name="pref_data_export_archive_summary">Exportar notas como archivo ZIP comprimido (no automático ni cifrado).</string>
     <string name="pref_data_clear">Limpiar todos los datos</string>
     <string name="pref_data_clear_confirm_message">¡Todas las notas se eliminarán! Esto no se puede revertir.</string>
     <string name="pref_data_clear_success_message">Todos los datos se han borrado correctamente.</string>

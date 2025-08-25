@@ -51,6 +51,7 @@
     <string name="action_select_all">Sélectionner tout</string>
     <string name="action_settings">Paramètres</string>
     <string name="action_share">Partager</string>
+    <string name="action_sort_items">Trier en ordre alphabétique</string>
     <string name="action_unarchive">Désarchiver</string>
     <string name="action_uncheck_all">Décocher tous les éléments</string>
     <string name="action_undo">Annuler</string>
@@ -91,13 +92,11 @@
     <string name="search_hint">Rechercher dans vos notes</string>
     <string name="search_empty_placeholder">Aucune note trouvée pour cette recherche.</string>
     <string name="sort_title">Options de tri</string>
-    <string name="sort_direction">Sens du tri</string>
-    <string name="sort_direction_ascending">Ordre croissant</string>
-    <string name="sort_direction_descending">Ordre décroissant</string>
     <string name="sort_field">Trier par</string>
     <string name="sort_field_created">Date de création</string>
     <string name="sort_field_modified">Date de modification</string>
     <string name="sort_field_title">Titre</string>
+    <string name="sort_field_custom">Personnalisé</string>
     <!-- Edit -->
     <string name="edit_add_title">Ajouter</string>
     <string name="edit_change_title">Modifier</string>
@@ -168,12 +167,13 @@
     <string name="pref_theme_system">Par défaut</string>
     <string name="pref_dynamic_colors">Utiliser les couleurs dynamiques</string>
     <string name="pref_strikethrough_checked">Barrer les éléments cochés</string>
+    <string name="pref_text_size">Taille du texte à l\'édition</string>
     <string name="pref_preview_labels">Maximum d\'étiquettes dans l\'aperçu</string>
     <string name="pref_shown_date">Date affichée pour les notes</string>
     <string name="pref_shown_date_added">Date de création</string>
     <string name="pref_shown_date_modified">Date de modification</string>
     <string name="pref_shown_date_none">Aucune date</string>
-    <string name="pref_deleted_notes_timeout">Délai de suppression de la corbeille</string>
+    <string name="pref_deleted_notes_timeout_title">Délai de suppression dans la corbeille</string>
     <string name="pref_deleted_notes_timeout_day">24 heures</string>
     <string name="pref_deleted_notes_timeout_week">7 jours</string>
     <string name="pref_deleted_notes_timeout_month">30 jours</string>
@@ -187,6 +187,8 @@
     <string name="pref_group_behavior">Comportement</string>
     <string name="pref_behavior_swipe_action_left">Glissement à gauche</string>
     <string name="pref_behavior_swipe_action_right">Glissement à droite</string>
+    <string name="pref_behavior_mark_as_done_action">Action pour les rappels terminés</string>
+    <string name="pref_behavior_edit_initial_focus">Focus initial pour les nouvelles notes</string>
     <string name="pref_behavior_move_checked">Déplacer les éléments cochés vers le bas</string>
     <string name="pref_group_data">Données</string>
     <string name="pref_data_export">Exporter les données</string>
@@ -199,6 +201,8 @@
     <string name="pref_data_import">Importer des données</string>
     <string name="pref_data_import_summary">Importer des données JSON exportées précédemment,
         tout en gardant les données existantes.</string>
+    <string name="pref_data_export_archive">Exporter une archive des notes</string>
+    <string name="pref_data_export_archive_summary">Exporter les notes dans un fichier ZIP (pas automatique ni encrypté).</string>
     <string name="pref_data_clear">Effacer toutes les données</string>
     <string name="pref_data_clear_confirm_message">Toutes les notes seront effacées définitivement !
         Cette action ne pourra pas être annulée.</string>

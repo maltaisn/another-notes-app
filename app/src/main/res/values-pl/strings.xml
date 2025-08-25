@@ -90,9 +90,6 @@
     <string name="search_hint">Szukaj notatek</string>
     <string name="search_empty_placeholder">Nie znaleziono pasujących notatek.</string>
     <string name="sort_title">Opcje sortowania</string>
-    <string name="sort_direction">Kierunek sortowania</string>
-    <string name="sort_direction_ascending">Rosnąco</string>
-    <string name="sort_direction_descending">Malejąco</string>
     <string name="sort_field">Sortuj według</string>
     <string name="sort_field_created">Data utworzenia</string>
     <string name="sort_field_modified">Data modyfikacji</string>
@@ -187,7 +184,6 @@
     <string name="pref_shown_date_added">Data utworzenia</string>
     <string name="pref_shown_date_modified">Data ostatniej modyfikacji</string>
     <string name="pref_shown_date_none">Nie pokazuj</string>
-    <string name="pref_deleted_notes_timeout">Opóźnienie automatycznego usuwania kosza</string>
     <string name="pref_deleted_notes_timeout_day">24 godziny</string>
     <string name="pref_deleted_notes_timeout_week">Siedem dni</string>
     <string name="pref_deleted_notes_timeout_month">30 dni</string>

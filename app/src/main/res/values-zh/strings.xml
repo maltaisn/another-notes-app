@@ -42,6 +42,7 @@
     <string name="action_open">打开</string>
     <string name="action_pin">固定</string>
     <string name="action_postpone">推迟</string>
+    <string name="action_redo">重做</string>
     <string name="action_reminder_add">添加提醒</string>
     <string name="action_reminder_edit">编辑提醒</string>
     <string name="action_rename">重命名</string>
@@ -50,6 +51,7 @@
     <string name="action_select_all">全选</string>
     <string name="action_settings">设置</string>
     <string name="action_share">分享</string>
+    <string name="action_sort_items">按字母顺序排列项目</string>
     <string name="action_unarchive">取消归档</string>
     <string name="action_uncheck_all">取消选中所有项目</string>
     <string name="action_undo">撤销</string>
@@ -78,19 +80,20 @@
     <plurals name="note_list_item_info_checked">
         <item quantity="other">+ %d 个已选中的项目</item>
     </plurals>
+    <plurals name="trash_reminder_message">
+        <item quantity="other">回收站内的笔记将在 %d 天后自动删除。</item>
+    </plurals>
     <string name="trash_delete_message">此笔记将被永久删除。</string>
     <string name="trash_delete_selected_message">所选笔记将被永久删除。</string>
     <string name="trash_empty_message">回收站中的所有笔记将被永久删除。</string>
     <string name="search_hint">搜索笔记</string>
     <string name="search_empty_placeholder">没有找到您查询的笔记。</string>
     <string name="sort_title">排序选项</string>
-    <string name="sort_direction">排序方向</string>
-    <string name="sort_direction_ascending">升序</string>
-    <string name="sort_direction_descending">降序</string>
     <string name="sort_field">排序</string>
     <string name="sort_field_created">创建日期</string>
     <string name="sort_field_modified">修改日期</string>
     <string name="sort_field_title">标题</string>
+    <string name="sort_field_custom">自定义</string>
     <!-- Edit -->
     <string name="edit_add_title">创建笔记</string>
     <string name="edit_change_title">编辑笔记</string>
@@ -130,7 +133,16 @@
     <string name="reminder_empty_placeholder">未设置提醒</string>
     <string name="reminder_restricted_battery">提醒可能无法正常工作，因为应用被限制了电池使用。这可以在应用设置中更改。</string>
     <string name="reminder_notif_permission">要能够发送提醒通知，应用程序需要一个权限。点击确定以显示权限请求。您将能够在此后设置提醒。</string>
+    <string name="reminder_alarm_permission">为了能发送提醒通知， 从
+        Android 14 起，应用需要另一个权限。单击确定显示权限请求。
+        允许后，你将可以设置提醒。</string>
     <string name="reminder_notif_permission_denied">通知权限已被拒绝。在启用之前，提醒无法正常使用。</string>
+    <string name="reminder_alarm_permission_denied">提醒权限被拒。
+    允许前，提醒闹钟将无法正常使用。</string>
+    <string name="toast_notification_permission_denied">通知权限被拒，提醒将
+        无法使用！轻按任意提醒进行设置</string>
+    <string name="toast_alarm_permission_denied">闹铃权限被拒，提醒将无法正常使用！
+        轻按任何提醒进行设置</string>
     <!-- Labels -->
     <string name="label_create">新建标签</string>
     <string name="label_edit">编辑标签名</string>
@@ -149,11 +161,17 @@
     <string name="pref_theme_system">跟随系统</string>
     <string name="pref_dynamic_colors">使用动态颜色</string>
     <string name="pref_strikethrough_checked">已勾选项目使用删除线</string>
+    <string name="pref_text_size">文本编辑尺寸</string>
     <string name="pref_preview_labels">预览标签的最大数量</string>
     <string name="pref_shown_date">笔记显示的日期</string>
     <string name="pref_shown_date_added">创建日期</string>
     <string name="pref_shown_date_modified">最后修改日期</string>
     <string name="pref_shown_date_none">不显示日期</string>
+    <string name="pref_deleted_notes_timeout_title">多久后删除回收站中的笔记</string>
+    <string name="pref_deleted_notes_timeout_day">24 小时</string>
+    <string name="pref_deleted_notes_timeout_week">7 天</string>
+    <string name="pref_deleted_notes_timeout_month">30 天</string>
+    <string name="pref_deleted_notes_timeout_year">1 年</string>
     <string name="pref_preview_lines">预览中最大行数</string>
     <string name="pref_preview_lines_summary">配置每种布局模式和笔记类型显示多少行和项目。</string>
     <string name="pref_preview_lines_grid_layout">网格布局</string>
@@ -163,6 +181,8 @@
     <string name="pref_group_behavior">行为</string>
     <string name="pref_behavior_swipe_action_left">左滑动作</string>
     <string name="pref_behavior_swipe_action_right">右滑动作</string>
+    <string name="pref_behavior_mark_as_done_action">标记为完成操作</string>
+    <string name="pref_behavior_edit_initial_focus">新笔记的初始焦点</string>
     <string name="pref_behavior_move_checked">将所选项移动到底部</string>
     <string name="pref_group_data">数据</string>
     <string name="pref_data_export">导出数据</string>
@@ -174,6 +194,8 @@
     <string name="pref_data_auto_export_date">(上次导出于 %s)</string>
     <string name="pref_data_import">导入数据</string>
     <string name="pref_data_import_summary">导入以前导出的 JSON 数据，与现有数据合并。</string>
+    <string name="pref_data_export_archive">导出笔记存档</string>
+    <string name="pref_data_export_archive_summary">将笔记导出为 ZIP 压缩文件（不是自动，也不加密）。</string>
     <string name="pref_data_clear">清除全部数据</string>
     <string name="pref_data_clear_confirm_message">所有笔记数据将被永久清理！这个操作无法撤消。</string>
     <string name="pref_data_clear_success_message">已成功清除所有数据。</string>

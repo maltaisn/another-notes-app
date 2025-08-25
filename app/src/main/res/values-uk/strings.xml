@@ -89,9 +89,6 @@
     <string name="search_hint">Пошук нотаток</string>
     <string name="search_empty_placeholder">За Вашим запитом нотаток не знайдено.</string>
     <string name="sort_title">Параметри сортування</string>
-    <string name="sort_direction">Напрям сортування</string>
-    <string name="sort_direction_ascending">Зростання</string>
-    <string name="sort_direction_descending">Спадання</string>
     <string name="sort_field">Сортувати за</string>
     <string name="sort_field_created">Датою створення</string>
     <string name="sort_field_modified">Датою зміни</string>

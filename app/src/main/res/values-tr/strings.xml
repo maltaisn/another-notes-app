@@ -85,9 +85,6 @@
     <string name="search_hint">Notları ara</string>
     <string name="search_empty_placeholder">Sorgunuz için hiçbir eşleşme bulunamadı.</string>
     <string name="sort_title">Sıralama seçenekleri</string>
-    <string name="sort_direction">Sıralama Yönü</string>
-    <string name="sort_direction_ascending">Artan sırada</string>
-    <string name="sort_direction_descending">Azalan sırada</string>
     <string name="sort_field">Şuna göre sırala</string>
     <string name="sort_field_created">Oluşturulma Tarihi</string>
     <string name="sort_field_modified">Değiştirilme tarihi</string>

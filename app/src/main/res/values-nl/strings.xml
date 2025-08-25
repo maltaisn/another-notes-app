@@ -90,9 +90,6 @@
     <string name="search_hint">Doorzoek notities</string>
     <string name="search_empty_placeholder">Geen zoekresultaat gevonden.</string>
     <string name="sort_title">Sorteeropties</string>
-    <string name="sort_direction">Sorteer richting</string>
-    <string name="sort_direction_ascending">Oplopend</string>
-    <string name="sort_direction_descending">Aflopend</string>
     <string name="sort_field">Sorteren op</string>
     <string name="sort_field_created">Aanmaakdatum</string>
     <string name="sort_field_modified">Datum laatste wijziging</string>
@@ -178,7 +175,6 @@
     <string name="pref_shown_date_added">Aanmaakdatum</string>
     <string name="pref_shown_date_modified">Datum laatste wijziging</string>
     <string name="pref_shown_date_none">Geen datum tonen</string>
-    <string name="pref_deleted_notes_timeout">Prullenbak automatisch verwijderen vertraging</string>
     <string name="pref_deleted_notes_timeout_day">24 uur</string>
     <string name="pref_deleted_notes_timeout_week">7 dagen</string>
     <string name="pref_deleted_notes_timeout_month">30 dagen</string>

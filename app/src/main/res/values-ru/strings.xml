@@ -42,6 +42,7 @@
     <string name="action_open">Открыть</string>
     <string name="action_pin">Закрепить</string>
     <string name="action_postpone">Отложить</string>
+    <string name="action_redo">Повторить</string>
     <string name="action_reminder_add">Добавить напоминание</string>
     <string name="action_reminder_edit">Редактировать напоминание</string>
     <string name="action_rename">Переименовать</string>
@@ -50,6 +51,7 @@
     <string name="action_select_all">Выделить все</string>
     <string name="action_settings">Настройки</string>
     <string name="action_share">Поделиться</string>
+    <string name="action_sort_items">Сортировать элементы по алфавиту</string>
     <string name="action_unarchive">Разархивировать</string>
     <string name="action_uncheck_all">Снять выделение со всех элементов</string>
     <string name="action_undo">Отменить</string>
@@ -84,19 +86,23 @@
         <item quantity="many">+ %d отмеченных элементов</item>
         <item quantity="other">+ %d отмеченных элементов</item>
     </plurals>
+    <plurals name="trash_reminder_message">
+        <item quantity="one">Заметки в корзине автоматически удаляются после %d дня.</item>
+        <item quantity="few">Заметки в корзине автоматически удаляются после %d дней.</item>
+        <item quantity="many">Заметки в корзине автоматически удаляются после %d дней.</item>
+        <item quantity="other">Заметки в корзине автоматически удаляются после %d дня.</item>
+    </plurals>
     <string name="trash_delete_message">Эта заметка будет удалена навсегда.</string>
     <string name="trash_delete_selected_message">Выбранные заметки будут удалены навсегда.</string>
     <string name="trash_empty_message">Все заметки в корзине будут удалены навсегда.</string>
     <string name="search_hint">Поиск заметок</string>
     <string name="search_empty_placeholder">Заметки по вашему запросу отсутствуют.</string>
     <string name="sort_title">Параметры сортировки</string>
-    <string name="sort_direction">Порядок сортировки</string>
-    <string name="sort_direction_ascending">По возрастанию</string>
-    <string name="sort_direction_descending">По убыванию</string>
     <string name="sort_field">Сортировать по</string>
     <string name="sort_field_created">Дата создания</string>
     <string name="sort_field_modified">Дата изменения</string>
     <string name="sort_field_title">Наименование</string>
+    <string name="sort_field_custom">Пользовательское</string>
     <!-- Edit -->
     <string name="edit_add_title">Создание заметки</string>
     <string name="edit_change_title">Редактирование заметки</string>
@@ -153,8 +159,13 @@
     не потребляет заряд аккумулятора. Это может быть изменено в настройках приложения.</string>
     <string name="reminder_notif_permission">Чтобы иметь возможность отправлять уведомления, приложению требуется разрешение.
     Нажмите ОК, чтобы отобразить запрос на разрешение. Вы сможете установить напоминание.</string>
+    <string name="reminder_alarm_permission">Чтобы иметь возможность отправлять уведомления, начиная с Android 14 приложению требуется другое разрешение. Нажмите кнопку ОК, чтобы отобразить запрос на разрешение. Впоследствии вы сможете установить напоминание.</string>
     <string name="reminder_notif_permission_denied">Разрешение на уведомление было отклонено.
     Будильники напоминания не будут работать, пока не включено.</string>
+    <string name="reminder_alarm_permission_denied">Разрешение на уведомление было отклонено.
+    Будильники напоминания не будут работать, пока не включено.</string>
+    <string name="toast_notification_permission_denied">В разрешении на уведомления отказано, напоминания не будут работать! Коснитесь любого напоминания для настройки.</string>
+    <string name="toast_alarm_permission_denied">В разрешении на оповещение отказано, напоминания работать не будут! Коснитесь любого напоминания для настройки.</string>
     <!-- Labels -->
     <string name="label_create">Создать новую метку</string>
     <string name="label_edit">Изменить имя метки</string>
@@ -174,11 +185,13 @@
     <string name="pref_theme_system">Следовать системе</string>
     <string name="pref_dynamic_colors">Использовать динамический цвета</string>
     <string name="pref_strikethrough_checked">Зачеркнуть отмеченные элементы списка</string>
+    <string name="pref_text_size">Размер текста для редактирования</string>
     <string name="pref_preview_labels">Максимальное количество меток</string>
     <string name="pref_shown_date">Дата отображения заметок</string>
     <string name="pref_shown_date_added">По дате создания</string>
     <string name="pref_shown_date_modified">По дате редактирования</string>
     <string name="pref_shown_date_none">Не указывать</string>
+    <string name="pref_deleted_notes_timeout_title">Удалить заметки в корзине через</string>
     <string name="pref_deleted_notes_timeout_day">24 часа</string>
     <string name="pref_deleted_notes_timeout_week">7 дней</string>
     <string name="pref_deleted_notes_timeout_month">30 дней</string>
@@ -193,6 +206,8 @@
     <string name="pref_group_behavior">Поведение</string>
     <string name="pref_behavior_swipe_action_left">Действие при смахивании влево</string>
     <string name="pref_behavior_swipe_action_right">Действие при смахивании вправо</string>
+    <string name="pref_behavior_mark_as_done_action">Отметить как выполненное действие</string>
+    <string name="pref_behavior_edit_initial_focus">Первоначальная фокусировка для новых заметок</string>
     <string name="pref_behavior_move_checked">Перемещать отмеченные пункты в конец</string>
     <string name="pref_group_data">Данные</string>
     <string name="pref_data_export">Экспорт данных</string>
@@ -205,6 +220,8 @@
     <string name="pref_data_auto_export_date">(Последнее экспортирование %s)</string>
     <string name="pref_data_import">Импорт данных</string>
     <string name="pref_data_import_summary">Импортировать ранее экспортированные данные JSON, объединяя с существующими данными.</string>
+    <string name="pref_data_export_archive">Экспортировать архив заметок</string>
+    <string name="pref_data_export_archive_summary">Экспортировать заметки как сжатый ZIP архив (не автоматический или зашифрованный).</string>
     <string name="pref_data_clear">Очистить все данные</string>
     <string name="pref_data_clear_confirm_message">Все заметки будут удалены навсегда!
         Это действие не может быть отменено.</string>

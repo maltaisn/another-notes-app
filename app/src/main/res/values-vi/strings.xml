@@ -87,9 +87,6 @@
     <string name="search_hint">Tìm kiếm ghi chú</string>
     <string name="search_empty_placeholder">Không tìm thấy ghi chú cho truy vấn của bạn.</string>
     <string name="sort_title">Tùy chọn sắp xếp</string>
-    <string name="sort_direction">Hướng sắp xếp</string>
-    <string name="sort_direction_ascending">Tăng dần</string>
-    <string name="sort_direction_descending">Giảm dần</string>
     <string name="sort_field">Sắp xếp theo</string>
     <string name="sort_field_created">Ngày tạo</string>
     <string name="sort_field_modified">Ngày sửa đổi</string>
@@ -170,7 +167,6 @@
     <string name="pref_shown_date_added">Ngày tạo</string>
     <string name="pref_shown_date_modified">Ngày sửa đổi lần cuối</string>
     <string name="pref_shown_date_none">Không có ngày hiển thị</string>
-    <string name="pref_deleted_notes_timeout">Trì hoãn tự động xóa thùng rác</string>
     <string name="pref_deleted_notes_timeout_day">24 giờ</string>
     <string name="pref_deleted_notes_timeout_week">7 ngày</string>
     <string name="pref_deleted_notes_timeout_month">30 ngày</string>
