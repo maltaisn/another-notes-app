@@ -59,7 +59,7 @@ abstract class NotesDatabase : RoomDatabase() {
 
     @Suppress("MagicNumber")
     companion object {
-        const val VERSION = 5
+        const val VERSION = 6
 
         val MIGRATION_1_2 = object : Migration(1, 2) {
             override fun migrate(db: SupportSQLiteDatabase) {
@@ -133,6 +133,15 @@ abstract class NotesDatabase : RoomDatabase() {
             }
         }
 
+        val MIGRATION_5_6 = object : Migration(5, 6) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.apply {
+                    // Add color column to notes table, default to 0.
+                    execSQL("ALTER TABLE notes ADD COLUMN color INTEGER NOT NULL DEFAULT 0")
+                }
+            }
+        }
+
         // All SQL used in migrations must be compatible with min SDK version, API 21,
         // which uses SQLite 3.8.6! See https://stackoverflow.com/a/4377116/5288316
         val ALL_MIGRATIONS = arrayOf(
@@ -140,6 +149,7 @@ abstract class NotesDatabase : RoomDatabase() {
             MIGRATION_2_3,
             MIGRATION_3_4,
             MIGRATION_4_5,
+            MIGRATION_5_6,
         )
     }
 }

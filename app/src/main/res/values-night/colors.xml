@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Note colors -->
+    <color name="note_color_default">#191C1E</color>
+    <color name="note_color_1">#2D2D30</color>
+    <color name="note_color_2">#1E3A4C</color>
+    <color name="note_color_3">#2C2A3E</color>
+    <color name="note_color_4">#2A3B2E</color>
+    <color name="note_color_5">#3D2E29</color>
+</resources>

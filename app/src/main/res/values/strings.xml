@@ -25,6 +25,7 @@
     <string name="action_archive">Archive</string>
     <string name="action_cancel">Cancel</string>
     <string name="action_clear">Clear</string>
+    <string name="action_color">Change color</string>
     <string name="action_convert_to_list">Convert to list</string>
     <string name="action_convert_to_text">Convert to text</string>
     <string name="action_copy">Make a copy</string>

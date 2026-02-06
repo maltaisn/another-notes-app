@@ -79,4 +79,12 @@
     <!-- Theme independent colors -->
     <color name="color_highlight">#ffd740</color>
     <color name="color_on_highlight">#000000</color>
+
+    <!-- Note colors -->
+    <color name="note_color_default">#FCFCFF</color>
+    <color name="note_color_1">#FFF9E6</color>
+    <color name="note_color_2">#E8F4F8</color>
+    <color name="note_color_3">#F0F0F0</color>
+    <color name="note_color_4">#FFF0F5</color>
+    <color name="note_color_5">#F5F9E9</color>
 </resources>

@@ -216,6 +216,14 @@ class EditViewModel @Inject constructor(
     val showLinkDialogEvent: LiveData<Event<String>>
         get() = _showLinkDialogEvent
 
+    private val _showColorDialogEvent = MutableLiveData<Event<Int>>()
+    val showColorDialogEvent: LiveData<Event<Int>>
+        get() = _showColorDialogEvent
+
+    private val _currentNoteColor = MutableLiveData<Int>()
+    val currentNoteColor: LiveData<Int>
+        get() = _currentNoteColor
+
     private val _openLinkEvent = MutableLiveData<Event<String>>()
     val openLinkEvent: LiveData<Event<String>>
         get() = _openLinkEvent
@@ -247,6 +255,7 @@ class EditViewModel @Inject constructor(
                 val note = notesRepository.getNoteById(savedStateHandle[KEY_NOTE_ID] ?: Note.NO_ID)
                 if (note != null) {
                     this@EditViewModel.note = note
+                    _currentNoteColor.value = note.color
                 }
                 restoreNoteJob = null
             }
@@ -325,6 +334,7 @@ class EditViewModel @Inject constructor(
             status = note.status
             pinned = note.pinned
             reminder = note.reminder
+            _currentNoteColor.value = note.color
 
             savedStateHandle[KEY_NOTE_ID] = note.id
 
@@ -410,6 +420,7 @@ class EditViewModel @Inject constructor(
             convertToText = EditActionAvailability.fromBoolean(isList && !inTrash),
             reminderAdd = EditActionAvailability.fromBoolean(!inTrash && reminder == null),
             reminderEdit = EditActionAvailability.fromBoolean(!inTrash && reminder != null),
+            changeColor = EditActionAvailability.fromBoolean(!inTrash),
             archive = EditActionAvailability.fromBoolean(status == NoteStatus.ACTIVE),
             unarchive = EditActionAvailability.fromBoolean(status == NoteStatus.ARCHIVED),
             delete = EditActionAvailability.fromBoolean(!inTrash),
@@ -562,6 +573,18 @@ class EditViewModel @Inject constructor(
 
     fun changeLabels() {
         _showLabelsFragmentEvent.send(note.id)
+    }
+
+    fun changeColor() {
+        _showColorDialogEvent.send(note.color)
+    }
+
+    fun onColorChange(color: Int) {
+        if (note.color != color) {
+            note = note.copy(color = color)
+            _currentNoteColor.value = color
+            saveNote()
+        }
     }
 
     fun onReminderChange(reminder: Reminder?) {
@@ -1090,7 +1113,7 @@ class EditViewModel @Inject constructor(
     companion object {
         private val BLANK_NOTE = Note(Note.NO_ID, NoteType.TEXT, "", "",
             BlankNoteMetadata, Date(0), Date(0), FractionalIndex.INITIAL,
-            NoteStatus.ACTIVE, PinnedStatus.UNPINNED, null)
+            NoteStatus.ACTIVE, 0, PinnedStatus.UNPINNED, null)
 
         private const val KEY_NOTE_ID = "noteId"
         private const val KEY_IS_NEW_NOTE = "isNewNote"

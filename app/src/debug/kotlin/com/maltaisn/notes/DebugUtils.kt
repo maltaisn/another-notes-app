@@ -59,9 +59,10 @@ object DebugUtils {
         val added = getRandomDate()
         val modified = getRandomDate(added)
         val pinned = if (status == NoteStatus.ACTIVE) PinnedStatus.UNPINNED else PinnedStatus.CANT_PIN
+        val color = (0..5).random()
 
         return Note(0, type, title, content, metadata, added, modified,
-            FractionalIndex.INITIAL, status, pinned, null)
+            FractionalIndex.INITIAL, status, color, pinned, null)
     }
 
     private fun getRandomString(size: IntRange): String {

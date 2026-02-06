@@ -169,4 +169,14 @@
         <item name="widgetLayout">@layout/item_material3_switch</item>
     </style>
 
+    <style name="Widget.App.Toolbar" parent="Widget.Material3.Toolbar">
+        <item name="contentInsetStartWithNavigation">0dp</item>
+    </style>
+
+    <style name="Widget.App.ActionButton" parent="Widget.AppCompat.ActionButton">
+        <item name="android:minWidth">@dimen/toolbar_action_button_min_width</item>
+        <item name="android:paddingStart">@dimen/toolbar_action_button_padding_horizontal</item>
+        <item name="android:paddingEnd">@dimen/toolbar_action_button_padding_horizontal</item>
+    </style>
+
 </resources>

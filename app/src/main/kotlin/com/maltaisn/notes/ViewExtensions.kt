@@ -20,6 +20,7 @@ import android.graphics.Paint
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.TextView
+import androidx.annotation.ColorRes
 import androidx.core.content.getSystemService
 
 /**
@@ -31,9 +32,19 @@ fun View.hideKeyboard() {
     imm?.hideSoftInputFromWindow(this.windowToken, 0)
 }
 
+@ColorRes
+fun getNoteColorResource(index: Int): Int = when (index) {
+    0 -> R.color.note_color_default
+    1 -> R.color.note_color_1
+    2 -> R.color.note_color_2
+    3 -> R.color.note_color_3
+    4 -> R.color.note_color_4
+    5 -> R.color.note_color_5
+    else -> R.color.note_color_default
+}
+
 /**
  * Try to show the keyboard from [this] view.
- * The keyboard is shown with a 200 ms delay by default, otherwise it often doesn't work.
  */
 fun View.showKeyboard(delay: Long = 200L) {
     val context = this.context ?: return
