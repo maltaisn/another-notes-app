@@ -64,8 +64,11 @@ import com.maltaisn.notes.ui.startSharingData
 import dagger.hilt.android.AndroidEntryPoint
 import com.google.android.material.R as RMaterial
 
+import com.maltaisn.notes.getNoteColorResource
+import androidx.core.content.ContextCompat
+
 @AndroidEntryPoint
-class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener, ConfirmDialog.Callback {
+class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener, ConfirmDialog.Callback, ColorPickerDialog.Callback {
 
     val viewModel: EditViewModel by hiltNavGraphViewModels(R.id.fragment_edit)
     val sharedViewModel: SharedViewModel by activityViewModels()
@@ -76,6 +79,8 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener, ConfirmDialog.
     private val binding get() = _binding!!
 
     var editActions: List<EditAction> = emptyList()
+
+    private var originalStatusBarColor: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         sharedElementEnterTransition = MaterialContainerTransform(requireContext(), true).apply {
@@ -117,6 +122,7 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener, ConfirmDialog.
     @SuppressLint("ClickableViewAccessibility")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val context = requireContext()
+        originalStatusBarColor = requireActivity().window.statusBarColor
 
         requireActivity().onBackPressedDispatcher.addCallback(this) {
             viewModel.saveNote()
@@ -277,6 +283,17 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener, ConfirmDialog.
             navController.navigateSafe(NavGraphMainDirections.actionLabel(longArrayOf(noteId)))
         }
 
+        viewModel.showColorDialogEvent.observeEvent(viewLifecycleOwner) { color ->
+            ColorPickerDialog.newInstance(color).show(childFragmentManager, ColorPickerDialog.TAG)
+        }
+
+        viewModel.currentNoteColor.observe(viewLifecycleOwner) { color ->
+            val colorInt = ContextCompat.getColor(requireContext(), getNoteColorResource(color))
+            binding.fragmentEditLayout.setBackgroundColor(colorInt)
+            binding.contentContainer.setBackgroundColor(colorInt)
+            requireActivity().window.statusBarColor = colorInt
+        }
+
         viewModel.showLinkDialogEvent.observeEvent(viewLifecycleOwner) { linkText ->
             ConfirmDialog.newInstance(
                 btnPositive = R.string.action_open,
@@ -317,15 +334,18 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener, ConfirmDialog.
         editActions = EditActionsAvailability().createActions(requireContext())
 
         val menu = binding.toolbar.menu
-        for ((i, action) in editActions.withIndex()) {
-            menu.add(0, i, 0, action.title).apply {
+        val context = requireContext()
+        for (action in editActions) {
+            menu.add(0, action.menuItemId, 0, action.title).apply {
                 setIcon(action.icon)
                 isVisible = false
                 setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
+                // Explicitly set content description using the resolved string
+                androidx.core.view.MenuItemCompat.setContentDescription(this, context.getString(action.title))
             }
         }
         @SuppressLint("PrivateResource")
-        menu.add(0, editActions.size, 0, androidx.appcompat.R.string.abc_action_menu_overflow_description).apply {
+        menu.add(0, OVERFLOW_MENU_ID, 0, androidx.appcompat.R.string.abc_action_menu_overflow_description).apply {
             setIcon(R.drawable.ic_vertical_dots)
             setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
         }
@@ -338,17 +358,61 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener, ConfirmDialog.
         val menu = binding.toolbar.menu
         val inToolbarMax = context.resources.getInteger(R.integer.edit_actions_in_toolbar)
         val showOverflow = updateToolbarItemsForEditActions(inToolbarMax, editActions) { pos, visible, enabled ->
-            val item = menu[pos]
-            item.isVisible = visible
-            item.isEnabled = enabled
+            val action = editActions[pos]
+            val item = menu.findItem(action.menuItemId)
+            item?.let {
+                it.isVisible = visible
+                it.isEnabled = enabled
+                // Re-set content description to ensure it's on the ActionMenuItemView
+                if (visible) {
+                    androidx.core.view.MenuItemCompat.setContentDescription(it, context.getString(action.title))
+                }
+            }
         }
 
         // Show overflow icon only if there are hidden items
-        menu[editActions.size].isVisible = showOverflow
+        menu.findItem(OVERFLOW_MENU_ID)?.isVisible = showOverflow
+
+        // Set content descriptions on the actual ActionMenuItemView instances
+        // Use ViewTreeObserver to ensure views are laid out
+        binding.toolbar.viewTreeObserver.addOnGlobalLayoutListener(object : android.view.ViewTreeObserver.OnGlobalLayoutListener {
+            override fun onGlobalLayout() {
+                binding.toolbar.viewTreeObserver.removeOnGlobalLayoutListener(this)
+                setContentDescriptionsOnViews()
+            }
+        })
+    }
+
+    private fun setContentDescriptionsOnViews() {
+        val context = requireContext()
+
+        // Find the ActionMenuView in the toolbar
+        for (i in 0 until binding.toolbar.childCount) {
+            val child = binding.toolbar.getChildAt(i)
+            if (child is androidx.appcompat.widget.ActionMenuView) {
+                // Get list of visible actions in toolbar order
+                val visibleActions = editActions.filter { action ->
+                    binding.toolbar.menu.findItem(action.menuItemId)?.isVisible == true
+                }
+
+                // Set content descriptions on ActionMenuItemView children
+                var actionIndex = 0
+                for (j in 0 until child.childCount) {
+                    val view = child.getChildAt(j)
+                    if (view is androidx.appcompat.view.menu.ActionMenuItemView && actionIndex < visibleActions.size) {
+                        val action = visibleActions[actionIndex]
+                        view.contentDescription = context.getString(action.title)
+                        actionIndex++
+                    }
+                }
+                break
+            }
+        }
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
+        requireActivity().window.statusBarColor = originalStatusBarColor
         _binding = null
     }
 
@@ -358,17 +422,21 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener, ConfirmDialog.
     }
 
     override fun onMenuItemClick(item: MenuItem): Boolean {
-        for ((i, action) in editActions.withIndex()) {
-            if (item.itemId == i && action.available == EditActionAvailability.AVAILABLE) {
+        for (action in editActions) {
+            if (item.itemId == action.menuItemId && action.available == EditActionAvailability.AVAILABLE) {
                 action.action(viewModel)
                 return true
             }
         }
-        if (item.itemId == editActions.size) {
+        if (item.itemId == OVERFLOW_MENU_ID) {
             // Overflow item
             findNavController().navigateSafe(EditFragmentDirections.actionEditToEditActions())
         }
         return false
+    }
+
+    override fun onColorSelected(color: Int) {
+        viewModel.onColorChange(color)
     }
 
     override fun onDialogPositiveButtonClicked(tag: String?) {
@@ -391,6 +459,7 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener, ConfirmDialog.
         private const val OPEN_LINK_DIALOG_TAG = "open_link_confirm_dialog"
 
         private const val CANT_EDIT_SNACKBAR_DURATION = 5000
+        private const val OVERFLOW_MENU_ID = -1
     }
 }
 

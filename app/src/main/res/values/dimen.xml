@@ -34,6 +34,10 @@
     <!-- Minimum screen height to show title for dialogs with a text input. -->
     <dimen name="input_dialog_title_min_height">420dp</dimen>
 
-    <integer name="edit_actions_in_toolbar">5</integer>
+    <integer name="edit_actions_in_toolbar">8</integer>
+
+    <!-- Toolbar action button spacing -->
+    <dimen name="toolbar_action_button_padding_horizontal">4dp</dimen>
+    <dimen name="toolbar_action_button_min_width">40dp</dimen>
 
 </resources>

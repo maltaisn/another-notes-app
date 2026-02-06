@@ -85,16 +85,24 @@ data class Note(
     val rank: FractionalIndex,
 
     /**
-     * Status of the note, i.e. its location in the user interface.
+     * Note status, i.e. its location in the user interface.
      */
     @ColumnInfo(name = "status")
     val status: NoteStatus,
+
+    /**
+     * Note color index, from 0 to 5.
+     * 0 is the default color.
+     */
+    @ColumnInfo(name = "color", defaultValue = "0")
+    val color: Int = 0,
 
     /**
      * Describes how the note is pinned.
      * Notes with [status] set to [NoteStatus.ACTIVE] should be pinned or unpinned.
      * Other notes should be set to [PinnedStatus.CANT_PIN].
      */
+
     @ColumnInfo(name = "pinned")
     val pinned: PinnedStatus,
 
@@ -112,18 +120,18 @@ data class Note(
             NoteType.LIST -> metadata is ListNoteMetadata
         })
 
-        debugRequire(addedDate.time <= lastModifiedDate.time) {
+        require(addedDate.time <= lastModifiedDate.time) {
             "Note added date must be before or on last modified date."
         }
 
-        debugRequire(status != NoteStatus.ACTIVE || pinned != PinnedStatus.CANT_PIN) {
+        require(status != NoteStatus.ACTIVE || pinned != PinnedStatus.CANT_PIN) {
             "Active note must be pinnable."
         }
-        debugRequire(status == NoteStatus.ACTIVE || pinned == PinnedStatus.CANT_PIN) {
+        require(status == NoteStatus.ACTIVE || pinned == PinnedStatus.CANT_PIN) {
             "Archived or deleted note must not be pinnable."
         }
 
-        debugRequire(status != NoteStatus.DELETED || reminder == null) {
+        require(status != NoteStatus.DELETED || reminder == null) {
             "Deleted note cannot have a reminder."
         }
     }
@@ -151,7 +159,7 @@ data class Note(
                 return mutableListOf()
             }
 
-            debugCheck(checked.size == items.size) { "Invalid list note data." }
+            check(checked.size == items.size) { "Invalid list note data." }
 
             return items.mapIndexedTo(mutableListOf()) { i, text ->
                 ListNoteItem(text.trim(), checked.getOrElse(i) { false })

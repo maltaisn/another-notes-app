@@ -19,6 +19,6 @@
     <integer name="note_list_layout_span_count">1</integer>
     <integer name="note_grid_layout_span_count">3</integer>
 
-    <integer name="edit_actions_in_toolbar">7</integer>
+    <integer name="edit_actions_in_toolbar">10</integer>
 
 </resources>

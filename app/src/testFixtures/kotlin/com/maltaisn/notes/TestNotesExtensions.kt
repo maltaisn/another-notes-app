@@ -43,9 +43,10 @@ fun testNote(
     modified: Date = added,
     rank: FractionalIndex = NO_RANK,
     status: NoteStatus = NoteStatus.ACTIVE,
+    color: Int = 0,
     pinned: PinnedStatus = defaultPinnedStatusForStatus(status),
     reminder: Reminder? = null
-) = Note(id, type, title, content, metadata, added, modified, rank, status, pinned, reminder)
+) = Note(id, type, title, content, metadata, added, modified, rank, status, color, pinned, reminder)
 
 fun listNote(
     items: List<ListNoteItem>,
@@ -55,6 +56,7 @@ fun listNote(
     modified: Date = added,
     rank: FractionalIndex = NO_RANK,
     status: NoteStatus = NoteStatus.ACTIVE,
+    color: Int = 0,
     pinned: PinnedStatus = defaultPinnedStatusForStatus(status),
     reminder: Reminder? = null
 ) = Note(id, NoteType.LIST, title,
@@ -62,7 +64,7 @@ fun listNote(
         require('\n' !in it.content)
         it.content
     },
-    ListNoteMetadata(items.map { it.checked }), added, modified, rank, status, pinned, reminder)
+    ListNoteMetadata(items.map { it.checked }), added, modified, rank, status, color, pinned, reminder)
 
 fun assertNoteEquals(
     expected: Note,

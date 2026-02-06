@@ -56,7 +56,8 @@
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
         <item name="android:statusBarColor">@color/md_theme_dark_surface</item>
 
-        <item name="toolbarStyle">@style/Widget.Material3.Toolbar</item>
+        <item name="toolbarStyle">@style/Widget.App.Toolbar</item>
+        <item name="actionButtonStyle">@style/Widget.App.ActionButton</item>
 
         <item name="windowActionModeOverlay">true</item>
         <item name="actionModeStyle">@style/ActionModeStyle</item>

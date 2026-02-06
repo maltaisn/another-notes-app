@@ -65,7 +65,7 @@ class DefaultJsonManager @Inject constructor(
             val note = noteWithLabels.note
             notesMap[note.id] = NoteSurrogate(note.type, note.title, note.content,
                 note.metadata, note.addedDate, note.lastModifiedDate,
-                note.rank, note.status, note.pinned, note.reminder,
+                note.rank, note.status, note.color, note.pinned, note.reminder,
                 noteWithLabels.labels.map { it.id })
         }
 
@@ -223,7 +223,7 @@ class DefaultJsonManager @Inject constructor(
             }
 
             val newNote = Note(id, ns.type, ns.title, ns.content, ns.metadata, ns.addedDate,
-                ns.lastModifiedDate, rank, ns.status, ns.pinned, ns.reminder)
+                ns.lastModifiedDate, rank, ns.status, ns.color, ns.pinned, ns.reminder)
             val oldNote = existingNotes[noteId]
 
             // Remap labels appropriately and discard unresolved label IDs.
@@ -314,6 +314,8 @@ private data class NoteSurrogate(
     val rank: FractionalIndex? = null,
     @SerialName("status")
     val status: NoteStatus,
+    @SerialName("color")
+    val color: Int = 0,
     @SerialName("pinned")
     val pinned: PinnedStatus,
     @SerialName("reminder")

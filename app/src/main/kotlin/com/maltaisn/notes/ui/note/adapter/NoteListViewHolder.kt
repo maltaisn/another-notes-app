@@ -24,6 +24,7 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.text.set
+import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
@@ -40,6 +41,7 @@ import com.maltaisn.notes.databinding.ItemNoteLabelBinding
 import com.maltaisn.notes.databinding.ItemNoteListBinding
 import com.maltaisn.notes.databinding.ItemNoteListItemBinding
 import com.maltaisn.notes.databinding.ItemNoteTextBinding
+import com.maltaisn.notes.getNoteColorResource
 import com.maltaisn.notes.model.DefaultPrefsManager
 import com.maltaisn.notes.model.entity.Label
 import com.maltaisn.notes.model.entity.NoteType
@@ -78,8 +80,13 @@ sealed class NoteViewHolder<T : NoteItem>(itemView: View) :
         bindLabels(adapter, item)
         bindActionBtn(adapter, item)
 
+        val note = item.note
+
+        cardView.setCardBackgroundColor(ContextCompat.getColor(itemView.context,
+            getNoteColorResource(note.color)))
+
         // Set transition names for shared transitions
-        val noteId = item.note.id
+        val noteId = note.id
         ViewCompat.setTransitionName(
             cardView,
             "noteContainer$noteId"

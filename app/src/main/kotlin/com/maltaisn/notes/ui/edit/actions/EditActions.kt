@@ -45,6 +45,7 @@ data class EditActionsAvailability(
     val convertToText: EditActionAvailability = EditActionAvailability.HIDDEN,
     val reminderAdd: EditActionAvailability = EditActionAvailability.HIDDEN,
     val reminderEdit: EditActionAvailability = EditActionAvailability.HIDDEN,
+    val changeColor: EditActionAvailability = EditActionAvailability.HIDDEN,
     val archive: EditActionAvailability = EditActionAvailability.HIDDEN,
     val unarchive: EditActionAvailability = EditActionAvailability.HIDDEN,
     val delete: EditActionAvailability = EditActionAvailability.HIDDEN,
@@ -96,15 +97,20 @@ data class EditActionsAvailability(
                 R.drawable.ic_label_outline,
                 true,
                 EditViewModel::changeLabels),
+            EditAction(changeColor,
+                R.string.action_color,
+                R.drawable.ic_palette,
+                true,
+                EditViewModel::changeColor),
             EditAction(archive,
                 R.string.action_archive,
                 R.drawable.ic_archive,
-                true,
+                false,
                 EditViewModel::moveNoteAndExit),
             EditAction(unarchive,
                 R.string.action_unarchive,
                 R.drawable.ic_unarchive,
-                true,
+                false,
                 EditViewModel::moveNoteAndExit),
             EditAction(pin,
                 R.string.action_pin,
@@ -119,7 +125,7 @@ data class EditActionsAvailability(
             EditAction(share,
                 R.string.action_share,
                 R.drawable.ic_share,
-                true,
+                false,
                 EditViewModel::shareNote),
             EditAction(copy,
                 R.string.action_copy,
@@ -169,4 +175,7 @@ data class EditAction(
     @field:DrawableRes @param:DrawableRes val icon: Int,
     val showInToolbar: Boolean,
     val action: (EditViewModel) -> Unit,
-)
+) {
+    // Use the title resource ID as the menu item ID for consistent identification
+    val menuItemId: Int get() = title
+}
