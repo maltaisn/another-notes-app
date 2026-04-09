@@ -52,8 +52,10 @@ sealed class EditFocusableViewHolder<T : EditTextItem>(root: View) :
 
     abstract val editText: EditEditText
     var item: T? = null
+    private lateinit var callback: EditAdapter.Callback
 
     fun init(callback: EditAdapter.Callback) {
+        this.callback = callback
         editText.setOnClickListener {
             callback.onNoteClickedToEdit()
         }
@@ -90,7 +92,10 @@ sealed class EditFocusableViewHolder<T : EditTextItem>(root: View) :
         this.item = item
         editText.isFocusable = item.editable
         editText.isFocusableInTouchMode = item.editable
-        editText.setTextIgnoringUndo(item.text.text)
+        editText.setAutoTextSize(callback.textSize)
+        if (editText.text?.toString() != item.text.text.toString()) {
+            editText.setTextIgnoringUndo(item.text.text)
+        }
     }
 }
 
