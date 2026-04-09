@@ -31,10 +31,12 @@
     <string name="action_delete">Delete</string>
     <string name="action_delete_checked">Delete checked items</string>
     <string name="action_delete_forever">Delete forever</string>
+    <string name="action_decrease_text_size">Decrease text size</string>
     <string name="action_delete_selection">Delete selection</string>
     <string name="action_delete_selection_forever">Delete selection forever</string>
     <string name="action_empty_trash">Empty recycle bin</string>
     <string name="action_empty_trash_short">Empty</string>
+    <string name="action_increase_text_size">Increase text size</string>
     <string name="action_keep">Keep</string>
     <string name="action_labels">Change labels</string>
     <string name="action_layout_grid">View as grid</string>
