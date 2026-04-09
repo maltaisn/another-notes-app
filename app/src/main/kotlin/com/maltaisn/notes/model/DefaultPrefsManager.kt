@@ -65,6 +65,7 @@ class DefaultPrefsManager @Inject constructor(
     override var encryptedImportKeyDerivationSalt: String by preference(ENCRYPTED_IMPORT_KEY_DERIVATION_SALT,
         "")
     override var shouldAutoExport: Boolean by preference(AUTO_EXPORT, false)
+    override var autoExportFormat: AutoExportFormat by enumPreference(AUTO_EXPORT_FORMAT, AutoExportFormat.JSON)
     override var autoExportUri: String by preference(AUTO_EXPORT_URI, "")
     override var autoExportFailed: Boolean by preference(AUTO_EXPORT_FAILED, false)
     override var lastAutoExportTime: Long by preference(LAST_AUTO_EXPORT_TIME, 0)
@@ -192,6 +193,7 @@ class DefaultPrefsManager @Inject constructor(
         const val ENCRYPTED_EXPORT = "encrypted_export"
         const val EXPORT_DATA = "export_data"
         const val AUTO_EXPORT = "auto_export"
+        const val AUTO_EXPORT_FORMAT = "auto_export_format"
         const val IMPORT_DATA = "import_data"
         const val EXPORT_ARCHIVE = "export_archive"
         const val CLEAR_DATA = "clear_data"
@@ -243,4 +245,3 @@ class DefaultPrefsManager @Inject constructor(
         const val MAXIMUM_RELATIVE_DATE_DAYS = 6
     }
 }
-
