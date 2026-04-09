@@ -102,6 +102,7 @@ class EditViewModelTest {
             on { shownDateField } doReturn ShownDateField.ADDED
             on { moveCheckedToBottom } doReturn false
             on { editInitialFocus } doReturn EditInitialFocus.TITLE
+            on { textSize } doReturn 15
         }
 
         // Sample active notes
@@ -167,6 +168,8 @@ class EditViewModelTest {
         assertEquals(EditActionsAvailability(
             undo = UNAVAILABLE,
             redo = UNAVAILABLE,
+            zoomIn = AVAILABLE,
+            zoomOut = AVAILABLE,
             convertToList = AVAILABLE,
             reminderAdd = AVAILABLE,
             archive = AVAILABLE,
@@ -225,6 +228,8 @@ class EditViewModelTest {
         assertEquals(EditActionsAvailability(
             undo = UNAVAILABLE,
             redo = UNAVAILABLE,
+            zoomIn = AVAILABLE,
+            zoomOut = AVAILABLE,
             convertToList = AVAILABLE,
             reminderAdd = AVAILABLE,
             archive = AVAILABLE,
@@ -244,6 +249,8 @@ class EditViewModelTest {
         assertEquals(EditActionsAvailability(
             undo = UNAVAILABLE,
             redo = UNAVAILABLE,
+            zoomIn = AVAILABLE,
+            zoomOut = AVAILABLE,
             convertToText = AVAILABLE,
             reminderAdd = AVAILABLE,
             archive = AVAILABLE,
@@ -473,6 +480,8 @@ class EditViewModelTest {
         assertEquals(EditActionsAvailability(
             undo = UNAVAILABLE,
             redo = UNAVAILABLE,
+            zoomIn = AVAILABLE,
+            zoomOut = AVAILABLE,
             convertToList = AVAILABLE,
             reminderAdd = AVAILABLE,
             archive = AVAILABLE,
@@ -503,6 +512,8 @@ class EditViewModelTest {
         assertEquals(EditActionsAvailability(
             undo = UNAVAILABLE,
             redo = UNAVAILABLE,
+            zoomIn = AVAILABLE,
+            zoomOut = AVAILABLE,
             convertToText = AVAILABLE,
             reminderAdd = AVAILABLE,
             archive = AVAILABLE,
@@ -896,6 +907,36 @@ class EditViewModelTest {
     }
 
     @Test
+    fun `should increase text size and refresh editor`() = runTest {
+        viewModel.start(1)
+
+        viewModel.zoomIn()
+
+        assertEquals(16f, viewModel.textSize)
+        assertLiveDataEventSent(viewModel.refreshTextSizeEvent)
+        val visibility = viewModel.editActionsAvailability.getOrAwaitValue()
+        assertEquals(AVAILABLE, visibility.zoomIn)
+        assertEquals(AVAILABLE, visibility.zoomOut)
+    }
+
+    @Test
+    fun `should clamp text size zoom actions at bounds`() = runTest {
+        viewModel.start(1)
+
+        repeat(20) {
+            viewModel.zoomIn()
+        }
+        assertEquals(30f, viewModel.textSize)
+        assertEquals(UNAVAILABLE, viewModel.editActionsAvailability.getOrAwaitValue().zoomIn)
+
+        repeat(25) {
+            viewModel.zoomOut()
+        }
+        assertEquals(10f, viewModel.textSize)
+        assertEquals(UNAVAILABLE, viewModel.editActionsAvailability.getOrAwaitValue().zoomOut)
+    }
+
+    @Test
     fun `should edit existing text note (modified date field)`() = runTest {
         whenever(prefs.shownDateField) doReturn ShownDateField.MODIFIED
         viewModel.start(1)
@@ -1285,6 +1326,8 @@ class EditViewModelTest {
         assertEquals(EditActionsAvailability(
             undo = UNAVAILABLE,
             redo = UNAVAILABLE,
+            zoomIn = AVAILABLE,
+            zoomOut = AVAILABLE,
             convertToText = AVAILABLE,
             reminderEdit = AVAILABLE,
             archive = AVAILABLE,
