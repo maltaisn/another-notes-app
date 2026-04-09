@@ -75,4 +75,13 @@
         <item>365</item>
     </string-array>
 
+    <string-array name="pref_auto_export_format_entries">
+        <item>@string/pref_data_auto_export_format_json</item>
+        <item>@string/pref_data_auto_export_format_zip</item>
+    </string-array>
+    <string-array name="pref_auto_export_format_values">
+        <item>json</item>
+        <item>zip</item>
+    </string-array>
+
 </resources>
