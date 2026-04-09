@@ -53,6 +53,7 @@ interface PrefsManager {
     var encryptedExportKeyDerivationSalt: String
     var encryptedImportKeyDerivationSalt: String
     var shouldAutoExport: Boolean
+    var autoExportFormat: AutoExportFormat
     var autoExportUri: String
     var autoExportFailed: Boolean
     var lastAutoExportTime: Long
@@ -74,4 +75,3 @@ interface PrefsManager {
     @TestOnly
     fun clear(context: Context)
 }
-
