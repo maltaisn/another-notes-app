@@ -45,6 +45,7 @@ import com.maltaisn.notes.BuildConfig
 import com.maltaisn.notes.R
 import com.maltaisn.notes.TAG
 import com.maltaisn.notes.databinding.FragmentSettingsBinding
+import com.maltaisn.notes.model.AutoExportFormat
 import com.maltaisn.notes.model.DefaultPrefsManager
 import com.maltaisn.notes.navigateSafe
 import com.maltaisn.notes.setEnterExitTransitions
@@ -98,7 +99,7 @@ class SettingsFragment : PreferenceFragmentCompat(), ConfirmDialog.Callback, Exp
                 val output = try {
                     val cr = context.contentResolver
                     cr.takePersistableUriPermission(uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
-                    cr.openOutputStream(uri)
+                    cr.openOutputStream(uri, "wt")
                 } catch (e: Exception) {
                     Log.i(TAG, "Data export failed", e)
                     null
@@ -254,6 +255,9 @@ class SettingsFragment : PreferenceFragmentCompat(), ConfirmDialog.Callback, Exp
             true
         }
 
+        requirePreference<DropDownPreference>(DefaultPrefsManager.AUTO_EXPORT_FORMAT)
+            .summaryProvider = DropDownPreference.SimpleSummaryProvider.getInstance()
+
         requirePreference<Preference>(DefaultPrefsManager.IMPORT_DATA).setOnPreferenceClickListener {
             // note: explicit mimetype fails for some devices, see #11
             val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
@@ -302,6 +306,22 @@ class SettingsFragment : PreferenceFragmentCompat(), ConfirmDialog.Callback, Exp
     private val autoExportPref: SwitchPreferenceCompat
         get() = requirePreference(DefaultPrefsManager.AUTO_EXPORT)
 
+    private val autoExportFormat: AutoExportFormat
+        get() = AutoExportFormat.fromValue(requirePreference<DropDownPreference>(
+            DefaultPrefsManager.AUTO_EXPORT_FORMAT).value)
+
+    private val autoExportExtension: String
+        get() = when (autoExportFormat) {
+            AutoExportFormat.JSON -> "json"
+            AutoExportFormat.ZIP -> "zip"
+        }
+
+    private val autoExportMimeType: String
+        get() = when (autoExportFormat) {
+            AutoExportFormat.JSON -> "application/json"
+            AutoExportFormat.ZIP -> "application/zip"
+        }
+
     private fun updateAutoExportSummary(enabled: Boolean, date: Long = 0) {
         if (enabled) {
             autoExportPref.summary = buildString {
@@ -328,8 +348,10 @@ class SettingsFragment : PreferenceFragmentCompat(), ConfirmDialog.Callback, Exp
 
             AUTOMATIC_EXPORT_DIALOG_TAG -> {
                 val intent = Intent(Intent.ACTION_CREATE_DOCUMENT)
-                    .setType("application/json")
-                    .addCategory(Intent.CATEGORY_OPENABLE)
+                    .setType(autoExportMimeType)
+                    .addCategory(Intent.CATEGORY_OPENABLE).apply {
+                        putExtra(Intent.EXTRA_TITLE, "notes.$autoExportExtension")
+                    }
                 autoExportLauncher?.launch(intent)
             }
 
