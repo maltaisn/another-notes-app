@@ -27,6 +27,8 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavDirections
 import com.maltaisn.notes.NavGraphMainDirections
 import com.maltaisn.notes.R
+import com.maltaisn.notes.model.ArchiveExporter
+import com.maltaisn.notes.model.AutoExportFormat
 import com.maltaisn.notes.model.DefaultPrefsManager
 import com.maltaisn.notes.model.JsonManager
 import com.maltaisn.notes.model.LabelsRepository
@@ -57,6 +59,7 @@ class MainViewModel @Inject constructor(
     private val labelsRepository: LabelsRepository,
     private val prefsManager: PrefsManager,
     private val jsonManager: JsonManager,
+    private val archiveExporter: ArchiveExporter,
     private val reminderAlarmManager: ReminderAlarmManager,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
@@ -231,13 +234,20 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    fun autoExport(output: OutputStream?) {
+    fun autoExport(output: OutputStream?, untitledName: String) {
         if (output != null) {
             viewModelScope.launch(Dispatchers.IO) {
                 prefsManager.autoExportFailed = try {
-                    val jsonData = jsonManager.exportJsonData()
                     output.use {
-                        output.write(jsonData.toByteArray())
+                        when (prefsManager.autoExportFormat) {
+                            AutoExportFormat.JSON -> {
+                                val jsonData = jsonManager.exportJsonData()
+                                output.write(jsonData.toByteArray())
+                            }
+                            AutoExportFormat.ZIP -> {
+                                archiveExporter.exportArchive(output, untitledName)
+                            }
+                        }
                     }
                     prefsManager.lastAutoExportTime = System.currentTimeMillis()
                     false
