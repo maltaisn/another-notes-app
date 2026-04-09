@@ -226,6 +226,12 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener, ConfirmDialog.
 
         viewModel.focusEvent.observeEvent(viewLifecycleOwner, adapter::setItemFocus)
 
+        viewModel.refreshTextSizeEvent.observeEvent(viewLifecycleOwner) {
+            if (adapter.itemCount > 0) {
+                adapter.notifyItemRangeChanged(0, adapter.itemCount)
+            }
+        }
+
         viewModel.noteCreateEvent.observeEvent(viewLifecycleOwner) { noteId ->
             sharedViewModel.noteCreated(noteId)
         }
