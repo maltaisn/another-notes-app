@@ -184,6 +184,10 @@ class EditViewModel @Inject constructor(
     val focusEvent: LiveData<Event<EditFocusChange>>
         get() = _focusEvent
 
+    private val _refreshTextSizeEvent = MutableLiveData<Event<Unit>>()
+    val refreshTextSizeEvent: LiveData<Event<Unit>>
+        get() = _refreshTextSizeEvent
+
     private val _messageEvent = MutableLiveData<Event<EditMessage>>()
     val messageEvent: LiveData<Event<EditMessage>>
         get() = _messageEvent
@@ -223,6 +227,10 @@ class EditViewModel @Inject constructor(
     private val _exitEvent = MutableLiveData<Event<Unit>>()
     val exitEvent: LiveData<Event<Unit>>
         get() = _exitEvent
+
+    private var currentTextSize = prefs.textSize
+        .takeIf { it in MIN_EDITOR_TEXT_SIZE..MAX_EDITOR_TEXT_SIZE }
+        ?: DEFAULT_EDITOR_TEXT_SIZE
 
     /**
      * Whether to show date item.
@@ -406,6 +414,8 @@ class EditViewModel @Inject constructor(
         val visibility = EditActionsAvailability(
             undo = EditActionAvailability.fromBoolean(!inTrash, undoManager.canUndo),
             redo = EditActionAvailability.fromBoolean(!inTrash, undoManager.canRedo),
+            zoomIn = EditActionAvailability.fromBoolean(!inTrash, currentTextSize < MAX_EDITOR_TEXT_SIZE),
+            zoomOut = EditActionAvailability.fromBoolean(!inTrash, currentTextSize > MIN_EDITOR_TEXT_SIZE),
             convertToList = EditActionAvailability.fromBoolean(!isList && !inTrash),
             convertToText = EditActionAvailability.fromBoolean(isList && !inTrash),
             reminderAdd = EditActionAvailability.fromBoolean(!inTrash && reminder == null),
@@ -447,6 +457,14 @@ class EditViewModel @Inject constructor(
 
     fun redo() {
         doUndoRedo(undoManager.redo(), ::redoWork)
+    }
+
+    fun zoomIn() {
+        changeTextSizeBy(1)
+    }
+
+    fun zoomOut() {
+        changeTextSizeBy(-1)
     }
 
     private fun redoWork(event: EditEvent) = when (event) {
@@ -1080,7 +1098,17 @@ class EditViewModel @Inject constructor(
         get() = prefs.moveCheckedToBottom
 
     override val textSize: Float
-        get() = prefs.textSize.toFloat()
+        get() = currentTextSize.toFloat()
+
+    private fun changeTextSizeBy(delta: Int) {
+        val newSize = (currentTextSize + delta).coerceIn(MIN_EDITOR_TEXT_SIZE, MAX_EDITOR_TEXT_SIZE)
+        if (newSize == currentTextSize) {
+            return
+        }
+        currentTextSize = newSize
+        updateEditActionsVisibility()
+        _refreshTextSizeEvent.send()
+    }
 
     private inline fun <reified T : EditListItem> findItem() =
         (listItems.find { it is T } ?: error("List item not found")) as T
@@ -1100,5 +1128,9 @@ class EditViewModel @Inject constructor(
 
         // Should be more than enough
         const val MAX_UNDO_EVENTS = 2048
+
+        private const val MIN_EDITOR_TEXT_SIZE = 10
+        private const val MAX_EDITOR_TEXT_SIZE = 30
+        private const val DEFAULT_EDITOR_TEXT_SIZE = 15
     }
 }
