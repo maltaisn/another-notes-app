@@ -225,7 +225,7 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
             } catch (e: Exception) {
                 Log.i(TAG, "Auto data export failed", e)
                 null
-            })
+            }, getString(R.string.edit_copy_untitled_name))
         }
 
         viewModel.createNoteEvent.observeEvent(this) { newNoteData ->
