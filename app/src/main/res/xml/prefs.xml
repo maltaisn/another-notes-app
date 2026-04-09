@@ -161,6 +161,14 @@
             app:title="@string/pref_data_auto_export"
             />
 
+        <DropDownPreference
+            app:defaultValue="json"
+            app:entries="@array/pref_auto_export_format_entries"
+            app:entryValues="@array/pref_auto_export_format_values"
+            app:key="auto_export_format"
+            app:title="@string/pref_data_auto_export_format"
+            />
+
         <Preference
             app:icon="@drawable/ic_import"
             app:key="import_data"
