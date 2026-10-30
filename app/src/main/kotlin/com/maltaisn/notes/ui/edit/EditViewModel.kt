@@ -240,6 +240,14 @@ class EditViewModel @Inject constructor(
     val searchMatchPosition: LiveData<NoteSearch.Position>
         get() = _searchMatchPosition
 
+    private val _inNoteSearchShown = MutableLiveData(savedStateHandle[KEY_IN_NOTE_SEARCH_SHOWN] ?: false)
+
+    /**
+     * Whether the field to search in the note is shown.
+     */
+    val inNoteSearchShown: LiveData<Boolean>
+        get() = _inNoteSearchShown
+
     /**
      * Whether to show date item.
      */
@@ -254,10 +262,14 @@ class EditViewModel @Inject constructor(
 
     private var updateNoteJob: Job? = null
 
-    /** Search query the note was opened with, or empty. */
-    private var searchQuery = ""
+    /** Search query the note was opened with or typed in the note search field, or empty. */
+    var searchQuery: String = savedStateHandle[KEY_SEARCH_QUERY] ?: ""
+        private set(value) {
+            field = value
+            savedStateHandle[KEY_SEARCH_QUERY] = value
+        }
 
-    /** Index of the last search match moved to, or -1 if none. */
+    /** Index of the last search match moved to, or -1 if none since query was changed. */
     private var searchMatchIndex = -1
     private var restoreNoteJob: Job? = null
 
@@ -303,7 +315,10 @@ class EditViewModel @Inject constructor(
             restoreNoteJob?.join()
 
             val isFirstStart = (note == BLANK_NOTE)
-            this@EditViewModel.searchQuery = searchQuery
+            if (KEY_SEARCH_QUERY !in savedStateHandle) {
+                // Only on first start, the query may have been changed in the note since.
+                this@EditViewModel.searchQuery = searchQuery
+            }
 
             // Try to get note by ID with its labels.
             val noteWithLabels = notesRepository.getNoteByIdWithLabels(if (isFirstStart) {
@@ -449,6 +464,29 @@ class EditViewModel @Inject constructor(
         _focusEvent.send(matches[searchMatchIndex].copy(itemExists = true))
     }
 
+    /** Show the field to search in the note. */
+    fun startInNoteSearch() {
+        _inNoteSearchShown.value = true
+        savedStateHandle[KEY_IN_NOTE_SEARCH_SHOWN] = true
+    }
+
+    /** Hide the field to search in the note, and stop highlighting the search query. */
+    fun stopInNoteSearch() {
+        _inNoteSearchShown.value = false
+        savedStateHandle[KEY_IN_NOTE_SEARCH_SHOWN] = false
+        changeSearchQuery("")
+    }
+
+    /** Change the search query, highlighting its matches. */
+    fun changeSearchQuery(query: String) {
+        if (query == searchQuery) {
+            return
+        }
+        searchQuery = query
+        searchMatchIndex = -1
+        findSearchMatches()
+    }
+
     /**
      * Update note and save it in database if it was changed.
      * This updates last modified date.
@@ -514,6 +552,7 @@ class EditViewModel @Inject constructor(
             delete = EditActionAvailability.fromBoolean(!inTrash),
             deleteForever = EditActionAvailability.fromBoolean(inTrash),
             restore = EditActionAvailability.fromBoolean(inTrash),
+            searchInNote = EditActionAvailability.fromBoolean(!inTrash),
             pin = EditActionAvailability.fromBoolean(pinned == PinnedStatus.UNPINNED),
             unpin = EditActionAvailability.fromBoolean(pinned == PinnedStatus.PINNED),
             share = EditActionAvailability.fromBoolean(!inTrash),
@@ -1199,7 +1238,10 @@ class EditViewModel @Inject constructor(
         private const val KEY_NOTE_ID = "noteId"
         private const val KEY_IS_NEW_NOTE = "isNewNote"
         private const val KEY_LINK_URL = "linkUrl"
+        // Not "searchQuery", which is the navigation argument with the initial query.
+        private const val KEY_SEARCH_QUERY = "editSearchQuery"
         private const val KEY_SEARCH_MATCH_FOCUSED = "searchMatchFocused"
+        private const val KEY_IN_NOTE_SEARCH_SHOWN = "inNoteSearchShown"
 
         val UNDO_TEXT_DEBOUNCE_DELAY = 500.milliseconds
 

@@ -175,6 +175,7 @@ class EditViewModelTest {
             pin = AVAILABLE,
             share = AVAILABLE,
             copy = AVAILABLE,
+            searchInNote = AVAILABLE,
         ), viewModel.editActionsAvailability.getOrAwaitValue())
 
         assertEquals(listOf(
@@ -233,6 +234,7 @@ class EditViewModelTest {
             pin = AVAILABLE,
             share = AVAILABLE,
             copy = AVAILABLE,
+            searchInNote = AVAILABLE,
         ), viewModel.editActionsAvailability.getOrAwaitValue())
 
         assertEquals(NOTE1_ITEMS, viewModel.editItems.getOrAwaitValue())
@@ -255,6 +257,7 @@ class EditViewModelTest {
             uncheckAll = AVAILABLE,
             deleteChecked = AVAILABLE,
             sortItems = AVAILABLE,
+            searchInNote = AVAILABLE,
         ), viewModel.editActionsAvailability.getOrAwaitValue())
 
         assertEquals(NOTE2_ITEMS, viewModel.editItems.getOrAwaitValue())
@@ -481,6 +484,7 @@ class EditViewModelTest {
             pin = AVAILABLE,
             share = AVAILABLE,
             copy = AVAILABLE,
+            searchInNote = AVAILABLE,
         ), viewModel.editActionsAvailability.getOrAwaitValue())
 
         assertLiveDataEventSent(viewModel.messageEvent, EditMessage.RESTORED_NOTE)
@@ -514,6 +518,7 @@ class EditViewModelTest {
             uncheckAll = AVAILABLE,
             deleteChecked = AVAILABLE,
             sortItems = AVAILABLE,
+            searchInNote = AVAILABLE,
         ), viewModel.editActionsAvailability.getOrAwaitValue())
 
         assertLiveDataEventSent(viewModel.messageEvent, EditMessage.RESTORED_NOTE)
@@ -1294,6 +1299,7 @@ class EditViewModelTest {
             share = AVAILABLE,
             copy = AVAILABLE,
             sortItems = AVAILABLE,
+            searchInNote = AVAILABLE,
         ), viewModel.editActionsAvailability.getOrAwaitValue())
     }
 
@@ -1555,6 +1561,52 @@ class EditViewModelTest {
         viewModel.start(4, searchQuery = "content")
         viewModel.editItems.getOrAwaitValue()
         assertEquals(emptyList(), viewModel.searchTerms.getOrAwaitValue())
+    }
+
+    @Test
+    fun `should search in note`() = runTest {
+        viewModel.start(7)
+        assertFalse(viewModel.inNoteSearchShown.getOrAwaitValue())
+
+        viewModel.startInNoteSearch()
+        assertTrue(viewModel.inNoteSearchShown.getOrAwaitValue())
+
+        // Changing the query only highlights, the first match is focused on next.
+        viewModel.changeSearchQuery("item 3")
+        assertEquals(listOf("item 3"), viewModel.searchTerms.getOrAwaitValue())
+        assertEquals("item 3", viewModel.searchQuery)
+        assertNull(viewModel.focusEvent.value)
+
+        viewModel.goToSearchMatch(next = true)
+        assertLiveDataEventSent(viewModel.focusEvent,
+            searchMatch(EditFocusLocation.Item(2), 0, itemExists = true))
+
+        viewModel.stopInNoteSearch()
+        assertFalse(viewModel.inNoteSearchShown.getOrAwaitValue())
+        assertEquals(emptyList(), viewModel.searchTerms.getOrAwaitValue())
+        assertEquals(NoteSearch.Position(-1, 0), viewModel.searchMatchPosition.getOrAwaitValue())
+        assertEquals("", viewModel.searchQuery)
+    }
+
+    @Test
+    fun `should go to last search match on previous after query change`() = runTest {
+        viewModel.start(7, searchQuery = "item 1")
+        assertLiveDataEventSent(viewModel.focusEvent, searchMatch(EditFocusLocation.Item(0), 0))
+
+        viewModel.changeSearchQuery("item")
+        viewModel.goToSearchMatch(next = false)
+        assertLiveDataEventSent(viewModel.focusEvent,
+            searchMatch(EditFocusLocation.Item(3), 0, itemExists = true))
+    }
+
+    @Test
+    fun `should keep changed search query when started again`() = runTest {
+        viewModel.start(7, searchQuery = "item 1")
+        viewModel.changeSearchQuery("item 2")
+        viewModel.start(7, searchQuery = "item 1")
+        viewModel.editItems.getOrAwaitValue()
+        assertEquals("item 2", viewModel.searchQuery)
+        assertEquals(listOf("item 2"), viewModel.searchTerms.getOrAwaitValue())
     }
 
     @Test

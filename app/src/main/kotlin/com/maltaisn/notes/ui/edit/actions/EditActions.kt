@@ -57,6 +57,7 @@ data class EditActionsAvailability(
     val uncheckAll: EditActionAvailability = EditActionAvailability.HIDDEN,
     val deleteChecked: EditActionAvailability = EditActionAvailability.HIDDEN,
     val sortItems: EditActionAvailability = EditActionAvailability.HIDDEN,
+    val searchInNote: EditActionAvailability = EditActionAvailability.HIDDEN,
 ) {
 
     fun createActions(context: Context): List<EditAction> {
@@ -121,6 +122,11 @@ data class EditActionsAvailability(
                 R.drawable.ic_share,
                 true,
                 EditViewModel::shareNote),
+            EditAction(searchInNote,
+                R.string.action_search_in_note,
+                R.drawable.ic_search,
+                false,
+                EditViewModel::startInNoteSearch),
             EditAction(copy,
                 R.string.action_copy,
                 R.drawable.ic_copy,

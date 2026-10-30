@@ -54,6 +54,8 @@
     <string name="action_search">Search</string>
     <string name="action_search_previous">Previous result</string>
     <string name="action_search_next">Next result</string>
+    <string name="action_search_in_note">Search in note</string>
+    <string name="action_search_close">Close search</string>
     <string name="action_select_all">Select all</string>
     <string name="action_settings">Settings</string>
     <string name="action_share">Share</string>
