@@ -26,7 +26,6 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.view.ViewTreeObserver
 import androidx.activity.addCallback
 import androidx.appcompat.widget.Toolbar
 import androidx.core.net.toUri
@@ -141,17 +140,10 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener, ConfirmDialog.
                 viewModel.exit()
             }
 
-            viewTreeObserver.addOnPreDrawListener(object : ViewTreeObserver.OnPreDrawListener {
-                private var directionSet = false
-
-                override fun onPreDraw(): Boolean {
-                    if (!directionSet) {
-                        menu.setIconsLayoutDirection(view.layoutDirection)
-                        directionSet = true
-                    }
-                    return true
-                }
-            })
+            // One shot, otherwise the listener stays on the window and leaks the view after it's destroyed.
+            OneShotPreDrawListener.add(this) {
+                menu.setIconsLayoutDirection(view.layoutDirection)
+            }
         }
 
         // Recycler view
