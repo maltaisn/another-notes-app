@@ -232,6 +232,14 @@ class EditViewModel @Inject constructor(
     val searchTerms: LiveData<List<String>>
         get() = _searchTerms
 
+    private val _searchMatchPosition = MutableLiveData(NoteSearch.Position(-1, 0))
+
+    /**
+     * Position of the current search match among all matches in the note.
+     */
+    val searchMatchPosition: LiveData<NoteSearch.Position>
+        get() = _searchMatchPosition
+
     /**
      * Whether to show date item.
      */
@@ -248,6 +256,9 @@ class EditViewModel @Inject constructor(
 
     /** Search query the note was opened with, or empty. */
     private var searchQuery = ""
+
+    /** Index of the last search match moved to, or -1 if none. */
+    private var searchMatchIndex = -1
     private var restoreNoteJob: Job? = null
 
     init {
@@ -364,7 +375,12 @@ class EditViewModel @Inject constructor(
                 // Not based on isFirstStart, which is false when the note ID is in the saved state
                 // as a navigation argument. Only done once, not when the view is recreated.
                 savedStateHandle[KEY_SEARCH_MATCH_FOCUSED] = true
-                focus = findSearchMatches().firstOrNull()
+                val matches = findSearchMatches()
+                focus = matches.firstOrNull()
+                if (focus != null) {
+                    searchMatchIndex = 0
+                    updateSearchMatchPosition(matches.size)
+                }
             }
 
             updateListItems(focus)
@@ -373,18 +389,31 @@ class EditViewModel @Inject constructor(
 
     /**
      * Find all matches of the search query in the current list items, in order of appearance.
-     * This also updates the highlighted search terms, since the text may have changed.
+     * This also updates the highlighted search terms and the match position, since the text may have changed.
      * The returned focus changes move the cursor to the match, without showing the keyboard since the user
      * is probably just looking for the results.
      */
     private fun findSearchMatches(): List<EditFocusChange> {
         updateSearchTerms()
         val terms = _searchTerms.value.orEmpty()
-        return listItems.filterIsInstance<EditTextItem>().flatMap { item ->
+        val matches = listItems.filterIsInstance<EditTextItem>().flatMap { item ->
             val location = EditFocusLocation.fromItem(item)
             NoteSearch.findMatches(item.text.text, terms).map { match ->
                 EditFocusChange(location, match.start, itemExists = false, showKeyboard = false)
             }
+        }
+        if (searchMatchIndex > matches.lastIndex) {
+            // Matches were removed by editing the text.
+            searchMatchIndex = -1
+        }
+        updateSearchMatchPosition(matches.size)
+        return matches
+    }
+
+    private fun updateSearchMatchPosition(count: Int) {
+        val position = NoteSearch.Position(searchMatchIndex, count)
+        if (position != _searchMatchPosition.value) {
+            _searchMatchPosition.value = position
         }
     }
 
@@ -398,6 +427,26 @@ class EditViewModel @Inject constructor(
         if (terms != _searchTerms.value) {
             _searchTerms.value = terms
         }
+    }
+
+    /**
+     * Move to the next or previous match of the search query, wrapping around.
+     */
+    fun goToSearchMatch(next: Boolean) {
+        if (isNoteInTrash) {
+            return
+        }
+        val matches = findSearchMatches()
+        if (matches.isEmpty()) {
+            return
+        }
+        searchMatchIndex = when {
+            searchMatchIndex < 0 -> if (next) 0 else matches.lastIndex
+            next -> (searchMatchIndex + 1).mod(matches.size)
+            else -> (searchMatchIndex - 1).mod(matches.size)
+        }
+        updateSearchMatchPosition(matches.size)
+        _focusEvent.send(matches[searchMatchIndex].copy(itemExists = true))
     }
 
     /**
@@ -919,7 +968,7 @@ class EditViewModel @Inject constructor(
             _focusEvent.send(focusChange)
         }
         _editItems.value = listItems.toMutableList()
-        updateSearchTerms()
+        findSearchMatches()
     }
 
     private fun focusItemAt(location: EditFocusLocation, textPos: Int) {
@@ -978,6 +1027,10 @@ class EditViewModel @Inject constructor(
                     appendEvent(event, apply = false)
                 }
             }
+        }
+        if (searchQuery.isNotBlank()) {
+            // Update the match count.
+            findSearchMatches()
         }
     }
 

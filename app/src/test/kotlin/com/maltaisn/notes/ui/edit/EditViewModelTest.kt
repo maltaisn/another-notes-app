@@ -1432,6 +1432,9 @@ class EditViewModelTest {
         viewModel.start(1, searchQuery = "missing")
         assertEquals(NOTE1_ITEMS, viewModel.editItems.getOrAwaitValue())
         assertNull(viewModel.focusEvent.value)
+
+        viewModel.goToSearchMatch(next = true)
+        assertNull(viewModel.focusEvent.value)
     }
 
     @Test
@@ -1439,12 +1442,20 @@ class EditViewModelTest {
         viewModel.start(4, searchQuery = "content")
         viewModel.editItems.getOrAwaitValue()
         assertNull(viewModel.focusEvent.value)
+
+        viewModel.goToSearchMatch(next = true)
+        assertNull(viewModel.focusEvent.value)
     }
 
     @Test
     fun `should prefer whole query match over word matches`() = runTest {
         viewModel.start(2, searchQuery = "item 2")
         assertLiveDataEventSent(viewModel.focusEvent, searchMatch(EditFocusLocation.Item(1), 0))
+
+        // Only one match, next wraps around to it.
+        viewModel.goToSearchMatch(next = true)
+        assertLiveDataEventSent(viewModel.focusEvent,
+            searchMatch(EditFocusLocation.Item(1), 0, itemExists = true))
     }
 
     @Test
@@ -1457,6 +1468,73 @@ class EditViewModelTest {
     fun `should match any word of query if no whole query match`() = runTest {
         viewModel.start(1, searchQuery = "  missing   content ")
         assertLiveDataEventSent(viewModel.focusEvent, searchMatch(EditFocusLocation.Content, 0))
+    }
+
+    @Test
+    fun `should go to next and previous search match, wrapping around`() = runTest {
+        viewModel.start(7, searchQuery = "item")
+        assertLiveDataEventSent(viewModel.focusEvent, searchMatch(EditFocusLocation.Item(0), 0))
+
+        for (pos in listOf(1, 2, 3, 0)) {
+            viewModel.goToSearchMatch(next = true)
+            assertLiveDataEventSent(viewModel.focusEvent,
+                searchMatch(EditFocusLocation.Item(pos), 0, itemExists = true))
+        }
+        for (pos in listOf(3, 2)) {
+            viewModel.goToSearchMatch(next = false)
+            assertLiveDataEventSent(viewModel.focusEvent,
+                searchMatch(EditFocusLocation.Item(pos), 0, itemExists = true))
+        }
+    }
+
+    @Test
+    fun `should find multiple search matches in same item, in order`() = runTest {
+        notesRepo.addNote(testNote(id = 8, title = "note", content = "a cat, a CAT and a cat",
+            status = NoteStatus.ACTIVE))
+        viewModel.start(8, searchQuery = "cat")
+        assertLiveDataEventSent(viewModel.focusEvent, searchMatch(EditFocusLocation.Content, 2))
+
+        for (pos in listOf(9, 19, 2)) {
+            viewModel.goToSearchMatch(next = true)
+            assertLiveDataEventSent(viewModel.focusEvent,
+                searchMatch(EditFocusLocation.Content, pos, itemExists = true))
+        }
+    }
+
+    @Test
+    fun `should not return overlapping search matches`() = runTest {
+        notesRepo.addNote(testNote(id = 8, title = "note", content = "aaaa", status = NoteStatus.ACTIVE))
+        viewModel.start(8, searchQuery = "aa")
+        assertLiveDataEventSent(viewModel.focusEvent, searchMatch(EditFocusLocation.Content, 0))
+
+        viewModel.goToSearchMatch(next = true)
+        assertLiveDataEventSent(viewModel.focusEvent,
+            searchMatch(EditFocusLocation.Content, 2, itemExists = true))
+        viewModel.goToSearchMatch(next = true)
+        assertLiveDataEventSent(viewModel.focusEvent,
+            searchMatch(EditFocusLocation.Content, 0, itemExists = true))
+    }
+
+    @Test
+    fun `should merge word matches at same position`() = runTest {
+        // "ite" and "item" both match at position 0, only one match should be kept per position.
+        viewModel.start(2, searchQuery = "ite item x")
+        assertLiveDataEventSent(viewModel.focusEvent, searchMatch(EditFocusLocation.Item(0), 0))
+
+        viewModel.goToSearchMatch(next = true)
+        assertLiveDataEventSent(viewModel.focusEvent,
+            searchMatch(EditFocusLocation.Item(1), 0, itemExists = true))
+    }
+
+    @Test
+    fun `should find search matches in text edited after opening`() = runTest {
+        viewModel.start(1, searchQuery = "content")
+        assertLiveDataEventSent(viewModel.focusEvent, searchMatch(EditFocusLocation.Content, 0))
+
+        itemAt<EditTextItem>(2).text.replace(7, 7, " content")
+        viewModel.goToSearchMatch(next = true)
+        assertLiveDataEventSent(viewModel.focusEvent,
+            searchMatch(EditFocusLocation.Content, 8, itemExists = true))
     }
 
     @Test
@@ -1477,6 +1555,22 @@ class EditViewModelTest {
         viewModel.start(4, searchQuery = "content")
         viewModel.editItems.getOrAwaitValue()
         assertEquals(emptyList(), viewModel.searchTerms.getOrAwaitValue())
+    }
+
+    @Test
+    fun `should update search match position`() = runTest {
+        viewModel.start(7, searchQuery = "item")
+        viewModel.editItems.getOrAwaitValue()
+        assertEquals(NoteSearch.Position(0, 4), viewModel.searchMatchPosition.getOrAwaitValue())
+        viewModel.goToSearchMatch(next = true)
+        assertEquals(NoteSearch.Position(1, 4), viewModel.searchMatchPosition.getOrAwaitValue())
+        viewModel.goToSearchMatch(next = false)
+        viewModel.goToSearchMatch(next = false)
+        assertEquals(NoteSearch.Position(3, 4), viewModel.searchMatchPosition.getOrAwaitValue())
+
+        // Count is updated when text is edited.
+        itemAt<EditTextItem>(2).text.replace(0, 4, "it")
+        assertEquals(NoteSearch.Position(-1, 3), viewModel.searchMatchPosition.getOrAwaitValue())
     }
 
     private fun searchMatch(location: EditFocusLocation, pos: Int, itemExists: Boolean = false) =

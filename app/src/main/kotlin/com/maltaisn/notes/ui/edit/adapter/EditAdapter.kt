@@ -18,9 +18,12 @@ package com.maltaisn.notes.ui.edit.adapter
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.Rect
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.ViewGroup
+import androidx.core.view.OneShotPreDrawListener
+import androidx.core.view.doOnLayout
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -136,8 +139,7 @@ class EditAdapter(val context: Context, val callback: Callback) :
         }
         if (holder is EditFocusableViewHolder<*> && position == pendingFocusChangeIndex) {
             // Apply pending focus change event.
-            val focus = pendingFocusChange!!
-            holder.setFocus(focus.textPos, focus.showKeyboard)
+            setHolderFocus(holder, pendingFocusChange!!)
             pendingFocusChange = null
             pendingFocusChangeIndex = null
         }
@@ -157,11 +159,49 @@ class EditAdapter(val context: Context, val callback: Callback) :
         val index = focus.location.findIndexIn(currentList)
         val viewHolder = rcv.findViewHolderForAdapterPosition(index)
         if (viewHolder is EditFocusableViewHolder<*>) {
-            viewHolder.setFocus(focus.textPos, focus.showKeyboard)
+            setHolderFocus(viewHolder, focus)
+        } else if (index >= 0 && !focus.showKeyboard) {
+            // Item is out of view, as can happen when jumping between search results.
+            // Scroll to it first, then focus it once it has been laid out.
+            rcv.scrollToPosition(index)
+            rcv.doOnLayout {
+                val holder = rcv.findViewHolderForAdapterPosition(index)
+                if (holder is EditFocusableViewHolder<*>) {
+                    setHolderFocus(holder, focus)
+                }
+            }
         } else {
             // No item view holder for that position.
             // Not supposed to happen, but if it does, just save it for later.
             pendingFocusChange = focus
+        }
+    }
+
+    private fun setHolderFocus(holder: EditFocusableViewHolder<*>, focus: EditFocusChange) {
+        holder.setFocus(focus.textPos, focus.showKeyboard)
+        if (!focus.showKeyboard) {
+            // Search match, bring it to the middle instead of the edge where the text view scrolls it.
+            scrollCursorToCenter(holder)
+        }
+    }
+
+    private fun scrollCursorToCenter(holder: EditFocusableViewHolder<*>) {
+        val rcv = recyclerView ?: return
+        OneShotPreDrawListener.add(rcv) {
+            // Posted to replace the scroll started on pre-draw to bring the cursor into view.
+            rcv.post {
+                val editText = holder.editText
+                val layout = editText.layout
+                if (layout == null || holder.itemView.parent !== rcv) {
+                    return@post
+                }
+                val line = layout.getLineForOffset(editText.selectionEnd)
+                val rect = Rect(0, layout.getLineTop(line), 0, layout.getLineBottom(line))
+                rect.offset(0, editText.extendedPaddingTop)
+                rcv.offsetDescendantRectToMyCoords(editText, rect)
+                val center = (rcv.paddingTop + rcv.height - rcv.paddingBottom) / 2
+                rcv.smoothScrollBy(0, rect.centerY() - center)
+            }
         }
     }
 

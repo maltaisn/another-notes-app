@@ -26,6 +26,7 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.OvershootInterpolator
 import androidx.activity.addCallback
 import androidx.appcompat.widget.Toolbar
 import androidx.core.net.toUri
@@ -33,6 +34,7 @@ import androidx.core.view.OneShotPreDrawListener
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.get
+import androidx.core.view.isVisible
 import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -197,6 +199,16 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener, ConfirmDialog.
             insets
         }
 
+        // Search matches navigation
+        binding.searchPreviousFab.setOnClickListener {
+            it.animateSearchArrowClick()
+            viewModel.goToSearchMatch(next = false)
+        }
+        binding.searchNextFab.setOnClickListener {
+            it.animateSearchArrowClick()
+            viewModel.goToSearchMatch(next = true)
+        }
+
         setupViewModelObservers(adapter)
 
         // Delay the shared element transition until the recyclerView is ready to be drawn
@@ -213,6 +225,12 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener, ConfirmDialog.
 
         viewModel.searchTerms.observe(viewLifecycleOwner) { terms ->
             adapter.searchTerms = terms
+            binding.searchNavLayout.isVisible = terms.isNotEmpty()
+        }
+
+        viewModel.searchMatchPosition.observe(viewLifecycleOwner) { position ->
+            binding.searchCountTxv.text = getString(R.string.edit_search_match_position,
+                position.index + 1, position.count)
         }
 
         viewModel.editActionsAvailability.observe(viewLifecycleOwner, ::updateActionItemsVisibility)
@@ -344,6 +362,17 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener, ConfirmDialog.
         menu[editActions.size].isVisible = showOverflow
     }
 
+    /** Shrink then bounce back, to clearly show the click, more than the ripple alone. */
+    private fun View.animateSearchArrowClick() {
+        animate().cancel()
+        scaleX = SEARCH_ARROW_CLICK_SCALE
+        scaleY = SEARCH_ARROW_CLICK_SCALE
+        animate().scaleX(1f).scaleY(1f)
+            .setDuration(SEARCH_ARROW_CLICK_DURATION)
+            .setInterpolator(OvershootInterpolator(SEARCH_ARROW_CLICK_OVERSHOOT))
+            .start()
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
@@ -388,6 +417,10 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener, ConfirmDialog.
         private const val OPEN_LINK_DIALOG_TAG = "open_link_confirm_dialog"
 
         private const val CANT_EDIT_SNACKBAR_DURATION = 5000
+
+        private const val SEARCH_ARROW_CLICK_SCALE = 0.7f
+        private const val SEARCH_ARROW_CLICK_DURATION = 300L
+        private const val SEARCH_ARROW_CLICK_OVERSHOOT = 4f
     }
 }
 

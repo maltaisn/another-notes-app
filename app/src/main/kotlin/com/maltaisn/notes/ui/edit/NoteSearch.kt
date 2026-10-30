@@ -62,6 +62,11 @@ object NoteSearch {
         return occurrences
     }
 
+    /**
+     * Position of the current match, [index] is -1 if there's no current match, among [count] matches.
+     */
+    data class Position(val index: Int, val count: Int)
+
     data class Match(val start: Int, val length: Int) {
         val end: Int
             get() = start + length
