@@ -224,6 +224,14 @@ class EditViewModel @Inject constructor(
     val exitEvent: LiveData<Event<Unit>>
         get() = _exitEvent
 
+    private val _searchTerms = MutableLiveData<List<String>>(emptyList())
+
+    /**
+     * Terms of the search query to highlight in the note, empty if not searching or if nothing matches.
+     */
+    val searchTerms: LiveData<List<String>>
+        get() = _searchTerms
+
     /**
      * Whether to show date item.
      */
@@ -237,6 +245,9 @@ class EditViewModel @Inject constructor(
         get() = status == NoteStatus.DELETED
 
     private var updateNoteJob: Job? = null
+
+    /** Search query the note was opened with, or empty. */
+    private var searchQuery = ""
     private var restoreNoteJob: Job? = null
 
     init {
@@ -281,6 +292,7 @@ class EditViewModel @Inject constructor(
             restoreNoteJob?.join()
 
             val isFirstStart = (note == BLANK_NOTE)
+            this@EditViewModel.searchQuery = searchQuery
 
             // Try to get note by ID with its labels.
             val noteWithLabels = notesRepository.getNoteByIdWithLabels(if (isFirstStart) {
@@ -352,7 +364,7 @@ class EditViewModel @Inject constructor(
                 // Not based on isFirstStart, which is false when the note ID is in the saved state
                 // as a navigation argument. Only done once, not when the view is recreated.
                 savedStateHandle[KEY_SEARCH_MATCH_FOCUSED] = true
-                focus = findSearchMatches(searchQuery).firstOrNull()
+                focus = findSearchMatches().firstOrNull()
             }
 
             updateListItems(focus)
@@ -360,18 +372,31 @@ class EditViewModel @Inject constructor(
     }
 
     /**
-     * Find all matches of the search [query] in the current list items, in order of appearance.
+     * Find all matches of the search query in the current list items, in order of appearance.
+     * This also updates the highlighted search terms, since the text may have changed.
      * The returned focus changes move the cursor to the match, without showing the keyboard since the user
      * is probably just looking for the results.
      */
-    private fun findSearchMatches(query: String): List<EditFocusChange> {
-        val textItems = listItems.filterIsInstance<EditTextItem>()
-        val terms = NoteSearch.findTerms(query, textItems.map { it.text.text })
-        return textItems.flatMap { item ->
+    private fun findSearchMatches(): List<EditFocusChange> {
+        updateSearchTerms()
+        val terms = _searchTerms.value.orEmpty()
+        return listItems.filterIsInstance<EditTextItem>().flatMap { item ->
             val location = EditFocusLocation.fromItem(item)
             NoteSearch.findMatches(item.text.text, terms).map { match ->
                 EditFocusChange(location, match.start, itemExists = false, showKeyboard = false)
             }
+        }
+    }
+
+    private fun updateSearchTerms() {
+        val terms = if (isNoteInTrash) {
+            emptyList()
+        } else {
+            NoteSearch.findTerms(searchQuery,
+                listItems.filterIsInstance<EditTextItem>().map { it.text.text })
+        }
+        if (terms != _searchTerms.value) {
+            _searchTerms.value = terms
         }
     }
 
@@ -894,6 +919,7 @@ class EditViewModel @Inject constructor(
             _focusEvent.send(focusChange)
         }
         _editItems.value = listItems.toMutableList()
+        updateSearchTerms()
     }
 
     private fun focusItemAt(location: EditFocusLocation, textPos: Int) {

@@ -17,7 +17,7 @@
 package com.maltaisn.notes.ui.edit
 
 /**
- * Search of a query in the text of a note, used to find search matches.
+ * Search of a query in the text of a note, used to find and highlight search matches.
  */
 object NoteSearch {
 

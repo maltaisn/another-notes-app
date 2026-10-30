@@ -211,6 +211,10 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener, ConfirmDialog.
     private fun setupViewModelObservers(adapter: EditAdapter) {
         val navController = findNavController()
 
+        viewModel.searchTerms.observe(viewLifecycleOwner) { terms ->
+            adapter.searchTerms = terms
+        }
+
         viewModel.editActionsAvailability.observe(viewLifecycleOwner, ::updateActionItemsVisibility)
 
         // Each observer must take care not to undo the work of another observer

@@ -97,11 +97,31 @@ class EditAdapter(val context: Context, val callback: Callback) :
         }
     }
 
+    /** Terms of the search query to highlight in the note. */
+    var searchTerms: List<String> = emptyList()
+        set(value) {
+            field = value
+            val rcv = recyclerView ?: return
+            for (i in 0 until rcv.childCount) {
+                val holder = rcv.getChildViewHolder(rcv.getChildAt(i))
+                if (holder is EditFocusableViewHolder<*>) {
+                    holder.editText.searchTerms = value
+                }
+            }
+        }
+
     override fun submitList(list: List<EditListItem>?) {
         if (list != null) {
             pendingFocusChangeIndex = pendingFocusChange?.location?.findIndexIn(list)
         }
         super.submitList(list)
+    }
+
+    override fun onViewAttachedToWindow(holder: RecyclerView.ViewHolder) {
+        // Views in the cache are attached again without being bound, the terms may have changed since.
+        if (holder is EditFocusableViewHolder<*>) {
+            holder.editText.searchTerms = searchTerms
+        }
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {

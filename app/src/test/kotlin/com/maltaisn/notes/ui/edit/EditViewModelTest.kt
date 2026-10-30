@@ -1407,6 +1407,7 @@ class EditViewModelTest {
             editableTextProvider, savedStateHandle)
         viewModel.start(1, searchQuery = "content")
         assertLiveDataEventSent(viewModel.focusEvent, searchMatch(EditFocusLocation.Content, 0))
+        assertEquals(listOf("content"), viewModel.searchTerms.getOrAwaitValue())
 
         // Not focused again when the view is recreated.
         viewModel.start(1, searchQuery = "content")
@@ -1456,6 +1457,26 @@ class EditViewModelTest {
     fun `should match any word of query if no whole query match`() = runTest {
         viewModel.start(1, searchQuery = "  missing   content ")
         assertLiveDataEventSent(viewModel.focusEvent, searchMatch(EditFocusLocation.Content, 0))
+    }
+
+    @Test
+    fun `should set search terms to highlight when opening note`() = runTest {
+        viewModel.start(2, searchQuery = "missing item")
+        assertEquals(listOf("missing", "item"), viewModel.searchTerms.getOrAwaitValue())
+    }
+
+    @Test
+    fun `should not set search terms if no match`() = runTest {
+        viewModel.start(2, searchQuery = "missing")
+        viewModel.editItems.getOrAwaitValue()
+        assertEquals(emptyList(), viewModel.searchTerms.getOrAwaitValue())
+    }
+
+    @Test
+    fun `should not set search terms in trash`() = runTest {
+        viewModel.start(4, searchQuery = "content")
+        viewModel.editItems.getOrAwaitValue()
+        assertEquals(emptyList(), viewModel.searchTerms.getOrAwaitValue())
     }
 
     private fun searchMatch(location: EditFocusLocation, pos: Int, itemExists: Boolean = false) =

@@ -18,6 +18,10 @@ package com.maltaisn.notes.ui.edit.adapter
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.Canvas
+import android.graphics.Paint
+import android.graphics.Path
+import android.graphics.Rect
 import android.text.Editable
 import android.text.TextWatcher
 import android.text.style.CharacterStyle
@@ -27,11 +31,14 @@ import android.util.TypedValue
 import android.view.View
 import android.widget.EditText
 import androidx.appcompat.widget.AppCompatEditText
+import androidx.core.content.ContextCompat
+import androidx.core.graphics.withTranslation
 import androidx.core.text.getSpans
 import androidx.core.text.util.LinkifyCompat
 import com.maltaisn.notes.R
 import com.maltaisn.notes.ui.edit.EditFragment
 import com.maltaisn.notes.ui.edit.LinkArrowKeyMovementMethod
+import com.maltaisn.notes.ui.edit.NoteSearch
 
 /**
  * Custom [EditText] class used for all fields of the [EditFragment].
@@ -49,6 +56,32 @@ class EditEditText @JvmOverloads constructor(
     var onTextChangedForUndoListener: ((start: Int, end: Int, oldText: String, newText: String) -> Unit)? = null
 
     private var ignoreTextChanges: Boolean = false
+
+    /**
+     * Terms of the search query to highlight in the text, see [NoteSearch].
+     * The highlight is drawn instead of being set as spans on the text, since there can be thousands of
+     * matches for a short query and changing that many spans on each typed character is very slow.
+     */
+    var searchTerms: List<String> = emptyList()
+        set(value) {
+            if (value != field) {
+                field = value
+                searchMatches = null
+                invalidate()
+            }
+        }
+
+    /** Matches of [searchTerms] in the text, or `null` if they must be found again when drawing. */
+    private var searchMatches: List<NoteSearch.Match>? = null
+
+    private val searchHighlightPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = ContextCompat.getColor(context, R.color.color_search_highlight)
+    }
+    private val currentSearchHighlightPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = ContextCompat.getColor(context, R.color.color_search_highlight_current)
+    }
+    private val searchHighlightPath = Path()
+    private val searchClipBounds = Rect()
 
     init {
         @SuppressLint("UseKtx")
@@ -72,6 +105,7 @@ class EditEditText @JvmOverloads constructor(
             }
 
             override fun afterTextChanged(s: Editable?) {
+                searchMatches = null
                 if (s == null) return
 
                 // Might not remove all spans but will work for most of them.
@@ -107,6 +141,47 @@ class EditEditText @JvmOverloads constructor(
 
     fun setAutoTextSize(size: Float) {
         setTextSize(TypedValue.COMPLEX_UNIT_SP, size * textSizeMultiplier)
+    }
+
+    override fun onDraw(canvas: Canvas) {
+        drawSearchHighlights(canvas)
+        super.onDraw(canvas)
+    }
+
+    /** Draw the search highlights behind the text, only for the visible lines. */
+    private fun drawSearchHighlights(canvas: Canvas) {
+        val layout = layout ?: return
+        if (searchTerms.isEmpty() || !canvas.getClipBounds(searchClipBounds)) {
+            return
+        }
+        val matches = searchMatches ?: NoteSearch.findMatches(text ?: "", searchTerms)
+        searchMatches = matches
+        if (matches.isEmpty()) {
+            return
+        }
+
+        val dx = compoundPaddingLeft.toFloat()
+        val dy = extendedPaddingTop.toFloat()
+        val firstLine = layout.getLineForVertical((searchClipBounds.top - dy).toInt())
+        val lastLine = layout.getLineForVertical((searchClipBounds.bottom - dy).toInt())
+        val visibleStart = layout.getLineStart(firstLine)
+        val visibleEnd = layout.getLineEnd(lastLine)
+
+        // The current match is the one the cursor was moved to, it's highlighted differently.
+        val cursorPos = if (hasFocus() && selectionStart == selectionEnd) selectionStart else -1
+
+        // Matches are sorted by start, find the first one that may be visible.
+        var i = matches.binarySearch { if (it.end <= visibleStart) -1 else 1 }.let { -(it + 1) }
+        canvas.withTranslation(dx, dy) {
+            while (i < matches.size && matches[i].start < visibleEnd) {
+                val match = matches[i]
+                layout.getSelectionPath(match.start, match.end, searchHighlightPath)
+                val isCurrent = match.start == cursorPos
+                drawPath(searchHighlightPath,
+                    if (isCurrent) currentSearchHighlightPaint else searchHighlightPaint)
+                i++
+            }
+        }
     }
 }
 

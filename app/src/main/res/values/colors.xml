@@ -79,4 +79,6 @@
     <!-- Theme independent colors -->
     <color name="color_highlight">#ffd740</color>
     <color name="color_on_highlight">#000000</color>
+    <color name="color_search_highlight">#ffd740</color>
+    <color name="color_search_highlight_current">#ff9100</color>
 </resources>
