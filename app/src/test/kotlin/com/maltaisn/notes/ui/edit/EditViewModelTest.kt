@@ -78,6 +78,7 @@ class EditViewModelTest {
     private lateinit var labelsRepo: MockLabelsRepository
     private lateinit var alarmCallback: MockAlarmCallback
     private lateinit var prefs: PrefsManager
+    private lateinit var editableTextProvider: EditableTextProvider
 
     @get:Rule
     var mainCoroutineRule = MainCoroutineRule()
@@ -145,7 +146,7 @@ class EditViewModelTest {
 
         alarmCallback = MockAlarmCallback()
 
-        val editableTextProvider = object : EditableTextProvider {
+        editableTextProvider = object : EditableTextProvider {
             override fun create(text: CharSequence): EditableText {
                 // This editable text will call onTextChanged when changed.
                 return TestEditableText(text, viewModel)
@@ -1390,6 +1391,75 @@ class EditViewModelTest {
         assertWasFocused(EditFocusLocation.Content, 7)
         assertEquals("content", item.text.text.toString())
     }
+
+    @Test
+    fun `should focus first search match when opening note`() = runTest {
+        viewModel.start(1, searchQuery = "content")
+        assertLiveDataEventSent(viewModel.focusEvent, searchMatch(EditFocusLocation.Content, 0))
+    }
+
+    @Test
+    fun `should focus first search match with navigation arguments in saved state`() = runTest {
+        // The navigation component puts the destination arguments in the saved state handle.
+        val savedStateHandle = SavedStateHandle(mapOf("noteId" to 1L, "searchQuery" to "content"))
+        viewModel = EditViewModel(notesRepo, labelsRepo, prefs,
+            DefaultReminderAlarmManager(notesRepo, prefs, alarmCallback),
+            editableTextProvider, savedStateHandle)
+        viewModel.start(1, searchQuery = "content")
+        assertLiveDataEventSent(viewModel.focusEvent, searchMatch(EditFocusLocation.Content, 0))
+
+        // Not focused again when the view is recreated.
+        viewModel.start(1, searchQuery = "content")
+        assertTrue(viewModel.focusEvent.getOrAwaitValue().hasBeenHandled)
+    }
+
+    @Test
+    fun `should find search match ignoring case, in title`() = runTest {
+        viewModel.start(1, searchQuery = "TiTlE")
+        assertLiveDataEventSent(viewModel.focusEvent, searchMatch(EditFocusLocation.Title, 0))
+    }
+
+    @Test
+    fun `should not focus when opening note without search query`() = runTest {
+        viewModel.start(1)
+        assertEquals(NOTE1_ITEMS, viewModel.editItems.getOrAwaitValue())
+        assertNull(viewModel.focusEvent.value)
+    }
+
+    @Test
+    fun `should not focus when search query has no match`() = runTest {
+        viewModel.start(1, searchQuery = "missing")
+        assertEquals(NOTE1_ITEMS, viewModel.editItems.getOrAwaitValue())
+        assertNull(viewModel.focusEvent.value)
+    }
+
+    @Test
+    fun `should not focus search match in trash`() = runTest {
+        viewModel.start(4, searchQuery = "content")
+        viewModel.editItems.getOrAwaitValue()
+        assertNull(viewModel.focusEvent.value)
+    }
+
+    @Test
+    fun `should prefer whole query match over word matches`() = runTest {
+        viewModel.start(2, searchQuery = "item 2")
+        assertLiveDataEventSent(viewModel.focusEvent, searchMatch(EditFocusLocation.Item(1), 0))
+    }
+
+    @Test
+    fun `should strip quotes from search query`() = runTest {
+        viewModel.start(2, searchQuery = "\"item 2\"")
+        assertLiveDataEventSent(viewModel.focusEvent, searchMatch(EditFocusLocation.Item(1), 0))
+    }
+
+    @Test
+    fun `should match any word of query if no whole query match`() = runTest {
+        viewModel.start(1, searchQuery = "  missing   content ")
+        assertLiveDataEventSent(viewModel.focusEvent, searchMatch(EditFocusLocation.Content, 0))
+    }
+
+    private fun searchMatch(location: EditFocusLocation, pos: Int, itemExists: Boolean = false) =
+        EditFocusChange(location, pos, itemExists, showKeyboard = false)
 
     private fun TestScope.doEventTest(
         itemsAfter: List<EditListItem>,

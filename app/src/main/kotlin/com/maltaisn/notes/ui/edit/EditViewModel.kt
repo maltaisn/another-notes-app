@@ -261,6 +261,8 @@ class EditViewModel @Inject constructor(
      * @param noteId Can be [Note.NO_ID] to create a new note with [type], [title] and [content].
      * @param labelId Can be different from [Label.NO_ID] to initially set a label on a new note.
      * @param changeReminder Whether to start editing note by first changing the reminder.
+     * @param searchQuery If not blank and an existing note is opened, the cursor is moved to the first
+     * match of this query in the note, which brings it into view.
      */
     fun start(
         noteId: Long = Note.NO_ID,
@@ -269,6 +271,7 @@ class EditViewModel @Inject constructor(
         type: NoteType = NoteType.TEXT,
         title: String = "",
         content: String = "",
+        searchQuery: String = "",
     ) {
         viewModelScope.launch {
             // If fragment was very briefly destroyed then recreated, it's possible that this job is launched
@@ -344,9 +347,31 @@ class EditViewModel @Inject constructor(
                 if (changeReminder) {
                     changeReminder()
                 }
+            } else if (KEY_SEARCH_MATCH_FOCUSED !in savedStateHandle && searchQuery.isNotBlank() && !isNoteInTrash) {
+                // Opened from search results, move to the first match.
+                // Not based on isFirstStart, which is false when the note ID is in the saved state
+                // as a navigation argument. Only done once, not when the view is recreated.
+                savedStateHandle[KEY_SEARCH_MATCH_FOCUSED] = true
+                focus = findSearchMatches(searchQuery).firstOrNull()
             }
 
             updateListItems(focus)
+        }
+    }
+
+    /**
+     * Find all matches of the search [query] in the current list items, in order of appearance.
+     * The returned focus changes move the cursor to the match, without showing the keyboard since the user
+     * is probably just looking for the results.
+     */
+    private fun findSearchMatches(query: String): List<EditFocusChange> {
+        val textItems = listItems.filterIsInstance<EditTextItem>()
+        val terms = NoteSearch.findTerms(query, textItems.map { it.text.text })
+        return textItems.flatMap { item ->
+            val location = EditFocusLocation.fromItem(item)
+            NoteSearch.findMatches(item.text.text, terms).map { match ->
+                EditFocusChange(location, match.start, itemExists = false, showKeyboard = false)
+            }
         }
     }
 
@@ -1095,6 +1120,7 @@ class EditViewModel @Inject constructor(
         private const val KEY_NOTE_ID = "noteId"
         private const val KEY_IS_NEW_NOTE = "isNewNote"
         private const val KEY_LINK_URL = "linkUrl"
+        private const val KEY_SEARCH_MATCH_FOCUSED = "searchMatchFocused"
 
         val UNDO_TEXT_DEBOUNCE_DELAY = 500.milliseconds
 

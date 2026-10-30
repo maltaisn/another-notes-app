@@ -116,7 +116,8 @@ class EditAdapter(val context: Context, val callback: Callback) :
         }
         if (holder is EditFocusableViewHolder<*> && position == pendingFocusChangeIndex) {
             // Apply pending focus change event.
-            holder.setFocus(pendingFocusChange!!.textPos)
+            val focus = pendingFocusChange!!
+            holder.setFocus(focus.textPos, focus.showKeyboard)
             pendingFocusChange = null
             pendingFocusChangeIndex = null
         }
@@ -136,7 +137,7 @@ class EditAdapter(val context: Context, val callback: Callback) :
         val index = focus.location.findIndexIn(currentList)
         val viewHolder = rcv.findViewHolderForAdapterPosition(index)
         if (viewHolder is EditFocusableViewHolder<*>) {
-            viewHolder.setFocus(focus.textPos)
+            viewHolder.setFocus(focus.textPos, focus.showKeyboard)
         } else {
             // No item view holder for that position.
             // Not supposed to happen, but if it does, just save it for later.

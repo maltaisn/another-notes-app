@@ -55,6 +55,10 @@ class SearchViewModel @Inject constructor(
     // call query changed listener after it's been recreated.
     private var lastQuery = ""
 
+    /** The query currently typed in the search view. */
+    val currentQuery: String
+        get() = lastQuery
+
     init {
         viewModelScope.launch {
             restoreState()

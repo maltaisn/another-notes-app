@@ -128,7 +128,8 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener, ConfirmDialog.
             args.changeReminder,
             NoteType.fromValue(args.type),
             args.title,
-            args.content
+            args.content,
+            args.searchQuery
         )
 
         // Toolbar

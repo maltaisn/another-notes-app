@@ -37,6 +37,9 @@ class SearchFragment : NoteFragment() {
 
     override val viewModel: SearchViewModel by viewModels()
 
+    override val searchQueryForEdit: String
+        get() = viewModel.currentQuery
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setEnterExitTransitions()

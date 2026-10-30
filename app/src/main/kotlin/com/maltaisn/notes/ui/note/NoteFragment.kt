@@ -81,6 +81,13 @@ abstract class NoteFragment : Fragment(), ActionMode.Callback, ConfirmDialog.Cal
 
     protected abstract val viewModel: NoteViewModel
 
+    /**
+     * Search query passed to the edit fragment when opening a note, so that the
+     * edit screen can scroll to the first match. Empty if not coming from a search.
+     */
+    protected open val searchQueryForEdit: String
+        get() = ""
+
     private var _binding: FragmentNoteBinding? = null
     protected val binding get() = _binding!!
 
@@ -222,7 +229,9 @@ abstract class NoteFragment : Fragment(), ActionMode.Callback, ConfirmDialog.Cal
             ) {
                 binding.recyclerView.scrollToPosition(pos)
             }
-            navController.navigateSafe(NavGraphMainDirections.actionEditNote(noteId), extras = extras)
+            navController.navigateSafe(
+                NavGraphMainDirections.actionEditNote(noteId, searchQuery = searchQueryForEdit),
+                extras = extras)
         }
 
         viewModel.currentSelection.observe(viewLifecycleOwner) { selection ->
