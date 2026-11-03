@@ -52,6 +52,10 @@
     <string name="action_rename">Rename</string>
     <string name="action_restore">Restore</string>
     <string name="action_search">Search</string>
+    <string name="action_search_previous">Previous result</string>
+    <string name="action_search_next">Next result</string>
+    <string name="action_search_in_note">Search in note</string>
+    <string name="action_search_close">Close search</string>
     <string name="action_select_all">Select all</string>
     <string name="action_settings">Settings</string>
     <string name="action_share">Share</string>
@@ -117,6 +121,7 @@
     <string name="edit_hint_note_title">Title</string>
     <string name="edit_hint_note_content">Note</string>
     <string name="edit_hint_note_item">List item</string>
+    <string name="edit_search_match_position" translatable="false">%1$d/%2$d</string>
 
     <string name="edit_message_blank_note_discarded">Blank note discarded.</string>
     <plurals name="edit_move_archive_message">

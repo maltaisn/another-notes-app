@@ -80,10 +80,12 @@ sealed class EditFocusableViewHolder<T : EditTextItem>(root: View) :
         editText.setAutoTextSize(callback.textSize)
     }
 
-    fun setFocus(pos: Int) {
+    fun setFocus(pos: Int, showKeyboard: Boolean = true) {
         editText.requestFocus()
         editText.setSelection(pos)
-        editText.showKeyboard()
+        if (showKeyboard) {
+            editText.showKeyboard()
+        }
     }
 
     open fun bind(item: T) {

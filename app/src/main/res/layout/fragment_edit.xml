@@ -50,6 +50,44 @@
             app:navigationIcon="@drawable/ic_arrow_start"
             />
 
+        <LinearLayout
+            android:id="@+id/search_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingStart="16dp"
+            android:paddingEnd="4dp"
+            android:visibility="gone"
+            tools:visibility="visible"
+            >
+
+            <EditText
+                android:id="@+id/search_edt"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@null"
+                android:hint="@string/action_search_in_note"
+                android:importantForAutofill="no"
+                android:imeOptions="actionSearch"
+                android:inputType="text"
+                android:minHeight="48dp"
+                android:textAppearance="?textAppearanceBodyLarge"
+                />
+
+            <ImageButton
+                android:id="@+id/search_close_btn"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="?selectableItemBackgroundBorderless"
+                android:contentDescription="@string/action_search_close"
+                android:src="@drawable/ic_close"
+                app:tint="?colorControlNormal"
+                />
+
+        </LinearLayout>
+
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -88,6 +126,55 @@
             tools:listitem="@layout/item_edit_item"
             android:fitsSystemWindows="true"
             />
+
+        <!-- Shown on the side when there are search matches in the note, to move between them. -->
+        <LinearLayout
+            android:id="@+id/search_nav_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:orientation="vertical"
+            android:gravity="center_horizontal"
+            android:visibility="gone"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:visibility="visible"
+            >
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/search_previous_fab"
+                style="?floatingActionButtonSmallSecondaryStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/action_search_previous"
+                android:src="@drawable/ic_arrow_up"
+                />
+
+            <TextView
+                android:id="@+id/search_count_txv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:background="@drawable/shape_search_count"
+                android:paddingHorizontal="6dp"
+                android:paddingVertical="2dp"
+                android:textAppearance="?textAppearanceLabelMedium"
+                android:textColor="?colorOnSecondaryContainer"
+                tools:text="3/12"
+                />
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/search_next_fab"
+                style="?floatingActionButtonSmallSecondaryStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:contentDescription="@string/action_search_next"
+                android:src="@drawable/ic_arrow_down"
+                />
+
+        </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

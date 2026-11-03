@@ -24,12 +24,12 @@ import android.os.Build
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
-import android.view.ViewTreeObserver
 import androidx.appcompat.view.ActionMode
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
 import androidx.core.view.GravityCompat
+import androidx.core.view.OneShotPreDrawListener
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.FragmentNavigatorExtras
@@ -111,17 +111,10 @@ class HomeFragment : NoteFragment(), Toolbar.OnMenuItemClickListener {
 
             // This observer is needed because the layout direction isn't actually set before the view is attached.
             // See https://stackoverflow.com/a/48282355. The same goes for all the other fragments with a toolbar.
-            viewTreeObserver.addOnPreDrawListener(object : ViewTreeObserver.OnPreDrawListener {
-                private var directionSet = false
-
-                override fun onPreDraw(): Boolean {
-                    if (!directionSet) {
-                        menu.setIconsLayoutDirection(view.layoutDirection)
-                        directionSet = true
-                    }
-                    return true
-                }
-            })
+            // One shot, otherwise the listener stays on the window and leaks the view after it's destroyed.
+            OneShotPreDrawListener.add(this) {
+                menu.setIconsLayoutDirection(view.layoutDirection)
+            }
         }
 
         // Floating action button

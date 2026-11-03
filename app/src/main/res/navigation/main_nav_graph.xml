@@ -86,6 +86,11 @@
             android:defaultValue=""
             app:argType="string"
             />
+        <argument
+            android:name="searchQuery"
+            android:defaultValue=""
+            app:argType="string"
+            />
         <action
             android:id="@+id/action_edit_to_edit_actions"
             app:destination="@id/dialog_edit_actions"

@@ -26,7 +26,9 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.view.ViewTreeObserver
+import android.view.animation.OvershootInterpolator
+import android.view.inputmethod.EditorInfo
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.addCallback
 import androidx.appcompat.widget.Toolbar
 import androidx.core.net.toUri
@@ -34,7 +36,9 @@ import androidx.core.view.OneShotPreDrawListener
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.get
+import androidx.core.view.isVisible
 import androidx.core.view.updatePadding
+import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
@@ -53,6 +57,7 @@ import com.maltaisn.notes.hideKeyboard
 import com.maltaisn.notes.model.entity.NoteType
 import com.maltaisn.notes.navigateSafe
 import com.maltaisn.notes.setIconsLayoutDirection
+import com.maltaisn.notes.showKeyboard
 import com.maltaisn.notes.ui.SharedViewModel
 import com.maltaisn.notes.ui.common.ConfirmDialog
 import com.maltaisn.notes.ui.edit.actions.EditAction
@@ -122,6 +127,11 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener, ConfirmDialog.
             viewModel.saveNote()
             viewModel.exit()
         }
+        // Added last so that it's called first, to close the search before exiting.
+        val closeSearchCallback = requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner,
+            false) {
+            viewModel.stopInNoteSearch()
+        }
 
         viewModel.start(
             args.noteId,
@@ -129,7 +139,8 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener, ConfirmDialog.
             args.changeReminder,
             NoteType.fromValue(args.type),
             args.title,
-            args.content
+            args.content,
+            args.searchQuery
         )
 
         // Toolbar
@@ -141,17 +152,10 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener, ConfirmDialog.
                 viewModel.exit()
             }
 
-            viewTreeObserver.addOnPreDrawListener(object : ViewTreeObserver.OnPreDrawListener {
-                private var directionSet = false
-
-                override fun onPreDraw(): Boolean {
-                    if (!directionSet) {
-                        menu.setIconsLayoutDirection(view.layoutDirection)
-                        directionSet = true
-                    }
-                    return true
-                }
-            })
+            // One shot, otherwise the listener stays on the window and leaks the view after it's destroyed.
+            OneShotPreDrawListener.add(this) {
+                menu.setIconsLayoutDirection(view.layoutDirection)
+            }
         }
 
         // Recycler view
@@ -204,7 +208,34 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener, ConfirmDialog.
             insets
         }
 
-        setupViewModelObservers(adapter)
+        // Search in note
+        binding.searchEdt.doAfterTextChanged {
+            // Ignore the text restored while hidden, it would clear the query the note was opened with.
+            if (binding.searchBar.isVisible) {
+                viewModel.changeSearchQuery(it?.toString().orEmpty())
+            }
+        }
+        binding.searchEdt.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                goToSearchMatch(next = true)
+                true
+            } else {
+                false
+            }
+        }
+        binding.searchCloseBtn.setOnClickListener {
+            viewModel.stopInNoteSearch()
+        }
+        binding.searchPreviousFab.setOnClickListener {
+            it.animateSearchArrowClick()
+            goToSearchMatch(next = false)
+        }
+        binding.searchNextFab.setOnClickListener {
+            it.animateSearchArrowClick()
+            goToSearchMatch(next = true)
+        }
+
+        setupViewModelObservers(adapter, closeSearchCallback)
 
         // Delay the shared element transition until the recyclerView is ready to be drawn
         OneShotPreDrawListener.add(binding.recyclerView) {
@@ -215,8 +246,38 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener, ConfirmDialog.
     }
 
     @SuppressLint("WrongConstant")
-    private fun setupViewModelObservers(adapter: EditAdapter) {
+    private fun setupViewModelObservers(adapter: EditAdapter, closeSearchCallback: OnBackPressedCallback) {
         val navController = findNavController()
+
+        viewModel.searchTerms.observe(viewLifecycleOwner) { terms ->
+            adapter.searchTerms = terms
+            binding.searchNavLayout.isVisible = terms.isNotEmpty()
+        }
+
+        viewModel.searchMatchPosition.observe(viewLifecycleOwner) { position ->
+            binding.searchCountTxv.text = getString(R.string.edit_search_match_position,
+                position.index + 1, position.count)
+        }
+
+        viewModel.inNoteSearchShown.observe(viewLifecycleOwner) { shown ->
+            val searchEdt = binding.searchEdt
+            if (shown && !binding.searchBar.isVisible) {
+                binding.searchBar.isVisible = true
+                if (searchEdt.text.toString() != viewModel.searchQuery) {
+                    // Start with the query the note was opened with, if any.
+                    searchEdt.setText(viewModel.searchQuery)
+                    searchEdt.setSelection(searchEdt.length())
+                }
+                searchEdt.requestFocus()
+                searchEdt.showKeyboard()
+            } else if (!shown && binding.searchBar.isVisible) {
+                searchEdt.hideKeyboard()
+                searchEdt.clearFocus()
+                searchEdt.text = null
+                binding.searchBar.isVisible = false
+            }
+            closeSearchCallback.isEnabled = shown
+        }
 
         viewModel.editActionsAvailability.observe(viewLifecycleOwner, ::updateActionItemsVisibility)
 
@@ -347,6 +408,25 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener, ConfirmDialog.
         menu[editActions.size].isVisible = showOverflow
     }
 
+    /** Shrink then bounce back, to clearly show the click, more than the ripple alone. */
+    private fun View.animateSearchArrowClick() {
+        animate().cancel()
+        scaleX = SEARCH_ARROW_CLICK_SCALE
+        scaleY = SEARCH_ARROW_CLICK_SCALE
+        animate().scaleX(1f).scaleY(1f)
+            .setDuration(SEARCH_ARROW_CLICK_DURATION)
+            .setInterpolator(OvershootInterpolator(SEARCH_ARROW_CLICK_OVERSHOOT))
+            .start()
+    }
+
+    private fun goToSearchMatch(next: Boolean) {
+        // Hide the keyboard if typing the search query, the match is focused without it.
+        if (binding.searchEdt.hasFocus()) {
+            binding.searchEdt.hideKeyboard()
+        }
+        viewModel.goToSearchMatch(next)
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
@@ -391,6 +471,10 @@ class EditFragment : Fragment(), Toolbar.OnMenuItemClickListener, ConfirmDialog.
         private const val OPEN_LINK_DIALOG_TAG = "open_link_confirm_dialog"
 
         private const val CANT_EDIT_SNACKBAR_DURATION = 5000
+
+        private const val SEARCH_ARROW_CLICK_SCALE = 0.7f
+        private const val SEARCH_ARROW_CLICK_DURATION = 300L
+        private const val SEARCH_ARROW_CLICK_OVERSHOOT = 4f
     }
 }
 

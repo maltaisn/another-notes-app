@@ -24,11 +24,14 @@ import com.maltaisn.notes.ui.edit.adapter.EditTextItem
  * @param itemExists This should be `true` if the list currently seen by the adapter contains
  * the item targeted by this focus change. Otherwise, the adapter will wait until the new item
  * is bound to a view holder before changing the focus.
+ * @param showKeyboard Whether to show the keyboard after focusing. This is `false` when focusing
+ * only to bring a search result into view.
  */
 data class EditFocusChange(
     val location: EditFocusLocation,
     val textPos: Int,
     val itemExists: Boolean = false,
+    val showKeyboard: Boolean = true,
 ) {
 
     companion object {

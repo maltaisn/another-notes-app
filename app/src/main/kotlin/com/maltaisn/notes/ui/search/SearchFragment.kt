@@ -18,8 +18,8 @@ package com.maltaisn.notes.ui.search
 
 import android.os.Bundle
 import android.view.View
-import android.view.ViewTreeObserver
 import androidx.appcompat.widget.SearchView
+import androidx.core.view.OneShotPreDrawListener
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -36,6 +36,9 @@ import dagger.hilt.android.AndroidEntryPoint
 class SearchFragment : NoteFragment() {
 
     override val viewModel: SearchViewModel by viewModels()
+
+    override val searchQueryForEdit: String
+        get() = viewModel.currentQuery
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,17 +61,10 @@ class SearchFragment : NoteFragment() {
                 navController.popBackStack()
             }
 
-            viewTreeObserver.addOnPreDrawListener(object : ViewTreeObserver.OnPreDrawListener {
-                private var directionSet = false
-
-                override fun onPreDraw(): Boolean {
-                    if (!directionSet) {
-                        menu.setIconsLayoutDirection(view.layoutDirection)
-                        directionSet = true
-                    }
-                    return true
-                }
-            })
+            // One shot, otherwise the listener stays on the window and leaks the view after it's destroyed.
+            OneShotPreDrawListener.add(this) {
+                menu.setIconsLayoutDirection(view.layoutDirection)
+            }
         }
 
         binding.fab.isVisible = false

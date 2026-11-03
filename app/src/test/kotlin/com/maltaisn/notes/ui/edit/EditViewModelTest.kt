@@ -78,6 +78,7 @@ class EditViewModelTest {
     private lateinit var labelsRepo: MockLabelsRepository
     private lateinit var alarmCallback: MockAlarmCallback
     private lateinit var prefs: PrefsManager
+    private lateinit var editableTextProvider: EditableTextProvider
 
     @get:Rule
     var mainCoroutineRule = MainCoroutineRule()
@@ -145,7 +146,7 @@ class EditViewModelTest {
 
         alarmCallback = MockAlarmCallback()
 
-        val editableTextProvider = object : EditableTextProvider {
+        editableTextProvider = object : EditableTextProvider {
             override fun create(text: CharSequence): EditableText {
                 // This editable text will call onTextChanged when changed.
                 return TestEditableText(text, viewModel)
@@ -174,6 +175,7 @@ class EditViewModelTest {
             pin = AVAILABLE,
             share = AVAILABLE,
             copy = AVAILABLE,
+            searchInNote = AVAILABLE,
         ), viewModel.editActionsAvailability.getOrAwaitValue())
 
         assertEquals(listOf(
@@ -232,6 +234,7 @@ class EditViewModelTest {
             pin = AVAILABLE,
             share = AVAILABLE,
             copy = AVAILABLE,
+            searchInNote = AVAILABLE,
         ), viewModel.editActionsAvailability.getOrAwaitValue())
 
         assertEquals(NOTE1_ITEMS, viewModel.editItems.getOrAwaitValue())
@@ -254,6 +257,7 @@ class EditViewModelTest {
             uncheckAll = AVAILABLE,
             deleteChecked = AVAILABLE,
             sortItems = AVAILABLE,
+            searchInNote = AVAILABLE,
         ), viewModel.editActionsAvailability.getOrAwaitValue())
 
         assertEquals(NOTE2_ITEMS, viewModel.editItems.getOrAwaitValue())
@@ -480,6 +484,7 @@ class EditViewModelTest {
             pin = AVAILABLE,
             share = AVAILABLE,
             copy = AVAILABLE,
+            searchInNote = AVAILABLE,
         ), viewModel.editActionsAvailability.getOrAwaitValue())
 
         assertLiveDataEventSent(viewModel.messageEvent, EditMessage.RESTORED_NOTE)
@@ -513,6 +518,7 @@ class EditViewModelTest {
             uncheckAll = AVAILABLE,
             deleteChecked = AVAILABLE,
             sortItems = AVAILABLE,
+            searchInNote = AVAILABLE,
         ), viewModel.editActionsAvailability.getOrAwaitValue())
 
         assertLiveDataEventSent(viewModel.messageEvent, EditMessage.RESTORED_NOTE)
@@ -1293,6 +1299,7 @@ class EditViewModelTest {
             share = AVAILABLE,
             copy = AVAILABLE,
             sortItems = AVAILABLE,
+            searchInNote = AVAILABLE,
         ), viewModel.editActionsAvailability.getOrAwaitValue())
     }
 
@@ -1390,6 +1397,236 @@ class EditViewModelTest {
         assertWasFocused(EditFocusLocation.Content, 7)
         assertEquals("content", item.text.text.toString())
     }
+
+    @Test
+    fun `should focus first search match when opening note`() = runTest {
+        viewModel.start(1, searchQuery = "content")
+        assertLiveDataEventSent(viewModel.focusEvent, searchMatch(EditFocusLocation.Content, 0))
+    }
+
+    @Test
+    fun `should focus first search match with navigation arguments in saved state`() = runTest {
+        // The navigation component puts the destination arguments in the saved state handle.
+        val savedStateHandle = SavedStateHandle(mapOf("noteId" to 1L, "searchQuery" to "content"))
+        viewModel = EditViewModel(notesRepo, labelsRepo, prefs,
+            DefaultReminderAlarmManager(notesRepo, prefs, alarmCallback),
+            editableTextProvider, savedStateHandle)
+        viewModel.start(1, searchQuery = "content")
+        assertLiveDataEventSent(viewModel.focusEvent, searchMatch(EditFocusLocation.Content, 0))
+        assertEquals(listOf("content"), viewModel.searchTerms.getOrAwaitValue())
+
+        // Not focused again when the view is recreated.
+        viewModel.start(1, searchQuery = "content")
+        assertTrue(viewModel.focusEvent.getOrAwaitValue().hasBeenHandled)
+    }
+
+    @Test
+    fun `should find search match ignoring case, in title`() = runTest {
+        viewModel.start(1, searchQuery = "TiTlE")
+        assertLiveDataEventSent(viewModel.focusEvent, searchMatch(EditFocusLocation.Title, 0))
+    }
+
+    @Test
+    fun `should not focus when opening note without search query`() = runTest {
+        viewModel.start(1)
+        assertEquals(NOTE1_ITEMS, viewModel.editItems.getOrAwaitValue())
+        assertNull(viewModel.focusEvent.value)
+    }
+
+    @Test
+    fun `should not focus when search query has no match`() = runTest {
+        viewModel.start(1, searchQuery = "missing")
+        assertEquals(NOTE1_ITEMS, viewModel.editItems.getOrAwaitValue())
+        assertNull(viewModel.focusEvent.value)
+
+        viewModel.goToSearchMatch(next = true)
+        assertNull(viewModel.focusEvent.value)
+    }
+
+    @Test
+    fun `should not focus search match in trash`() = runTest {
+        viewModel.start(4, searchQuery = "content")
+        viewModel.editItems.getOrAwaitValue()
+        assertNull(viewModel.focusEvent.value)
+
+        viewModel.goToSearchMatch(next = true)
+        assertNull(viewModel.focusEvent.value)
+    }
+
+    @Test
+    fun `should prefer whole query match over word matches`() = runTest {
+        viewModel.start(2, searchQuery = "item 2")
+        assertLiveDataEventSent(viewModel.focusEvent, searchMatch(EditFocusLocation.Item(1), 0))
+
+        // Only one match, next wraps around to it.
+        viewModel.goToSearchMatch(next = true)
+        assertLiveDataEventSent(viewModel.focusEvent,
+            searchMatch(EditFocusLocation.Item(1), 0, itemExists = true))
+    }
+
+    @Test
+    fun `should strip quotes from search query`() = runTest {
+        viewModel.start(2, searchQuery = "\"item 2\"")
+        assertLiveDataEventSent(viewModel.focusEvent, searchMatch(EditFocusLocation.Item(1), 0))
+    }
+
+    @Test
+    fun `should match any word of query if no whole query match`() = runTest {
+        viewModel.start(1, searchQuery = "  missing   content ")
+        assertLiveDataEventSent(viewModel.focusEvent, searchMatch(EditFocusLocation.Content, 0))
+    }
+
+    @Test
+    fun `should go to next and previous search match, wrapping around`() = runTest {
+        viewModel.start(7, searchQuery = "item")
+        assertLiveDataEventSent(viewModel.focusEvent, searchMatch(EditFocusLocation.Item(0), 0))
+
+        for (pos in listOf(1, 2, 3, 0)) {
+            viewModel.goToSearchMatch(next = true)
+            assertLiveDataEventSent(viewModel.focusEvent,
+                searchMatch(EditFocusLocation.Item(pos), 0, itemExists = true))
+        }
+        for (pos in listOf(3, 2)) {
+            viewModel.goToSearchMatch(next = false)
+            assertLiveDataEventSent(viewModel.focusEvent,
+                searchMatch(EditFocusLocation.Item(pos), 0, itemExists = true))
+        }
+    }
+
+    @Test
+    fun `should find multiple search matches in same item, in order`() = runTest {
+        notesRepo.addNote(testNote(id = 8, title = "note", content = "a cat, a CAT and a cat",
+            status = NoteStatus.ACTIVE))
+        viewModel.start(8, searchQuery = "cat")
+        assertLiveDataEventSent(viewModel.focusEvent, searchMatch(EditFocusLocation.Content, 2))
+
+        for (pos in listOf(9, 19, 2)) {
+            viewModel.goToSearchMatch(next = true)
+            assertLiveDataEventSent(viewModel.focusEvent,
+                searchMatch(EditFocusLocation.Content, pos, itemExists = true))
+        }
+    }
+
+    @Test
+    fun `should not return overlapping search matches`() = runTest {
+        notesRepo.addNote(testNote(id = 8, title = "note", content = "aaaa", status = NoteStatus.ACTIVE))
+        viewModel.start(8, searchQuery = "aa")
+        assertLiveDataEventSent(viewModel.focusEvent, searchMatch(EditFocusLocation.Content, 0))
+
+        viewModel.goToSearchMatch(next = true)
+        assertLiveDataEventSent(viewModel.focusEvent,
+            searchMatch(EditFocusLocation.Content, 2, itemExists = true))
+        viewModel.goToSearchMatch(next = true)
+        assertLiveDataEventSent(viewModel.focusEvent,
+            searchMatch(EditFocusLocation.Content, 0, itemExists = true))
+    }
+
+    @Test
+    fun `should merge word matches at same position`() = runTest {
+        // "ite" and "item" both match at position 0, only one match should be kept per position.
+        viewModel.start(2, searchQuery = "ite item x")
+        assertLiveDataEventSent(viewModel.focusEvent, searchMatch(EditFocusLocation.Item(0), 0))
+
+        viewModel.goToSearchMatch(next = true)
+        assertLiveDataEventSent(viewModel.focusEvent,
+            searchMatch(EditFocusLocation.Item(1), 0, itemExists = true))
+    }
+
+    @Test
+    fun `should find search matches in text edited after opening`() = runTest {
+        viewModel.start(1, searchQuery = "content")
+        assertLiveDataEventSent(viewModel.focusEvent, searchMatch(EditFocusLocation.Content, 0))
+
+        itemAt<EditTextItem>(2).text.replace(7, 7, " content")
+        viewModel.goToSearchMatch(next = true)
+        assertLiveDataEventSent(viewModel.focusEvent,
+            searchMatch(EditFocusLocation.Content, 8, itemExists = true))
+    }
+
+    @Test
+    fun `should set search terms to highlight when opening note`() = runTest {
+        viewModel.start(2, searchQuery = "missing item")
+        assertEquals(listOf("missing", "item"), viewModel.searchTerms.getOrAwaitValue())
+    }
+
+    @Test
+    fun `should not set search terms if no match`() = runTest {
+        viewModel.start(2, searchQuery = "missing")
+        viewModel.editItems.getOrAwaitValue()
+        assertEquals(emptyList(), viewModel.searchTerms.getOrAwaitValue())
+    }
+
+    @Test
+    fun `should not set search terms in trash`() = runTest {
+        viewModel.start(4, searchQuery = "content")
+        viewModel.editItems.getOrAwaitValue()
+        assertEquals(emptyList(), viewModel.searchTerms.getOrAwaitValue())
+    }
+
+    @Test
+    fun `should search in note`() = runTest {
+        viewModel.start(7)
+        assertFalse(viewModel.inNoteSearchShown.getOrAwaitValue())
+
+        viewModel.startInNoteSearch()
+        assertTrue(viewModel.inNoteSearchShown.getOrAwaitValue())
+
+        // Changing the query only highlights, the first match is focused on next.
+        viewModel.changeSearchQuery("item 3")
+        assertEquals(listOf("item 3"), viewModel.searchTerms.getOrAwaitValue())
+        assertEquals("item 3", viewModel.searchQuery)
+        assertNull(viewModel.focusEvent.value)
+
+        viewModel.goToSearchMatch(next = true)
+        assertLiveDataEventSent(viewModel.focusEvent,
+            searchMatch(EditFocusLocation.Item(2), 0, itemExists = true))
+
+        viewModel.stopInNoteSearch()
+        assertFalse(viewModel.inNoteSearchShown.getOrAwaitValue())
+        assertEquals(emptyList(), viewModel.searchTerms.getOrAwaitValue())
+        assertEquals(NoteSearch.Position(-1, 0), viewModel.searchMatchPosition.getOrAwaitValue())
+        assertEquals("", viewModel.searchQuery)
+    }
+
+    @Test
+    fun `should go to last search match on previous after query change`() = runTest {
+        viewModel.start(7, searchQuery = "item 1")
+        assertLiveDataEventSent(viewModel.focusEvent, searchMatch(EditFocusLocation.Item(0), 0))
+
+        viewModel.changeSearchQuery("item")
+        viewModel.goToSearchMatch(next = false)
+        assertLiveDataEventSent(viewModel.focusEvent,
+            searchMatch(EditFocusLocation.Item(3), 0, itemExists = true))
+    }
+
+    @Test
+    fun `should keep changed search query when started again`() = runTest {
+        viewModel.start(7, searchQuery = "item 1")
+        viewModel.changeSearchQuery("item 2")
+        viewModel.start(7, searchQuery = "item 1")
+        viewModel.editItems.getOrAwaitValue()
+        assertEquals("item 2", viewModel.searchQuery)
+        assertEquals(listOf("item 2"), viewModel.searchTerms.getOrAwaitValue())
+    }
+
+    @Test
+    fun `should update search match position`() = runTest {
+        viewModel.start(7, searchQuery = "item")
+        viewModel.editItems.getOrAwaitValue()
+        assertEquals(NoteSearch.Position(0, 4), viewModel.searchMatchPosition.getOrAwaitValue())
+        viewModel.goToSearchMatch(next = true)
+        assertEquals(NoteSearch.Position(1, 4), viewModel.searchMatchPosition.getOrAwaitValue())
+        viewModel.goToSearchMatch(next = false)
+        viewModel.goToSearchMatch(next = false)
+        assertEquals(NoteSearch.Position(3, 4), viewModel.searchMatchPosition.getOrAwaitValue())
+
+        // Count is updated when text is edited.
+        itemAt<EditTextItem>(2).text.replace(0, 4, "it")
+        assertEquals(NoteSearch.Position(-1, 3), viewModel.searchMatchPosition.getOrAwaitValue())
+    }
+
+    private fun searchMatch(location: EditFocusLocation, pos: Int, itemExists: Boolean = false) =
+        EditFocusChange(location, pos, itemExists, showKeyboard = false)
 
     private fun TestScope.doEventTest(
         itemsAfter: List<EditListItem>,

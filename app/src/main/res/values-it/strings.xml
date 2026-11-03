@@ -46,6 +46,10 @@
     <string name="action_rename">Rinomina</string>
     <string name="action_restore">Ripristina</string>
     <string name="action_search">Cerca</string>
+    <string name="action_search_previous">Risultato precedente</string>
+    <string name="action_search_next">Risultato successivo</string>
+    <string name="action_search_in_note">Cerca nella nota</string>
+    <string name="action_search_close">Chiudi ricerca</string>
     <string name="action_select_all">Seleziona tutti</string>
     <string name="action_settings">Impostazioni</string>
     <string name="action_share">Condividi</string>
