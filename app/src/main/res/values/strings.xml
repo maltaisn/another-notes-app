@@ -272,8 +272,9 @@
         Check if the password was correct.</string>
     <string name="encrypted_import_encryption_unsupported">Could not import data, encryption is not supported
         on this version of Android.</string>
-    <string name="auto_export_message">To enable automatic export, a file must be chosen to
-        save the data. The app\'s data will be exported once a day while the app is opened.
+    <string name="auto_export_message">To enable automatic export, a folder must be chosen to
+        save the data. The app\'s data will be exported to a new file once a day while the app is opened.
+        Only the 7 most recent exports are kept, older ones are deleted.
         Click OK to proceed.</string>
     <string name="auto_export_fail">Failed to export data automatically. Make sure the export location
         still exists and is accessible, then reconfigure automatic export.</string>

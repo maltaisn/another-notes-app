@@ -155,7 +155,7 @@ class SettingsViewModel @Inject constructor(
         _exportData.send(exportType)
     }
 
-    fun setupAutoExport(output: OutputStream, uri: String) {
+    fun setupAutoExport(uri: String, write: (String) -> Unit) {
         prefsManager.autoExportUri = uri
         viewModelScope.launch(Dispatchers.IO) {
             val jsonData = try {
@@ -166,9 +166,7 @@ class SettingsViewModel @Inject constructor(
             }
 
             try {
-                output.use {
-                    output.write(jsonData.toByteArray())
-                }
+                write(jsonData)
                 showMessage(R.string.export_success)
 
                 val now = System.currentTimeMillis()
