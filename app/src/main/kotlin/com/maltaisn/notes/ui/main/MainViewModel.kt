@@ -16,6 +16,7 @@
 
 package com.maltaisn.notes.ui.main
 
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import androidx.core.view.contains
@@ -27,6 +28,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavDirections
 import com.maltaisn.notes.NavGraphMainDirections
 import com.maltaisn.notes.R
+import com.maltaisn.notes.TAG
 import com.maltaisn.notes.model.DefaultPrefsManager
 import com.maltaisn.notes.model.JsonManager
 import com.maltaisn.notes.model.LabelsRepository
@@ -47,7 +49,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import java.io.OutputStream
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.hours
 
@@ -231,22 +232,17 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    fun autoExport(output: OutputStream?) {
-        if (output != null) {
-            viewModelScope.launch(Dispatchers.IO) {
-                prefsManager.autoExportFailed = try {
-                    val jsonData = jsonManager.exportJsonData()
-                    output.use {
-                        output.write(jsonData.toByteArray())
-                    }
-                    prefsManager.lastAutoExportTime = System.currentTimeMillis()
-                    false
-                } catch (_: Exception) {
-                    true
-                }
+    fun autoExport(write: (String) -> Unit) {
+        viewModelScope.launch(Dispatchers.IO) {
+            prefsManager.autoExportFailed = try {
+                val jsonData = jsonManager.exportJsonData()
+                write(jsonData)
+                prefsManager.lastAutoExportTime = System.currentTimeMillis()
+                false
+            } catch (e: Exception) {
+                Log.i(TAG, "Auto data export failed", e)
+                true
             }
-        } else {
-            prefsManager.autoExportFailed = true
         }
     }
 

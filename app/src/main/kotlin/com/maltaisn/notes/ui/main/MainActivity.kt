@@ -48,6 +48,7 @@ import com.maltaisn.notes.NavGraphMainDirections
 import com.maltaisn.notes.R
 import com.maltaisn.notes.TAG
 import com.maltaisn.notes.databinding.ActivityMainBinding
+import com.maltaisn.notes.model.AutoExportFolder
 import com.maltaisn.notes.model.PrefsManager
 import com.maltaisn.notes.model.converter.NoteTypeConverter
 import com.maltaisn.notes.model.entity.Note
@@ -219,13 +220,18 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
         }
 
         viewModel.autoExportEvent.observeEvent(this) { uri ->
-            viewModel.autoExport(try {
-                // write and *truncate*. Otherwise the file is not overwritten!
-                contentResolver.openOutputStream(uri.toUri(), "wt")
-            } catch (e: Exception) {
-                Log.i(TAG, "Auto data export failed", e)
-                null
-            })
+            val parsedUri = uri.toUri()
+            viewModel.autoExport { data ->
+                if (AutoExportFolder.isFolderUri(parsedUri)) {
+                    AutoExportFolder.export(contentResolver, parsedUri, data)
+                } else {
+                    // Single file chosen in older versions of the app: overwrite it.
+                    // Write and *truncate*, otherwise the file is not overwritten!
+                    checkNotNull(contentResolver.openOutputStream(parsedUri, "wt")).use {
+                        it.write(data.toByteArray())
+                    }
+                }
+            }
         }
 
         viewModel.createNoteEvent.observeEvent(this) { newNoteData ->

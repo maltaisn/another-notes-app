@@ -45,6 +45,7 @@ import com.maltaisn.notes.BuildConfig
 import com.maltaisn.notes.R
 import com.maltaisn.notes.TAG
 import com.maltaisn.notes.databinding.FragmentSettingsBinding
+import com.maltaisn.notes.model.AutoExportFolder
 import com.maltaisn.notes.model.DefaultPrefsManager
 import com.maltaisn.notes.navigateSafe
 import com.maltaisn.notes.setEnterExitTransitions
@@ -95,16 +96,17 @@ class SettingsFragment : PreferenceFragmentCompat(), ConfirmDialog.Callback, Exp
         autoExportLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             val uri = result.data?.data
             if (result.resultCode == Activity.RESULT_OK && uri != null) {
-                val output = try {
-                    val cr = context.contentResolver
-                    cr.takePersistableUriPermission(uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
-                    cr.openOutputStream(uri)
+                val permissionTaken = try {
+                    context.contentResolver.takePersistableUriPermission(uri, AUTO_EXPORT_FOLDER_PERMISSIONS)
+                    true
                 } catch (e: Exception) {
                     Log.i(TAG, "Data export failed", e)
-                    null
+                    false
                 }
-                if (output != null) {
-                    viewModel.setupAutoExport(output, uri.toString())
+                if (permissionTaken) {
+                    viewModel.setupAutoExport(uri.toString()) { data ->
+                        AutoExportFolder.export(context.contentResolver, uri, data)
+                    }
                 } else {
                     showMessage(R.string.export_fail)
                     autoExportPref.isChecked = false
@@ -169,8 +171,14 @@ class SettingsFragment : PreferenceFragmentCompat(), ConfirmDialog.Callback, Exp
         }
         viewModel.releasePersistableUriEvent.observeEvent(viewLifecycleOwner) { uri ->
             try {
-                requireContext().contentResolver.releasePersistableUriPermission(uri.toUri(),
-                    Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+                val parsedUri = uri.toUri()
+                requireContext().contentResolver.releasePersistableUriPermission(parsedUri,
+                    if (AutoExportFolder.isFolderUri(parsedUri)) {
+                        AUTO_EXPORT_FOLDER_PERMISSIONS
+                    } else {
+                        // Single file chosen in older versions of the app
+                        Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+                    })
             } catch (e: Exception) {
                 // Permission was revoked? will probably happen sometimes
                 Log.i(TAG, "Failed to release persistable URI permission", e)
@@ -327,9 +335,8 @@ class SettingsFragment : PreferenceFragmentCompat(), ConfirmDialog.Callback, Exp
             }
 
             AUTOMATIC_EXPORT_DIALOG_TAG -> {
-                val intent = Intent(Intent.ACTION_CREATE_DOCUMENT)
-                    .setType("application/json")
-                    .addCategory(Intent.CATEGORY_OPENABLE)
+                val intent = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE)
+                    .addFlags(AUTO_EXPORT_FOLDER_PERMISSIONS or Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION)
                 autoExportLauncher?.launch(intent)
             }
 
@@ -388,5 +395,8 @@ class SettingsFragment : PreferenceFragmentCompat(), ConfirmDialog.Callback, Exp
         private const val CLEAR_DATA_DIALOG_TAG = "clear_data_dialog"
         private const val AUTOMATIC_EXPORT_DIALOG_TAG = "automatic_export_dialog"
         private const val NOTIF_PERMISSION_DIALOG = "notif-permission-dialog"
+
+        private const val AUTO_EXPORT_FOLDER_PERMISSIONS =
+            Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
     }
 }
